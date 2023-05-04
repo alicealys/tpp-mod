@@ -1,0 +1,36 @@
+[submodule "deps/minhook"]
+	path = deps/minhook
+	url = https://github.com/TsudaKageyu/minhook.git
+[submodule "deps/udis86"]
+	path = deps/udis86
+	url = https://github.com/vmt/udis86.git
+[submodule "deps/json"]
+	path = deps/json
+	url = https://github.com/nlohmann/json.git
+[submodule "deps/curl"]
+	path = deps/curl
+	url = https://github.com/curl/curl.git
+[submodule "deps/imgui"]
+	path = deps/imgui
+	url = https://github.com/fedddddd/imgui.git
+[submodule "deps/zlib"]
+	path = deps/zlib
+	url = https://github.com/madler/zlib.git
+[submodule "deps/libtommath"]
+	path = deps/libtommath
+	url = https://github.com/libtom/libtommath.git
+[submodule "deps/libtomcrypt"]
+	path = deps/libtomcrypt
+	url = https://github.com/libtom/libtomcrypt.git
+[submodule "deps/asmjit"]
+	path = deps/asmjit
+	url = https://github.com/asmjit/asmjit.git
+[submodule "deps/discord-rpc"]
+	path = deps/discord-rpc
+	url = https://github.com/discord/discord-rpc.git
+[submodule "deps/rapidjson"]
+	path = deps/rapidjson
+	url = https://github.com/Tencent/rapidjson.git
+[submodule "deps/GSL"]
+	path = deps/GSL
+	url = https://github.com/Microsoft/GSL.git
