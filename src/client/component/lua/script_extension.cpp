@@ -14,7 +14,7 @@ namespace lua::script_extension
 	namespace
 	{
 		template <console::console_type Type>
-		void lua_print(game::lua::lua_State* s)
+		void lua_print(lua_State* s)
 		{
 			size_t len{};
 			const char* cstr = game::lua::lua_tolstring(s, -1, &len);
@@ -46,6 +46,9 @@ namespace lua::script_extension
 			}
 
 			utils::hook::inject(0x1435B49B6 + 3, lua_print<console::con_type_info>);
+			utils::hook::inject(0x1435B49D9 + 3, lua_print<console::con_type_warning>);
+			utils::hook::inject(0x1435B4A03 + 3, lua_print<console::con_type_warning>);
+			utils::hook::inject(0x1435B4A1F + 3, lua_print<console::con_type_error>);
 		}
 	};
 }

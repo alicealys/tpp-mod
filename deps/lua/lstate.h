@@ -69,6 +69,7 @@ typedef struct global_State {
   stringtable strt;  /* hash table for strings */
   lua_Alloc frealloc;  /* function to reallocate memory */
   void *ud;         /* auxiliary data to `frealloc' */
+  void* unk_callback; // mgsv
   lu_byte currentwhite;
   lu_byte gcstate;  /* state of garbage collector */
   int sweepstrgc;  /* position of sweep in `strt' */
@@ -91,6 +92,7 @@ typedef struct global_State {
   UpVal uvhead;  /* head of double-linked list of all open upvalues */
   struct Table *mt[NUM_TAGS];  /* metatables for basic types */
   TString *tmname[TM_N];  /* array with tag-method names */
+  void* unk;
 } global_State;
 
 

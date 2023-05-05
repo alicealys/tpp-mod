@@ -107,7 +107,28 @@
 extern "C"
 {
 #include "lapi.h"
+#include "lauxlib.h"
+#include "lcode.h"
+#include "ldebug.h"
+#include "ldo.h"
+#include "lfunc.h"
+#include "lgc.h"
+#include "llex.h"
+#include "llimits.h"
+#include "lmem.h"
+#include "lobject.h"
+#include "lopcodes.h"
+#include "lparser.h"
+#include "lstate.h"
+#include "lstring.h"
+#include "ltable.h"
+#include "ltm.h"
 #include "lua.h"
+#include "luaconf.h"
+#include "lualib.h"
+#include "lundump.h"
+#include "lvm.h"
+#include "lzio.h"
 }
 
 #pragma warning(pop)

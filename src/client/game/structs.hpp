@@ -5,11 +5,6 @@ namespace game
 {
 	namespace lua
 	{
-		struct lua_State
-		{
-
-		};
-
 		struct lua_state_container
 		{
 			void* unk;
