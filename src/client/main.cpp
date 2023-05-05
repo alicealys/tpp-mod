@@ -20,8 +20,16 @@ namespace
 		return lib;
 	}
 
+	void enable_dpi_awareness()
+	{
+		const utils::nt::library user32{"user32.dll"};
+		user32.invoke<BOOL>("SetProcessDpiAwarenessContext", DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2);
+	}
+
 	int start()
 	{
+		enable_dpi_awareness();
+
 		component_loader::post_start();
 		component_loader::post_load();
 		component_loader::post_unpack();

@@ -4,18 +4,40 @@
 
 namespace game
 {
+	namespace environment
+	{
+		enum game_mode
+		{
+			none,
+			mgsv,
+			mgo,
+		};
+
+		game_mode get_mode();
+		void set_mode(game_mode mode);
+
+		bool is_mgsv();
+		bool is_mgo();
+	}
+
 	template <typename T>
 	class symbol
 	{
 	public:
-		symbol(const size_t address)
-			: address_(reinterpret_cast<T*>(address))
+		symbol(const size_t mgsv, const size_t mgo)
+			: mgsv_address_(reinterpret_cast<T*>(mgsv))
+			  , mgo_address_(reinterpret_cast<T*>(mgo))
 		{
 		}
 
 		T* get() const
 		{
-			return reinterpret_cast<T*>(address_);
+			if (environment::is_mgsv())
+			{
+				return reinterpret_cast<T*>(this->mgsv_address_);
+			}
+
+			return this->mgo_address_;
 		}
 
 		operator T* () const
@@ -29,7 +51,9 @@ namespace game
 		}
 
 	private:
-		T* address_;
+		T* mgsv_address_{};
+		T* mgo_address_{};
+
 	};
 }
 

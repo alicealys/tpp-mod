@@ -104,6 +104,12 @@
 #include <backends/imgui_impl_win32.h>
 #include <misc/cpp/imgui_stdlib.h>
 
+extern "C"
+{
+#include "lapi.h"
+#include "lua.h"
+}
+
 #pragma warning(pop)
 #pragma warning(disable: 4100)
 
