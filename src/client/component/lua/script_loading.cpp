@@ -62,7 +62,7 @@ namespace lua::script_loading
 		}
 
 		utils::hook::detour lual_load_buffer_hook;
-		int lual_load_buffer_stub(game::lua::lua_State* state, const char* buffer, size_t size, const char* name)
+		int lual_load_buffer_stub(lua_State* state, const char* buffer, size_t size, const char* name)
 		{
 			if (loading_custom_script)
 			{

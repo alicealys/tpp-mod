@@ -206,9 +206,8 @@ typedef union TString {
   } tsv;
 } TString;
 
-
-#define getstr(ts)	cast(const char *, (ts) + 1)
-#define svalue(o)       getstr(rawtsvalue(o))
+#define getstr(ts)	cast(const char **, (ts) + 1)
+#define svalue(o)       *getstr(rawtsvalue(o))
 
 
 

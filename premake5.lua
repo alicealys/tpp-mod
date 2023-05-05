@@ -1,3 +1,5 @@
+require('vstudio')
+
 gitVersioningCommand = "git describe --tags --dirty --always"
 gitCurrentBranchCommand = "git symbolic-ref -q --short HEAD"
 
@@ -266,6 +268,20 @@ workspace "tpp-mod"
 		optimize "Debug"
 		defines {"DEBUG", "_DEBUG"}
 	filter {}
+
+	local elementslink = premake.vstudio.vc2010.elements.link
+	premake.vstudio.vc2010.elements.link = function(cfg, ...)
+		local elements = elementslink(cfg, ...)
+		if (cfg.project.name ~= "client") then
+			return elements
+		end
+
+		table.insert(elements, function()
+			premake.w('<RandomizedBaseAddress>false</RandomizedBaseAddress>')
+		end)
+
+		return elements
+	end
 
 project "common"
 	kind "StaticLib"

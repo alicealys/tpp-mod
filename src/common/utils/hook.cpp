@@ -260,6 +260,11 @@ namespace utils::hook
 		return jump(reinterpret_cast<void*>(pointer), data, use_far);
 	}
 
+	void jump(void* pointer, const size_t data, const bool use_far)
+	{
+		return jump(reinterpret_cast<size_t>(pointer), reinterpret_cast<void*>(data), use_far);
+	}
+
 	void jump(const size_t pointer, const size_t data, const bool use_far)
 	{
 		return jump(pointer, reinterpret_cast<void*>(data), use_far);
