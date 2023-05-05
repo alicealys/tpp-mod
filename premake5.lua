@@ -295,7 +295,6 @@ project "client"
 	resincludedirs {"$(ProjectDir)src"}
 
 	links {"common"}
-
 	prebuildcommands {"pushd %{_MAIN_SCRIPT_DIR}", "tools\\premake5 generate-buildinfo", "popd"}
 
 	if _OPTIONS["copy-to"] then
