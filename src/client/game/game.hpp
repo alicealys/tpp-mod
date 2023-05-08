@@ -2,6 +2,8 @@
 
 #include "structs.hpp"
 
+#define SELECT_VALUE(mgsv, mgo) (game::environment::is_mgsv() ? (mgsv) : (mgo))
+
 namespace game
 {
 	namespace environment
