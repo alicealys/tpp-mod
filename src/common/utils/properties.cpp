@@ -18,7 +18,7 @@ namespace utils::properties
 			CoTaskMemFree(path);
 		});
 
-		static auto appdata = std::filesystem::path(path) / "h2-mod";
+		static auto appdata = std::filesystem::path(path) / "tpp-mod";
 		return appdata;
 	}
 }
