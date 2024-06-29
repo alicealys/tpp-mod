@@ -50,5 +50,4 @@ jobs:
         with:
           name: ${{matrix.configuration}} binaries
           path: |
-            build/bin/x64/${{matrix.configuration}}/tpp-mod.exe
-            build/bin/x64/${{matrix.configuration}}/tpp-mod.pdb
+            build/bin/x64/${{matrix.configuration}}/dinput8.dll
