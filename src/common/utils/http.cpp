@@ -2,6 +2,7 @@
 #include <algorithm>
 #include <curl/curl.h>
 #include <gsl/gsl>
+#include <chrono>
 
 #pragma comment(lib, "ws2_32.lib")
 
