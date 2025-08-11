@@ -1,5 +1,9 @@
 # tpp-mod
 
+## Download
+
+[dinput8.dll](https://github.alicent.cat/tpp-mod/dinput8.dll)
+
 ## Features
 
 - `-custom-server`: flag allows to set a custom server instead of https://mgstpp-game.konamionline.com/tppstm/gate  
