@@ -8,6 +8,7 @@
 
 #include <utils/io.hpp>
 #include <utils/hook.hpp>
+#include <utils/flags.hpp>
 
 namespace lua::script_extension
 {
@@ -40,7 +41,7 @@ namespace lua::script_extension
 	public:
 		void post_unpack() override
 		{
-			if (!game::environment::is_mgsv())
+			if (!utils::flags::has_flag("lua-debug") || !game::environment::is_mgsv())
 			{
 				return;
 			}

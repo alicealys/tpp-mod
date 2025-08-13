@@ -8,6 +8,7 @@
 
 #include <utils/io.hpp>
 #include <utils/hook.hpp>
+#include <utils/flags.hpp>
 
 namespace lua::script_loading
 {
@@ -85,7 +86,11 @@ namespace lua::script_loading
 			}
 			else
 			{
-				printf("Loading lua script \"%s\"", name);
+				if (utils::flags::has_flag("lua-debug"))
+				{
+					printf("Loading lua script \"%s\"", name);
+				}
+
 				return lual_load_buffer_hook.invoke<int>(state, buffer, size, name);
 			}
 		}
