@@ -17,6 +17,7 @@ namespace custom_server
 	namespace
 	{
 		char custom_url[0x2000]{};
+		std::optional<std::string> custom_server;
 
 		utils::hook::detour file_read_hook;
 		utils::hook::detour file_write_hook;
@@ -121,6 +122,39 @@ namespace custom_server
 
 			return 7;
 		}
+
+		std::string get_command_line_args()
+		{
+			int num_args{};
+			const auto argv = CommandLineToArgvW(GetCommandLineW(), &num_args);
+
+			std::string buffer;
+			for (auto i = 0; i < num_args; i++)
+			{
+				buffer.append(utils::string::convert(argv[i]));
+				buffer.append(" ");
+			}
+
+			LocalFree(argv);
+			return buffer;
+		}
+
+		BOOL create_process_stub(LPCSTR application_name,
+			LPSTR command_line, LPSECURITY_ATTRIBUTES process_attributes,
+			LPSECURITY_ATTRIBUTES thread_attributes, BOOL inherit_handles,
+			DWORD creation_flags, LPVOID environment, LPCSTR current_directory, LPSTARTUPINFOA startup_info,
+			LPPROCESS_INFORMATION process_information)
+		{
+			std::string command_line_;
+			if (custom_server.has_value())
+			{
+				const auto current_args = get_command_line_args();
+				command_line_.append(std::format("{} {}", current_args.data(), command_line));
+			}
+
+			return CreateProcess(application_name, command_line_.data(), process_attributes, thread_attributes, 
+				inherit_handles, creation_flags, environment, current_directory, startup_info, process_information);
+		}
 	}
 
 	bool is_using_custom_server()
@@ -133,23 +167,30 @@ namespace custom_server
 	public:
 		void post_unpack() override
 		{
-			const auto custom_server = utils::flags::get_flag("custom-server");
+			custom_server = utils::flags::get_flag(SELECT_VALUE("custom-server-tpp", "custom-server-mgo"));
 			if (!custom_server.has_value() || custom_server->size() > sizeof(custom_url))
 			{
 				return;
 			}
 
-			file_read_hook.create(0x143593E20, file_read_stub);
-			file_write_hook.create(0x143596770, file_write_stub);
-
 			std::memcpy(custom_url, custom_server->data(), custom_server->size());
 			console::info("Using custom server url: %s\n", custom_url);
 
-			const auto folder = get_custom_server_data_folder();
-			utils::io::write_file(std::format("{}\\server_url.txt", folder), custom_url);
+			if (game::environment::is_mgsv())
+			{
+				file_read_hook.create(0x143593E20, file_read_stub);
+				file_write_hook.create(0x143596770, file_write_stub);
 
-			utils::hook::inject(0x1407D27AC + 3, custom_url);
-			utils::hook::jump(0x143593E7B, utils::hook::assemble(steam_storage_read_file_stub), true);
+				const auto folder = get_custom_server_data_folder();
+				utils::io::write_file(std::format("{}\\server_url.txt", folder), custom_url);
+
+				utils::hook::jump(0x143593E7B, utils::hook::assemble(steam_storage_read_file_stub), true);
+			}
+
+			utils::hook::inject(SELECT_VALUE(0x1407D27AC, 0x140572AD6) + 3, custom_url);
+
+			utils::hook::nop(SELECT_VALUE(0x144BD4489, 0x143AA3C49), 0x6);
+			utils::hook::call(SELECT_VALUE(0x144BD4489, 0x143AA3C49), create_process_stub);
 		}
 	};
 }
