@@ -14,33 +14,57 @@ namespace server_logging
 {
 	namespace
 	{
-		utils::hook::detour reader_parse_hook;
+		utils::hook::detour http_codec_begin_encode_hook;
+		utils::hook::detour http_codec_end_decode_hook;
 
-		bool reader_parse_stub(void* a1, void* a2, const char* begin_doc, const char* end_doc, void* a5)
+		std::string get_dump_path(const std::string cmd_name, const bool request)
 		{
-			const auto dump_command = [&]
-			{
-				const auto data = std::string{begin_doc, end_doc};
-				auto j = nlohmann::json::parse(data);
-				if (!j.is_object() || !j["msgid"].is_string())
-				{
-					return;
-				}
+			static const auto game_name = SELECT_VALUE("tpp", "mgo");
+			static const auto folder = custom_server::is_using_custom_server() ? "server_dump/custom" : "server_dump/konami";
 
-				const auto cmd_name = j["msgid"].get<std::string>();
-				printf("[server logging] got response for command \"%s\"\n", cmd_name.data());
+			const auto request_folder = request ? "requests" : "responses";
+			const auto name = utils::string::va("tpp-mod/%s/%s/%s/%s/%lli.json", folder, game_name, request_folder,
+				cmd_name.data(), GetTickCount64());
 
-				static const auto game_name = SELECT_VALUE("tpp", "mgo");
-				const auto folder = custom_server::is_using_custom_server() ? "server_dump_custom" : "server_dump";
+			return name;
+		}
 
-				const auto name = utils::string::va("tpp-mod/%s/%s/%s/%lli.json", folder, game_name,
-					cmd_name.data(), GetTickCount64());
+		std::string get_fox_buffer(void* buffer)
+		{
+			const auto buf = game::fox::String::GetBuffer(buffer);
+			const auto buf_size = game::fox::String::GetSize(buffer);
+			const auto data = std::string{buf, buf + buf_size};
+			return data;
+		}
 
-				utils::io::write_file(name, j.dump(4));
-			};
+		void* http_codec_end_decode_stub(void* this_, void* ctx, void* buffer)
+		{
+			const auto res = http_codec_end_decode_hook.invoke<void*>(this_, ctx, buffer);
 
-			dump_command();
-			return reader_parse_hook.invoke<bool>(a1, a2, begin_doc, end_doc, a5);
+			const auto data = get_fox_buffer(buffer);
+			const auto json = nlohmann::json::parse(data);
+			const auto cmd = json["msgid"].get<std::string>();
+
+			printf("[server logging] received response for command \"%s\"", cmd.data());
+
+			const auto path = get_dump_path(cmd, false);
+			utils::io::write_file(path, json.dump(4));
+
+			return res;
+		}
+
+		void* http_codec_begin_encode_stub(void* this_, void* ctx, void* buffer, void* session_key)
+		{
+			const auto data = get_fox_buffer(buffer);
+			const auto json = nlohmann::json::parse(data);
+			const auto cmd = json["msgid"].get<std::string>();
+
+			printf("[server logging] sending request for command \"%s\"", cmd.data());
+
+			const auto path = get_dump_path(cmd, true);
+			utils::io::write_file(path, json.dump(4));
+
+			return http_codec_begin_encode_hook.invoke<void*>(this_, ctx, buffer, session_key);
 		}
 	}
 
@@ -49,12 +73,13 @@ namespace server_logging
 	public:
 		void post_unpack() override
 		{
-			if (!utils::flags::has_flag("-server-logging"))
+			if (!utils::flags::has_flag("server-logging"))
 			{
 				return;
 			}
 
-			reader_parse_hook.create(SELECT_VALUE(0x14D35E4A0, 0x14A509020), reader_parse_stub);
+			http_codec_begin_encode_hook.create(SELECT_VALUE(0x14D343690, 0x14A4E7640), http_codec_begin_encode_stub);
+			http_codec_end_decode_hook.create(SELECT_VALUE(0x141CE3210, 0x140C42A20), http_codec_end_decode_stub);
 		}
 	};
 }

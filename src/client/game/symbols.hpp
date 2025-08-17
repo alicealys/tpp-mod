@@ -6,6 +6,11 @@ namespace game
 {
 	// Functions
 	
+	namespace fox::String
+	{
+		WEAK symbol<size_t(void* buffer)> GetSize{0x140A839C0, 0x1406C4D70};
+		WEAK symbol<char*(void* buffer)> GetBuffer{0x14C240CB0, 0x14CB3BB00};
+	}
 
 	// Variables
 
