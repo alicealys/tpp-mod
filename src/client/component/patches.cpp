@@ -17,7 +17,7 @@ namespace patches
 	public:
 		void post_unpack() override
 		{
-			utils::hook::jump(0x14008130A, 0x1400814D8); // unlock framerate always
+			utils::hook::jump(SELECT_VALUE(0x14008130A, 0x14008195A), SELECT_VALUE(0x1400814D8, 0x140081B28)); // unlock framerate always
 		}
 	};
 }
