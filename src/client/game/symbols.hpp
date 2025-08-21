@@ -12,6 +12,14 @@ namespace game
 		WEAK symbol<char*(void* buffer)> GetBuffer{0x14C240CB0, 0x14CB3BB00};
 	}
 
+	namespace tpp::ui::hud::CommonDataManager
+	{
+		struct CommonDataManager;
+
+		WEAK symbol<CommonDataManager*()> GetInstance{0x145C0A890, 0x0};
+		WEAK symbol<void(CommonDataManager*, const char*, int, int, int)> AnnounceLogView{0x140863050, 0x0};
+	}
+
 	// Variables
 
 	namespace lua
