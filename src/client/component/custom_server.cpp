@@ -24,7 +24,9 @@ namespace custom_server
 
 		std::unordered_set<std::string> file_names =
 		{
-			{"TPP_GAME_DATA"}
+			{"TPP_GAME_DATA"},
+			{"TPP_GAME_DATA0"},
+			{"TPP_GAME_DATA1"},
 		};
 
 		struct steam_storage;
@@ -155,6 +157,30 @@ namespace custom_server
 			return CreateProcess(application_name, command_line_.data(), process_attributes, thread_attributes, 
 				inherit_handles, creation_flags, environment, current_directory, startup_info, process_information);
 		}
+
+		HANDLE create_file_stub(LPCWSTR file_name, DWORD desired_access, DWORD share_mode, 
+			LPSECURITY_ATTRIBUTES security_attributes, DWORD creation_disp, DWORD flags, HANDLE template_file)
+		{
+			const auto get_new_path = [&]()
+				-> std::wstring
+			{
+				const auto name = utils::string::convert(file_name);
+				const auto base_name = name.substr(name.find_last_of("/\\") + 1);
+
+				if (!file_names.contains(base_name))
+				{
+					return file_name;
+				}
+
+				console::info("[LocalStorage] Create file \"%s\"\n", base_name.data());
+
+				const auto path = get_custom_server_data_file_path(base_name);
+				return utils::string::convert(path);
+			};
+
+			const auto new_path = get_new_path();
+			return CreateFileW(new_path.data(), desired_access, share_mode, security_attributes, creation_disp, flags, template_file);
+		}
 	}
 
 	bool is_using_custom_server()
@@ -180,6 +206,8 @@ namespace custom_server
 			{
 				file_read_hook.create(0x143593E20, file_read_stub);
 				file_write_hook.create(0x143596770, file_write_stub);
+
+				utils::hook::set(0x14DB4F0B8, create_file_stub);
 
 				const auto folder = get_custom_server_data_folder();
 				utils::io::write_file(std::format("{}\\server_url.txt", folder), custom_url);
