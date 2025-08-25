@@ -6,6 +6,7 @@
 #include <utils/hook.hpp>
 #include <utils/flags.hpp>
 #include <utils/nt.hpp>
+#include <utils/signature.hpp>
 
 namespace patches
 {
@@ -25,7 +26,14 @@ namespace patches
 
 		unsigned int get_processor_count_stub()
 		{
-			return 4;
+			const auto worker_count_opt = utils::flags::get_flag("worker-count");
+			if (worker_count_opt.has_value())
+			{
+				const auto& worker_count = worker_count_opt.value();
+				return std::atoi(worker_count.data());
+			}
+
+			return 4u;
 		}
 
 		void sub_143AA8300_stub(__int64 unk, unsigned int* res, int arg_count, const char** args)
@@ -56,6 +64,11 @@ namespace patches
 			{
 				// /AppData 99c85cdbf2c837d50d37c82af2c837d5c12d5e80fbc837d5f2c837d5f2c837d5f2 (command line arg)
 				utils::hook::jump(0x143AA8300, sub_143AA8300_stub);
+			}
+			else
+			{
+				// disable intro splash screen
+				utils::hook::jump(0x145E59910, 0x145E5991B);
 			}
 
 			if (utils::flags::has_flag("unlock-fps"))

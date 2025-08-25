@@ -76,6 +76,11 @@ namespace lua::script_loading
 				name_ = name_.substr(1);
 			}
 
+			if (name_.starts_with("/"))
+			{
+				name_ = name_.substr(1);
+			}
+
 			utils::io::write_file("tpp-mod/dump/lua/"s + name_, std::string(buffer, size));
 
 			std::string data;
