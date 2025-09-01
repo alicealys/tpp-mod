@@ -47,10 +47,17 @@ namespace patches
 		void unlock_fps()
 		{
 			set_timer_resolution();
+			
+			if (game::environment::is_mgo())
+			{
+				utils::hook::call(0x14002AFAB, get_processor_count_stub);
+			}
+			else
+			{
+				utils::hook::jump(0x142F308E0, get_processor_count_stub);
+			}
 
 			utils::hook::call(SELECT_VALUE(0x142F2AD7F, 0x14241449F), thread_sleep);
-			utils::hook::jump(SELECT_VALUE(0x142F308E0, 0x14C6D6A20), get_processor_count_stub);
-
 			utils::hook::jump(SELECT_VALUE(0x14008130A, 0x14008195A), SELECT_VALUE(0x1400814D8, 0x140081B28)); // unlock framerate always
 		}
 	}
