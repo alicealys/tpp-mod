@@ -5,8 +5,6 @@
 
 #include <utils/hook.hpp>
 #include <utils/flags.hpp>
-#include <utils/nt.hpp>
-#include <utils/signature.hpp>
 
 namespace patches
 {

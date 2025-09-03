@@ -31,8 +31,8 @@ namespace server_logging
 
 		std::string get_fox_buffer(void* buffer)
 		{
-			const auto buf = game::fox::String::GetBuffer(buffer);
-			const auto buf_size = game::fox::String::GetSize(buffer);
+			const auto buf = game::fox::Buffer::GetBuffer(buffer);
+			const auto buf_size = game::fox::Buffer::GetSize(buffer);
 			const auto data = std::string{buf, buf + buf_size};
 			return data;
 		}
