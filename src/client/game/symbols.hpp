@@ -36,7 +36,7 @@ namespace game
 
 	// Variables
 
-	WEAK symbol<ISteamNetworking*(*)()> SteamNetworking{0x14DB4F7C8, 0x0};
+	WEAK symbol<ISteamNetworking*(*)()> SteamNetworking{0x14DB4F7C8, 0x14CE237E8};
 
 	namespace lua
 	{

@@ -184,16 +184,10 @@ namespace network
 		{
 			const auto res = cmd_get_fob_target_detail_result_unpack_hook.invoke<int>(result);
 
-			sockaddr_in addr_in{};
-			inet_pton(AF_INET, result->ip->buffer, &addr_in.sin_addr);
-
 			net_address address{};
-			address.fields.ip[0] = addr_in.sin_addr.S_un.S_un_b.s_b1;
-			address.fields.ip[1] = addr_in.sin_addr.S_un.S_un_b.s_b2;
-			address.fields.ip[2] = addr_in.sin_addr.S_un.S_un_b.s_b3;
-			address.fields.ip[3] = addr_in.sin_addr.S_un.S_un_b.s_b4;
-			address.fields.port = static_cast<std::uint16_t>(result->port);
 
+			inet_pton(AF_INET, result->ip->buffer, address.fields.ip);
+			address.fields.port = static_cast<std::uint16_t>(result->port);
 			result->steam_id = address.value;
 
 			return res;
