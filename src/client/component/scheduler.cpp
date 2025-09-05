@@ -12,6 +12,9 @@ namespace scheduler
 {
 	namespace
 	{
+		utils::hook::detour core_framework_enter_frame_hook;
+		utils::hook::detour net_daemon_update_hook;
+
 		struct task
 		{
 			std::function<bool()> handler{};
@@ -90,6 +93,18 @@ namespace scheduler
 			assert(type >= 0 && type < pipeline::count);
 			pipelines[type].execute();
 		}
+
+		void core_framework_enter_frame_stub(void* a1, void* a2)
+		{
+			core_framework_enter_frame_hook.invoke<void>(a1, a2);
+			execute(main);
+		}
+
+		void net_daemon_update_stub(void* a1)
+		{
+			net_daemon_update_hook.invoke<void>(a1);
+			execute(network);
+		}
 	}
 
 	void schedule(const std::function<bool()>& callback, const pipeline type,
@@ -125,21 +140,6 @@ namespace scheduler
 		}, type, delay);
 	}
 
-	void on_game_initialized(const std::function<void()>& callback, const pipeline type,
-		const std::chrono::milliseconds delay)
-	{
-		//schedule([=]()
-		//{
-		//	//if (game::Sys_IsDatabaseReady2())
-		//	//{
-		//	//	once(callback, type, delay);
-		//	//	return cond_end;
-		//	//}
-		//
-		//	return cond_continue;
-		//}, pipeline::main);
-	}
-
 	class component final : public component_interface
 	{
 	public:
@@ -157,7 +157,8 @@ namespace scheduler
 
 		void post_unpack() override
 		{
-
+			core_framework_enter_frame_hook.create(SELECT_VALUE(0x14007FAA0, 0x140080180), core_framework_enter_frame_stub);
+			net_daemon_update_hook.create(SELECT_VALUE(0x1459B7340, 0x144DF6490), net_daemon_update_stub);
 		}
 
 		void pre_destroy() override

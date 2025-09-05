@@ -3,6 +3,8 @@
 
 namespace game
 {
+	// https://github.com/rlabrecque/SteamworksSDK/tree/f4d127e335a66a1615c0870830d14dcee76ed8aa/public/steam
+
 	struct raw_steam_id final
 	{
 		unsigned int account_id : 32;
