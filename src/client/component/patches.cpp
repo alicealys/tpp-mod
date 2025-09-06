@@ -3,6 +3,8 @@
 
 #include "game/game.hpp"
 
+#include "vars.hpp"
+
 #include <utils/hook.hpp>
 #include <utils/flags.hpp>
 
@@ -10,6 +12,9 @@ namespace patches
 {
 	namespace
 	{
+		vars::var_ptr var_worker_count;
+		vars::var_ptr var_unlock_fps;
+
 		void set_timer_resolution()
 		{
 			ULONG data{};
@@ -22,7 +27,7 @@ namespace patches
 			std::this_thread::yield();
 		}
 
-		unsigned int get_processor_count_stub()
+		unsigned int get_processor_count()
 		{
 			const auto worker_count_opt = utils::flags::get_flag("worker-count");
 			if (worker_count_opt.has_value())
@@ -31,7 +36,13 @@ namespace patches
 				return std::atoi(worker_count.data());
 			}
 
-			return 4u;
+			return var_worker_count->latched.get<bool>();
+		}
+
+		unsigned int get_processor_count_stub()
+		{
+			static const auto count = get_processor_count();
+			return count;
 		}
 
 		void sub_143AA8300_stub(__int64 unk, unsigned int* res, int arg_count, const char** args)
@@ -63,6 +74,14 @@ namespace patches
 	class component final : public component_interface
 	{
 	public:
+		void post_start() override
+		{
+			var_worker_count = vars::register_int("com_worker_count", 4, 0, std::numeric_limits<int>::max(), 
+				vars::var_flag_saved | vars::var_flag_latched, "maxiumum number of job executor worker threads");
+
+			var_unlock_fps = vars::register_bool("com_unlock_fps", false, vars::var_flag_saved | vars::var_flag_latched, "unlock fps");
+		}
+
 		void post_unpack() override
 		{
 			if (game::environment::is_mgo())
@@ -74,9 +93,9 @@ namespace patches
 			{
 				// disable intro splash screen
 				utils::hook::jump(0x145E59910, 0x145E5991B);
-			}
+			}	
 
-			if (utils::flags::has_flag("unlock-fps"))
+			if (utils::flags::has_flag("unlock-fps") || var_unlock_fps->latched.get<bool>())
 			{
 				unlock_fps();
 			}
