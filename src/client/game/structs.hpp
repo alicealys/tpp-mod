@@ -367,9 +367,10 @@ namespace game
 					void(__fastcall* Start)(SessionImpl2* this_);
 					void(__fastcall* EnableAccept)(SessionImpl2* this_, bool);
 					void(__fastcall* DisconnectPreparingMembers)(SessionImpl2* this_);
+					void*(__fastcall* GetP2pConnectionManager)(SessionImpl2* this_);
+					void(__fastcall* SetP2pConnectionManager)(SessionImpl2* this_, void*);
 					void(__fastcall* FixFrameTime)(SessionImpl2* this_);
 					void(__fastcall* Update)(SessionImpl2* this_);
-					void* (__fastcall* GetP2pConnectionManager)(SessionImpl2* this_);
 					unsigned __int64(__fastcall* GetResult)(SessionImpl2* this_);
 					void(__fastcall* InitAcceptedMember)(SessionImpl2* this_, void*, void*);
 					Group*(__fastcall* GetAllMembers)(SessionImpl2* this_);
