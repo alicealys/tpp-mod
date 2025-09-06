@@ -197,6 +197,30 @@ namespace game
 				std::uint32_t a4;
 			};
 #pragma pack(pop)
+
+			template <typename T>
+			struct ObjectPtr
+			{
+				T* ptr;
+			};
+
+			struct MpSocket
+			{
+
+			};
+		};
+
+		struct EntityHandle
+		{
+			void* a1;
+		};
+
+		template <typename T>
+		struct Array
+		{
+			std::uint32_t size;
+			std::uint32_t capacity;
+			T** array;
 		};
 
 		namespace nt
@@ -258,11 +282,8 @@ namespace game
 				void* sPtr2;
 				std::uint8_t a5;
 				int flags;
-				int entityHandle;
-				std::uint32_t a7;
-				void** entityHandles;
-				void* a9;
-				void* a10;
+				fox::Array<fox::EntityHandle> entityHandles;
+				fox::Array<fox::nio::ObjectPtr<fox::nio::MpSocket>> mpSockets;
 				void* syncActivator;
 				fox::nt::SteamSessionUserId* sessionUserId;
 				void* sPtr3;
