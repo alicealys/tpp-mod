@@ -64,6 +64,6 @@ namespace vars
 	var_ptr& register_float(const std::string& name, float value, float min, float max,
 		const std::uint32_t flags, const std::string& description);
 
-	var_ptr& register_string(const std::string& name, float value, float min, float max,
+	var_ptr& register_string(const std::string& name, const std::string& value,
 		const std::uint32_t flags, const std::string& description);
 }

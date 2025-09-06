@@ -263,6 +263,11 @@ namespace vars
 
 			return value_j;
 		}
+
+		std::string var_value_to_string(const var_ptr& var, const nlohmann::json& value)
+		{
+			return var->type == var_type_string ? value.get<std::string>() : value.dump();
+		}
 	}
 
 	var_ptr& register_var(
@@ -320,7 +325,7 @@ namespace vars
 		return register_var(name, var_type_float, value, limits, flags, description);
 	}
 
-	var_ptr& register_string(const std::string& name, float value, float min, float max,
+	var_ptr& register_string(const std::string& name, const std::string& value,
 		const std::uint32_t flags, const std::string& description)
 	{
 		return register_var(name, var_type_string, value, {}, flags, description);
@@ -347,9 +352,9 @@ namespace vars
 				{
 					if (params.size() == 1)
 					{
-						const auto current_str = var->current.dump();
-						const auto latched_str = var->latched.dump();
-						const auto reset_str = var->reset.dump();
+						const auto current_str = var_value_to_string(var, var->current);
+						const auto latched_str = var_value_to_string(var, var->latched);
+						const auto reset_str = var_value_to_string(var, var->reset);
 
 						printf("\"%s\" is: \"%s\" latched: \"%s\" default: \"%s\" type: \"%s\" flags: %i\n", 
 							var->name.data(), current_str.data(), latched_str.data(), reset_str.data(), var->current.type_name(), var->flags);
@@ -369,7 +374,7 @@ namespace vars
 			{
 				for (const auto& var : get_vars())
 				{
-					const auto current_str = var->current.dump();
+					const auto current_str = var_value_to_string(var, var->current);
 					printf("\"%s\": \"%s\"\n", var->name.data(), current_str.data());
 				}
 			});

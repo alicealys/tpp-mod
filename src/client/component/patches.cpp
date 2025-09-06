@@ -37,7 +37,7 @@ namespace patches
 				return std::atoi(worker_count.data());
 			}
 
-			return var_worker_count->latched.get<bool>();
+			return var_worker_count->latched.get<std::uint32_t>();
 		}
 
 		unsigned int get_processor_count_stub()

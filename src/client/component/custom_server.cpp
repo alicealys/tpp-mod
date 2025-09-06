@@ -5,6 +5,7 @@
 
 #include "scheduler.hpp"
 #include "console.hpp"
+#include "vars.hpp"
 
 #include <utils/string.hpp>
 #include <utils/hook.hpp>
@@ -17,7 +18,6 @@ namespace custom_server
 	namespace
 	{
 		char custom_url[0x2000]{};
-		std::optional<std::string> custom_server;
 
 		utils::hook::detour file_read_hook;
 		utils::hook::detour file_write_hook;
@@ -28,6 +28,9 @@ namespace custom_server
 			{"TPP_GAME_DATA0"},
 			{"TPP_GAME_DATA1"},
 		};
+
+		vars::var_ptr var_custom_server_tpp;
+		vars::var_ptr var_custom_server_mgo;
 
 		struct steam_storage;
 
@@ -141,22 +144,6 @@ namespace custom_server
 			return buffer;
 		}
 
-		BOOL create_process_stub(LPCSTR application_name,
-			LPSTR command_line, LPSECURITY_ATTRIBUTES process_attributes,
-			LPSECURITY_ATTRIBUTES thread_attributes, BOOL inherit_handles,
-			DWORD creation_flags, LPVOID environment, LPCSTR current_directory, LPSTARTUPINFOA startup_info,
-			LPPROCESS_INFORMATION process_information)
-		{
-			std::string command_line_;
-			if (custom_server.has_value())
-			{
-				const auto current_args = get_command_line_args();
-				command_line_.append(std::format("{} {}", current_args.data(), command_line));
-			}
-
-			return CreateProcess(application_name, command_line_.data(), process_attributes, thread_attributes, 
-				inherit_handles, creation_flags, environment, current_directory, startup_info, process_information);
-		}
 
 		HANDLE create_file_stub(LPCWSTR file_name, DWORD desired_access, DWORD share_mode, 
 			LPSECURITY_ATTRIBUTES security_attributes, DWORD creation_disp, DWORD flags, HANDLE template_file)
@@ -191,16 +178,24 @@ namespace custom_server
 	class component final : public component_interface
 	{
 	public:
+		void post_start() override
+		{
+			var_custom_server_tpp = vars::register_string("net_custom_server_tpp", "", vars::var_flag_saved | vars::var_flag_latched, "custom server url (tpp)");
+			var_custom_server_mgo = vars::register_string("net_custom_server_mgo", "", vars::var_flag_saved | vars::var_flag_latched, "custom server url (mgo)");
+		}
+
 		void post_unpack() override
 		{
-			custom_server = utils::flags::get_flag(SELECT_VALUE("custom-server-tpp", "custom-server-mgo"));
-			if (!custom_server.has_value() || custom_server->size() > sizeof(custom_url))
+			const auto& custom_server_var = SELECT_VALUE(var_custom_server_tpp, var_custom_server_mgo);
+			const auto custom_server = custom_server_var->current.get<std::string>();
+
+			if (custom_server.empty())
 			{
 				return;
 			}
 
-			std::memcpy(custom_url, custom_server->data(), custom_server->size());
-			console::info("Using custom server url: %s\n", custom_url);
+			std::memcpy(custom_url, custom_server.data(), custom_server.size());
+			console::info("[net] using server url: \"%s\"\n", custom_url);
 
 			if (game::environment::is_mgsv())
 			{
@@ -216,9 +211,6 @@ namespace custom_server
 			}
 
 			utils::hook::inject(SELECT_VALUE(0x1407D27AC, 0x140572AD6) + 3, custom_url);
-
-			utils::hook::nop(SELECT_VALUE(0x144BD4489, 0x143AA3C49), 0x6);
-			utils::hook::call(SELECT_VALUE(0x144BD4489, 0x143AA3C49), create_process_stub);
 		}
 	};
 }
