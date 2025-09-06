@@ -17,11 +17,10 @@ namespace session
 		game::steam_id current_lobby_id;
 		std::unordered_set<std::uint64_t> kicked_steam_ids;
 
-		game::ISteamMatchmaking_vtbl steam_matchmaking_vtbl{};
-
-		struct player_msg
+		struct kick_msg_t
 		{
 			std::uint32_t type;
+			std::uint32_t unk;
 			std::uint64_t steam_id;
 		};
 
@@ -35,19 +34,24 @@ namespace session
 
 			const auto steam_friends = (*game::SteamFriends)();
 			const auto is_host = main_session->sessionInterface.__vftable->IsHost(&main_session->sessionInterface);
-			const auto member_count = main_session->sessionInterface.__vftable->GetMemberCount(&main_session->sessionInterface);
+			const auto state = main_session->__vftable->GetState(main_session);
+			const auto all_members = main_session->__vftable->GetAllMembers(main_session);
 
 			printf("is host: %i\n", is_host);
+			printf("state: %i\n", state);
 			printf("num flags steam_id                         name                            \n");
 			printf("--- ----- -------------------------------- --------------------------------\n");
 
-			for (auto i = 0; i < member_count; i++)
+			for (auto i = 0u; i < all_members->size; i++)
 			{
-				const auto member = main_session->allMembers.members[i];
+				const auto member = all_members->members[i];
+				if (member == nullptr || member->flags == 0)
+				{
+					continue;
+				}
 
 				game::steam_id steam_id{};
-				steam_id.bits = member->flags != 0 ? member->sessionUserId->userId : 0ull;
-
+				steam_id.bits = member->sessionUserId->userId;
 				const auto name = steam_friends->__vftable->GetFriendPersonaName(steam_friends, steam_id);
 
 				printf("%3i %5i %32lli %32s", i, member->flags, steam_id.bits, name);
@@ -79,68 +83,51 @@ namespace session
 			set_lobby_data("kick_num", kicked_steam_ids.size());
 
 			auto index = 0;
-			for (const auto& steam_id : kicked_steam_ids)
+			for (const auto& id : kicked_steam_ids)
 			{
-				set_lobby_data(utils::string::va("kicked_id_%d", index++), steam_id);
+				set_lobby_data(utils::string::va("kicked_id_%d", index++), id);
 			}
-
-			printf("GetLobbyData(kick_num) = %s\n", get_lobby_data("kick_num"));
 		}
 
 		void kick_player_from_lobby(const std::uint64_t steam_id)
 		{
-			player_msg kick_msg{};
+			kick_msg_t kick_msg{};
 			kick_msg.type = 1;
+			kick_msg.unk = 0xFFFFFFFF;
 			kick_msg.steam_id = steam_id;
 
 			const auto steam_matchmaking = (*game::SteamMatchmaking)();
 			steam_matchmaking->__vftable->SendLobbyChatMsg(steam_matchmaking, current_lobby_id, &kick_msg, sizeof(kick_msg));
 		}
 
-		void kick_client(const int index)
+		bool is_host()
 		{
-			static
-
 			const auto main_session = *game::s_pSession;
-			if (!main_session)
+			if (main_session == nullptr)
 			{
-				printf("not ingame\n");
-				return;
+				return false;
 			}
 
-			const auto is_host = main_session->sessionInterface.__vftable->IsHost(&main_session->sessionInterface);
-			if (!is_host)
-			{
-				printf("cannot kick as non-host\n");
-				return;
-			}
+			return main_session->sessionInterface.__vftable->IsHost(&main_session->sessionInterface);
+		}
 
-			const auto member_count = main_session->sessionInterface.__vftable->GetMemberCount(&main_session->sessionInterface);
-			if (index >= member_count)
+		game::fox::nt::Member* get_client_by_index(const unsigned int index)
+		{
+			const auto main_session = *game::s_pSession;
+			if (main_session == nullptr || index >= main_session->allMembers.size)
 			{
-				printf("invalid index\n");
-				return;
+				return nullptr;
 			}
 
 			const auto local_member = main_session->__vftable->GetLocalMember(main_session);
 			const auto target_member = main_session->allMembers.members[index];
 
-			if (target_member == nullptr)
+			if (target_member == nullptr || target_member->flags || (local_member->sessionUserId->userId == target_member->sessionUserId->userId))
 			{
-				printf("client not found\n");
-				return;
+				return nullptr;
 			}
 
-			if (local_member->sessionUserId->userId == target_member->sessionUserId->userId)
-			{
-				printf("cannot kick yourself\n");
-				return;
-			}
-
-			game::fox::nt::Member_::Reset(target_member);
-			kick_player_from_lobby(target_member->sessionUserId->userId);
-
-			printf("kicked client %i\n", index);
+			return target_member;
 		}
 
 		void* create_lobby_cb_stub(void* a1, game::steam_id lobby_id)
@@ -166,11 +153,11 @@ namespace session
 				scheduler::once(print_status, scheduler::session);
 			});
 
-			command::add("clientkick", [](const command::params& params)
+			command::add("kick", [](const command::params& params)
 			{
 				if (params.size() < 2)
 				{
-					printf("usage: clientkick <player index>\n");
+					printf("usage: kick <player index>\n");
 					return;
 				}
 
@@ -178,7 +165,22 @@ namespace session
 				const auto index = std::atoi(index_s.data());
 				scheduler::once([index]
 				{
-					kick_client(index);
+					if (!is_host())
+					{
+						printf("cannot kick as non-host\n");
+						return;
+					}
+
+					const auto client = get_client_by_index(index);
+					if (client == nullptr)
+					{
+						printf("client not found\n");
+						return;
+					}
+
+					kick_player_from_lobby(client->sessionUserId->userId);
+					ban_player_from_lobby(client->sessionUserId->userId);
+					game::fox::nt::Member_::Reset(client);
 				}, scheduler::session);
 			});
 
