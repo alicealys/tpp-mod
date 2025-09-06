@@ -14,6 +14,7 @@ namespace patches
 	{
 		vars::var_ptr var_worker_count;
 		vars::var_ptr var_unlock_fps;
+		vars::var_ptr var_skip_intro;
 
 		void set_timer_resolution()
 		{
@@ -80,6 +81,8 @@ namespace patches
 				vars::var_flag_saved | vars::var_flag_latched, "maxiumum number of job executor worker threads");
 
 			var_unlock_fps = vars::register_bool("com_unlock_fps", false, vars::var_flag_saved | vars::var_flag_latched, "unlock fps");
+
+			var_skip_intro = vars::register_bool("ui_skip_intro", false, vars::var_flag_saved | vars::var_flag_latched, "skip intro splashscreens");
 		}
 
 		void post_unpack() override
@@ -91,8 +94,11 @@ namespace patches
 			}
 			else
 			{
-				// disable intro splash screen
-				utils::hook::jump(0x145E59910, 0x145E5991B);
+				if (var_skip_intro->current.get<bool>())
+				{
+					// disable intro splash screen
+					utils::hook::jump(0x145E59910, 0x145E5991B);
+				}
 			}	
 
 			if (utils::flags::has_flag("unlock-fps") || var_unlock_fps->latched.get<bool>())
