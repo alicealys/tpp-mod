@@ -3,6 +3,7 @@
 #include "loader/component_loader.hpp"
 
 #include "game/game.hpp"
+#include "command.hpp"
 
 #include <utils/thread.hpp>
 #include <utils/hook.hpp>
@@ -254,7 +255,7 @@ namespace console
 
 				con.history_index = -1;
 
-				//game_console::add(con.buffer);
+				command::execute(con.buffer);
 
 				con.cursor = 0;
 

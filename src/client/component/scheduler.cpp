@@ -14,6 +14,7 @@ namespace scheduler
 	{
 		utils::hook::detour core_framework_enter_frame_hook;
 		utils::hook::detour net_daemon_update_hook;
+		utils::hook::detour nt_daemon_update_first_hook;
 
 		struct task
 		{
@@ -103,7 +104,13 @@ namespace scheduler
 		void net_daemon_update_stub(void* a1)
 		{
 			net_daemon_update_hook.invoke<void>(a1);
-			execute(network);
+			execute(net);
+		}
+
+		void nt_daemon_update_first_stub()
+		{
+			nt_daemon_update_first_hook.invoke<void>();
+			execute(session);
 		}
 	}
 
@@ -159,6 +166,7 @@ namespace scheduler
 		{
 			core_framework_enter_frame_hook.create(SELECT_VALUE(0x14007FAA0, 0x140080180), core_framework_enter_frame_stub);
 			net_daemon_update_hook.create(SELECT_VALUE(0x1459B7340, 0x144DF6490), net_daemon_update_stub);
+			nt_daemon_update_first_hook.create(SELECT_VALUE(0x0, 0x14A57FC80), nt_daemon_update_first_stub);
 		}
 
 		void pre_destroy() override

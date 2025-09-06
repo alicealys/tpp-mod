@@ -4,6 +4,7 @@
 #include "command.hpp"
 #include "console.hpp"
 #include "patches.hpp"
+#include "scheduler.hpp"
 
 #include <utils/io.hpp>
 #include <utils/string.hpp>
@@ -101,6 +102,7 @@ namespace command
 	void execute(const std::string& cmd)
 	{
 		std::lock_guard _0(queue_mutex);
+		printf("]%s", cmd.data());
 		command_queue.emplace_back(cmd);
 	}
 
@@ -123,7 +125,7 @@ namespace command
 	public:
 		void post_start() override
 		{
-
+			scheduler::loop(run_frame, scheduler::main);
 		}
 	};
 }
