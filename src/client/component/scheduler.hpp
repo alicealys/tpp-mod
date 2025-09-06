@@ -5,8 +5,9 @@ namespace scheduler
 	enum pipeline
 	{
 		async = 0,
-		main = 1,
-		network = 2,
+		main = 1, // main thread
+		net = 2, // server stuff
+		session = 3, // session stuff
 		count,
 	};
 
