@@ -4,6 +4,7 @@
 #include "game/game.hpp"
 
 #include "custom_server.hpp"
+#include "vars.hpp"
 
 #include <utils/hook.hpp>
 #include <utils/io.hpp>
@@ -16,6 +17,8 @@ namespace server_logging
 	{
 		utils::hook::detour http_codec_begin_encode_hook;
 		utils::hook::detour http_codec_end_decode_hook;
+
+		vars::var_ptr var_server_logging;
 
 		std::string get_dump_path(const std::string cmd_name, const bool request)
 		{
@@ -41,28 +44,34 @@ namespace server_logging
 		{
 			const auto res = http_codec_end_decode_hook.invoke<void*>(this_, ctx, buffer);
 
-			const auto data = get_fox_buffer(buffer);
-			const auto json = nlohmann::json::parse(data);
-			const auto cmd = json["msgid"].get<std::string>();
+			if (var_server_logging->current.get<bool>())
+			{
+				const auto data = get_fox_buffer(buffer);
+				const auto json = nlohmann::json::parse(data);
+				const auto cmd = json["msgid"].get<std::string>();
 
-			printf("[server logging] received response for command \"%s\"", cmd.data());
+				printf("[server logging] received response for command \"%s\"", cmd.data());
 
-			const auto path = get_dump_path(cmd, false);
-			utils::io::write_file(path, json.dump(4));
+				const auto path = get_dump_path(cmd, false);
+				utils::io::write_file(path, json.dump(4));
+			}
 
 			return res;
 		}
 
 		void* http_codec_begin_encode_stub(void* this_, void* ctx, void* buffer, void* session_key)
 		{
-			const auto data = get_fox_buffer(buffer);
-			const auto json = nlohmann::json::parse(data);
-			const auto cmd = json["msgid"].get<std::string>();
+			if (var_server_logging->current.get<bool>())
+			{
+				const auto data = get_fox_buffer(buffer);
+				const auto json = nlohmann::json::parse(data);
+				const auto cmd = json["msgid"].get<std::string>();
 
-			printf("[server logging] sending request for command \"%s\"", cmd.data());
+				printf("[server logging] sending request for command \"%s\"", cmd.data());
 
-			const auto path = get_dump_path(cmd, true);
-			utils::io::write_file(path, json.dump(4));
+				const auto path = get_dump_path(cmd, true);
+				utils::io::write_file(path, json.dump(4));
+			}
 
 			return http_codec_begin_encode_hook.invoke<void*>(this_, ctx, buffer, session_key);
 		}
@@ -71,13 +80,13 @@ namespace server_logging
 	class component final : public component_interface
 	{
 	public:
+		void post_start() override
+		{
+			var_server_logging = vars::register_bool("net_server_logging", false, vars::var_flag_saved, "enable server logging");
+		}
+
 		void post_unpack() override
 		{
-			if (!utils::flags::has_flag("server-logging"))
-			{
-				return;
-			}
-
 			http_codec_begin_encode_hook.create(SELECT_VALUE(0x14D343690, 0x14A4E7640), http_codec_begin_encode_stub);
 			http_codec_end_decode_hook.create(SELECT_VALUE(0x141CE3210, 0x140C42A20), http_codec_end_decode_stub);
 		}

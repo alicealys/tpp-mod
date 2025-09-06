@@ -3,7 +3,7 @@
 
 #include "game/game.hpp"
 
-#include "config.hpp"
+#include "vars.hpp"
 
 #include <utils/hook.hpp>
 #include <utils/flags.hpp>
@@ -29,6 +29,9 @@ namespace network
 				std::uint64_t value;
 			};
 		};
+
+		vars::var_ptr var_net_port;
+		vars::var_ptr var_net_udp;
 
 		static_assert(sizeof(net_address) == sizeof(game::steam_id));
 
@@ -63,16 +66,9 @@ namespace network
 			return 0;
 		}
 
-		void set_port(const std::uint32_t port)
-		{
-			socket_port = static_cast<std::uint16_t>(port);
-			utils::hook::set(SELECT_VALUE(0x145970AFD, 0x0) + 3, port);
-			utils::hook::set(SELECT_VALUE(0x145970B0B, 0x0) + 3, port);
-		}
-
 		SOCKET get_socket()
 		{
-			static const auto socket = create_socket(socket_port);
+			static const auto socket = create_socket(var_net_port->latched.get<std::uint16_t>());
 			return socket;
 		}
 
@@ -197,6 +193,12 @@ namespace network
 	class component final : public component_interface
 	{
 	public:
+		void post_start() override
+		{
+			var_net_udp = vars::register_bool("net_udp", false, vars::var_flag_saved | vars::var_flag_latched, "use udp sockets instead of steam networking");
+			var_net_port = vars::register_int("net_port", 5377, 0, 65535, vars::var_flag_saved | vars::var_flag_latched, "udp socket port");
+		}
+
 		void post_unpack() override
 		{
 			if (!game::environment::is_mgsv())
@@ -204,17 +206,13 @@ namespace network
 				return;
 			}
 
-			const auto net_udp = config::get<bool>("net_udp");
-			if (!net_udp.has_value() || !net_udp.value())
+			if (var_net_udp->latched.get<bool>())
 			{
 				return;
 			}
 
-			const auto net_port = config::get<std::uint16_t>("net_port");
-			if (net_port.has_value())
-			{
-				set_port(net_port.value());
-			}
+			utils::hook::set(SELECT_VALUE(0x145970AFD, 0x0) + 3, var_net_port->latched.get<std::uint16_t>());
+			utils::hook::set(SELECT_VALUE(0x145970B0B, 0x0) + 3, var_net_port->latched.get<std::uint16_t>());
 
 			nt_daemon_constructor_hook.create(SELECT_VALUE(0x1459ACD80, 0x0), nt_daemon_constructor_stub);
 			cmd_get_fob_target_detail_result_unpack_hook.create(SELECT_VALUE(0x14081BDC0, 0x0), cmd_get_fob_target_detail_result_unpack_stub);
