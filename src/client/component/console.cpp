@@ -341,18 +341,12 @@ namespace console
 	class component final : public component_interface
 	{
 	public:
-		component()
-		{
-			ShowWindow(GetConsoleWindow(), SW_HIDE);
-		}
-
 		void post_start() override
 		{
-			printf_hook.create(printf, printf_stub);
-		}
+			ShowWindow(GetConsoleWindow(), SW_HIDE);
 
-		void post_unpack() override
-		{
+			printf_hook.create(printf, printf_stub);
+
 			create_console();
 			ShowWindow(GetConsoleWindow(), SW_SHOW);
 			SetConsoleTitle("TPP-Mod");
