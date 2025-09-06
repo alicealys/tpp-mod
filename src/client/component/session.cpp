@@ -122,7 +122,7 @@ namespace session
 			const auto local_member = main_session->__vftable->GetLocalMember(main_session);
 			const auto target_member = main_session->allMembers.members[index];
 
-			if (target_member == nullptr || target_member->flags || (local_member->sessionUserId->userId == target_member->sessionUserId->userId))
+			if (target_member == nullptr || target_member->flags == 0 || (local_member->sessionUserId->userId == target_member->sessionUserId->userId))
 			{
 				return nullptr;
 			}
