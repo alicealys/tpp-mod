@@ -287,6 +287,23 @@ namespace console
 				strncpy_s(con.buffer, "", sizeof(con.buffer));
 				break;
 			}
+			case VK_TAB:
+			{
+				const auto name_opt = command::find_command_name(con.buffer);
+				if (!name_opt.has_value())
+				{
+					break;
+				}
+
+				const auto& name = name_opt.value();
+				std::memcpy(con.buffer, name.data(), name.size());
+				con.cursor = static_cast<int>(name.size());
+				con.buffer[con.cursor++] = ' ';
+				con.buffer[con.cursor] = '\0';
+
+				update();
+				break;
+			}
 			default:
 			{
 				const auto c = record.Event.KeyEvent.uChar.AsciiChar;

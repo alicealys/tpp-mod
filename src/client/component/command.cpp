@@ -155,6 +155,21 @@ namespace command
 		});
 	}
 
+	std::optional<std::string> find_command_name(const std::string& input)
+	{
+		const auto lower = utils::string::to_lower(input);
+
+		for (const auto& [name, command] : commands)
+		{
+			if (name.starts_with(lower))
+			{
+				return {name};
+			}
+		}
+
+		return {};
+	}
+
 	class component final : public component_interface
 	{
 	public:
