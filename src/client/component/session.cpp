@@ -136,6 +136,50 @@ namespace session
 			printf("[SteamMatchmaking] Created lobby %llu\n", lobby_id.bits);
 			return create_lobby_cb_hook.invoke<void*>(a1, lobby_id);
 		}
+
+		void connect_to_lobby(game::steam_id lobby_id)
+		{
+			const auto unk = *game::s_unk1;
+			if (unk == nullptr)
+			{
+				return;
+			}
+
+			unk->unk1->is_joining_invite = 1;
+			unk->unk1->invite_lobby_id = lobby_id.bits;
+
+			const auto steam_matchmaking = (*game::SteamMatchmaking)();
+			steam_matchmaking->__vftable->RequestLobbyData(steam_matchmaking, lobby_id);
+		}
+
+		game::ISteamMatchmaking_vtbl steam_matchmaking_vtbl{};
+		bool request_lobby_data_stub(game::ISteamMatchmaking* this_, game::steam_id lobby_id)
+		{
+			printf("[SteamMatchmaking] RequestLobbyData %lli\n", lobby_id.bits);
+			return steam_matchmaking_vtbl.RequestLobbyData(this_, lobby_id);
+		}
+
+		unsigned __int64 join_lobby_stub(game::ISteamMatchmaking* this_, game::steam_id lobby_id)
+		{
+			printf("[SteamMatchmaking] JoinLobby %lli", lobby_id.bits);
+			return steam_matchmaking_vtbl.JoinLobby(this_, lobby_id);
+		}
+
+		void leave_lobby_stub(game::ISteamMatchmaking* this_, game::steam_id lobby_id)
+		{
+			printf("[SteamMatchmaking] LeaveLobby %lli", lobby_id.bits);
+			return steam_matchmaking_vtbl.LeaveLobby(this_, lobby_id);
+		}
+
+		void hook_steam_matchmaking()
+		{
+			const auto steam_matchmaking = (*game::SteamMatchmaking)();
+			std::memcpy(&steam_matchmaking_vtbl, steam_matchmaking->__vftable, sizeof(game::ISteamMatchmaking_vtbl));
+
+			utils::hook::set(&steam_matchmaking->__vftable->JoinLobby, join_lobby_stub);
+			utils::hook::set(&steam_matchmaking->__vftable->LeaveLobby, leave_lobby_stub);
+			utils::hook::set(&steam_matchmaking->__vftable->RequestLobbyData, request_lobby_data_stub);
+		}
 	}
 
 	class component final : public component_interface
@@ -192,6 +236,24 @@ namespace session
 					set_lobby_data("kick_num", 0);
 				}, scheduler::session);
 			});
+
+			command::add("connect_lobby", [](const command::params& params)
+			{
+				if (params.size() < 2)
+				{
+					printf("usage: connect_lobby <lobby_id>\n");
+					return;
+				}
+
+				game::steam_id lobby_id{};
+
+				const auto lobby_id_s = params.get(1);
+				lobby_id.bits = std::strtoull(lobby_id_s.data(), nullptr, 0);
+
+				connect_to_lobby(lobby_id);
+			});
+
+			scheduler::once(hook_steam_matchmaking, scheduler::net);
 
 			create_lobby_cb_hook.create(0x144EF10B0, create_lobby_cb_stub);
 		}

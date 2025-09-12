@@ -53,6 +53,9 @@ namespace game
 	WEAK symbol<fox::nt::impl::SessionImpl2*> s_pSession{0x0, 0x14209B430};
 	WEAK symbol<fox::nt::impl::SessionIdle*> s_idleSession{0x0, 0x14209B480};
 
+	WEAK symbol<fox::unk1*> s_unk1{0x0, 0x141F8A930};
+	WEAK symbol<fox::unk2> s_unk2{0x0, 0x142054190};
+
 	namespace lua
 	{
 		WEAK symbol<lua_state_container*> state_container{0x142B641F0, 0x0};
