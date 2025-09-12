@@ -17,6 +17,40 @@ namespace command
 
 		std::mutex queue_mutex;
 		std::vector<std::string> command_queue;
+
+		void parse_command_line()
+		{
+			static auto parsed = false;
+			if (parsed)
+			{
+				return;
+			}
+
+			static std::string comand_line_buffer = GetCommandLineA();
+			auto* command_line = comand_line_buffer.data();
+
+			auto inq = false;
+
+			while (*command_line)
+			{
+				if (*command_line == '"')
+				{
+					inq = !inq;
+				}
+				// look for a + separating character
+				// if commandLine came from a file, we might have real line seperators
+				if ((*command_line == '+' && !inq) || *command_line == '\n' || *command_line == '\r')
+				{
+					const auto cmd = command_line + 1;
+					command::execute(cmd);
+					*command_line = '\0';
+				}
+
+				command_line++;
+			}
+
+			parsed = true;
+		}
 	}
 
 	params::params(const std::vector<std::string>& tokens)
@@ -85,6 +119,8 @@ namespace command
 
 	void run_frame()
 	{
+		parse_command_line();
+
 		std::vector<std::string> queue_copy;
 
 		{
@@ -102,7 +138,6 @@ namespace command
 	void execute(const std::string& cmd)
 	{
 		std::lock_guard _0(queue_mutex);
-		printf("]%s", cmd.data());
 		command_queue.emplace_back(cmd);
 	}
 

@@ -184,6 +184,44 @@ namespace game
 
 	namespace fox
 	{
+#pragma pack(push, 1)
+		struct unk1_unk1
+		{
+			char __pad0[13];
+			char is_joining_invite;
+			unsigned __int64 invite_lobby_id;
+			char __pad1[3122];
+		};
+#pragma pack(pop)
+
+		static_assert(offsetof(unk1_unk1, is_joining_invite) == 13);
+		static_assert(offsetof(unk1_unk1, invite_lobby_id) == 14);
+		static_assert(sizeof(unk1_unk1) == 3144);
+
+		struct unk1
+		{
+			char __pad0[8];
+			unk1_unk1* unk1;
+			void* unk2;
+		};
+
+		static_assert(sizeof(unk1) == 24);
+
+		struct unk2
+		{
+			char __pad0[5531];
+			char unk1;
+		};
+
+		namespace math
+		{
+			struct Vector2
+			{
+				float x;
+				float y;
+			};
+		}
+
 		namespace nio
 		{
 			struct Object_vtbl;

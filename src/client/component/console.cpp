@@ -255,6 +255,7 @@ namespace console
 
 				con.history_index = -1;
 
+				printf("]%s", con.buffer);
 				command::execute(con.buffer);
 
 				con.cursor = 0;
