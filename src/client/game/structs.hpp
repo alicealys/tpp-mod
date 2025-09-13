@@ -189,13 +189,16 @@ namespace game
 		{
 			char __pad0[13];
 			char is_joining_invite;
-			unsigned __int64 invite_lobby_id;
-			char __pad1[3122];
+			game::steam_id invite_lobby_id;
+			char __pad1[410];
+			game::steam_id lobby_id;
+			char __pad2[2704];
 		};
 #pragma pack(pop)
 
 		static_assert(offsetof(unk1_unk1, is_joining_invite) == 13);
 		static_assert(offsetof(unk1_unk1, invite_lobby_id) == 14);
+		static_assert(offsetof(unk1_unk1, lobby_id) == 432);
 		static_assert(sizeof(unk1_unk1) == 3144);
 
 		struct unk1
@@ -211,6 +214,12 @@ namespace game
 		{
 			char __pad0[5531];
 			char unk1;
+		};
+
+		struct StringId
+		{
+			std::uint32_t l;
+			std::uint32_t h;
 		};
 
 		namespace math
