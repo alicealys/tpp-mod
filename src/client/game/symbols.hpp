@@ -36,6 +36,21 @@ namespace game
 		}
 	}
 
+	namespace tpp
+	{
+		namespace ui
+		{
+			namespace utility
+			{
+				WEAK symbol<fox::StringId* (fox::StringId*, unsigned __int16 a2, unsigned __int16 a3, char a4)> GetMissionNameKey{0x140912880, 0x14538F900};
+				WEAK symbol<unsigned __int16()> GetCurrentLocationId{0x140910890, 0x140683360};
+				WEAK symbol<unsigned __int16()> GetCurrentMissionId{0x1409108D0, 0x1406833A0};
+				WEAK symbol<const char* (fox::StringId)> GetLangText{0x1409122D0, 0x140685060};
+				WEAK symbol<fox::StringId*(fox::StringId*, const char*)> GetStringId{0x1409137A0, 0x140685060};
+			}
+		}
+	}
+
 	namespace lua
 	{
 		WEAK symbol<int(lua_State* s, const char* buffer, 
@@ -50,8 +65,8 @@ namespace game
 	WEAK symbol<ISteamFriends* (*)()> SteamFriends{0x14DB4F7C0, 0x14CE237D8};
 	WEAK symbol<ISteamMatchmaking* (*)()> SteamMatchmaking{0x0, 0x14CE237E0};
 
-	WEAK symbol<fox::nt::impl::SessionImpl2*> s_pSession{0x0, 0x14209B430};
-	WEAK symbol<fox::nt::impl::SessionIdle*> s_idleSession{0x0, 0x14209B480};
+	WEAK symbol<fox::nt::impl::SessionImpl2*> s_pSession{0x142B9DFB0, 0x14209B430};
+	WEAK symbol<fox::nt::impl::SessionIdle*> s_idleSession{0x142B9E000, 0x14209B480};
 
 	WEAK symbol<fox::unk1*> s_unk1{0x0, 0x141F8A930};
 	WEAK symbol<fox::unk2> s_unk2{0x0, 0x142054190};

@@ -2,8 +2,11 @@
 #include "loader/component_loader.hpp"
 
 #include "game/game.hpp"
+
 #include "command.hpp"
 #include "scheduler.hpp"
+#include "console.hpp"
+#include "session.hpp"
 
 #include <utils/hook.hpp>
 #include <utils/string.hpp>
@@ -137,38 +140,29 @@ namespace session
 			return create_lobby_cb_hook.invoke<void*>(a1, lobby_id);
 		}
 
-		void connect_to_lobby(game::steam_id lobby_id)
-		{
-			const auto unk = *game::s_unk1;
-			if (unk == nullptr)
-			{
-				return;
-			}
-
-			unk->unk1->is_joining_invite = 1;
-			unk->unk1->invite_lobby_id = lobby_id.bits;
-
-			const auto steam_matchmaking = (*game::SteamMatchmaking)();
-			steam_matchmaking->__vftable->RequestLobbyData(steam_matchmaking, lobby_id);
-		}
-
 		game::ISteamMatchmaking_vtbl steam_matchmaking_vtbl{};
 		bool request_lobby_data_stub(game::ISteamMatchmaking* this_, game::steam_id lobby_id)
 		{
-			printf("[SteamMatchmaking] RequestLobbyData %lli\n", lobby_id.bits);
+			console::debug("[SteamMatchmaking] RequestLobbyData %lli\n", lobby_id.bits);
 			return steam_matchmaking_vtbl.RequestLobbyData(this_, lobby_id);
 		}
 
 		unsigned __int64 join_lobby_stub(game::ISteamMatchmaking* this_, game::steam_id lobby_id)
 		{
-			printf("[SteamMatchmaking] JoinLobby %lli", lobby_id.bits);
+			console::info("[SteamMatchmaking] JoinLobby %lli", lobby_id.bits);
 			return steam_matchmaking_vtbl.JoinLobby(this_, lobby_id);
 		}
 
 		void leave_lobby_stub(game::ISteamMatchmaking* this_, game::steam_id lobby_id)
 		{
-			printf("[SteamMatchmaking] LeaveLobby %lli", lobby_id.bits);
+			console::info("[SteamMatchmaking] LeaveLobby %lli", lobby_id.bits);
 			return steam_matchmaking_vtbl.LeaveLobby(this_, lobby_id);
+		}
+
+		bool set_lobby_data_stub(game::ISteamMatchmaking* this_, game::steam_id lobby_id, const char* key, const char* value)
+		{
+			console::debug("[SteamMatchmaking] SetLobbyData %s %s\n", key, value);
+			return steam_matchmaking_vtbl.SetLobbyData(this_, lobby_id, key, value);
 		}
 
 		void hook_steam_matchmaking()
@@ -179,7 +173,23 @@ namespace session
 			utils::hook::set(&steam_matchmaking->__vftable->JoinLobby, join_lobby_stub);
 			utils::hook::set(&steam_matchmaking->__vftable->LeaveLobby, leave_lobby_stub);
 			utils::hook::set(&steam_matchmaking->__vftable->RequestLobbyData, request_lobby_data_stub);
+			utils::hook::set(&steam_matchmaking->__vftable->SetLobbyData, set_lobby_data_stub);
 		}
+	}
+
+	void connect_to_lobby(game::steam_id lobby_id)
+	{
+		const auto unk = *game::s_unk1;
+		if (unk == nullptr)
+		{
+			return;
+		}
+
+		unk->unk1->is_joining_invite = 1;
+		unk->unk1->invite_lobby_id = lobby_id;
+
+		const auto steam_matchmaking = (*game::SteamMatchmaking)();
+		steam_matchmaking->__vftable->RequestLobbyData(steam_matchmaking, lobby_id);
 	}
 
 	class component final : public component_interface

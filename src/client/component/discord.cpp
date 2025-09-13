@@ -1,0 +1,293 @@
+#include <std_include.hpp>
+#include "loader/component_loader.hpp"
+
+#include "game/game.hpp"
+
+#include "scheduler.hpp"
+#include "console.hpp"
+#include "command.hpp"
+#include "session.hpp"
+#include "vars.hpp"
+
+#include <utils/string.hpp>
+#include <utils/hook.hpp>
+#include <utils/cryptography.hpp>
+#include <utils/io.hpp>
+
+#include <discord_rpc.h>
+
+namespace discord
+{
+	namespace
+	{
+		struct discord_presence_strings_t
+		{
+			std::string state;
+			std::string details;
+			std::string small_image_key;
+			std::string small_image_text;
+			std::string large_image_key;
+			std::string large_image_text;
+			std::string party_id;
+			std::string join_secret;
+		};
+
+		DiscordRichPresence discord_presence{};
+		discord_presence_strings_t discord_strings;
+
+		vars::var_ptr var_discord_enable;
+
+		template <typename... Args>
+		const char* get_localized_string(const char* fmt, Args&&... args)
+		{
+			game::fox::StringId string_id{};
+			const auto key = utils::string::va(fmt, std::forward<Args>(args)...);
+			game::tpp::ui::utility::GetStringId(&string_id, key);
+			return game::tpp::ui::utility::GetLangText(string_id);
+		}
+
+		std::string get_map_name(const int map_index)
+		{
+			static std::vector<std::string> maps =
+			{
+				"JADE FOREST",
+				"GRAY RAMPART",
+				"RED FORTRESS",
+				"BLACK SITE",
+				"AMBER STATION",
+				"CORAL COMPLEX",
+				"AZURE MOUNTAIN",
+				"RUST PALACE"
+			};
+
+			if (map_index > maps.size())
+			{
+				return "";
+			}
+
+			return maps[map_index];
+		}
+
+		std::string get_gamemode_name(const int match_rule)
+		{
+			static std::unordered_map<int, std::string> gamemodes =
+			{
+				{1, "COMM CONTROL"},
+				{2, "BOUNTY HUNTER"},
+				{3, "CLOAK AND DAGGER"},
+				{8, "SABOTAGE"},
+			};
+
+			const auto iter = gamemodes.find(match_rule);
+			if (iter == gamemodes.end())
+			{
+				return "";
+			}
+
+			return iter->second;
+		}
+
+		void update_discord_mgo()
+		{
+			discord_strings = {};
+
+			const auto unk = *game::s_unk1;
+			const auto session = *game::s_pSession;
+
+			if (session == nullptr || unk == nullptr || unk->unk1->lobby_id.bits == 0)
+			{
+				discord_presence.state = "Main Menu";
+
+				discord_presence.startTimestamp = 0;
+
+				discord_presence.partyMax = 0;
+				discord_presence.partySize = 0;
+
+				discord_presence.partyId = nullptr;
+				discord_presence.joinSecret = nullptr;
+				discord_presence.largeImageKey = nullptr;
+			}
+			else
+			{
+				discord_presence.state = "In a Match";
+
+				const auto steam_matchmaking = (*game::SteamMatchmaking)();
+				const auto max_members = steam_matchmaking->__vftable->GetLobbyMemberLimit(steam_matchmaking, unk->unk1->lobby_id);
+
+				const auto map_id = std::atoi(steam_matchmaking->__vftable->GetLobbyData(steam_matchmaking, unk->unk1->lobby_id, "map_id"));
+				const auto day_night = std::atoi(steam_matchmaking->__vftable->GetLobbyData(steam_matchmaking, unk->unk1->lobby_id, "day_night"));
+				const auto match_rule = std::atoi(steam_matchmaking->__vftable->GetLobbyData(steam_matchmaking, unk->unk1->lobby_id, "match_rule"));
+
+				discord_strings.details = std::format("{} - {}", get_gamemode_name(match_rule), get_map_name(map_id));
+				discord_strings.large_image_key = utils::string::va("map_%i_%i", map_id, day_night);
+				discord_strings.large_image_text = get_map_name(map_id);
+
+				const auto lobby_id_str = utils::string::va("%lli", unk->unk1->lobby_id);
+				discord_strings.party_id = utils::cryptography::sha1::compute(lobby_id_str, true).substr(0, 8);
+				discord_strings.join_secret = lobby_id_str;
+
+				discord_presence.partyMax = max_members;
+				discord_presence.partySize = session->sessionInterface.__vftable->GetMemberCount(&session->sessionInterface);
+
+				if (discord_presence.startTimestamp == 0)
+				{
+					discord_presence.startTimestamp = std::chrono::duration_cast<std::chrono::seconds>(
+						std::chrono::system_clock::now().time_since_epoch()).count();
+				}
+
+				discord_presence.partyId = discord_strings.party_id.data();
+				discord_presence.joinSecret = discord_strings.join_secret.data();
+				discord_presence.largeImageKey = discord_strings.large_image_key.data();
+			}
+
+			discord_presence.details = discord_strings.details.data();
+		}
+
+		void update_discord_mgsv()
+		{
+			discord_presence.largeImageKey = "mgsv";
+
+			const auto location_id = game::tpp::ui::utility::GetCurrentLocationId();
+			const auto mission_id = game::tpp::ui::utility::GetCurrentMissionId();
+
+			discord_strings = {};
+
+			if (mission_id != 1 && mission_id != 0xFFFF)
+			{
+				discord_strings.details = get_localized_string("name_mission_%02d_%05d", location_id, mission_id);
+
+				if (!discord_strings.details.empty() || mission_id == 50050)
+				{
+					discord_strings.large_image_key = utils::string::va("mission_%i", mission_id);
+				}
+				else
+				{
+					discord_strings.details = "Free Roam";
+					discord_strings.large_image_key = utils::string::va("location_%i", location_id);
+				}
+
+				switch (location_id)
+				{
+				case 50:
+					discord_strings.state = "Mother Base (Seychelles Waters)";
+					break;
+				case 40:
+					discord_strings.state = "";
+					break;
+				case 30:
+					discord_strings.state = "Hospital Mena de Barranquilla, Colombia";
+					break;
+				case 20:
+					discord_strings.state = "Angola-Zaire Border Region";
+					break;
+				case 10:
+					discord_strings.state = "Northern Kabul, Afghanistan";
+					break;
+				}
+
+				if (mission_id == 50050)
+				{
+					discord_strings.details = "FOB Mission";
+					discord_strings.state = "";
+				}
+
+				if (mission_id - location_id == 40000)
+				{
+					discord_strings.details = "Aerial Command Center";
+				}
+
+				const auto session = *game::s_pSession;
+				if (session != nullptr)
+				{
+					discord_presence.partyMax = session->allMembers.size;
+					discord_presence.partySize = session->sessionInterface.__vftable->GetMemberCount(&session->sessionInterface);
+					discord_presence.partyPrivacy = DISCORD_PARTY_PRIVATE;
+				}
+				else
+				{
+					discord_presence.partyMax = 0;
+					discord_presence.partySize = 0;
+					discord_presence.partyPrivacy = 0;
+				}
+			}
+
+			discord_presence.largeImageKey = discord_strings.large_image_key.data();
+			discord_presence.state = discord_strings.state.data();
+			discord_presence.details = discord_strings.details.data();
+		}
+
+		void update_discord()
+		{
+			Discord_RunCallbacks();
+
+			SELECT_VALUE(update_discord_mgsv, update_discord_mgo)();
+
+			Discord_UpdatePresence(&discord_presence);
+		}
+
+		void join_game(const char* join_secret)
+		{
+			console::debug("Discord: join_game called with secret '%s'\n", join_secret);
+
+			game::steam_id lobby_id{};
+			lobby_id.bits = std::strtoull(join_secret, nullptr, 0);
+
+			scheduler::once([=]
+			{
+				session::connect_to_lobby(lobby_id);
+			}, scheduler::pipeline::main);
+		}
+
+		void ready(const DiscordUser* /*request*/)
+		{
+			std::memset(&discord_presence, 0, sizeof(discord_presence));
+
+			discord_presence.instance = 1;
+			discord_presence.state = "";
+
+			Discord_UpdatePresence(&discord_presence);
+		}
+
+		void errored(const int error_code, const char* message)
+		{
+			console::error("Discord: (%i) %s", error_code, message);
+		}
+	}
+
+	class component final : public component_interface
+	{
+	public:
+		void post_start() override
+		{
+			var_discord_enable = vars::register_bool("discord_enable", true, vars::var_flag_saved | vars::var_flag_latched, "enable discord rpc");
+		}
+
+		void post_unpack() override
+		{
+			if (!var_discord_enable->latched.get<bool>())
+			{
+				return;
+			}
+
+			DiscordEventHandlers handlers{};
+
+			handlers.ready = ready;
+			handlers.errored = errored;
+			handlers.disconnected = errored;
+
+			if (game::environment::is_mgo())
+			{
+				handlers.joinGame = join_game;
+			}
+
+			handlers.spectateGame = nullptr;
+			handlers.joinRequest = nullptr;
+
+			Discord_Initialize(SELECT_VALUE("1104156817845665792", "1416421354365911124"), &handlers, 1, nullptr);
+
+			scheduler::loop(update_discord, scheduler::pipeline::net, 1s);
+		}
+	};
+}
+
+REGISTER_COMPONENT(discord::component)
