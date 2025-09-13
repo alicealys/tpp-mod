@@ -37,6 +37,35 @@ namespace discord
 
 		vars::var_ptr var_discord_enable;
 
+		enum string_ids
+		{
+			aerial_command_center = 1373758758,
+			northern_kabul_afghanistan_1 = 152702784,
+			northern_kabul_afghanistan_2 = 583793986,
+			northern_kabul_afghanistan_3 = 3438240887,
+			northern_kabul_afghanistan_4 = 1077138525,
+			angola_zaire_border_region_1 = 1031205248,
+			angola_zaire_border_region_2 = 3063837159,
+			hospital_mena_de_barranquilla_colombia = 744102497,
+			mother_base_seychelles_waters = 2859948209,
+
+			comm_control = 3521205522,
+			bounty_hunter_1 = 1715984803,
+			bounty_hunter_2 = 4172308629,
+			sabotage = 2171042730,
+			cloak_and_dagger = 1510345948,
+
+			jade_forest = 800092068,
+			gray_rampart = 3449842512,
+			red_fortress = 1475160674,
+			black_site = 2649983836,
+			amber_station = 2142188143,
+			coral_complex = 2899302814,
+			azure_mountain = 621877069,
+			rust_palace = 492283241,
+
+		};
+
 		template <typename... Args>
 		const char* get_localized_string(const char* fmt, Args&&... args)
 		{
@@ -46,36 +75,44 @@ namespace discord
 			return game::tpp::ui::utility::GetLangText(string_id);
 		}
 
-		std::string get_map_name(const int map_index)
+		const char* get_localized_string(const std::uint32_t id)
 		{
-			static std::vector<std::string> maps =
+			game::fox::StringId string_id{};
+			string_id.l = id;
+			return game::tpp::ui::utility::GetLangText(string_id);
+		}
+
+		std::string get_map_name(const int map_id)
+		{
+			static std::unordered_map<int, std::uint32_t> maps =
 			{
-				"JADE FOREST",
-				"GRAY RAMPART",
-				"RED FORTRESS",
-				"BLACK SITE",
-				"AMBER STATION",
-				"CORAL COMPLEX",
-				"AZURE MOUNTAIN",
-				"RUST PALACE"
+				{0, jade_forest},
+				{1, gray_rampart},
+				{2, red_fortress},
+				{3, black_site},
+				{4, amber_station},
+				{5, coral_complex},
+				{6, azure_mountain},
+				{7, rust_palace},
 			};
 
-			if (map_index > maps.size())
+			const auto iter = maps.find(map_id);
+			if (iter == maps.end())
 			{
 				return "";
 			}
 
-			return maps[map_index];
+			return get_localized_string(iter->second);
 		}
 
 		std::string get_gamemode_name(const int match_rule)
 		{
-			static std::unordered_map<int, std::string> gamemodes =
+			static std::unordered_map<int, std::uint32_t> gamemodes =
 			{
-				{1, "COMM CONTROL"},
-				{2, "BOUNTY HUNTER"},
-				{3, "CLOAK AND DAGGER"},
-				{8, "SABOTAGE"},
+				{1, comm_control},
+				{2, bounty_hunter_1},
+				{3, cloak_and_dagger},
+				{8, sabotage},
 			};
 
 			const auto iter = gamemodes.find(match_rule);
@@ -84,7 +121,7 @@ namespace discord
 				return "";
 			}
 
-			return iter->second;
+			return get_localized_string(iter->second);
 		}
 
 		void update_discord_mgo()
@@ -169,19 +206,19 @@ namespace discord
 				switch (location_id)
 				{
 				case 50:
-					discord_strings.state = "Mother Base (Seychelles Waters)";
+					discord_strings.state = get_localized_string(mother_base_seychelles_waters);
 					break;
 				case 40:
 					discord_strings.state = "";
 					break;
 				case 30:
-					discord_strings.state = "Hospital Mena de Barranquilla, Colombia";
+					discord_strings.state = get_localized_string(hospital_mena_de_barranquilla_colombia);
 					break;
 				case 20:
-					discord_strings.state = "Angola-Zaire Border Region";
+					discord_strings.state = get_localized_string(angola_zaire_border_region_1);
 					break;
 				case 10:
-					discord_strings.state = "Northern Kabul, Afghanistan";
+					discord_strings.state = get_localized_string(northern_kabul_afghanistan_1);
 					break;
 				}
 
@@ -193,7 +230,7 @@ namespace discord
 
 				if (mission_id - location_id == 40000)
 				{
-					discord_strings.details = "Aerial Command Center";
+					discord_strings.details = get_localized_string(aerial_command_center);
 				}
 
 				const auto session = *game::s_pSession;
