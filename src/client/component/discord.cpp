@@ -37,7 +37,7 @@ namespace discord
 
 		vars::var_ptr var_discord_enable;
 
-		enum string_ids
+		enum string_ids : std::uint32_t
 		{
 			aerial_command_center = 1373758758,
 			northern_kabul_afghanistan_1 = 152702784,
