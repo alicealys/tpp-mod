@@ -79,12 +79,12 @@ namespace vars
 			case var_type_integer:
 			{
 				const auto value_int = value.get<std::int32_t>();
-				return value_int >= var->limits.integer.min && value_int < var->limits.integer.max;
+				return value_int >= var->limits.integer.min && value_int <= var->limits.integer.max;
 			}
 			case var_type_float:
 			{
 				const auto value_float = value.get<std::int32_t>();
-				return value_float >= var->limits.float_.min && value_float < var->limits.float_.max;
+				return value_float >= var->limits.float_.min && value_float <= var->limits.float_.max;
 			}
 			}
 
