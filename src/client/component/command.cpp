@@ -5,6 +5,7 @@
 #include "console.hpp"
 #include "patches.hpp"
 #include "scheduler.hpp"
+#include "vars.hpp"
 
 #include <utils/io.hpp>
 #include <utils/string.hpp>
@@ -103,7 +104,11 @@ namespace command
 		const auto command = commands.find(name);
 		if (command == commands.end())
 		{
-			console::warn("Command \"%s\" not found\n", name.data());
+			if (!vars::var_command(args))
+			{
+				console::warn("Command \"%s\" not found\n", name.data());
+			}
+
 			return;
 		}
 
@@ -173,7 +178,7 @@ namespace command
 	class component final : public component_interface
 	{
 	public:
-		void post_start() override
+		void start() override
 		{
 			scheduler::loop(run_frame, scheduler::main);
 		}

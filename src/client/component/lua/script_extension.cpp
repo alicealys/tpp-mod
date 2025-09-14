@@ -39,7 +39,7 @@ namespace lua::script_extension
 	class component final : public component_interface
 	{
 	public:
-		void post_unpack() override
+		void start() override
 		{
 			if (!utils::flags::has_flag("lua-debug") || !game::environment::is_mgsv())
 			{

@@ -178,13 +178,13 @@ namespace custom_server
 	class component final : public component_interface
 	{
 	public:
-		void post_start() override
+		void pre_load() override
 		{
 			var_custom_server_tpp = vars::register_string("net_custom_server_tpp", "", vars::var_flag_saved | vars::var_flag_latched, "custom server url (tpp)");
 			var_custom_server_mgo = vars::register_string("net_custom_server_mgo", "", vars::var_flag_saved | vars::var_flag_latched, "custom server url (mgo)");
 		}
 
-		void post_unpack() override
+		void start() override
 		{
 			const auto& custom_server_var = SELECT_VALUE(var_custom_server_tpp, var_custom_server_mgo);
 			const auto custom_server = custom_server_var->current.get<std::string>();

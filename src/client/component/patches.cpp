@@ -75,7 +75,7 @@ namespace patches
 	class component final : public component_interface
 	{
 	public:
-		void post_start() override
+		void pre_load() override
 		{
 			var_worker_count = vars::register_int("com_worker_count", 4, 0, std::numeric_limits<int>::max(), 
 				vars::var_flag_saved | vars::var_flag_latched, "maxiumum number of job executor worker threads");
@@ -85,7 +85,7 @@ namespace patches
 			var_skip_intro = vars::register_bool("ui_skip_intro", false, vars::var_flag_saved | vars::var_flag_latched, "skip intro splashscreens");
 		}
 
-		void post_unpack() override
+		void start() override
 		{
 			if (game::environment::is_mgo())
 			{
