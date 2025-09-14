@@ -7,7 +7,7 @@ public:
 	{
 	}
 
-	virtual void post_start()
+	virtual void pre_load()
 	{
 	}
 
@@ -15,11 +15,11 @@ public:
 	{
 	}
 
-	virtual void pre_destroy()
+	virtual void end()
 	{
 	}
 
-	virtual void post_unpack()
+	virtual void start()
 	{
 	}
 

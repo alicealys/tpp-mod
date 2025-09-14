@@ -80,12 +80,12 @@ namespace server_logging
 	class component final : public component_interface
 	{
 	public:
-		void post_start() override
+		void pre_load() override
 		{
 			var_server_logging = vars::register_bool("net_server_logging", false, vars::var_flag_saved, "enable server logging");
 		}
 
-		void post_unpack() override
+		void start() override
 		{
 			http_codec_begin_encode_hook.create(SELECT_VALUE(0x14D343690, 0x14A4E7640), http_codec_begin_encode_stub);
 			http_codec_end_decode_hook.create(SELECT_VALUE(0x141CE3210, 0x140C42A20), http_codec_end_decode_stub);

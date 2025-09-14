@@ -294,12 +294,12 @@ namespace discord
 	class component final : public component_interface
 	{
 	public:
-		void post_start() override
+		void pre_load() override
 		{
 			var_discord_enable = vars::register_bool("discord_enable", true, vars::var_flag_saved | vars::var_flag_latched, "enable discord rpc");
 		}
 
-		void post_unpack() override
+		void start() override
 		{
 			if (!var_discord_enable->latched.get<bool>())
 			{

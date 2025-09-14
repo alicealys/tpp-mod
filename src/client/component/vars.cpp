@@ -1,20 +1,26 @@
 #include <std_include.hpp>
 #include "loader/component_loader.hpp"
 
-#include "vars.hpp"
 #include "console.hpp"
-#include "command.hpp"
+#include "vars.hpp"
 
 #include <utils/hook.hpp>
 #include <utils/io.hpp>
 #include <utils/properties.hpp>
 #include <utils/string.hpp>
+#include <utils/flags.hpp>
 
 namespace vars
 {
-	std::vector<var_ptr>& get_vars()
+	std::vector<var_ptr>& get_var_list()
 	{
 		static std::vector<var_ptr> vars;
+		return vars;
+	}
+
+	std::unordered_map<std::string, var_ptr>& get_var_map()
+	{
+		static std::unordered_map<std::string, var_ptr> vars;
 		return vars;
 	}
 
@@ -30,7 +36,7 @@ namespace vars
 			const auto path = get_config_file_path();
 
 			nlohmann::json config;
-			for (const auto& var : get_vars())
+			for (const auto& var : get_var_list())
 			{
 				if ((var->flags & var_flag_saved) == 0)
 				{
@@ -87,6 +93,11 @@ namespace vars
 
 		bool check_type(const var_ptr& var, const nlohmann::json& value)
 		{
+			if (var->type == var_type_string)
+			{
+				return true;
+			}
+
 			const auto type = value.type();
 
 			switch (type)
@@ -128,29 +139,60 @@ namespace vars
 				return value.get<bool>();
 			}
 			case var_type_string:
-				return value.get<std::string>();
+			{
+				if (value.is_string())
+				{
+					return value.get<std::string>();
+				}
+				else
+				{
+					return value.dump();
+				}
+			}
 			}
 
 			throw std::runtime_error("invalid cast type");
 		}
 
-		void set_var(const var_ptr& var, const nlohmann::json& value, bool force)
+		bool cheats_enabled()
+		{
+			return utils::flags::has_flag("var-cheat");
+		}
+
+		bool check_cheats(const var_ptr& var, const var_source_t set_source)
+		{
+			return ((var->flags & var_flag_cheat) == 0) || set_source == var_source_internal || cheats_enabled();
+		}
+
+		void set_var(const var_ptr& var, const nlohmann::json& value, const var_source_t set_source)
 		{
 			const auto set_value = [&](const nlohmann::json& value)
 			{
 				const auto casted_value = cast_value(var, value);
 
 				var->current = casted_value;
-				if ((var->flags & var_flag_latched) == 0 || force)
+				if ((var->flags & var_flag_latched) == 0 || set_source == var_source_internal)
 				{
 					var->latched = casted_value;
 				}
 
-				if ((var->flags & var_flag_saved) != 0)
+				if ((var->flags & var_flag_saved) != 0 && set_source != var_source_internal)
 				{
 					write_config();
 				}
 			};
+
+			if (!check_cheats(var, set_source))
+			{
+				console::warn("\"%s\" is cheat protected", var->name.data());
+				return;
+			}
+
+			if ((var->flags & var_flag_readonly) != 0 && set_source != var_source_internal)
+			{
+				console::warn("\"%s\" is read only", var->name.data());
+				return;
+			}
 
 			if (value.is_null())
 			{
@@ -160,14 +202,14 @@ namespace vars
 
 			if (!check_type(var, value))
 			{
-				printf("[var] invalid value type \"%s\" for var \"%s\"\n", value.type_name(), var->name.data());
+				console::warn("[var] invalid value type \"%s\" for var \"%s\"\n", value.type_name(), var->name.data());
 				return;
 			}
 
 			if (!check_domain(var, value))
 			{
 				const auto value_str = value.dump();
-				printf("[var] invalid value %s for var \"%s\"\n", value_str.data(), var->name.data());
+				console::warn("[var] invalid value %s for var \"%s\"\n", value_str.data(), var->name.data());
 				return;
 			}
 
@@ -178,7 +220,7 @@ namespace vars
 		{
 			const auto cfg = read_config();
 
-			for (const auto& var : get_vars())
+			for (const auto& var : get_var_list())
 			{
 				if ((var->flags & var_flag_saved) == 0 || !cfg.contains(var->name))
 				{
@@ -186,7 +228,7 @@ namespace vars
 				}
 
 				const auto& value = cfg.at(var->name);
-				set_var(var, value, true);
+				set_var(var, value, var_source_internal);
 			}
 		}
 
@@ -256,7 +298,7 @@ namespace vars
 		nlohmann::json parse_value_text(const std::string& text)
 		{
 			const auto value_j = nlohmann::json::parse(text, nullptr, false);
-			if (value_j.is_discarded())
+			if (value_j.is_discarded() || !value_j.is_primitive())
 			{
 				return text;
 			}
@@ -270,11 +312,13 @@ namespace vars
 		}
 	}
 
-	var_ptr& register_var(
+	var_ptr register_var(
 		const std::string& name, const var_type_t& type, const var_value_t& value, const var_limits_t limits, const std::uint32_t flags, const std::string& description)
 	{
-		auto var = std::make_unique<var_t>();
-		var->name = name;
+		const auto lower = utils::string::to_lower(name);
+
+		auto var = std::make_shared<var_t>();
+		var->name = lower;
 		var->description = description;
 
 		var->type = type;
@@ -285,15 +329,18 @@ namespace vars
 		var->reset = value;
 		var->limits = limits;
 
-		return get_vars().emplace_back(std::move(var));
+		get_var_list().emplace_back(var);
+		get_var_map().insert(std::make_pair(lower, var));
+
+		return var;
 	}
 
-	var_ptr& register_bool(const std::string& name, bool value, const std::uint32_t flags, const std::string& description)
+	var_ptr register_bool(const std::string& name, bool value, const std::uint32_t flags, const std::string& description)
 	{
 		return register_var(name, var_type_boolean, value, {}, flags, description);
 	}
 
-	var_ptr& register_int(const std::string& name, std::int32_t value, std::int32_t min, std::int32_t max,
+	var_ptr register_int(const std::string& name, std::int32_t value, std::int32_t min, std::int32_t max,
 		const std::uint32_t flags, const std::string& description)
 	{
 		var_limits_t limits{};
@@ -309,7 +356,7 @@ namespace vars
 		return register_var(name, var_type_integer, value, limits, flags, description);
 	}
 
-	var_ptr& register_float(const std::string& name, float value, float min, float max,
+	var_ptr register_float(const std::string& name, float value, float min, float max,
 		const std::uint32_t flags, const std::string& description)
 	{
 		var_limits_t limits{};
@@ -325,17 +372,78 @@ namespace vars
 		return register_var(name, var_type_float, value, limits, flags, description);
 	}
 
-	var_ptr& register_string(const std::string& name, const std::string& value,
+	var_ptr register_string(const std::string& name, const std::string& value,
 		const std::uint32_t flags, const std::string& description)
 	{
 		return register_var(name, var_type_string, value, {}, flags, description);
+	}
+
+	std::optional<var_ptr> find(const std::string& name)
+	{
+		const auto lower = utils::string::to_lower(name);
+		const auto& map = get_var_map();
+		const auto iter = map.find(lower);
+
+		if (iter == map.end())
+		{
+			return {};
+		}
+
+		return {iter->second};
+	}
+
+	std::optional<std::string> find_name(const std::string& name)
+	{
+		const auto lower = utils::string::to_lower(name);
+
+		for (const auto& var : get_var_list())
+		{
+			if (var->name.starts_with(lower))
+			{
+				return {var->name};
+			}
+		}
+
+		return {};
+	}
+
+	bool var_command(const command::params& params)
+	{
+		const auto name = params.get(0);
+		const auto var_opt = find(name);
+
+		if (!var_opt.has_value())
+		{
+			return false;
+		}
+
+		auto& var = var_opt.value();
+
+		if (params.size() == 1)
+		{
+			const auto current_str = var_value_to_string(var, var->current);
+			const auto latched_str = var_value_to_string(var, var->latched);
+			const auto reset_str = var_value_to_string(var, var->reset);
+
+			printf("\"%s\" is: \"%s\" latched: \"%s\" default: \"%s\" type: \"%s\" flags: %i\n",
+				var->name.data(), current_str.data(), latched_str.data(), reset_str.data(), var->current.type_name(), var->flags);
+			printf("%s\n", var->description.data());
+			printf("   %s\n", get_var_domain(var));
+			return true;
+		}
+
+		const auto value = params.get(1);
+		const auto parsed_value = parse_value_text(value);
+
+		set_var(var, parsed_value, var_source_external);
+		return true;
 	}
 
 	class component final : public component_interface
 	{
 	public:
 
-		void post_start() override
+		void pre_load() override
 		{
 		}
 
@@ -344,35 +452,33 @@ namespace vars
 			parse_saved_vars();
 		}
 
-		void post_unpack() override
+		void start() override
 		{
-			for (const auto& var : get_vars())
+			command::add("set", [](const command::params& params)
 			{
-				command::add(var->name, [&](const command::params& params)
+				if (params.size() < 3)
 				{
-					if (params.size() == 1)
-					{
-						const auto current_str = var_value_to_string(var, var->current);
-						const auto latched_str = var_value_to_string(var, var->latched);
-						const auto reset_str = var_value_to_string(var, var->reset);
+					return;
+				}
 
-						printf("\"%s\" is: \"%s\" latched: \"%s\" default: \"%s\" type: \"%s\" flags: %i\n", 
-							var->name.data(), current_str.data(), latched_str.data(), reset_str.data(), var->current.type_name(), var->flags);
-						printf("%s\n", var->description.data());
-						printf("   %s\n", get_var_domain(var));
-						return;
-					}
+				const auto name = params.get(1);
+				const auto value = params.get(2);
 
-					const auto value = params.get(1);
+				const auto var = find(name);
+				if (!var.has_value())
+				{
+					register_string(name, value, var_flag_external, "");
+				}
+				else
+				{
 					const auto parsed_value = parse_value_text(value);
-
-					set_var(var, parsed_value, false);
-				});
-			}
+					set_var(var.value(), parsed_value, var_source_external);
+				}
+			});
 
 			command::add("var_list", []
 			{
-				for (const auto& var : get_vars())
+				for (const auto& var : get_var_list())
 				{
 					const auto current_str = var_value_to_string(var, var->current);
 					printf("\"%s\": \"%s\"\n", var->name.data(), current_str.data());

@@ -6,17 +6,21 @@ void component_loader::register_component(std::unique_ptr<component_interface>&&
 	get_components().push_back(std::move(component_));
 }
 
-bool component_loader::post_start()
+bool component_loader::pre_load()
 {
 	static auto handled = false;
-	if (handled) return true;
+	if (handled)
+	{
+		return true;
+	}
+
 	handled = true;
 
 	try
 	{
 		for (const auto& component_ : get_components())
 		{
-			component_->post_start();
+			component_->pre_load();
 		}
 	}
 	catch (premature_shutdown_trigger&)
@@ -30,7 +34,11 @@ bool component_loader::post_start()
 bool component_loader::post_load()
 {
 	static auto handled = false;
-	if (handled) return true;
+	if (handled)
+	{
+		return true;
+	}
+
 	handled = true;
 
 	clean();
@@ -50,19 +58,23 @@ bool component_loader::post_load()
 	return true;
 }
 
-void component_loader::post_unpack()
+void component_loader::start()
 {
 	static auto handled = false;
-	if (handled) return;
+	if (handled)
+	{
+		return;
+	}
+
 	handled = true;
 
 	for (const auto& component_ : get_components())
 	{
-		component_->post_unpack();
+		component_->start();
 	}
 }
 
-void component_loader::pre_destroy()
+void component_loader::end()
 {
 	static auto handled = false;
 	if (handled) return;
@@ -70,7 +82,7 @@ void component_loader::pre_destroy()
 
 	for (const auto& component_ : get_components())
 	{
-		component_->pre_destroy();
+		component_->end();
 	}
 }
 
@@ -81,7 +93,7 @@ void component_loader::clean()
 	{
 		if (!(*i)->is_supported())
 		{
-			(*i)->pre_destroy();
+			(*i)->end();
 			i = components.erase(i);
 		}
 		else
@@ -89,22 +101,6 @@ void component_loader::clean()
 			++i;
 		}
 	}
-}
-
-void* component_loader::load_import(const std::string& library, const std::string& function)
-{
-	void* function_ptr = nullptr;
-
-	for (const auto& component_ : get_components())
-	{
-		auto* const component_function_ptr = component_->load_import(library, function);
-		if (component_function_ptr)
-		{
-			function_ptr = component_function_ptr;
-		}
-	}
-
-	return function_ptr;
 }
 
 void component_loader::trigger_premature_shutdown()
@@ -119,7 +115,7 @@ std::vector<std::unique_ptr<component_interface>>& component_loader::get_compone
 
 	static component_vector_container components(new component_vector, [](component_vector* component_vector)
 	{
-		pre_destroy();
+		end();
 		delete component_vector;
 	});
 

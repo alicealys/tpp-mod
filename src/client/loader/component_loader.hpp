@@ -40,13 +40,13 @@ public:
 
 	static void register_component(std::unique_ptr<component_interface>&& component);
 
-	static bool post_start();
+	static bool pre_load();
 	static bool post_load();
-	static void post_unpack();
-	static void pre_destroy();
-	static void clean();
 
-	static void* load_import(const std::string& library, const std::string& function);
+	static void start();
+	static void end();
+
+	static void clean();
 
 	static void trigger_premature_shutdown();
 

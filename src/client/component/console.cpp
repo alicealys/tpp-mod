@@ -4,6 +4,7 @@
 
 #include "game/game.hpp"
 #include "command.hpp"
+#include "vars.hpp"
 
 #include <utils/thread.hpp>
 #include <utils/hook.hpp>
@@ -289,10 +290,14 @@ namespace console
 			}
 			case VK_TAB:
 			{
-				const auto name_opt = command::find_command_name(con.buffer);
+				auto name_opt = command::find_command_name(con.buffer);
 				if (!name_opt.has_value())
 				{
-					break;
+					name_opt = vars::find_name(con.buffer);
+					if (!name_opt.has_value())
+					{
+						break;
+					}
 				}
 
 				const auto& name = name_opt.value();
@@ -359,7 +364,7 @@ namespace console
 	class component final : public component_interface
 	{
 	public:
-		void post_start() override
+		void pre_load() override
 		{
 			ShowWindow(GetConsoleWindow(), SW_HIDE);
 
@@ -422,7 +427,7 @@ namespace console
 			});
 		}
 
-		void pre_destroy() override
+		void end() override
 		{
 			con.kill = true;
 			SetEvent(con.kill_event);

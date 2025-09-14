@@ -193,20 +193,20 @@ namespace network
 	class component final : public component_interface
 	{
 	public:
-		void post_start() override
+		void pre_load() override
 		{
 			var_net_udp = vars::register_bool("net_udp", false, vars::var_flag_saved | vars::var_flag_latched, "use udp sockets instead of steam networking");
 			var_net_port = vars::register_int("net_port", 5377, 0, 65535, vars::var_flag_saved | vars::var_flag_latched, "udp socket port");
 		}
 
-		void post_unpack() override
+		void start() override
 		{
 			if (!game::environment::is_mgsv())
 			{
 				return;
 			}
 
-			if (var_net_udp->latched.get<bool>())
+			if (!var_net_udp->latched.get<bool>())
 			{
 				return;
 			}

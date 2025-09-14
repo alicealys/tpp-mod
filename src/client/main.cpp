@@ -30,15 +30,15 @@ namespace
 	{
 		enable_dpi_awareness();
 
-		component_loader::post_start();
+		component_loader::pre_load();
 		component_loader::post_load();
-		component_loader::post_unpack();
+		component_loader::start();
 		return 1;
 	}
 
 	void destroy()
 	{
-		component_loader::pre_destroy();
+		component_loader::end();
 	}
 }
 

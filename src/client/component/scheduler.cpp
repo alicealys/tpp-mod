@@ -150,7 +150,7 @@ namespace scheduler
 	class component final : public component_interface
 	{
 	public:
-		void post_start() override
+		void pre_load() override
 		{
 			thread = utils::thread::create_named_thread("Async Scheduler", []()
 			{
@@ -162,14 +162,14 @@ namespace scheduler
 			});
 		}
 
-		void post_unpack() override
+		void start() override
 		{
 			core_framework_enter_frame_hook.create(SELECT_VALUE(0x14007FAA0, 0x140080180), core_framework_enter_frame_stub);
 			net_daemon_update_hook.create(SELECT_VALUE(0x1459B7340, 0x144DF6490), net_daemon_update_stub);
 			nt_daemon_update_first_hook.create(SELECT_VALUE(0x14D36E710, 0x14A57FC80), nt_daemon_update_first_stub);
 		}
 
-		void pre_destroy() override
+		void end() override
 		{
 			kill = true;
 			if (thread.joinable())
