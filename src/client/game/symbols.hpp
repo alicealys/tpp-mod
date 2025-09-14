@@ -10,8 +10,8 @@ namespace game
 	{
 		struct CommonDataManager;
 
-		WEAK symbol<CommonDataManager*()> GetInstance{0x145C0A890, 0x0};
-		WEAK symbol<void(CommonDataManager*, const char*, int, int, int)> AnnounceLogView{0x140863050, 0x0};
+		WEAK symbol<CommonDataManager*()> GetInstance{0x145C0A890, 0x1405EA6D0};
+		WEAK symbol<void(CommonDataManager*, const char*, int, int, int)> AnnounceLogView{0x140863050, 0x1405E7610};
 	}
 
 	namespace fox
@@ -26,12 +26,12 @@ namespace game
 		{
 			namespace Session
 			{
-				WEAK symbol<::game::Session*()> GetMainSession{0x0, 0x14A522BB0};
+				WEAK symbol<::game::Session*()> GetMainSession{0x140314190, 0x14A522BB0};
 			}
 
 			namespace Member_
 			{
-				WEAK symbol<void(Member*)> Reset{0x0, 0x140C54BD0};
+				WEAK symbol<void(Member*)> Reset{0x140317F20, 0x140C54BD0};
 			}
 		}
 	}
@@ -54,9 +54,9 @@ namespace game
 	namespace lua
 	{
 		WEAK symbol<int(lua_State* s, const char* buffer, 
-			size_t size, const char* name)> luaL_loadbuffer{0x14C200F90, 0x0};
+			size_t size, const char* name)> luaL_loadbuffer{0x14C200F90, 0x1414750E0};
 
-		WEAK symbol<const char*(lua_State* L, int idx, size_t* len)> lua_tolstring{0x14C1ECA70, 0x0};
+		WEAK symbol<const char*(lua_State* L, int idx, size_t* len)> lua_tolstring{0x14C1ECA70, 0x14CA2C890};
 	}
 
 	// Variables
@@ -73,6 +73,6 @@ namespace game
 
 	namespace lua
 	{
-		WEAK symbol<lua_state_container*> state_container{0x142B641F0, 0x0};
+		WEAK symbol<lua_state_container*> state_container{0x142B641F0, 0x141F28240};
 	}
 }
