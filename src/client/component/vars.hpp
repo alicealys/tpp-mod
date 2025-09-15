@@ -55,6 +55,7 @@ namespace vars
 		std::string name;
 		std::string description;
 		std::uint32_t flags;
+		bool changed;
 		var_value_t current;
 		var_value_t latched;
 		var_value_t reset;

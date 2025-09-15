@@ -176,6 +176,11 @@ namespace vars
 					var->latched = casted_value;
 				}
 
+				if (set_source != var_source_internal)
+				{
+					var->changed = true;
+				}
+
 				if ((var->flags & var_flag_saved) != 0 && set_source != var_source_internal)
 				{
 					write_config();

@@ -11,7 +11,7 @@
 #include <utils/hook.hpp>
 #include <utils/flags.hpp>
 
-namespace lua::script_loading
+namespace lua
 {
 	namespace
 	{
@@ -160,4 +160,4 @@ namespace lua::script_loading
 	};
 }
 
-REGISTER_COMPONENT(lua::script_loading::component)
+REGISTER_COMPONENT(lua::component)

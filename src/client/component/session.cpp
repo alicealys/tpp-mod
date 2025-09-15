@@ -7,6 +7,7 @@
 #include "scheduler.hpp"
 #include "console.hpp"
 #include "session.hpp"
+#include "text_chat.hpp"
 
 #include <utils/hook.hpp>
 #include <utils/string.hpp>
@@ -150,12 +151,14 @@ namespace session
 		unsigned __int64 join_lobby_stub(game::ISteamMatchmaking* this_, game::steam_id lobby_id)
 		{
 			console::info("[SteamMatchmaking] JoinLobby %lli", lobby_id.bits);
+			text_chat::reset_chat();
 			return steam_matchmaking_vtbl.JoinLobby(this_, lobby_id);
 		}
 
 		void leave_lobby_stub(game::ISteamMatchmaking* this_, game::steam_id lobby_id)
 		{
 			console::info("[SteamMatchmaking] LeaveLobby %lli", lobby_id.bits);
+			text_chat::reset_chat();
 			return steam_matchmaking_vtbl.LeaveLobby(this_, lobby_id);
 		}
 
