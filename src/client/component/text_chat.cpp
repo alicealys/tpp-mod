@@ -462,7 +462,7 @@ namespace text_chat
 		{
 			var_chat_time = vars::register_int("chat_time", 10000, 0, 60000, vars::var_flag_saved, "chat message duration");
 			var_chat_key = vars::register_string("chat_key", utils::string::va("%c", chat_key_default), vars::var_flag_saved, "key bind to open text chat");
-			var_chat_enable = vars::register_bool("chat_enable", false, vars::var_flag_saved, "enable mgo text chat");
+			var_chat_enable = vars::register_bool("chat_enable", true, vars::var_flag_saved, "enable mgo text chat");
 		}
 
 		void start() override
