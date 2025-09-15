@@ -10,8 +10,8 @@ namespace game
 	{
 		WEAK symbol<CommonDataManager*()> GetInstance{0x145C0A890, 0x1405EA6D0};
 		WEAK symbol<void(CommonDataManager*, const char*, int, int, int)> AnnounceLogView{0x140863050, 0x1405E7610};
-		WEAK symbol<void(CommonDataManager*, const char*, char, char)> AnnounceLogViewOnly{0x0, 0x145085A70};
-		WEAK symbol<bool(CommonDataManager*)> IsEndLoadingTips{0x0, 0x1450A34D0};
+		WEAK symbol<void(CommonDataManager*, const char*, char, char)> AnnounceLogViewOnly{0x140863220, 0x145085A70};
+		WEAK symbol<bool(CommonDataManager*)> IsEndLoadingTips{0x140866490, 0x1450A34D0};
 	}
 
 	namespace fox
@@ -42,12 +42,12 @@ namespace game
 		{
 			namespace GameStatus
 			{
-				WEAK symbol<bool(int)> Check{0x0, 0x1402ECAA0};
+				WEAK symbol<bool(int)> Check{0x14053DEC0, 0x1402ECAA0};
 			}
 
 			namespace GameMode
 			{
-				WEAK symbol<int()> GetUserMode{0x0, 0x1402F5060};
+				WEAK symbol<int()> GetUserMode{0x140546630, 0x1402F5060};
 			}
 		}
 
@@ -65,9 +65,9 @@ namespace game
 			{
 				namespace UiCommonDataManager
 				{
-					WEAK symbol<UiCommonDataManager* ()> GetInstance{0x0, 0x1405E0F30};
-					WEAK symbol<int(UiCommonDataManager*)> GetPauseMenuType{0x0, 0x1405E0FD0};
-					WEAK symbol<fox::ui::SoundControl*(UiCommonDataManager*)> GetSoundControl{0x0, 0x1408C2E70};
+					WEAK symbol<UiCommonDataManager* ()> GetInstance{0x14085F0C0, 0x1405E0F30};
+					WEAK symbol<int(UiCommonDataManager*)> GetPauseMenuType{0x14085F1C0, 0x1405E0FD0};
+					WEAK symbol<fox::ui::SoundControl*(UiCommonDataManager*)> GetSoundControl{0x140314400, 0x1408C2E70};
 				}
 
 				namespace impl
@@ -84,8 +84,8 @@ namespace game
 				WEAK symbol<const char* (fox::StringId)> GetLangText{0x1409122D0, 0x140685060};
 				WEAK symbol<fox::StringId*(fox::StringId*, const char*)> GetStringId{0x1409137A0, 0x140685060};
 
-				WEAK symbol<bool(fox::ui::SoundControl*, unsigned int)> StartSound{0x0, 0x14068D180};
-				WEAK symbol<bool(fox::ui::SoundControl*, unsigned int)> StopSound{0x0, 0x14068D2B0};
+				WEAK symbol<bool(fox::ui::SoundControl*, unsigned int)> StartSound{0x14091AFA0, 0x14068D180};
+				WEAK symbol<bool(fox::ui::SoundControl*, unsigned int)> StopSound{0x14091B0D0, 0x14068D2B0};
 			}
 		}
 	}
