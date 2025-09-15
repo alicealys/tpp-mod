@@ -1,6 +1,8 @@
 #include <std_include.hpp>
 #include "loader/component_loader.hpp"
 
+#include "game/game.hpp"
+
 #include "command.hpp"
 #include "console.hpp"
 #include "patches.hpp"
@@ -181,6 +183,56 @@ namespace command
 		void start() override
 		{
 			scheduler::loop(run_frame, scheduler::main);
+
+			command::add("startsound", [](const command::params& params)
+			{
+				if (params.size() < 2)
+				{
+					return;
+				}
+
+				const auto id_s = params.get(1);
+				const auto id = static_cast<unsigned int>(std::atoi(id_s.data()));
+
+				const auto ui_inst = game::tpp::ui::menu::UiCommonDataManager::GetInstance();
+				if (ui_inst == nullptr)
+				{
+					return;
+				}
+
+				const auto sound_control = game::tpp::ui::menu::UiCommonDataManager::GetSoundControl(ui_inst);
+				if (sound_control == nullptr)
+				{
+					return;
+				}
+
+				game::tpp::ui::utility::StartSound(sound_control, id);
+			});
+
+			command::add("stopsound", [](const command::params& params)
+			{
+				if (params.size() < 2)
+				{
+					return;
+				}
+
+				const auto id_s = params.get(1);
+				const auto id = static_cast<unsigned int>(std::atoi(id_s.data()));
+
+				const auto ui_inst = game::tpp::ui::menu::UiCommonDataManager::GetInstance();
+				if (ui_inst == nullptr)
+				{
+					return;
+				}
+
+				const auto sound_control = game::tpp::ui::menu::UiCommonDataManager::GetSoundControl(ui_inst);
+				if (sound_control == nullptr)
+				{
+					return;
+				}
+
+				game::tpp::ui::utility::StopSound(sound_control, id);
+			});
 		}
 	};
 }

@@ -7,7 +7,8 @@
 #include "scheduler.hpp"
 #include "console.hpp"
 #include "session.hpp"
-#include "text_chat.hpp"
+#include "text_chat/text_chat.hpp"
+#include "text_chat/ui.hpp"
 
 #include <utils/hook.hpp>
 #include <utils/string.hpp>
@@ -115,7 +116,7 @@ namespace session
 			return main_session->sessionInterface.__vftable->IsHost(&main_session->sessionInterface);
 		}
 
-		game::fox::nt::Member* get_client_by_index(const unsigned int index)
+		game::fox::nt::Member* get_client_by_index(const unsigned int index, bool* is_self)
 		{
 			const auto main_session = *game::s_pSession;
 			if (main_session == nullptr || index >= main_session->allMembers.size)
@@ -126,12 +127,97 @@ namespace session
 			const auto local_member = main_session->__vftable->GetLocalMember(main_session);
 			const auto target_member = main_session->allMembers.members[index];
 
-			if (target_member == nullptr || target_member->flags == 0 || (local_member->sessionUserId->userId == target_member->sessionUserId->userId))
+			if (target_member == nullptr || target_member->flags == 0)
 			{
 				return nullptr;
 			}
 
+			*is_self = (local_member->sessionUserId->userId == target_member->sessionUserId->userId);
+
 			return target_member;
+		}
+
+		game::fox::nt::Member* get_client_by_steam_id(const std::uint64_t steam_id, bool* is_self)
+		{
+			const auto main_session = *game::s_pSession;
+			if (main_session == nullptr)
+			{
+				return nullptr;
+			}
+
+			const auto local_member = main_session->__vftable->GetLocalMember(main_session);
+
+
+			for (auto i = 0u; i < main_session->allMembers.size; i++)
+			{
+				const auto member = main_session->allMembers.members[i];
+				if (member == nullptr || member->flags == 0)
+				{
+					continue;
+				}
+
+				if (member->sessionUserId->userId == steam_id)
+				{
+					*is_self = local_member->sessionUserId->userId == member->sessionUserId->userId;
+					return member;
+				}
+			}
+
+			return nullptr;
+		}
+
+		game::fox::nt::Member* get_client_by_name(const std::string& name, bool* is_self)
+		{
+			const auto main_session = *game::s_pSession;
+			if (main_session == nullptr)
+			{
+				return nullptr;
+			}
+
+			const auto local_member = main_session->__vftable->GetLocalMember(main_session);
+			const auto steam_friends = (*game::SteamFriends)();
+
+			for (auto i = 0u; i < main_session->allMembers.size; i++)
+			{
+				const auto member = main_session->allMembers.members[i];
+				if (member == nullptr || member->flags == 0)
+				{
+					continue;
+				}
+
+				game::steam_id steam_id{};
+				steam_id.bits = member->sessionUserId->userId;
+				const std::string member_name = steam_friends->__vftable->GetFriendPersonaName(steam_friends, steam_id);
+				if (member_name.starts_with(name))
+				{
+					*is_self = local_member->sessionUserId->userId == member->sessionUserId->userId;
+					return member;
+				}
+			}
+
+			return nullptr;
+		}
+
+		game::fox::nt::Member* find_client(const std::string& identifier, bool* is_self)
+		{
+			const auto is_number = utils::string::is_numeric(identifier);
+
+			if (is_number)
+			{
+				const auto integer = std::strtoull(identifier.data(), nullptr, 0);
+				if (integer < 128)
+				{
+					return get_client_by_index(static_cast<unsigned int>(integer), is_self);
+				}
+				else
+				{
+					return get_client_by_steam_id(integer, is_self);
+				}
+			}
+			else
+			{
+				return get_client_by_name(identifier, is_self);
+			}
 		}
 
 		void* create_lobby_cb_stub(void* a1, game::steam_id lobby_id)
@@ -214,26 +300,39 @@ namespace session
 			{
 				if (params.size() < 2)
 				{
-					printf("usage: kick <player index>\n");
+					text_chat::ui::print("Usage: kick <name|index|steam_id>", false);
 					return;
 				}
 
-				const auto index_s = params.get(1);
-				const auto index = std::atoi(index_s.data());
-				scheduler::once([index]
+				const auto identifier = params.get(1);
+				scheduler::once([identifier]
 				{
 					if (!is_host())
 					{
-						printf("cannot kick as non-host\n");
+						text_chat::ui::print("Cannot kick as non-host", false);
 						return;
 					}
 
-					const auto client = get_client_by_index(index);
+					bool is_self{};
+					const auto client = find_client(identifier, &is_self);
 					if (client == nullptr)
 					{
-						printf("client not found\n");
+						text_chat::ui::print("Client not found", false);
 						return;
 					}
+
+					if (is_self)
+					{
+						text_chat::ui::print("Cannot kick yourself", false);
+						return;
+					}
+
+					const auto steam_friends = (*game::SteamFriends)();
+					game::steam_id steam_id{};
+					steam_id.bits = client->sessionUserId->userId;
+					const auto name = steam_friends->__vftable->GetFriendPersonaName(steam_friends, steam_id);
+
+					text_chat::ui::print(utils::string::va("%s has been kicked", name), false);
 
 					kick_player_from_lobby(client->sessionUserId->userId);
 					ban_player_from_lobby(client->sessionUserId->userId);
