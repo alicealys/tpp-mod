@@ -34,7 +34,7 @@ namespace text_chat::lobby
 			const auto size = steam_matchmaking->__vftable->GetLobbyChatEntry(steam_matchmaking, msg->lobby_id, msg->chat_id,
 				&user, buffer, sizeof(buffer), &chat_entry_type);
 
-			if (size < 4 || *reinterpret_cast<int*>(buffer) != chat_message_msg_id)
+			if (size < 5 || *reinterpret_cast<int*>(buffer) != chat_message_msg_id)
 			{
 				return;
 			}

@@ -72,13 +72,16 @@ namespace text_chat::input
 
 		void handle_return(chat_state_t& state)
 		{
-			if (state.input[0] == '/')
+			if (state.input[0] != '\0')
 			{
-				command::execute(&state.input[1]);
-			}
-			else
-			{
-				lobby::send_chat_message(state.input);
+				if (state.input[0] == '/')
+				{
+					command::execute(&state.input[1]);
+				}
+				else
+				{
+					lobby::send_chat_message(state.input);
+				}
 			}
 
 			stop_typing(state);
@@ -215,6 +218,16 @@ namespace text_chat::input
 			{
 				return;
 			}
+
+			command::add("chatall", []
+			{
+				chat_state.access([](chat_state_t& state)
+				{
+					stop_typing(state);
+					state.is_typing = true;
+					state.block_input = true;
+				});
+			});
 
 			wnd_proc_hook.create(0x140070FC0, wnd_proc_stub);
 			get_raw_input_for_windows_hook.create(0x14CB496A0, get_raw_input_for_windows_stub);

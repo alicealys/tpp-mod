@@ -100,9 +100,10 @@ namespace game
 
 	// Variables
 
-	WEAK symbol<ISteamNetworking* (*)()> SteamNetworking{0x14DB4F7C8, 0x14CE237E8};
-	WEAK symbol<ISteamFriends* (*)()> SteamFriends{0x14DB4F7C0, 0x14CE237D8};
-	WEAK symbol<ISteamMatchmaking* (*)()> SteamMatchmaking{0x0, 0x14CE237E0};
+	WEAK symbol<ISteamNetworking*(*)()> SteamNetworking{0x14DB4F7C8, 0x14CE237E8};
+	WEAK symbol<ISteamFriends*(*)()> SteamFriends{0x14DB4F7C0, 0x14CE237D8};
+	WEAK symbol<ISteamMatchmaking*(*)()> SteamMatchmaking{0x0, 0x14CE237E0};
+	WEAK symbol<ISteamUser*(*)()> SteamUser{0x14DB4F7D8, 0x14CE237F8};
 
 	WEAK symbol<fox::nt::impl::SessionImpl2*> s_pSession{0x142B9DFB0, 0x14209B430};
 	WEAK symbol<fox::nt::impl::SessionIdle*> s_idleSession{0x142B9E000, 0x14209B480};

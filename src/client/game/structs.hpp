@@ -19,6 +19,39 @@ namespace game
 		unsigned long long bits;
 	} steam_id;
 
+	struct ISteamUser;
+
+	struct /*VFT*/ ISteamUser_vtbl
+	{
+		int(__fastcall* GetHSteamUser)(ISteamUser* this_);
+		bool(__fastcall* LoggedOn)(ISteamUser* this_);
+		__int64(__fastcall* GetSteamID)(ISteamUser* this_, steam_id* steamIDUser);
+		int(__fastcall* InitiateGameConnection)(ISteamUser* this_, void* pAuthBlob, int cbMaxAuthBlob, steam_id steamIDGameServer, unsigned int unIPServer, unsigned __int16 usPortServer, bool bSecure);
+		void(__fastcall* TerminateGameConnection)(ISteamUser* this_, unsigned int unIPServer, unsigned __int16 usPortServer);
+		void(__fastcall* TrackAppUsageEvent)(ISteamUser* this_, steam_id gameID, int eAppUsageEvent, const char* pchExtraInfo);
+		bool(__fastcall* GetUserDataFolder)(ISteamUser* this_, char* pchBuffer, int cubBuffer);
+		void(__fastcall* StartVoiceRecording)(ISteamUser* this_);
+		void(__fastcall* StopVoiceRecording)(ISteamUser* this_);
+		int(__fastcall* GetAvailableVoice)(ISteamUser* this_, unsigned int* pcbCompressed, unsigned int* pcbUncompressed, unsigned int nUncompressedVoiceDesiredSampleRate);
+		int(__fastcall* GetVoice)(ISteamUser* this_, bool bWantCompressed, void* pDestBuffer, unsigned int cbDestBufferSize, unsigned int* nBytesWritten, bool bWantUncompressed, void* pUncompressedDestBuffer, unsigned int cbUncompressedDestBufferSize, unsigned int* nUncompressBytesWritten, unsigned int nUncompressedVoiceDesiredSampleRate);
+		int(__fastcall* DecompressVoice)(ISteamUser* this_, void* pCompressed, unsigned int cbCompressed, void* pDestBuffer, unsigned int cbDestBufferSize, unsigned int* nBytesWritten);
+		unsigned int(__fastcall* GetVoiceOptimalSampleRate)(ISteamUser* this_);
+		unsigned int(__fastcall* GetAuthSessionTicket)(ISteamUser* this_, void* pTicket, int cbMaxTicket, unsigned int* pcbTicket);
+		int(__fastcall* BeginAuthSession)(ISteamUser* this_, const void* pAuthTicket, int cbAuthTicket, steam_id steamID);
+		void(__fastcall* EndAuthSession)(ISteamUser* this_, steam_id steamID);
+		void(__fastcall* CancelAuthTicket)(ISteamUser* this_, unsigned int hAuthTicket);
+		unsigned int(__fastcall* UserHasLicenseForApp)(ISteamUser* this_, steam_id steamID, unsigned int appID);
+		bool(__fastcall* BIsBehindNAT)(ISteamUser* this_);
+		void(__fastcall* AdvertiseGame)(ISteamUser* this_, steam_id steamIDGameServer, unsigned int unIPServer, unsigned __int16 usPortServer);
+		unsigned __int64(__fastcall* RequestEncryptedAppTicket)(ISteamUser* this_, void* pUserData, int cbUserData);
+		bool(__fastcall* GetEncryptedAppTicket)(ISteamUser* this_, void* pTicket, int cbMaxTicket, unsigned int* pcbTicket);
+	};
+
+	struct ISteamUser
+	{
+		ISteamUser_vtbl* __vftable /*VFT*/;
+	};
+
 	struct ISteamNetworking;
 
 	struct /*VFT*/ ISteamNetworking_vtbl
