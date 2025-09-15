@@ -133,6 +133,16 @@ namespace game
 		steam_id lobby_id;
 	};
 
+	struct LobbyChatMsg_t
+	{
+		steam_id lobby_id;
+		steam_id user_id;
+		std::uint8_t chat_entry_type;
+		std::uint32_t chat_id;
+	};
+
+	static_assert(offsetof(LobbyChatMsg_t, chat_id) == 20);
+
 	struct ISteamMatchmaking;
 
 	struct /*VFT*/ ISteamMatchmaking_vtbl
@@ -182,8 +192,43 @@ namespace game
 		ISteamMatchmaking_vtbl* __vftable /*VFT*/;
 	};
 
+	namespace tpp::ui::hud::CommonDataManager
+	{
+		struct CommonDataManager
+		{
+			char __pad0[4440];
+			void* announceLogViewer;
+		};
+	}
+
+	namespace tpp::ui::menu::UiCommonDataManager
+	{
+		struct UiCommonDataManager;
+	}
+
 	namespace fox
 	{
+		namespace ui
+		{
+			struct SoundControl;
+
+			struct TextUnit
+			{
+				char* a1;
+				unsigned int a2;
+				unsigned int flags;
+				unsigned __int16 a4;
+				unsigned __int16 a5;
+				float f1;
+				float f2;
+				unsigned int a8;
+			};
+
+			static_assert(offsetof(TextUnit, f1) == 20);
+			static_assert(offsetof(TextUnit, f2) == 24);
+			static_assert(offsetof(TextUnit, a8) == 28);
+		}
+
 #pragma pack(push, 1)
 		struct unk1_unk1
 		{
@@ -526,6 +571,14 @@ namespace game
 		fox::nt::impl::SessionIdle* sessionIdle;
 	};
 
+	namespace tpp::ui::menu::impl
+	{
+		struct MenuSystemImpl
+		{
+
+		};
+	}
+
 	namespace tpp::net
 	{
 		struct CmdGetFobTargetDetailResult
@@ -541,6 +594,16 @@ namespace game
 	static_assert(offsetof(tpp::net::CmdGetFobTargetDetailResult, steam_id) == 7144);
 	static_assert(offsetof(tpp::net::CmdGetFobTargetDetailResult, ip) == 7160);
 	static_assert(offsetof(tpp::net::CmdGetFobTargetDetailResult, port) == 7168);
+
+	namespace gn
+	{
+		struct swapchain
+		{
+			char __pad0[24];
+			IDXGISwapChain* swapChain;
+		};
+
+	}
 
 	namespace lua
 	{

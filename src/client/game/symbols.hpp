@@ -8,10 +8,10 @@ namespace game
 
 	namespace tpp::ui::hud::CommonDataManager
 	{
-		struct CommonDataManager;
-
 		WEAK symbol<CommonDataManager*()> GetInstance{0x145C0A890, 0x1405EA6D0};
 		WEAK symbol<void(CommonDataManager*, const char*, int, int, int)> AnnounceLogView{0x140863050, 0x1405E7610};
+		WEAK symbol<void(CommonDataManager*, const char*, char, char)> AnnounceLogViewOnly{0x0, 0x145085A70};
+		WEAK symbol<bool(CommonDataManager*)> IsEndLoadingTips{0x0, 0x1450A34D0};
 	}
 
 	namespace fox
@@ -38,8 +38,44 @@ namespace game
 
 	namespace tpp
 	{
+		namespace sys
+		{
+			namespace GameStatus
+			{
+				WEAK symbol<bool(int)> Check{0x0, 0x1402ECAA0};
+			}
+
+			namespace GameMode
+			{
+				WEAK symbol<int()> GetUserMode{0x0, 0x1402F5060};
+			}
+		}
+
 		namespace ui
 		{
+			namespace hud
+			{
+				namespace AnnounceLogViewer
+				{
+					WEAK symbol<char(void* a1, const char* text, char a3, char a4, char a5)> CallLogView{0x0, 0x1463CA640};
+				}
+			}
+
+			namespace menu
+			{
+				namespace UiCommonDataManager
+				{
+					WEAK symbol<UiCommonDataManager* ()> GetInstance{0x0, 0x1405E0F30};
+					WEAK symbol<int(UiCommonDataManager*)> GetPauseMenuType{0x0, 0x1405E0FD0};
+					WEAK symbol<fox::ui::SoundControl*(UiCommonDataManager*)> GetSoundControl{0x0, 0x1408C2E70};
+				}
+
+				namespace impl
+				{
+					WEAK symbol<MenuSystemImpl> g_menuSystem{0x0, 0x141F9C8F0};
+				}
+			}
+
 			namespace utility
 			{
 				WEAK symbol<fox::StringId* (fox::StringId*, unsigned __int16 a2, unsigned __int16 a3, char a4)> GetMissionNameKey{0x140912880, 0x14538F900};
@@ -47,6 +83,9 @@ namespace game
 				WEAK symbol<unsigned __int16()> GetCurrentMissionId{0x1409108D0, 0x1406833A0};
 				WEAK symbol<const char* (fox::StringId)> GetLangText{0x1409122D0, 0x140685060};
 				WEAK symbol<fox::StringId*(fox::StringId*, const char*)> GetStringId{0x1409137A0, 0x140685060};
+
+				WEAK symbol<bool(fox::ui::SoundControl*, unsigned int)> StartSound{0x0, 0x14068D180};
+				WEAK symbol<bool(fox::ui::SoundControl*, unsigned int)> StopSound{0x0, 0x14068D2B0};
 			}
 		}
 	}
@@ -70,6 +109,11 @@ namespace game
 
 	WEAK symbol<fox::unk1*> s_unk1{0x0, 0x141F8A930};
 	WEAK symbol<fox::unk2> s_unk2{0x0, 0x142054190};
+
+	WEAK symbol<ID3D11Device*> s_deviceD3D{0x142C6B860, 0x1420E4210};
+	WEAK symbol<ID3D11DeviceContext*> s_immediateContextD3D{0x142C6B868, 0x1420E4218};
+
+	WEAK symbol<bool> g_needShowCursor{0x0, 0x141F69E66};
 
 	namespace lua
 	{
