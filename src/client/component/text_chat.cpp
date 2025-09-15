@@ -226,9 +226,20 @@ namespace text_chat
 			game::tpp::ui::hud::CommonDataManager::AnnounceLogViewOnly(inst, input, 0, static_cast<char>(chat_message_input_index));
 		}
 
+		bool is_char_text(char c)
+		{
+			return c >= 32 && c <= 126;
+		}
+
+		bool check_message(const std::string& msg)
+		{
+			const auto res = std::ranges::find_if_not(msg.begin(), msg.end(), is_char_text);
+			return res == msg.end();
+		}
+
 		void push_chat_message(const std::string& msg, bool play_sound)
 		{
-			if (!is_chat_enabled() || !can_use_chat())
+			if (!is_chat_enabled() || !can_use_chat() || !check_message(msg))
 			{
 				return;
 			}
@@ -381,7 +392,7 @@ namespace text_chat
 					return;
 				}
 
-				if (c >= 32 && c < 127)
+				if (is_char_text(c))
 				{
 					handle_char(c);
 				}
