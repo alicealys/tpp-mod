@@ -54,6 +54,22 @@ namespace command
 
 			parsed = true;
 		}
+
+		std::vector<std::string> tokenize_string(const std::string& str)
+		{
+			std::vector<std::string> res;
+
+			const auto args = utils::string::split(str, ' ');
+			for (const auto& arg : args)
+			{
+				if (!arg.empty())
+				{
+					res.emplace_back(arg);
+				}
+			}
+
+			return res;
+		}
 	}
 
 	params::params(const std::vector<std::string>& tokens)
@@ -88,7 +104,11 @@ namespace command
 		for (auto i = index; i < this->size(); i++)
 		{
 			buffer.append(this->tokens_[i]);
-			buffer.append(" ");
+
+			if (i != this->size() - 1)
+			{
+				buffer.append(" ");
+			}
 		}
 
 		return buffer;
@@ -96,7 +116,7 @@ namespace command
 
 	void execute_single(const std::string& cmd)
 	{
-		const auto args = utils::string::split(cmd, ' ');
+		const auto args = tokenize_string(cmd);
 		if (args.size() == 0)
 		{
 			return;

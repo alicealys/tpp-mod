@@ -107,14 +107,17 @@ namespace text_chat::mutes
 			const auto steam_matchmaking = (*game::SteamMatchmaking)();
 			const auto steam_friends = (*game::SteamFriends)();
 
+			const auto lower = utils::string::to_lower(identifier);
+
 			const auto num_players = steam_matchmaking->__vftable->GetNumLobbyMembers(steam_matchmaking, unk->unk1->lobby_id);
 			for (auto i = 0; i < num_players; i++)
 			{
 				game::steam_id steam_id{};
 				steam_matchmaking->__vftable->GetLobbyMemberByIndex(steam_matchmaking, &steam_id, unk->unk1->lobby_id, i);
 				const std::string name = steam_friends->__vftable->GetFriendPersonaName(steam_friends, steam_id);
+				const auto target_name_lower = utils::string::to_lower(name);
 
-				if (name.starts_with(identifier))
+				if (target_name_lower.starts_with(lower))
 				{
 					res_name = name;
 					mute_steam_id(steam_id.bits, unmute);
@@ -186,7 +189,7 @@ namespace text_chat::mutes
 					return;
 				}
 
-				mute_player(params.get(1), false);
+				mute_player(params.join(1), false);
 			});
 
 			command::add("unmute", [](const command::params& params)
@@ -197,7 +200,7 @@ namespace text_chat::mutes
 					return;
 				}
 
-				mute_player(params.get(1), true);
+				mute_player(params.join(1), true);
 			});
 
 			command::add("mutelist", [](const command::params& params)
