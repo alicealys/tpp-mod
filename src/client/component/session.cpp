@@ -174,6 +174,8 @@ namespace session
 				return nullptr;
 			}
 
+			const auto lower = utils::string::to_lower(name);
+
 			const auto local_member = main_session->__vftable->GetLocalMember(main_session);
 			const auto steam_friends = (*game::SteamFriends)();
 
@@ -187,8 +189,11 @@ namespace session
 
 				game::steam_id steam_id{};
 				steam_id.bits = member->sessionUserId->userId;
+
 				const std::string member_name = steam_friends->__vftable->GetFriendPersonaName(steam_friends, steam_id);
-				if (member_name.starts_with(name))
+				const auto member_name_lower = utils::string::to_lower(name);
+
+				if (member_name_lower.starts_with(lower))
 				{
 					*is_self = local_member->sessionUserId->userId == member->sessionUserId->userId;
 					return member;
@@ -304,7 +309,7 @@ namespace session
 					return;
 				}
 
-				const auto identifier = params.get(1);
+				const auto identifier = params.join(1);
 				scheduler::once([identifier]
 				{
 					if (!is_host())
