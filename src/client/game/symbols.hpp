@@ -34,6 +34,11 @@ namespace game
 				WEAK symbol<UixUtilityImpl* ()> GetUixUtilityToFeedQuarkEnvironment{0x0, 0x1402BADD0};
 			}
 		}
+
+		namespace EntityHandle_
+		{
+			WEAK symbol<Entity* (EntityHandle*)> GetRawPtr{0x0, 0x14254B900};
+		}
 	}
 
 	namespace tpp

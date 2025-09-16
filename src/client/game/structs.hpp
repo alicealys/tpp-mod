@@ -292,11 +292,126 @@ namespace game
 
 			};
 
-			struct ModelNodeText
+			struct ModelNodeText;
+
+			struct ModelNodeText_vtbl
 			{
 
 			};
 
+#pragma pack(push, 1)
+			struct ModelNodeText
+			{
+				ModelNodeText_vtbl* __vftable;
+				char __pad0[106];
+				char f0;
+				char __pad1[21];
+				void* f1;
+				short f2;
+				char f3;
+				char __pad2[1];
+				int f4;
+				void* f5;
+				void* f6;
+				void* f7;
+				void* f8;
+				int f9;
+				void* f10;
+				char __pad3[4];
+				void* f11;
+				void* f12;
+				short f13;
+				char f14;
+				char f15;
+				short f16;
+				char __pad4[2];
+				void* f17;
+				void* f18;
+				__m128 f19;
+				void* f20;
+				int f21;
+				char __pad5[4];
+				void* f22;
+				void* f23;
+				int f24;
+				char __pad6[4];
+				void* f25;
+				void* f26;
+				void* f27;
+				int f28;
+				char __pad7[4];
+				void* f29;
+				void* f30;
+				void* f31;
+				void* f32;
+				void* f33;
+				void* f34;
+				void* f35;
+				void* f36;
+				void* f37;
+				void* f38;
+				void* f39;
+				void* f40;
+				void* f41;
+				void* f42;
+				void* f43;
+			};
+#pragma pack(pop)
+
+			static_assert(offsetof(fox::ui::ModelNodeText, __pad0) == 8);
+			static_assert(offsetof(fox::ui::ModelNodeText, f0) == 114);
+			static_assert(offsetof(fox::ui::ModelNodeText, __pad1) == 115);
+			static_assert(offsetof(fox::ui::ModelNodeText, f1) == 136);
+			static_assert(offsetof(fox::ui::ModelNodeText, f2) == 144);
+			static_assert(offsetof(fox::ui::ModelNodeText, f3) == 146);
+			static_assert(offsetof(fox::ui::ModelNodeText, __pad2) == 147);
+			static_assert(offsetof(fox::ui::ModelNodeText, f4) == 148);
+			static_assert(offsetof(fox::ui::ModelNodeText, f5) == 152);
+			static_assert(offsetof(fox::ui::ModelNodeText, f6) == 160);
+			static_assert(offsetof(fox::ui::ModelNodeText, f7) == 168);
+			static_assert(offsetof(fox::ui::ModelNodeText, f8) == 176);
+			static_assert(offsetof(fox::ui::ModelNodeText, f9) == 184);
+			static_assert(offsetof(fox::ui::ModelNodeText, f10) == 188);
+			static_assert(offsetof(fox::ui::ModelNodeText, __pad3) == 196);
+			static_assert(offsetof(fox::ui::ModelNodeText, f11) == 200);
+			static_assert(offsetof(fox::ui::ModelNodeText, f12) == 208);
+			static_assert(offsetof(fox::ui::ModelNodeText, f13) == 216);
+			static_assert(offsetof(fox::ui::ModelNodeText, f14) == 218);
+			static_assert(offsetof(fox::ui::ModelNodeText, f15) == 219);
+			static_assert(offsetof(fox::ui::ModelNodeText, f16) == 220);
+			static_assert(offsetof(fox::ui::ModelNodeText, __pad4) == 222);
+			static_assert(offsetof(fox::ui::ModelNodeText, f17) == 224);
+			static_assert(offsetof(fox::ui::ModelNodeText, f18) == 232);
+			static_assert(offsetof(fox::ui::ModelNodeText, f19) == 240);
+			static_assert(offsetof(fox::ui::ModelNodeText, f20) == 256);
+			static_assert(offsetof(fox::ui::ModelNodeText, f21) == 264);
+			static_assert(offsetof(fox::ui::ModelNodeText, __pad5) == 268);
+			static_assert(offsetof(fox::ui::ModelNodeText, f22) == 272);
+			static_assert(offsetof(fox::ui::ModelNodeText, f23) == 280);
+			static_assert(offsetof(fox::ui::ModelNodeText, f24) == 288);
+			static_assert(offsetof(fox::ui::ModelNodeText, __pad6) == 292);
+			static_assert(offsetof(fox::ui::ModelNodeText, f25) == 296);
+			static_assert(offsetof(fox::ui::ModelNodeText, f26) == 304);
+			static_assert(offsetof(fox::ui::ModelNodeText, f27) == 312);
+			static_assert(offsetof(fox::ui::ModelNodeText, f28) == 320);
+			static_assert(offsetof(fox::ui::ModelNodeText, __pad7) == 324);
+			static_assert(offsetof(fox::ui::ModelNodeText, f29) == 328);
+			static_assert(offsetof(fox::ui::ModelNodeText, f30) == 336);
+			static_assert(offsetof(fox::ui::ModelNodeText, f31) == 344);
+			static_assert(offsetof(fox::ui::ModelNodeText, f32) == 352);
+			static_assert(offsetof(fox::ui::ModelNodeText, f33) == 360);
+			static_assert(offsetof(fox::ui::ModelNodeText, f34) == 368);
+			static_assert(offsetof(fox::ui::ModelNodeText, f35) == 376);
+			static_assert(offsetof(fox::ui::ModelNodeText, f36) == 384);
+			static_assert(offsetof(fox::ui::ModelNodeText, f37) == 392);
+			static_assert(offsetof(fox::ui::ModelNodeText, f38) == 400);
+			static_assert(offsetof(fox::ui::ModelNodeText, f39) == 408);
+			static_assert(offsetof(fox::ui::ModelNodeText, f40) == 416);
+			static_assert(offsetof(fox::ui::ModelNodeText, f41) == 424);
+			static_assert(offsetof(fox::ui::ModelNodeText, f42) == 432);
+			static_assert(offsetof(fox::ui::ModelNodeText, f43) == 440);
+
+			static_assert(sizeof(ModelNodeText) == 0x1C0);
 
 			struct ModelNodeLine
 			{
@@ -362,12 +477,12 @@ namespace game
 				unsigned __int16 a5;
 				float f1;
 				float f2;
-				unsigned int a8;
+				unsigned int paletteColor;
 			};
 
 			static_assert(offsetof(TextUnit, f1) == 20);
 			static_assert(offsetof(TextUnit, f2) == 24);
-			static_assert(offsetof(TextUnit, a8) == 28);
+			static_assert(offsetof(TextUnit, paletteColor) == 28);
 
 			struct WindowInterface;
 			struct TriggerPool;
@@ -411,6 +526,17 @@ namespace game
 			{
 
 			};
+		};
+
+		struct Entity
+		{
+			char __pad0[56];
+			char team;
+		};
+
+		struct EntityPtrBase
+		{
+			Entity* entity;
 		};
 
 		struct EntityHandle
