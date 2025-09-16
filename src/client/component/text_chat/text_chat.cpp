@@ -27,16 +27,16 @@ namespace text_chat
 
 	bool can_use_chat()
 	{
-		const auto inst = game::tpp::ui::hud::CommonDataManager::GetInstance();
-		const auto ui_inst = game::tpp::ui::menu::UiCommonDataManager::GetInstance();
+		const auto inst = game::tpp::ui::hud::CommonDataManager_::GetInstance();
+		const auto ui_inst = game::tpp::ui::menu::UiCommonDataManager_::GetInstance();
 
 		if (inst == nullptr || ui_inst == nullptr)
 		{
 			return false;
 		}
 
-		if (game::tpp::ui::menu::UiCommonDataManager::GetPauseMenuType(ui_inst) != 0 ||
-			!game::tpp::ui::hud::CommonDataManager::IsEndLoadingTips(inst))
+		if (game::tpp::ui::menu::UiCommonDataManager_::GetPauseMenuType(ui_inst) != 0 ||
+			!game::tpp::ui::hud::CommonDataManager_::IsEndLoadingTips(inst))
 		{
 			return false;
 		}

@@ -17,10 +17,11 @@ namespace text_chat
 	constexpr auto chat_size = 5; // do not change
 	constexpr auto chat_view_size = 4; // ^
 	constexpr auto chat_message_input_index = 4; // ^
-	constexpr auto chat_message_max_len = 50;
+	constexpr auto chat_message_max_len = 64;
 	constexpr auto chat_cursor_interval = 500;
 	constexpr auto chat_message_msg_id = 20;
 	constexpr auto chat_message_sound_id = 22;
+	constexpr auto chat_message_fade_time = 1000;
 	constexpr auto chat_scroll_sound_id = 152;
 	constexpr auto chat_cursor_char = '_';
 	constexpr auto chat_key_default = 'Y';

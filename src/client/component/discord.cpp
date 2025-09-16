@@ -78,7 +78,7 @@ namespace discord
 		const char* get_localized_string(const std::uint32_t id)
 		{
 			game::fox::StringId string_id{};
-			string_id.l = id;
+			string_id.f.l = id;
 			return game::tpp::ui::utility::GetLangText(string_id);
 		}
 

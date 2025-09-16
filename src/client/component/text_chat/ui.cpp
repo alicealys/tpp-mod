@@ -15,109 +15,185 @@ namespace text_chat::ui
 	{
 		utils::hook::detour announce_log_view_hook;
 
-		void update_hud_messages(chat_state_t& state)
+		void set_log_text(game::tpp::ui::hud::AnnounceLogViewer* this_, const char* text, int index, float alpha)
 		{
-			const auto inst = game::tpp::ui::hud::CommonDataManager::GetInstance();
-			if (inst == nullptr || inst->announceLogViewer == nullptr)
+			if (!game::tpp::ui::hud::AnnounceLogViewer_::ModelInit(this_, static_cast<char>(index)))
 			{
 				return;
 			}
 
-			if (!var_chat_enable->current.get<bool>())
+			auto& log_model = this_->logModels[index];
+
+			game::tpp::ui::utility::SetTextForModelNodeText(log_model.modelNodeText1, &log_model.textUnit, text);
+			game::tpp::ui::utility::SetTextForModelNodeText(log_model.modelNodeText2, &log_model.textUnit, text);
+
+			log_model.model->__vftable->SetVisible(log_model.model, true);
+
+			const auto uix_utility = game::fox::uix::impl::GetUixUtilityToFeedQuarkEnvironment();
+			uix_utility->__vftable->SetAlpha1(uix_utility, log_model.modelNode, alpha);
+			uix_utility->__vftable->SetColorRGB5(uix_utility, log_model.modelNode, 1.f, 1.f, 1.f);
+		}
+
+		void clear_log_text(game::tpp::ui::hud::AnnounceLogViewer* this_)
+		{
+			for (auto i = 0; i < 5; i++)
 			{
-				if (var_chat_enable->changed)
+				set_log_text(this_, "", i, 1.f);
+			}
+		}
+
+		void set_log_visible(game::tpp::ui::hud::AnnounceLogViewer* this_, bool visible)
+		{
+			for (auto i = 0; i < 5; i++)
+			{
+				this_->logModels[i].model->__vftable->SetVisible(this_->logModels[i].model, visible);
+			}
+		}
+
+		void update_chat_sounds(chat_state_t& state)
+		{
+			const auto now = std::chrono::high_resolution_clock::now();
+
+			const auto ui_inst = game::tpp::ui::menu::UiCommonDataManager_::GetInstance();
+			const auto sound_control = game::tpp::ui::menu::UiCommonDataManager_::GetSoundControl(ui_inst);
+
+			for (auto sound = state.sounds.begin(); sound != state.sounds.end(); )
+			{
+				if (!sound->started)
 				{
-					var_chat_enable->changed = false;
-					state = {};
+					sound->start = now;
+					sound->started = true;
+				}
+
+				game::tpp::ui::utility::StartSound(sound_control, sound->id);
+				if (now - sound->start >= sound->duration)
+				{
+					sound = state.sounds.erase(sound);
 				}
 				else
 				{
-					return;
+					++sound;
 				}
 			}
+		}
 
-			static message_buffer_t messages[chat_view_size]{};
-			static message_buffer_t input{};
+		void update_chat_input(chat_state_t& state, game::tpp::ui::hud::AnnounceLogViewer* log_viewer)
+		{
+			static message_buffer_t log_buffer{};
+			std::memset(log_buffer, 0, sizeof(log_buffer));
 
-			std::memset(messages, 0, sizeof(messages));
-			std::memset(input, 0, sizeof(input));
+			if (state.is_typing)
+			{
+				const auto now = std::chrono::high_resolution_clock::now();
+				const auto ms_epoch = static_cast<int>(std::chrono::duration_cast<std::chrono::milliseconds>(now.time_since_epoch()).count());
+				const auto show_cursor = ((ms_epoch % chat_cursor_interval) > chat_cursor_interval / 2);
+
+				const auto len = std::strlen(state.input);
+
+				static const auto prefix_len = std::strlen(chat_input_prefix);
+				static const auto text_len = sizeof(log_buffer) - prefix_len;
+
+				std::memcpy(log_buffer, chat_input_prefix, prefix_len);
+				auto postfix = &log_buffer[prefix_len];
+
+				std::memcpy(postfix, state.input, state.cursor);
+				std::memcpy(&postfix[state.cursor + 1], &state.input[state.cursor], len - state.cursor);
+
+				postfix[state.cursor] = show_cursor ? chat_cursor_char : ' ';
+			}
+
+			set_log_text(log_viewer, log_buffer, chat_message_input_index, 1.f);
+		}
+
+		void update_chat_messages(chat_state_t& state, game::tpp::ui::hud::AnnounceLogViewer* log_viewer)
+		{
+			static message_buffer_t log_buffers[chat_view_size]{};
+			std::memset(log_buffers, 0, sizeof(log_buffers));
 
 			const auto now = std::chrono::high_resolution_clock::now();
 
-			if (can_use_chat())
+			if (state.is_typing)
 			{
-				if (state.is_typing)
-				{
-					const auto ms_epoch = static_cast<int>(std::chrono::duration_cast<std::chrono::milliseconds>(now.time_since_epoch()).count());
-					const auto show_cursor = ((ms_epoch % chat_cursor_interval) > chat_cursor_interval / 2);
-					_snprintf_s(&input[0], sizeof(input), sizeof(input), "%s%s%c", chat_input_prefix, state.input, show_cursor ? chat_cursor_char : '\0');
-				}
-
 				for (auto& message : state.messages)
 				{
-					if (state.is_typing)
-					{
-						message.time = now;
-					}
-				}
-
-				const auto ui_inst = game::tpp::ui::menu::UiCommonDataManager::GetInstance();
-				const auto sound_control = game::tpp::ui::menu::UiCommonDataManager::GetSoundControl(ui_inst);
-
-				for (auto sound = state.sounds.begin(); sound != state.sounds.end(); )
-				{
-					if (!sound->started)
-					{
-						sound->start = now;
-						sound->started = true;
-					}
-
-					game::tpp::ui::utility::StartSound(sound_control, sound->id);
-					if (now - sound->start >= sound->duration)
-					{
-						sound = state.sounds.erase(sound);
-					}
-					else
-					{
-						++sound;
-					}
-				}
-
-				for (auto i = 0ull; i < chat_view_size; i++)
-				{
-					const auto message_index = state.chat_offset + i;
-					if (message_index >= state.messages.size())
-					{
-						continue;
-					}
-
-					auto& message = state.messages[message_index];
-
-					const auto diff = now - message.time;
-					const auto ms = static_cast<int>(std::chrono::duration_cast<std::chrono::milliseconds>(diff).count());
-
-					if (!state.is_typing && ms > var_chat_time->current.get<int>())
-					{
-						continue;
-					}
-
-					std::memcpy(messages[i], message.buffer, sizeof(message.buffer));
+					message.time = now;
 				}
 			}
 
 			for (auto i = 0; i < chat_view_size; i++)
 			{
-				game::tpp::ui::hud::CommonDataManager::AnnounceLogViewOnly(inst, messages[i], 0, static_cast<char>(chat_message_input_index - i - 1));
+				const auto message_index = state.chat_offset + i;
+				if (message_index >= state.messages.size())
+				{
+					continue;
+				}
+
+				auto& message = state.messages[message_index];
+
+				const auto diff = now - message.time;
+				const auto ms = static_cast<int>(std::chrono::duration_cast<std::chrono::milliseconds>(diff).count());
+				const auto ms_left = var_chat_time->current.get<int>() - ms;
+
+				auto alpha = 1.f;
+
+				if (ms_left <= 0)
+				{
+					continue;
+				}
+				else if (ms_left <= chat_message_fade_time)
+				{
+					alpha = static_cast<float>(ms_left) / static_cast<float>(chat_message_fade_time);
+				}
+
+				std::memcpy(log_buffers[i], message.buffer, sizeof(message.buffer));
+				set_log_text(log_viewer, log_buffers[i], chat_message_input_index - i - 1, alpha);
+			}
+		}
+
+		void update_chat(chat_state_t& state)
+		{
+			const auto inst = game::tpp::ui::hud::CommonDataManager_::GetInstance();
+			if (inst == nullptr || inst->announceLogViewer == nullptr)
+			{
+				return;
 			}
 
-			game::tpp::ui::hud::CommonDataManager::AnnounceLogViewOnly(inst, input, 0, static_cast<char>(chat_message_input_index));
+			static auto was_chat_enabled = false;
+			const auto chat_enabled = is_chat_enabled();
+
+			const auto _0 = gsl::finally([&]
+			{
+				was_chat_enabled = chat_enabled;
+			});
+
+			if (!chat_enabled)
+			{
+				if (was_chat_enabled)
+				{
+					clear_log_text(inst->announceLogViewer);
+				}
+
+				return;
+			}
+
+			if (!can_use_chat())
+			{
+				set_log_visible(inst->announceLogViewer, false);
+				return;
+			}
+
+			set_log_visible(inst->announceLogViewer, true);
+
+			update_chat_sounds(state);
+			update_chat_input(state, inst->announceLogViewer);
+			update_chat_messages(state, inst->announceLogViewer);
 		}
 
 		void* update_ui_stub(void* a1)
 		{
 			chat_state.access([&](chat_state_t& state)
 			{
-				update_hud_messages(state);
+				update_chat(state);
 			});
 
 			return utils::hook::invoke<void*>(0x1405EA750, a1);
@@ -137,8 +213,8 @@ namespace text_chat::ui
 
 	void hud_message(const std::string& text)
 	{
-		const auto inst = game::tpp::ui::hud::CommonDataManager::GetInstance();
-		game::tpp::ui::hud::CommonDataManager::AnnounceLogView(inst, text.data(), 0, 0, 1);
+		const auto inst = game::tpp::ui::hud::CommonDataManager_::GetInstance();
+		game::tpp::ui::hud::CommonDataManager_::AnnounceLogView(inst, text.data(), 0, 0, 1);
 	}
 
 	void print(const std::string& msg, bool play_sound)

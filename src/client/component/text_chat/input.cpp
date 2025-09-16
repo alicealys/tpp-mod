@@ -29,9 +29,18 @@ namespace text_chat::input
 
 		void handle_char(chat_state_t& state, char c)
 		{
-			if (state.cursor < chat_message_max_len)
+			if (std::strlen(state.input) >= chat_message_max_len)
 			{
-				state.input[state.cursor++] = c;
+				return;
+			}
+
+			std::memmove(state.input + state.cursor + 1, state.input + state.cursor, chat_message_max_len - state.cursor);
+			state.input[state.cursor] = c;
+			state.cursor++;
+
+			if (state.cursor == chat_message_max_len)
+			{
+				state.input[state.cursor] = 0;
 			}
 		}
 
@@ -42,7 +51,9 @@ namespace text_chat::input
 				return;
 			}
 
-			state.input[--state.cursor] = 0;
+			std::memmove(state.input + state.cursor - 1, state.input + state.cursor,
+				std::strlen(state.input) + 1 - state.cursor);
+			state.cursor--;
 		}
 
 		void handle_tab(chat_state_t& state)
@@ -85,6 +96,57 @@ namespace text_chat::input
 			}
 
 			stop_typing(state);
+		}
+
+		void handle_paste(chat_state_t& state)
+		{
+			const auto clipboard = utils::string::get_clipboard_data();
+
+			for (const auto& c : clipboard)
+			{
+				if (state.cursor >= chat_message_max_len)
+				{
+					return;
+				}
+
+				if (is_char_text(c))
+				{
+					handle_char(state, c);
+				}
+			}
+		}
+
+		void move_cursor(chat_state_t& state, bool right)
+		{
+			if (right && state.input[state.cursor] != '\0')
+			{
+				state.cursor++;
+			}
+			else if (!right && state.cursor > 0)
+			{
+				state.cursor--;
+			}
+		}
+
+		void handle_delete(chat_state_t& state)
+		{
+			auto is_first = true;
+			while (state.cursor > 0)
+			{
+				const auto is_letter = isalnum(state.input[state.cursor - 1]);
+
+				if (is_letter || is_first)
+				{
+					handle_backspace(state);
+				}
+
+				if (!is_letter)
+				{
+					return;
+				}
+
+				is_first = false;
+			}
 		}
 
 		std::optional<char> get_chat_key()
@@ -137,6 +199,18 @@ namespace text_chat::input
 					{
 						state.block_input = true;
 					}
+					else
+					{
+						switch (w_param)
+						{
+						case VK_LEFT:
+							move_cursor(state, false);
+							break;
+						case VK_RIGHT:
+							move_cursor(state, true);
+							break;
+						}
+					}
 
 					break;
 				}
@@ -161,6 +235,9 @@ namespace text_chat::input
 					{
 						switch (w_param)
 						{
+						case 0x16:
+							handle_paste(state);
+							break;
 						case VK_TAB:
 							handle_tab(state);
 							break;
@@ -172,6 +249,9 @@ namespace text_chat::input
 							break;
 						case VK_RETURN:
 							handle_return(state);
+							break;
+						case 0x7F:
+							handle_delete(state);
 							break;
 						}
 					}
