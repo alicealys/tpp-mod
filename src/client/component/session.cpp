@@ -259,6 +259,18 @@ namespace session
 			return steam_matchmaking_vtbl.SetLobbyData(this_, lobby_id, key, value);
 		}
 
+		const char* get_lobby_data_stub(game::ISteamMatchmaking* this_, game::steam_id lobby_id, const char* key)
+		{
+			console::debug("[SteamMatchmaking] GetLobbyData %s\n", key);
+			return steam_matchmaking_vtbl.GetLobbyData(this_, lobby_id, key);
+		}
+
+		void add_request_lobby_list_numerical_filter(game::ISteamMatchmaking* this_, const char* key, int value, int compare)
+		{
+			console::debug("[SteamMatchmaking] AddRequestLobbyListNumericalFilter %s %i %i\n", key, value, compare);
+			steam_matchmaking_vtbl.AddRequestLobbyListNumericalFilter(this_, key, value, compare);
+		}
+
 		void hook_steam_matchmaking()
 		{
 			const auto steam_matchmaking = (*game::SteamMatchmaking)();
@@ -268,6 +280,8 @@ namespace session
 			utils::hook::set(&steam_matchmaking->__vftable->LeaveLobby, leave_lobby_stub);
 			utils::hook::set(&steam_matchmaking->__vftable->RequestLobbyData, request_lobby_data_stub);
 			utils::hook::set(&steam_matchmaking->__vftable->SetLobbyData, set_lobby_data_stub);
+			//utils::hook::set(&steam_matchmaking->__vftable->GetLobbyData, get_lobby_data_stub);
+			utils::hook::set(&steam_matchmaking->__vftable->AddRequestLobbyListNumericalFilter, add_request_lobby_list_numerical_filter);
 		}
 	}
 

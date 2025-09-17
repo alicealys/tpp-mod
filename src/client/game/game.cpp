@@ -1,6 +1,8 @@
 #include <std_include.hpp>
 #include "game.hpp"
 
+#include <utils/flags.hpp>
+
 namespace game
 {
 	namespace environment
@@ -25,6 +27,11 @@ namespace game
 		bool is_mgo()
 		{
 			return !is_mgsv();
+		}
+
+		bool is_dedi()
+		{
+			return is_mgo() && utils::flags::has_flag("dedicated");
 		}
 	}
 }

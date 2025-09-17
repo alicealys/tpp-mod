@@ -10,6 +10,8 @@ namespace command
 		std::string get(const size_t index) const;
 		std::string operator[](const size_t index) const;
 
+		int get_int(const size_t index) const;
+
 		size_t size() const;
 
 		std::string join(const size_t index) const;

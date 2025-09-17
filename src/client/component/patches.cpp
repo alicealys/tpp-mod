@@ -101,7 +101,7 @@ namespace patches
 				}
 			}	
 
-			if (utils::flags::has_flag("unlock-fps") || var_unlock_fps->latched.get<bool>())
+			if (!game::environment::is_dedi() && (utils::flags::has_flag("unlock-fps") || var_unlock_fps->latched.get<bool>()))
 			{
 				unlock_fps();
 			}
