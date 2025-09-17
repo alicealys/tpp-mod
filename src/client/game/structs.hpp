@@ -1183,9 +1183,22 @@ namespace game
 
 	static_assert(sizeof(unk1) == 24);
 
-	struct unk2
+	struct match_settings_t
 	{
-		char __pad0[5531];
-		char unk1;
+		int member_max; // 32
+		char match_num; // 36
+		char current_match; // 37
+		char match_type; // 38
+		char member_min; // 39
+		short is_dedicated_host; // 40
+		short briefing_time; // 44
+	};
+
+	struct mgo_match_t
+	{
+		char __pad0[40];
+		void* a1;
+		char __pad1[4480];
+		match_settings_t match_settings;
 	};
 }

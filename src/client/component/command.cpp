@@ -87,6 +87,16 @@ namespace command
 		return this->tokens_[index];
 	}
 
+	int params::get_int(const size_t index) const
+	{
+		if (this->tokens_.size() <= index)
+		{
+			return 0;
+		}
+
+		return std::atoi(this->tokens_[index].data());
+	}
+
 	std::string params::operator[](const size_t index) const
 	{
 		return this->get(index);

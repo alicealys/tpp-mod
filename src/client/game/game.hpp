@@ -13,6 +13,7 @@ namespace game
 			none,
 			mgsv,
 			mgo,
+			dedi,
 		};
 
 		game_mode get_mode();
@@ -20,6 +21,7 @@ namespace game
 
 		bool is_mgsv();
 		bool is_mgo();
+		bool is_dedi();
 	}
 
 	template <typename T>
