@@ -26,7 +26,7 @@ namespace command
 
 	void run_frame();
 
-	void execute(const std::string& cmd);
+	void execute(const std::string& cmd, bool sync = false);
 	void add(const std::string& name, const callback& cb);
 	void add(const std::string& name, const callback_narg& cb);
 

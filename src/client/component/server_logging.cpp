@@ -44,7 +44,7 @@ namespace server_logging
 		{
 			const auto res = http_codec_end_decode_hook.invoke<void*>(this_, ctx, buffer);
 
-			if (var_server_logging->current.get<bool>())
+			if (var_server_logging->current.enabled())
 			{
 				const auto data = get_fox_buffer(buffer);
 				const auto json = nlohmann::json::parse(data);
@@ -61,7 +61,7 @@ namespace server_logging
 
 		void* http_codec_begin_encode_stub(void* this_, void* ctx, void* buffer, void* session_key)
 		{
-			if (var_server_logging->current.get<bool>())
+			if (var_server_logging->current.enabled())
 			{
 				const auto data = get_fox_buffer(buffer);
 				const auto json = nlohmann::json::parse(data);

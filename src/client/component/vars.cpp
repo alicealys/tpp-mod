@@ -1,6 +1,8 @@
 #include <std_include.hpp>
 #include "loader/component_loader.hpp"
 
+#include "game/game.hpp"
+
 #include "console.hpp"
 #include "vars.hpp"
 
@@ -24,18 +26,125 @@ namespace vars
 		return vars;
 	}
 
+	bool var_value::enabled() const
+	{
+		return std::get<bool>(this->value_);
+	}
+
+	std::int32_t var_value::get_int() const
+	{
+		return std::get<std::int32_t>(this->value_);
+	}
+
+	float var_value::get_float() const
+	{
+		return std::get<float>(this->value_);
+	}
+
+	std::string var_value::get_string() const
+	{
+		return std::get<std::string>(this->value_);
+	}
+
+	var_type_t var_value::get_type() const
+	{
+		switch (this->value_.index())
+		{
+		case 1:
+			return var_type_boolean;
+		case 2:
+			return var_type_integer;
+		case 3:
+			return var_type_float;
+		case 4:
+			return var_type_string;
+		}
+
+		return var_type_none;
+	}
+
+	std::optional<var_value> var_value::parse(const std::string& str, const var_type_t type)
+	{
+		std::string string_value;
+
+		if (str.starts_with("\"") && str.ends_with("\""))
+		{
+			string_value = str.substr(1, str.size() - 2);
+		}
+		else
+		{
+			string_value = str;
+		}
+
+		switch (type)
+		{
+		case var_type_boolean:
+			return var_value(std::atoi(string_value.data()) == 1);
+		case var_type_integer:
+			return var_value(std::atoi(string_value.data()));
+		case var_type_float:
+			return var_value(static_cast<float>(std::atof(string_value.data())));
+		case var_type_string:
+			return var_value(string_value);
+		}
+
+		return {};
+	}
+
+	std::string var_value::to_string() const
+	{
+		switch (this->get_type())
+		{
+		case var_type_boolean:
+			return utils::string::va("%i", std::get<bool>(this->value_));
+		case var_type_integer:
+			return utils::string::va("%i", std::get<std::int32_t>(this->value_));
+		case var_type_float:
+			return utils::string::va("%f", std::get<float>(this->value_));
+		case var_type_string:
+			return std::get<std::string>(this->value_);
+		}
+
+		return "";
+	}
+
+	const char* var_value::type_name() const
+	{
+		switch (this->get_type())
+		{
+		case var_type_boolean:
+			return "bool";
+		case var_type_integer:
+			return "int";
+		case var_type_float:
+			return "float";
+		case var_type_string:
+			return "string";
+		}
+
+		return "empty";
+	}
+
 	namespace
 	{
+		bool post_initialization = false;
+
 		std::string get_config_file_path()
 		{
-			return (utils::properties::get_appdata_path() / "config.json").generic_string();
+			return (utils::properties::get_appdata_path() / "config.cfg").generic_string();
 		}
 
 		void write_config()
 		{
+			if (game::environment::is_dedi())
+			{
+				return;
+			}
+
+			std::string buffer;
+
 			const auto path = get_config_file_path();
 
-			nlohmann::json config;
 			for (const auto& var : get_var_list())
 			{
 				if ((var->flags & var_flag_saved) == 0)
@@ -43,11 +152,11 @@ namespace vars
 					continue;
 				}
 
-				config[var->name] = var->current;
+				const auto value = var->current.to_string();
+				buffer.append(utils::string::va("set %s \"%s\"\r\n", var->name.data(), value.data()));
 			}
 
-			const auto str = config.dump(4);
-			utils::io::write_file(path, str, false);
+			utils::io::write_file(path, buffer, false);
 		}
 
 		nlohmann::json read_config()
@@ -72,86 +181,23 @@ namespace vars
 			return {};
 		}
 
-		bool check_domain(const var_ptr& var, const nlohmann::json& value)
+		bool check_domain(const var_ptr& var, const var_value& value)
 		{
 			switch (var->type)
 			{
 			case var_type_integer:
 			{
-				const auto value_int = value.get<std::int32_t>();
+				const auto value_int = value.get_int();
 				return value_int >= var->limits.integer.min && value_int <= var->limits.integer.max;
 			}
 			case var_type_float:
 			{
-				const auto value_float = value.get<std::int32_t>();
+				const auto value_float = value.get_float();
 				return value_float >= var->limits.float_.min && value_float <= var->limits.float_.max;
 			}
 			}
 
 			return true;
-		}
-
-		bool check_type(const var_ptr& var, const nlohmann::json& value)
-		{
-			if (var->type == var_type_string)
-			{
-				return true;
-			}
-
-			const auto type = value.type();
-
-			switch (type)
-			{
-			case nlohmann::json::value_t::number_integer:
-			case nlohmann::json::value_t::number_unsigned:
-				return var->type == var_type_integer || var->type == var_type_float || var->type == var_type_boolean;
-			case nlohmann::json::value_t::number_float:
-				return var->type == var_type_float;
-			case nlohmann::json::value_t::string:
-				return var->type == var_type_string;
-			case nlohmann::json::value_t::boolean:
-				return var->type == var_type_boolean;
-			}
-
-			return false;
-		}
-
-		nlohmann::json cast_value(const var_ptr& var, const nlohmann::json& value)
-		{
-			switch (var->type)
-			{
-			case var_type_integer:
-				return value.get<std::int32_t>();
-			case var_type_float:
-				if (value.is_number_integer())
-				{
-					return static_cast<float>(value.get<std::int32_t>());
-				}
-
-				return value.get<float>();
-			case var_type_boolean:
-			{
-				if (value.is_number_integer())
-				{
-					return value.get<std::int32_t>() == 1;
-				}
-
-				return value.get<bool>();
-			}
-			case var_type_string:
-			{
-				if (value.is_string())
-				{
-					return value.get<std::string>();
-				}
-				else
-				{
-					return value.dump();
-				}
-			}
-			}
-
-			throw std::runtime_error("invalid cast type");
 		}
 
 		bool cheats_enabled()
@@ -164,29 +210,8 @@ namespace vars
 			return ((var->flags & var_flag_cheat) == 0) || set_source == var_source_internal || cheats_enabled();
 		}
 
-		void set_var(const var_ptr& var, const nlohmann::json& value, const var_source_t set_source)
+		void set_var(const var_ptr& var, const var_value& value, const var_source_t set_source)
 		{
-			const auto set_value = [&](const nlohmann::json& value)
-			{
-				const auto casted_value = cast_value(var, value);
-
-				var->current = casted_value;
-				if ((var->flags & var_flag_latched) == 0 || set_source == var_source_internal)
-				{
-					var->latched = casted_value;
-				}
-
-				if (set_source != var_source_internal)
-				{
-					var->changed = true;
-				}
-
-				if ((var->flags & var_flag_saved) != 0 && set_source != var_source_internal)
-				{
-					write_config();
-				}
-			};
-
 			if (!check_cheats(var, set_source))
 			{
 				console::warn("\"%s\" is cheat protected", var->name.data());
@@ -199,41 +224,30 @@ namespace vars
 				return;
 			}
 
-			if (value.is_null())
+			if (var->type != value.get_type())
 			{
-				set_value(var->reset);
-				return;
-			}
-
-			if (!check_type(var, value))
-			{
-				console::warn("[var] invalid value type \"%s\" for var \"%s\"\n", value.type_name(), var->name.data());
 				return;
 			}
 
 			if (!check_domain(var, value))
 			{
-				const auto value_str = value.dump();
-				console::warn("[var] invalid value %s for var \"%s\"\n", value_str.data(), var->name.data());
 				return;
 			}
 
-			set_value(value);
-		}
-
-		void parse_saved_vars()
-		{
-			const auto cfg = read_config();
-
-			for (const auto& var : get_var_list())
+			var->current = value;
+			if ((var->flags & var_flag_latched) == 0 || set_source == var_source_internal || !post_initialization)
 			{
-				if ((var->flags & var_flag_saved) == 0 || !cfg.contains(var->name))
-				{
-					continue;
-				}
+				var->latched = value;
+			}
 
-				const auto& value = cfg.at(var->name);
-				set_var(var, value, var_source_internal);
+			if (set_source != var_source_internal)
+			{
+				var->changed = true;
+			}
+
+			if ((var->flags & var_flag_saved) != 0 && set_source != var_source_internal)
+			{
+				write_config();
 			}
 		}
 
@@ -318,7 +332,7 @@ namespace vars
 	}
 
 	var_ptr register_var(
-		const std::string& name, const var_type_t& type, const var_value_t& value, const var_limits_t limits, const std::uint32_t flags, const std::string& description)
+		const std::string& name, const var_type_t& type, const var_value& value, const var_limits_t limits, const std::uint32_t flags, const std::string& description)
 	{
 		const auto lower = utils::string::to_lower(name);
 
@@ -426,9 +440,9 @@ namespace vars
 
 		if (params.size() == 1)
 		{
-			const auto current_str = var_value_to_string(var, var->current);
-			const auto latched_str = var_value_to_string(var, var->latched);
-			const auto reset_str = var_value_to_string(var, var->reset);
+			const auto current_str = var->current.to_string();
+			const auto latched_str = var->latched.to_string();
+			const auto reset_str = var->reset.to_string();
 
 			printf("\"%s\" is: \"%s\" latched: \"%s\" default: \"%s\" type: \"%s\" flags: %i\n",
 				var->name.data(), current_str.data(), latched_str.data(), reset_str.data(), var->current.type_name(), var->flags);
@@ -438,26 +452,20 @@ namespace vars
 		}
 
 		const auto value = params.get(1);
-		const auto parsed_value = parse_value_text(value);
+		const auto parsed_value = var_value::parse(value, var->type);
 
-		set_var(var, parsed_value, var_source_external);
+		if (parsed_value.has_value())
+		{
+			set_var(var, parsed_value.value(), var_source_external);
+		}
+
 		return true;
 	}
 
 	class component final : public component_interface
 	{
 	public:
-
 		void pre_load() override
-		{
-		}
-
-		void post_load() override
-		{
-			parse_saved_vars();
-		}
-
-		void start() override
 		{
 			command::add("set", [](const command::params& params)
 			{
@@ -476,8 +484,13 @@ namespace vars
 				}
 				else
 				{
-					const auto parsed_value = parse_value_text(value);
-					set_var(var.value(), parsed_value, var_source_external);
+					const auto parsed_value = var_value::parse(value, var.value()->type);
+					if (!parsed_value.has_value())
+					{
+						return;
+					}
+
+					set_var(var.value(), parsed_value.value(), var_source_external);
 				}
 			});
 
@@ -485,10 +498,25 @@ namespace vars
 			{
 				for (const auto& var : get_var_list())
 				{
-					const auto current_str = var_value_to_string(var, var->current);
-					printf("\"%s\": \"%s\"\n", var->name.data(), current_str.data());
+					const auto current_str = var->current.to_string();
+					printf("%s \"%s\"\n", var->name.data(), current_str.data());
 				}
 			});
+		}
+
+		void post_load() override
+		{
+			if (!game::environment::is_dedi())
+			{
+				command::execute("exec config.cfg", true);
+			}
+
+			post_initialization = true;
+		}
+
+		void start() override
+		{
+
 		}
 	};
 }

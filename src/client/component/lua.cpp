@@ -61,7 +61,7 @@ namespace lua
 
 		void lua_init_stub(void* a1)
 		{
-			if (var_lua_logging->current.get<int>() >= 1)
+			if (var_lua_logging->current.get_int() >= 1)
 			{
 				console::info("[lua]: initializing\n");
 			}
@@ -89,7 +89,7 @@ namespace lua
 				name_ = name_.substr(1);
 			}
 
-			if (var_lua_dump->current.get<bool>())
+			if (var_lua_dump->current.enabled())
 			{
 				utils::io::write_file("tpp-mod/dump/lua/"s + name_, std::string(buffer, size));
 			}
@@ -102,7 +102,7 @@ namespace lua
 			}
 			else
 			{
-				if (var_lua_logging->current.get<int>() >= 1)
+				if (var_lua_logging->current.get_int() >= 1)
 				{
 					console::info("[lua] Loading script \"%s\"", name);
 				}
@@ -114,7 +114,7 @@ namespace lua
 		template <console::console_type Type>
 		void lua_print(lua_State* s)
 		{
-			if (var_lua_logging->current.get<int>() < 2)
+			if (var_lua_logging->current.get_int() < 2)
 			{
 				return;
 			}

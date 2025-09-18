@@ -22,7 +22,7 @@ namespace text_chat
 
 	bool is_chat_enabled()
 	{
-		return var_chat_enable->current.get<bool>();
+		return var_chat_enable->current.enabled();
 	}
 
 	bool can_use_chat()

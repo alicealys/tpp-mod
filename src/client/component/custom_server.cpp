@@ -187,7 +187,7 @@ namespace custom_server
 		void start() override
 		{
 			const auto& custom_server_var = SELECT_VALUE(var_custom_server_tpp, var_custom_server_mgo);
-			const auto custom_server = custom_server_var->current.get<std::string>();
+			const auto custom_server = custom_server_var->current.get_string();
 
 			if (custom_server.empty())
 			{

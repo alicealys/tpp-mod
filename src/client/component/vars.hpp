@@ -4,10 +4,6 @@
 
 namespace vars
 {
-	using var_value_t = nlohmann::json;
-
-	using validate_callback_t = std::function<bool(const var_value_t&)>;
-
 	enum var_type_t
 	{
 		var_type_none = 0,
@@ -50,15 +46,45 @@ namespace vars
 		var_limits_float_t float_;
 	};
 
-	struct var_t
+	using var_value_variant_t = std::variant<std::monostate, bool, std::int32_t, float, std::string>;
+
+	class var_value
 	{
+	public:
+		var_value() = default;
+
+		template <typename T>
+		var_value(const T& value)
+		{
+			this->value_ = value;
+		}
+
+		bool enabled() const;
+		std::int32_t get_int() const;
+		float get_float() const;
+		std::string get_string() const;
+
+		std::string to_string() const;
+		const char* type_name() const;
+		var_type_t get_type() const;
+
+		static std::optional<var_value> parse(const std::string& value, const var_type_t type);
+
+	private:
+		var_value_variant_t value_{};
+
+	};
+
+	class var_t
+	{
+	public:
 		std::string name;
 		std::string description;
 		std::uint32_t flags;
 		bool changed;
-		var_value_t current;
-		var_value_t latched;
-		var_value_t reset;
+		var_value current;
+		var_value latched;
+		var_value reset;
 		var_type_t type;
 		var_limits_t limits;
 	};
@@ -66,7 +92,7 @@ namespace vars
 	using var_ptr = std::shared_ptr<var_t>;
 
 	var_ptr register_var(
-		const std::string& name, const var_type_t& type, const var_value_t& value, const var_limits_t limits, const std::uint32_t flags, const std::string& description);
+		const std::string& name, const var_type_t& type, const var_value& value, const var_limits_t limits, const std::uint32_t flags, const std::string& description);
 
 	var_ptr register_bool(const std::string& name, bool value, const std::uint32_t flags, const std::string& description);
 
