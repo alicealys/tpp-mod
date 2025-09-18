@@ -70,6 +70,11 @@ namespace patches
 			utils::hook::call(SELECT_VALUE(0x142F2AD7F, 0x14241449F), thread_sleep);
 			utils::hook::jump(SELECT_VALUE(0x14008130A, 0x14008195A), SELECT_VALUE(0x1400814D8, 0x140081B28)); // unlock framerate always
 		}
+
+		HANDLE create_mutex_stub(LPSECURITY_ATTRIBUTES attributes, BOOL owner, LPCWSTR name)
+		{
+			return CreateMutexW(attributes, owner, NULL);
+		}
 	}
 
 	class component final : public component_interface
@@ -99,7 +104,10 @@ namespace patches
 					// disable intro splash screen
 					utils::hook::jump(0x145E59910, 0x145E5991B);
 				}
-			}	
+			}
+
+			utils::hook::nop(SELECT_VALUE(0x142E4ED98, 0x1422339D8), 6);
+			utils::hook::call(SELECT_VALUE(0x142E4ED98, 0x1422339D8), create_mutex_stub);
 
 			if (!game::environment::is_dedi() && (utils::flags::has_flag("unlock-fps") || var_unlock_fps->latched.enabled()))
 			{
