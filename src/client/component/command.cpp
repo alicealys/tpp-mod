@@ -8,6 +8,7 @@
 #include "patches.hpp"
 #include "scheduler.hpp"
 #include "vars.hpp"
+#include "filesystem.hpp"
 
 #include <utils/io.hpp>
 #include <utils/string.hpp>
@@ -172,10 +173,17 @@ namespace command
 		}
 	}
 
-	void execute(const std::string& cmd)
+	void execute(const std::string& cmd, bool sync)
 	{
-		std::lock_guard _0(queue_mutex);
-		command_queue.emplace_back(cmd);
+		if (sync)
+		{
+			execute_single(cmd);
+		}
+		else
+		{
+			std::lock_guard _0(queue_mutex);
+			command_queue.emplace_back(cmd);
+		}
 	}
 
 	void add(const std::string& name, const callback& cb)
@@ -210,9 +218,31 @@ namespace command
 	class component final : public component_interface
 	{
 	public:
-		void start() override
+		void pre_load() override
 		{
 			scheduler::loop(run_frame, scheduler::main);
+
+			command::add("exec", [](const command::params& params)
+			{
+				if (params.size() < 2)
+				{
+					return;
+				}
+
+				const auto file = params.get(1);
+				std::string data;
+				if (!filesystem::read_file(file, &data))
+				{
+					console::warn("cfg file \"%s\" not found\n", file.data());
+					return;
+				}
+
+				const auto lines = utils::string::split_lines(data);
+				for (const auto& line : lines)
+				{
+					command::execute(line, true);
+				}
+			});
 
 			command::add("startsound", [](const command::params& params)
 			{

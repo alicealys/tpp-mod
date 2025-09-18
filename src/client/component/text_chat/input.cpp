@@ -151,7 +151,7 @@ namespace text_chat::input
 
 		std::optional<char> get_chat_key()
 		{
-			const auto key = var_chat_key->current.get<std::string>();
+			const auto key = var_chat_key->current.get_string();
 			if (key.size() > 0)
 			{
 				return {static_cast<char>(toupper(key[0]))};

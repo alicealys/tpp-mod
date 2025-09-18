@@ -37,7 +37,7 @@ namespace patches
 				return std::atoi(worker_count.data());
 			}
 
-			return var_worker_count->latched.get<std::uint32_t>();
+			return var_worker_count->latched.get_int();
 		}
 
 		unsigned int get_processor_count_stub()
@@ -94,14 +94,14 @@ namespace patches
 			}
 			else
 			{
-				if (var_skip_intro->current.get<bool>())
+				if (var_skip_intro->current.enabled())
 				{
 					// disable intro splash screen
 					utils::hook::jump(0x145E59910, 0x145E5991B);
 				}
 			}	
 
-			if (!game::environment::is_dedi() && (utils::flags::has_flag("unlock-fps") || var_unlock_fps->latched.get<bool>()))
+			if (!game::environment::is_dedi() && (utils::flags::has_flag("unlock-fps") || var_unlock_fps->latched.enabled()))
 			{
 				unlock_fps();
 			}

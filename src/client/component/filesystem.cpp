@@ -228,6 +228,7 @@ namespace filesystem
 		{
 			filesystem::register_path(L".");
 			filesystem::register_path(L"tpp-mod");
+			filesystem::register_path(utils::properties::get_appdata_path());
 		}
 	};
 }

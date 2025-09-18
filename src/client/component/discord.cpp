@@ -302,7 +302,7 @@ namespace discord
 
 		void start() override
 		{
-			if (game::environment::is_dedi() || !var_discord_enable->latched.get<bool>())
+			if (game::environment::is_dedi() || !var_discord_enable->latched.enabled())
 			{
 				return;
 			}

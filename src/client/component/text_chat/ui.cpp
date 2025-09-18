@@ -132,7 +132,7 @@ namespace text_chat::ui
 
 				const auto diff = now - message.time;
 				const auto ms = static_cast<int>(std::chrono::duration_cast<std::chrono::milliseconds>(diff).count());
-				const auto ms_left = var_chat_time->current.get<int>() - ms;
+				const auto ms_left = var_chat_time->current.get_int() - ms;
 
 				auto alpha = 1.f;
 

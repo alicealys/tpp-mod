@@ -320,7 +320,7 @@ namespace staff
 
 		void modify_stats_stub(const size_t ptr, const size_t index)
 		{
-			if (!var_staff_cheat->current.get<bool>())
+			if (!var_staff_cheat->current.enabled())
 			{
 				return;
 			}
