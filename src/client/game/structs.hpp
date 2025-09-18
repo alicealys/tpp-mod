@@ -1275,7 +1275,7 @@ namespace game
 		mgo_matchmaking_t_vtbl_3* __vftable;
 	};
 
-	struct mgo_matchmaking_t
+	struct mgo_matchmaking_manager_t
 	{
 		mgo_matchmaking_t_vtbl_1* __vftable;
 		mgo_matchmaking_t_2 interface1;
