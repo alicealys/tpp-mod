@@ -109,11 +109,11 @@ namespace text_chat::mutes
 
 			const auto lower = utils::string::to_lower(identifier);
 
-			const auto num_players = steam_matchmaking->__vftable->GetNumLobbyMembers(steam_matchmaking, unk->unk1->lobby_id);
+			const auto num_players = steam_matchmaking->__vftable->GetNumLobbyMembers(steam_matchmaking, unk->match->lobby_id);
 			for (auto i = 0; i < num_players; i++)
 			{
 				game::steam_id steam_id{};
-				steam_matchmaking->__vftable->GetLobbyMemberByIndex(steam_matchmaking, &steam_id, unk->unk1->lobby_id, i);
+				steam_matchmaking->__vftable->GetLobbyMemberByIndex(steam_matchmaking, &steam_id, unk->match->lobby_id, i);
 				const std::string name = steam_friends->__vftable->GetFriendPersonaName(steam_friends, steam_id);
 				const auto target_name_lower = utils::string::to_lower(name);
 

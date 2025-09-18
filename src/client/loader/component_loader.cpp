@@ -74,6 +74,22 @@ void component_loader::start()
 	}
 }
 
+void component_loader::post_start()
+{
+	static auto handled = false;
+	if (handled)
+	{
+		return;
+	}
+
+	handled = true;
+
+	for (const auto& component_ : get_components())
+	{
+		component_->post_start();
+	}
+}
+
 void component_loader::end()
 {
 	static auto handled = false;

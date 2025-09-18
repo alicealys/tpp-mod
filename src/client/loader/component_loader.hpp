@@ -44,6 +44,7 @@ public:
 	static bool post_load();
 
 	static void start();
+	static void post_start();
 	static void end();
 
 	static void clean();

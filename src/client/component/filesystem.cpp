@@ -224,7 +224,7 @@ namespace filesystem
 	class component final : public component_interface
 	{
 	public:
-		void post_load() override
+		void pre_load() override
 		{
 			filesystem::register_path(L".");
 			filesystem::register_path(L"tpp-mod");

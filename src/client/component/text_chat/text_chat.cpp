@@ -43,7 +43,7 @@ namespace text_chat
 
 		const auto unk = *game::s_unk1;
 		const auto session = *game::s_pSession;
-		if (unk == nullptr || session == nullptr || unk->unk1->lobby_id.bits == 0 || session->sessionInterface.__vftable->IsConnecting(&session->sessionInterface))
+		if (unk == nullptr || session == nullptr || unk->match->lobby_id.bits == 0 || session->sessionInterface.__vftable->IsConnecting(&session->sessionInterface))
 		{
 			return false;
 		}
