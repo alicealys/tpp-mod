@@ -366,8 +366,6 @@ namespace console
 	public:
 		void pre_load() override
 		{
-			ShowWindow(GetConsoleWindow(), SW_HIDE);
-
 			printf_hook.create(printf, printf_stub);
 
 			create_console();

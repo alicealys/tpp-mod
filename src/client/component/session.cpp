@@ -293,8 +293,8 @@ namespace session
 			return;
 		}
 
-		unk->unk1->is_joining_invite = 1;
-		unk->unk1->invite_lobby_id = lobby_id;
+		unk->match->is_joining_invite = 1;
+		unk->match->invite_lobby_id = lobby_id;
 
 		const auto steam_matchmaking = (*game::SteamMatchmaking)();
 		steam_matchmaking->__vftable->RequestLobbyData(steam_matchmaking, lobby_id);

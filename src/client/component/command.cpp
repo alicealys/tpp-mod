@@ -46,7 +46,7 @@ namespace command
 				if ((*command_line == '+' && !inq) || *command_line == '\n' || *command_line == '\r')
 				{
 					const auto cmd = command_line + 1;
-					command::execute(cmd);
+					command::execute(cmd, true);
 					*command_line = '\0';
 				}
 
@@ -70,6 +70,86 @@ namespace command
 			}
 
 			return res;
+		}
+
+		void execute_single(const std::string& cmd)
+		{
+			const auto args = tokenize_string(cmd);
+			if (args.size() == 0)
+			{
+				return;
+			}
+
+			const auto name = utils::string::to_lower(args[0]);
+			const auto command = commands.find(name);
+			if (command == commands.end())
+			{
+				if (!vars::var_command(args))
+				{
+					console::warn("Command \"%s\" not found\n", name.data());
+				}
+
+				return;
+			}
+
+			try
+			{
+				command->second(args);
+			}
+			catch (const std::exception& e)
+			{
+				console::error("Error executing command: %s\n", e.what());
+			}
+		}
+
+		void execute_commands(const std::string& line)
+		{
+			const auto cmds = utils::string::split(line, ';');
+			for (const auto& cmd : cmds)
+			{
+				execute_single(cmd);
+			}
+		}
+
+		void exec_file(const std::string& data)
+		{
+			auto is_in_comment = false;
+			const auto lines = utils::string::split_lines(data);
+
+			for (const auto& line : lines)
+			{
+				std::string cmd_buffer;
+
+				for (auto i = 0ull; i < line.size(); i++)
+				{
+					const auto cur = line[i];
+					const auto next = i < line.size() - 1 ? line[i + 1] : 0;
+
+					if (!is_in_comment && cur == '/' && next == '*')
+					{
+						is_in_comment = true;
+						i++;
+					}
+					else if (is_in_comment && cur == '*' && next == '/')
+					{
+						is_in_comment = false;
+						i++;
+					}
+					else if (!is_in_comment && cur == '/' && next == '/')
+					{
+						break;
+					}
+					else if (!is_in_comment)
+					{
+						cmd_buffer += cur;
+					}
+				}
+
+				if (!cmd_buffer.empty())
+				{
+					execute(cmd_buffer, true);
+				}
+			}
 		}
 	}
 
@@ -125,40 +205,8 @@ namespace command
 		return buffer;
 	}
 
-	void execute_single(const std::string& cmd)
-	{
-		const auto args = tokenize_string(cmd);
-		if (args.size() == 0)
-		{
-			return;
-		}
-
-		const auto name = utils::string::to_lower(args[0]);
-		const auto command = commands.find(name);
-		if (command == commands.end())
-		{
-			if (!vars::var_command(args))
-			{
-				console::warn("Command \"%s\" not found\n", name.data());
-			}
-
-			return;
-		}
-
-		try
-		{
-			command->second(args);
-		}
-		catch (const std::exception& e)
-		{
-			console::error("Error executing command: %s\n", e.what());
-		}
-	}
-
 	void run_frame()
 	{
-		parse_command_line();
-
 		std::vector<std::string> queue_copy;
 
 		{
@@ -169,7 +217,7 @@ namespace command
 
 		for (const auto& cmd : queue_copy)
 		{
-			execute_single(cmd);
+			execute_commands(cmd);
 		}
 	}
 
@@ -177,7 +225,7 @@ namespace command
 	{
 		if (sync)
 		{
-			execute_single(cmd);
+			execute_commands(cmd);
 		}
 		else
 		{
@@ -220,8 +268,6 @@ namespace command
 	public:
 		void pre_load() override
 		{
-			scheduler::loop(run_frame, scheduler::main);
-
 			command::add("exec", [](const command::params& params)
 			{
 				if (params.size() < 2)
@@ -237,12 +283,18 @@ namespace command
 					return;
 				}
 
-				const auto lines = utils::string::split_lines(data);
-				for (const auto& line : lines)
-				{
-					command::execute(line, true);
-				}
+				exec_file(data);
 			});
+		}
+
+		void post_load() override
+		{
+			parse_command_line();
+		}
+
+		void start() override
+		{
+			scheduler::loop(run_frame, scheduler::main);
 
 			command::add("startsound", [](const command::params& params)
 			{

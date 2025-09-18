@@ -14,55 +14,268 @@ namespace dedicated_server
 {
 	namespace
 	{
-		void start_match(int location, int mode, int dn)
-		{
-			if (*reinterpret_cast<unsigned int*>(0x142055770) == 0)
-			{
-				*reinterpret_cast<unsigned int*>(0x142055770) |= 1u;
-				utils::hook::invoke<void>(0x1408906F0, 0x142054190);
-				utils::hook::invoke<void>(0x141462070, 0x1416E5B90);
-			}
+		game::match_settings_t match_settings{};
 
-			utils::hook::invoke<void>(0x1408980D0, 0x142054190, 0, location, mode, dn);
+		struct match_field_t
+		{
+			int size;
+			int offset;
+		};
+
+#define DEFINE_MATCH_FIELD(__struct__, __name__) \
+		{#__name__, match_field_t(sizeof(__struct__::__name__), offsetof(__struct__, __name__))}
+
+		std::unordered_map<std::string, match_field_t> match_settings_fields =
+		{
+			DEFINE_MATCH_FIELD(game::match_settings_t, match_type),
+			DEFINE_MATCH_FIELD(game::match_settings_t, match_rule),
+			DEFINE_MATCH_FIELD(game::match_settings_t, match_variant),
+			DEFINE_MATCH_FIELD(game::match_settings_t, map_id),
+			DEFINE_MATCH_FIELD(game::match_settings_t, day_night),
+			DEFINE_MATCH_FIELD(game::match_settings_t, skill_level),
+			DEFINE_MATCH_FIELD(game::match_settings_t, cheat_rate),
+			DEFINE_MATCH_FIELD(game::match_settings_t, member_max),
+			DEFINE_MATCH_FIELD(game::match_settings_t, unique_char),
+			DEFINE_MATCH_FIELD(game::match_settings_t, walker_gear),
+			DEFINE_MATCH_FIELD(game::match_settings_t, rank),
+			DEFINE_MATCH_FIELD(game::match_settings_t, has_password),
+		};
+
+		std::unordered_map<std::string, match_field_t> match_rules_fields =
+		{
+			DEFINE_MATCH_FIELD(game::match_rules_t, pl_match_num),
+			DEFINE_MATCH_FIELD(game::match_rules_t, pl_current_match),
+			DEFINE_MATCH_FIELD(game::match_rules_t, pl_match_type),
+			DEFINE_MATCH_FIELD(game::match_rules_t, pl_member_min),
+			DEFINE_MATCH_FIELD(game::match_rules_t, pl_is_dedicated_host),
+			DEFINE_MATCH_FIELD(game::match_rules_t, pl_auto_leave),
+			DEFINE_MATCH_FIELD(game::match_rules_t, pl_dlc),
+			DEFINE_MATCH_FIELD(game::match_rules_t, pl_briefing_time),
+			DEFINE_MATCH_FIELD(game::match_rules_t, pl_total_match),
+		};
+
+		std::unordered_map<std::string, match_field_t> match_slot_fields =
+		{
+			DEFINE_MATCH_FIELD(game::match_slot_t, m_match_rule),
+			DEFINE_MATCH_FIELD(game::match_slot_t, m_map_id),
+			DEFINE_MATCH_FIELD(game::match_slot_t, m_variant),
+			DEFINE_MATCH_FIELD(game::match_slot_t, m_dn),
+			DEFINE_MATCH_FIELD(game::match_slot_t, m_time_limit),
+			DEFINE_MATCH_FIELD(game::match_slot_t, m_tickets),
+			DEFINE_MATCH_FIELD(game::match_slot_t, m_unique_char),
+			DEFINE_MATCH_FIELD(game::match_slot_t, m_unique_char_solid),
+			DEFINE_MATCH_FIELD(game::match_slot_t, m_unique_char_liquid),
+			DEFINE_MATCH_FIELD(game::match_slot_t, m_walker_gear),
+			DEFINE_MATCH_FIELD(game::match_slot_t, m_weather_change),
+		};
+
+		void create_lobby(game::mgo_match_t* match, game::match_settings_t* settings)
+		{
+			std::memcpy(&match->match_settings, settings, sizeof(game::match_settings_t));
+			utils::hook::invoke<void>(0x1405A1970, match, &match->match_settings);
 		}
 
-		void** thing()
+		void set_field(const void* struct_, const match_field_t field, const int value)
 		{
-			static void* ptr = nullptr;
-			return &ptr;
+			const auto ptr = reinterpret_cast<size_t>(struct_) + field.offset;
+			switch (field.size)
+			{
+			case 1:
+				*reinterpret_cast<char*>(ptr) = static_cast<char>(value);
+				break;
+			case 2:
+				*reinterpret_cast<char*>(ptr) = static_cast<char>(value);
+				break;
+			case 4:
+				*reinterpret_cast<char*>(ptr) = static_cast<char>(value);
+				break;
+			}
+		}
+
+		int read_field(const void* struct_, const match_field_t field)
+		{
+			const auto ptr = reinterpret_cast<size_t>(struct_) + field.offset;
+			switch (field.size)
+			{
+			case 1:
+				return static_cast<int>(*reinterpret_cast<char*>(ptr));
+			case 2:
+				return static_cast<int>(*reinterpret_cast<char*>(ptr));
+			case 4:
+				return static_cast<int>(*reinterpret_cast<char*>(ptr));
+			}
+
+			return 0;
+		}
+
+		void set_slot_field(int slot_number, const std::string& field, const int value)
+		{
+			const auto iter = match_slot_fields.find(field);
+			if (slot_number >= 5 || iter == match_slot_fields.end())
+			{
+				return;
+			}
+
+			set_field(&match_settings.rules.slots[slot_number], iter->second, value);
+		}
+
+		void set_match_setting(const std::string& field, const int value)
+		{
+			const auto iter = match_settings_fields.find(field);
+			if (iter == match_settings_fields.end())
+			{
+				return;
+			}
+
+			set_field(&match_settings, iter->second, value);
+		}
+
+		void set_match_rule(const std::string& field, const int value)
+		{
+			const auto iter = match_rules_fields.find(field);
+			if (iter == match_rules_fields.end())
+			{
+				return;
+			}
+
+			set_field(&match_settings.rules, iter->second, value);
+		}
+
+		void update_match_settings()
+		{
+			if (game::s_mgoMatchMaking->match_container == nullptr)
+			{
+				return;
+			}
+
+			std::memcpy(&game::s_mgoMatchMaking->match_container->match->match_settings, &match_settings, sizeof(game::match_settings_t));
+		}
+
+		std::atomic_bool request_match_start = false;
+
+		void run_frame()
+		{
+			static auto prev_state = 0;
+
+			if (game::s_mgoMatchMaking->match_container == nullptr || game::s_mgoMatchMaking->state == 0)
+			{
+				return;
+			}
+
+			if (prev_state != game::s_mgoMatchMaking->state)
+			{
+				console::info("[matchmaking] State updated: %i\n", game::s_mgoMatchMaking->state);
+			}
+
+			prev_state = game::s_mgoMatchMaking->state;
+
+			if (request_match_start)
+			{
+				if (game::s_mgoMatchMaking->state == 2)
+				{
+					console::info("[matchmaking] Starting match...\n");
+
+					request_match_start = false;
+					create_lobby(game::s_mgoMatchMaking->match_container->match, &match_settings);
+					game::s_mgoMatchMaking->state = 11;
+				}
+			}
 		}
 	}
 
 	class component final : public component_interface
 	{
 	public:
-		void start() override
+		void pre_load() override
 		{
 			if (!game::environment::is_mgo())
 			{
 				return;
 			}
 
-			command::add("start_match", [](const command::params& params)
+			scheduler::loop(run_frame, scheduler::main);
+
+			command::add("matchstart", [](const command::params& params)
 			{
-				if (params.size() < 4)
+				request_match_start = true;
+				console::info("[matchmaking] Match start requested\n");
+			});
+
+			command::add("matchset", [](const command::params& params)
+			{
+				if (params.size() < 3)
 				{
-					printf("usage: start_match <location> <mode> <day_night>\n");
+					printf("usage: matchset <name> <value>\n");
 					return;
 				}
 
-				start_match(params.get_int(1), params.get_int(2), params.get_int(3));
+				set_match_setting(params.get(1), params.get_int(2));
 			});
 
+			command::add("matchsetrule", [](const command::params& params)
+			{
+				if (params.size() < 3)
+				{
+					printf("usage: matchsetrule <name> <value>\n");
+					return;
+				}
+
+				set_match_rule(params.get(1), params.get_int(2));
+			});
+
+			command::add("matchsetslot", [](const command::params& params)
+			{
+				if (params.size() < 3)
+				{
+					printf("usage: matchsetslot <index> <name> <value>\n");
+					return;
+				}
+
+				set_slot_field(params.get_int(1), params.get(2), params.get_int(3));
+			});
+
+			command::add("matchprint", []()
+			{
+				if (game::s_mgoMatchMaking->match_container == nullptr)
+				{
+					return;
+				}
+
+				const auto match = game::s_mgoMatchMaking->match_container->match;
+
+				for (const auto& entry : match_settings_fields)
+				{
+					console::info("matchset %s %i\n", entry.first.data(), read_field(&match->match_settings, entry.second));
+				}
+
+				console::info("\n");
+
+				for (const auto& entry : match_rules_fields)
+				{
+					console::info("matchsetrule %s %i\n", entry.first.data(), read_field(&match->match_rules, entry.second));
+				}
+
+				console::info("\n");
+
+				for (auto i = 0; i < 5; i++)
+				{
+					for (const auto& entry : match_slot_fields)
+					{
+						const auto slot = &game::s_mgoMatchMaking->match_container->match->match_rules.slots[i];
+						console::info("matchsetslot %i %s %i\n", i, entry.first.data(), read_field(slot, entry.second));
+					}
+
+					console::info("\n");
+				}
+			});
+		}
+
+		void start() override
+		{
 			if (!game::environment::is_dedi())
 			{
 				return;
 			}
-
-			utils::hook::set<std::uint8_t>(0x148CDB16F + 6, 0); // briefing time
-			utils::hook::set<std::uint16_t>(0x148CDB114 + 7, 1); // dedicated host
-			utils::hook::set<std::uint32_t>(0x148CDB127 + 1, 0); // min players
-			utils::hook::set<std::uint32_t>(0x148CDB054 + 6, 2); // lobby type
 
 			utils::hook::set<std::uint8_t>(0x140A9F880, 0xC3); // dont build scene
 			utils::hook::set<std::uint8_t>(0x14930E490, 0xC3); // dont render scene

@@ -1158,47 +1158,151 @@ namespace game
 	}
 
 #pragma pack(push, 1)
-	struct unk1_unk1
+	struct match_slot_t
+	{
+		char m_match_rule;
+		char m_map_id;
+		char m_variant;
+		char m_dn;
+		char m_time_limit;
+		char m_tickets;
+		char m_unique_char;
+		char m_unique_char_solid;
+		char m_unique_char_liquid;
+		char m_walker_gear;
+		char m_weather_change;
+		char unk;
+	};
+#pragma pack(pop)
+
+#pragma pack(push, 1)
+	struct match_rules_t
+	{
+		match_slot_t slots[5];
+		char pl_match_num;
+		char pl_current_match;
+		char pl_match_type;
+		char pl_member_min;
+		char pl_is_dedicated_host;
+		char pl_auto_leave;
+		char pl_dlc;
+		char unk1;
+		short pl_briefing_time;
+		short unk2;
+		int pl_total_match;
+		char __pad4[8];
+	};
+
+#pragma pack(pop)
+
+#pragma pack(push, 1)
+	struct match_settings_t
+	{
+		int match_type;
+		int unk1;
+		int match_rule;
+		int match_variant;
+		int map_id;
+		int day_night;
+		int skill_level;
+		int cheat_rate;
+		int member_max;
+		char unique_char;
+		char unk5_2;
+		char unk5_3;
+		char walker_gear;
+		char rank;
+		char __pad0[3];
+		int host_comment;
+		char __pad1[28];
+		match_rules_t rules;
+		char __pad4[12];
+		int has_password;
+		char __pad5[8];
+	};
+#pragma pack(pop)
+
+#pragma pack(push, 1)
+	struct mgo_match_t
 	{
 		char __pad0[13];
 		char is_joining_invite;
 		game::steam_id invite_lobby_id;
-		char __pad1[410];
+		char __pad1[2];
+		match_settings_t match_settings;
+		char __pad2[48];
+		short lobby_member_limit;
+		char __pad3[90];
+		game::steam_id lobby_owner;
+		char __pad4[76];
 		game::steam_id lobby_id;
-		char __pad2[2704];
+		char __pad5[1008];
+		match_rules_t match_rules;
+		game::steam_id lobby_id2;
+		char __pad6[1604];
 	};
 #pragma pack(pop)
 
-	static_assert(offsetof(unk1_unk1, is_joining_invite) == 13);
-	static_assert(offsetof(unk1_unk1, invite_lobby_id) == 14);
-	static_assert(offsetof(unk1_unk1, lobby_id) == 432);
-	static_assert(sizeof(unk1_unk1) == 3144);
-
-	struct unk1
+	struct mgo_match_container_t
 	{
 		char __pad0[8];
-		unk1_unk1* unk1;
+		mgo_match_t* match;
 		void* unk2;
 	};
 
-	static_assert(sizeof(unk1) == 24);
-
-	struct match_settings_t
+	struct mgo_matchmaking_t_vtbl_1
 	{
-		int member_max; // 32
-		char match_num; // 36
-		char current_match; // 37
-		char match_type; // 38
-		char member_min; // 39
-		short is_dedicated_host; // 40
-		short briefing_time; // 44
+
 	};
 
-	struct mgo_match_t
+	struct mgo_matchmaking_t_vtbl_2
 	{
-		char __pad0[40];
-		void* a1;
+
+	};
+
+	struct mgo_matchmaking_t_vtbl_3
+	{
+
+	};
+
+	struct mgo_matchmaking_t_2
+	{
+		mgo_matchmaking_t_vtbl_2* __vftable;
+	};
+
+	struct mgo_matchmaking_t_3
+	{
+		mgo_matchmaking_t_vtbl_3* __vftable;
+	};
+
+	struct mgo_matchmaking_t
+	{
+		mgo_matchmaking_t_vtbl_1* __vftable;
+		mgo_matchmaking_t_2 interface1;
+		mgo_matchmaking_t_3 interface2;
+		char __pad0[16];
+		mgo_match_container_t* match_container;
 		char __pad1[4480];
 		match_settings_t match_settings;
+		char __pad2[788]; 
+		int state;
+		char __pad3[26];
+		char unk1;
+		char __pad4[8];
+		char unk2;
+		char __pad5[100]; // idk
 	};
+
+	static_assert(sizeof(match_rules_t) == 84);
+
+	static_assert(sizeof(mgo_match_container_t) == 24);
+
+	static_assert(offsetof(mgo_match_t, is_joining_invite) == 13);
+	static_assert(offsetof(mgo_match_t, invite_lobby_id) == 14);
+	static_assert(offsetof(mgo_match_t, lobby_id) == 432);
+	static_assert(sizeof(mgo_match_t) == 3144);
+
+	static_assert(sizeof(match_settings_t) == 184);
+
+	static_assert(offsetof(match_settings_t, member_max) == 32);
 }

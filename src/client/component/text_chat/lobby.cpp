@@ -72,7 +72,7 @@ namespace text_chat::lobby
 		buffer.append(text);
 
 		const auto steam_matchmaking = (*game::SteamMatchmaking)();
-		steam_matchmaking->__vftable->SendLobbyChatMsg(steam_matchmaking, unk->unk1->lobby_id, buffer.data(), static_cast<int>(buffer.size()));
+		steam_matchmaking->__vftable->SendLobbyChatMsg(steam_matchmaking, unk->match->lobby_id, buffer.data(), static_cast<int>(buffer.size()));
 	}
 
 	class component final : public component_interface

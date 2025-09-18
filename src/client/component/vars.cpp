@@ -510,13 +510,16 @@ namespace vars
 			{
 				command::execute("exec config.cfg", true);
 			}
-
-			post_initialization = true;
 		}
 
 		void start() override
 		{
 
+		}
+
+		void post_start() override
+		{
+			post_initialization = true;
 		}
 	};
 }

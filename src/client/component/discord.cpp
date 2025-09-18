@@ -133,7 +133,7 @@ namespace discord
 			const auto unk = *game::s_unk1;
 			const auto session = *game::s_pSession;
 
-			if (session == nullptr || unk == nullptr || unk->unk1->lobby_id.bits == 0)
+			if (session == nullptr || unk == nullptr || unk->match->lobby_id.bits == 0)
 			{
 				discord_presence.state = "Main Menu";
 
@@ -151,17 +151,17 @@ namespace discord
 				discord_presence.state = "In a Match";
 
 				const auto steam_matchmaking = (*game::SteamMatchmaking)();
-				const auto max_members = steam_matchmaking->__vftable->GetLobbyMemberLimit(steam_matchmaking, unk->unk1->lobby_id);
+				const auto max_members = steam_matchmaking->__vftable->GetLobbyMemberLimit(steam_matchmaking, unk->match->lobby_id);
 
-				const auto map_id = std::atoi(steam_matchmaking->__vftable->GetLobbyData(steam_matchmaking, unk->unk1->lobby_id, "map_id"));
-				const auto day_night = std::atoi(steam_matchmaking->__vftable->GetLobbyData(steam_matchmaking, unk->unk1->lobby_id, "day_night"));
-				const auto match_rule = std::atoi(steam_matchmaking->__vftable->GetLobbyData(steam_matchmaking, unk->unk1->lobby_id, "match_rule"));
+				const auto map_id = std::atoi(steam_matchmaking->__vftable->GetLobbyData(steam_matchmaking, unk->match->lobby_id, "map_id"));
+				const auto day_night = std::atoi(steam_matchmaking->__vftable->GetLobbyData(steam_matchmaking, unk->match->lobby_id, "day_night"));
+				const auto match_rule = std::atoi(steam_matchmaking->__vftable->GetLobbyData(steam_matchmaking, unk->match->lobby_id, "match_rule"));
 
 				discord_strings.details = std::format("{} - {}", get_gamemode_name(match_rule), get_map_name(map_id));
 				discord_strings.large_image_key = utils::string::va("map_%i_%i", map_id, day_night);
 				discord_strings.large_image_text = get_map_name(map_id);
 
-				discord_strings.join_secret = utils::string::va("%lli", unk->unk1->lobby_id.bits);
+				discord_strings.join_secret = utils::string::va("%lli", unk->match->lobby_id.bits);
 				discord_strings.party_id = utils::cryptography::sha1::compute(discord_strings.join_secret, true).substr(0, 8);
 
 				discord_presence.partyMax = max_members;
