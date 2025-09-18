@@ -143,43 +143,58 @@ namespace dedicated_server
 
 		void update_match_settings()
 		{
-			if (game::s_mgoMatchMaking->match_container == nullptr)
+			if (game::s_MgoMatchmakingManager->match_container == nullptr)
 			{
 				return;
 			}
 
-			std::memcpy(&game::s_mgoMatchMaking->match_container->match->match_settings, &match_settings, sizeof(game::match_settings_t));
+			std::memcpy(&game::s_MgoMatchmakingManager->match_container->match->match_settings, &match_settings, sizeof(game::match_settings_t));
 		}
 
 		std::atomic_bool request_match_start = false;
+		std::atomic_bool request_match_rotate = false;
+		std::atomic_bool request_disconnect = false;
 
 		void run_frame()
 		{
 			static auto prev_state = 0;
 
-			if (game::s_mgoMatchMaking->match_container == nullptr || game::s_mgoMatchMaking->state == 0)
+			if (game::s_MgoMatchmakingManager->match_container == nullptr || game::s_MgoMatchmakingManager->state == 0)
 			{
 				return;
 			}
 
-			if (prev_state != game::s_mgoMatchMaking->state)
+			if (prev_state != game::s_MgoMatchmakingManager->state)
 			{
-				console::info("[matchmaking] State updated: %i\n", game::s_mgoMatchMaking->state);
+				console::info("[matchmaking] State updated: %i\n", game::s_MgoMatchmakingManager->state);
 			}
 
-			prev_state = game::s_mgoMatchMaking->state;
+			prev_state = game::s_MgoMatchmakingManager->state;
 
-			if (request_match_start)
+			if (request_match_start && game::s_MgoMatchmakingManager->state == 2)
 			{
-				if (game::s_mgoMatchMaking->state == 2)
-				{
-					console::info("[matchmaking] Starting match...\n");
+				console::info("[matchmaking] Starting match...\n");
 
-					request_match_start = false;
-					create_lobby(game::s_mgoMatchMaking->match_container->match, &match_settings);
-					game::s_mgoMatchMaking->state = 11;
-				}
+				request_match_start = false;
+				create_lobby(game::s_MgoMatchmakingManager->match_container->match, &match_settings);
+				game::s_MgoMatchmakingManager->state = 11;
 			}
+
+			if (request_match_rotate && game::s_MgoMatchmakingManager->state == 20)
+			{
+				console::info("[matchmaking] Rotating match...\n");
+
+				utils::hook::invoke<void>(0x148D00CE0);
+				game::s_MgoMatchmakingManager->state = 21;
+			}
+
+			if (request_disconnect)
+			{
+				utils::hook::invoke<void>(0x140891C80, game::s_MgoMatchmakingManager.get(), 1);
+			}
+
+			request_match_rotate = false;
+			request_disconnect = false;
 		}
 	}
 
@@ -195,10 +210,19 @@ namespace dedicated_server
 
 			scheduler::loop(run_frame, scheduler::main);
 
+			command::add("disconnect", [](const command::params& params)
+			{
+				request_disconnect = true;
+			});
+
 			command::add("matchstart", [](const command::params& params)
 			{
 				request_match_start = true;
-				console::info("[matchmaking] Match start requested\n");
+			});
+
+			command::add("matchrotate", [](const command::params& params)
+			{
+				request_match_rotate = true;
 			});
 
 			command::add("matchset", [](const command::params& params)
@@ -236,12 +260,12 @@ namespace dedicated_server
 
 			command::add("matchprint", []()
 			{
-				if (game::s_mgoMatchMaking->match_container == nullptr)
+				if (game::s_MgoMatchmakingManager->match_container == nullptr)
 				{
 					return;
 				}
 
-				const auto match = game::s_mgoMatchMaking->match_container->match;
+				const auto match = game::s_MgoMatchmakingManager->match_container->match;
 
 				for (const auto& entry : match_settings_fields)
 				{
@@ -261,7 +285,7 @@ namespace dedicated_server
 				{
 					for (const auto& entry : match_slot_fields)
 					{
-						const auto slot = &game::s_mgoMatchMaking->match_container->match->match_rules.slots[i];
+						const auto slot = &game::s_MgoMatchmakingManager->match_container->match->match_rules.slots[i];
 						console::info("matchsetslot %i %s %i\n", i, entry.first.data(), read_field(slot, entry.second));
 					}
 
