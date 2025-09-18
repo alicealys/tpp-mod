@@ -1,5 +1,8 @@
 # tpp-mod
 
+discord server
+https://discord.gg/hYfW9MEEGF
+
 ## Download
 
 [dinput8.dll](https://github.alicent.cat/tpp-mod/dinput8.dll)  
@@ -25,5 +28,10 @@ place it in the game folder
   - `kick <client index>`: kicks a player from your session (mgo)  
   - `clearkicks`: clears the kicked player list (mgo)
   - `var_list`: returns list of registered variables
+
+- Metal Gear Online:
+  - text chat
+  - lobby host commands/tools
+  - dedicated server support (unfinished)
 
 working directory is `[mgsv game folder]/tpp-mod`
