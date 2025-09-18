@@ -54,6 +54,7 @@ namespace discord
 			bounty_hunter_2 = 4172308629,
 			sabotage = 2171042730,
 			cloak_and_dagger = 1510345948,
+			freeplay = 1965975201,
 
 			jade_forest = 800092068,
 			gray_rampart = 3449842512,
@@ -112,6 +113,7 @@ namespace discord
 				{1, comm_control},
 				{2, bounty_hunter_1},
 				{3, cloak_and_dagger},
+				{4, freeplay},
 				{8, sabotage},
 			};
 
@@ -159,9 +161,8 @@ namespace discord
 				discord_strings.large_image_key = utils::string::va("map_%i_%i", map_id, day_night);
 				discord_strings.large_image_text = get_map_name(map_id);
 
-				const auto lobby_id_str = utils::string::va("%lli", unk->unk1->lobby_id);
-				discord_strings.party_id = utils::cryptography::sha1::compute(lobby_id_str, true).substr(0, 8);
-				discord_strings.join_secret = lobby_id_str;
+				discord_strings.join_secret = utils::string::va("%lli", unk->unk1->lobby_id.bits);
+				discord_strings.party_id = utils::cryptography::sha1::compute(discord_strings.join_secret, true).substr(0, 8);
 
 				discord_presence.partyMax = max_members;
 				discord_presence.partySize = session->sessionInterface.__vftable->GetMemberCount(&session->sessionInterface);

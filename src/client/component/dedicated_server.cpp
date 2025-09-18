@@ -38,7 +38,7 @@ namespace dedicated_server
 	public:
 		void start() override
 		{
-			if (!game::environment::is_dedi())
+			if (!game::environment::is_mgo())
 			{
 				return;
 			}
@@ -53,6 +53,11 @@ namespace dedicated_server
 
 				start_match(params.get_int(1), params.get_int(2), params.get_int(3));
 			});
+
+			if (!game::environment::is_dedi())
+			{
+				return;
+			}
 
 			utils::hook::set<std::uint8_t>(0x148CDB16F + 6, 0); // briefing time
 			utils::hook::set<std::uint16_t>(0x148CDB114 + 7, 1); // dedicated host
