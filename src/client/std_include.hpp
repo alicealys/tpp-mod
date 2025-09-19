@@ -104,8 +104,6 @@
 #include <backends/imgui_impl_win32.h>
 #include <misc/cpp/imgui_stdlib.h>
 
-extern "C"
-{
 #include "lapi.h"
 #include "lauxlib.h"
 #include "lcode.h"
@@ -129,7 +127,6 @@ extern "C"
 #include "lundump.h"
 #include "lvm.h"
 #include "lzio.h"
-}
 
 #pragma warning(pop)
 #pragma warning(disable: 4100)

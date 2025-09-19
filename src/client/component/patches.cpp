@@ -7,6 +7,7 @@
 
 #include <utils/hook.hpp>
 #include <utils/flags.hpp>
+#include <utils/string.hpp>
 
 namespace patches
 {
@@ -108,6 +109,9 @@ namespace patches
 
 			utils::hook::nop(SELECT_VALUE(0x142E4ED98, 0x1422339D8), 6);
 			utils::hook::call(SELECT_VALUE(0x142E4ED98, 0x1422339D8), create_mutex_stub);
+			
+			// disable _purecall error
+			utils::hook::set<std::uint8_t>(0x141461F6A, 0xC3);
 
 			if (!game::environment::is_dedi() && (utils::flags::has_flag("unlock-fps") || var_unlock_fps->latched.enabled()))
 			{
