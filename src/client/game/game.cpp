@@ -31,7 +31,8 @@ namespace game
 
 		bool is_dedi()
 		{
-			return is_mgo() && utils::flags::has_flag("dedicated");
+			static const auto res = is_mgo() && utils::flags::has_flag("dedicated");
+			return res;
 		}
 	}
 }

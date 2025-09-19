@@ -210,47 +210,6 @@ namespace vars
 			return ((var->flags & var_flag_cheat) == 0) || set_source == var_source_internal || cheats_enabled();
 		}
 
-		void set_var(const var_ptr& var, const var_value& value, const var_source_t set_source)
-		{
-			if (!check_cheats(var, set_source))
-			{
-				console::warn("\"%s\" is cheat protected", var->name.data());
-				return;
-			}
-
-			if ((var->flags & var_flag_readonly) != 0 && set_source != var_source_internal)
-			{
-				console::warn("\"%s\" is read only", var->name.data());
-				return;
-			}
-
-			if (var->type != value.get_type())
-			{
-				return;
-			}
-
-			if (!check_domain(var, value))
-			{
-				return;
-			}
-
-			var->current = value;
-			if ((var->flags & var_flag_latched) == 0 || set_source == var_source_internal || !post_initialization)
-			{
-				var->latched = value;
-			}
-
-			if (set_source != var_source_internal)
-			{
-				var->changed = true;
-			}
-
-			if ((var->flags & var_flag_saved) != 0 && set_source != var_source_internal)
-			{
-				write_config();
-			}
-		}
-
 		const char* get_var_domain(const var_ptr& var)
 		{
 			switch (var->type)
@@ -328,6 +287,47 @@ namespace vars
 		std::string var_value_to_string(const var_ptr& var, const nlohmann::json& value)
 		{
 			return var->type == var_type_string ? value.get<std::string>() : value.dump();
+		}
+	}
+
+	void set_var(const var_ptr& var, const var_value& value, const var_source_t set_source)
+	{
+		if (!check_cheats(var, set_source))
+		{
+			console::warn("\"%s\" is cheat protected", var->name.data());
+			return;
+		}
+
+		if ((var->flags & var_flag_readonly) != 0 && set_source != var_source_internal)
+		{
+			console::warn("\"%s\" is read only", var->name.data());
+			return;
+		}
+
+		if (var->type != value.get_type())
+		{
+			return;
+		}
+
+		if (!check_domain(var, value))
+		{
+			return;
+		}
+
+		var->current = value;
+		if ((var->flags & var_flag_latched) == 0 || set_source == var_source_internal || !post_initialization)
+		{
+			var->latched = value;
+		}
+
+		if (set_source != var_source_internal)
+		{
+			var->changed = true;
+		}
+
+		if ((var->flags & var_flag_saved) != 0 && set_source != var_source_internal)
+		{
+			write_config();
 		}
 	}
 

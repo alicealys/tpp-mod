@@ -91,6 +91,8 @@ namespace vars
 
 	using var_ptr = std::shared_ptr<var_t>;
 
+	void set_var(const var_ptr& var, const var_value& value, const var_source_t set_source);
+
 	var_ptr register_var(
 		const std::string& name, const var_type_t& type, const var_value& value, const var_limits_t limits, const std::uint32_t flags, const std::string& description);
 

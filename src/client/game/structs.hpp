@@ -234,12 +234,15 @@ namespace game
 	{
 		struct Vector3
 		{
-			float values[4];
+			union
+			{
+				float values[4];
+				__m128 value;
+			};
 		};
 
 		struct Vector4
 		{
-			float values[4];
 		};
 
 		struct Quat
@@ -286,6 +289,22 @@ namespace game
 			struct LineDraw;
 
 			struct SoundControl;
+
+			struct TextUnit
+			{
+				char* text;
+				unsigned int a2;
+				unsigned int flags;
+				unsigned __int16 textLength;
+				unsigned __int16 a5;
+				float textWidth;
+				float textHeight;
+				unsigned int paletteColor;
+			};
+
+			static_assert(offsetof(TextUnit, textWidth) == 20);
+			static_assert(offsetof(TextUnit, textHeight) == 24);
+			static_assert(offsetof(TextUnit, paletteColor) == 28);
 
 			struct ModelNode
 			{
@@ -337,7 +356,7 @@ namespace game
 				char __pad6[4];
 				void* f25;
 				void* f26;
-				void* f27;
+				TextUnit* textUnit;
 				int f28;
 				char __pad7[4];
 				void* f29;
@@ -392,7 +411,7 @@ namespace game
 			static_assert(offsetof(fox::ui::ModelNodeText, __pad6) == 292);
 			static_assert(offsetof(fox::ui::ModelNodeText, f25) == 296);
 			static_assert(offsetof(fox::ui::ModelNodeText, f26) == 304);
-			static_assert(offsetof(fox::ui::ModelNodeText, f27) == 312);
+			static_assert(offsetof(fox::ui::ModelNodeText, textUnit) == 312);
 			static_assert(offsetof(fox::ui::ModelNodeText, f28) == 320);
 			static_assert(offsetof(fox::ui::ModelNodeText, __pad7) == 324);
 			static_assert(offsetof(fox::ui::ModelNodeText, f29) == 328);
@@ -467,22 +486,6 @@ namespace game
 			{
 				fox::ui::Model_vtbl* __vftable;
 			};
-
-			struct TextUnit
-			{
-				char* a1;
-				unsigned int a2;
-				unsigned int flags;
-				unsigned __int16 a4;
-				unsigned __int16 a5;
-				float f1;
-				float f2;
-				unsigned int paletteColor;
-			};
-
-			static_assert(offsetof(TextUnit, f1) == 20);
-			static_assert(offsetof(TextUnit, f2) == 24);
-			static_assert(offsetof(TextUnit, paletteColor) == 28);
 
 			struct WindowInterface;
 			struct TriggerPool;
@@ -1038,6 +1041,7 @@ namespace game
 			void* (__fastcall* SetShaderBaseTexUvRepeat)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::ModelNodeMesh*, float, float);
 			void* (__fastcall* SetShaderMaskTexUvRepeat)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::ModelNodeMesh*, float, float);
 			void* (__fastcall* SetShaderScreenTexUvRepeat)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::ModelNodeMesh*, float, float);
+			void* pad2[3];
 			void* (__fastcall* SetVertexTranslate)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::ModelNodeMesh*, fox::StringId, Vectormath::Aos::Vector3*, Vectormath::Aos::Vector3*);
 			void* (__fastcall* FindWindow_)(fox::uix::impl::UixUtilityImpl* this_, fox::StringId);
 			void* (__fastcall* EnableAllInheritance)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::WindowInterface const*);

@@ -34,6 +34,12 @@ namespace text_chat::lobby
 			const auto size = steam_matchmaking->__vftable->GetLobbyChatEntry(steam_matchmaking, msg->lobby_id, msg->chat_id,
 				&user, buffer, sizeof(buffer), &chat_entry_type);
 
+			const auto match_container = game::s_MgoMatchmakingManager->match_container;
+			if (match_container == nullptr || match_container->match->lobby_id.bits != msg->lobby_id.bits)
+			{
+				return;
+			}
+
 			if (size < 5 || *reinterpret_cast<int*>(buffer) != chat_message_msg_id)
 			{
 				return;
@@ -61,8 +67,8 @@ namespace text_chat::lobby
 
 	void send_chat_message(const std::string& text)
 	{
-		const auto unk = *game::s_unk1;
-		if (unk == nullptr)
+		const auto match_container = game::s_MgoMatchmakingManager->match_container;
+		if (match_container == nullptr)
 		{
 			return;
 		}
@@ -72,7 +78,7 @@ namespace text_chat::lobby
 		buffer.append(text);
 
 		const auto steam_matchmaking = (*game::SteamMatchmaking)();
-		steam_matchmaking->__vftable->SendLobbyChatMsg(steam_matchmaking, unk->match->lobby_id, buffer.data(), static_cast<int>(buffer.size()));
+		steam_matchmaking->__vftable->SendLobbyChatMsg(steam_matchmaking, match_container->match->lobby_id, buffer.data(), static_cast<int>(buffer.size()));
 	}
 
 	class component final : public component_interface
