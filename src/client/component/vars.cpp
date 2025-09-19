@@ -506,10 +506,7 @@ namespace vars
 
 		void post_load() override
 		{
-			if (!game::environment::is_dedi())
-			{
-				command::execute("exec config.cfg", true);
-			}
+
 		}
 
 		void start() override

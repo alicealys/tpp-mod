@@ -120,12 +120,14 @@ namespace command
 			{
 				std::string cmd_buffer;
 
+				auto is_in_quotes = false;
+
 				for (auto i = 0ull; i < line.size(); i++)
 				{
 					const auto cur = line[i];
 					const auto next = i < line.size() - 1 ? line[i + 1] : 0;
 
-					if (!is_in_comment && cur == '/' && next == '*')
+					if (!is_in_quotes && !is_in_comment && cur == '/' && next == '*')
 					{
 						is_in_comment = true;
 						i++;
@@ -135,9 +137,13 @@ namespace command
 						is_in_comment = false;
 						i++;
 					}
-					else if (!is_in_comment && cur == '/' && next == '/')
+					else if (!is_in_quotes && !is_in_comment && cur == '/' && next == '/')
 					{
 						break;
+					}
+					else if (!is_in_comment && cur == '"')
+					{
+						is_in_quotes = !is_in_quotes;
 					}
 					else if (!is_in_comment)
 					{
@@ -289,6 +295,11 @@ namespace command
 
 		void post_load() override
 		{
+			if (!game::environment::is_dedi())
+			{
+				command::execute("exec config.cfg", true);
+			}
+
 			parse_command_line();
 		}
 
