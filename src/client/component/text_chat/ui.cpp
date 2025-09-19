@@ -32,6 +32,33 @@ namespace text_chat::ui
 			const auto uix_utility = game::fox::uix::impl::GetUixUtilityToFeedQuarkEnvironment();
 			uix_utility->__vftable->SetAlpha1(uix_utility, log_model.modelNode, alpha);
 			uix_utility->__vftable->SetColorRGB5(uix_utility, log_model.modelNode, 1.f, 1.f, 1.f);
+			
+			game::fox::StringId string1{};
+			game::fox::StringId string2{};
+
+			string1.id = 0x1F66761CA0B9;
+			string2.id = 0x43FD27571000;
+
+			game::Vectormath::Aos::Vector3 vector1{};
+			game::Vectormath::Aos::Vector3 vector2{};
+
+			vector1.values[0] = log_model.textUnit.textWidth * 0.1f + 0.5f;
+			vector1.values[1] = 0.f;
+			vector1.values[2] = 0.f;
+			vector1.values[3] = 0.f;
+
+			vector2.values[0] = 0.f;
+			vector2.values[1] = 1.f;
+			vector2.values[2] = 1.f;
+			vector2.values[3] = 0.f;
+
+			const auto show_bg = *text != '\0' && game::tpp::ui::menu::impl::MotherBaseDeviceSystemImpl_::IsDeviceOpend();
+			const auto bg_alpha = show_bg ? alpha * 0.85f : 0.f;
+			uix_utility->__vftable->SetAlpha1(uix_utility, reinterpret_cast<game::fox::ui::ModelNode*>(log_model.modelNodeMesh), bg_alpha);
+
+			uix_utility->__vftable->SetVertexTranslate(uix_utility, log_model.modelNodeMesh, string1, &vector1, &vector2);
+			uix_utility->__vftable->SetVertexTranslate(uix_utility, log_model.modelNodeMesh, string2, &vector1, &vector2);
+			uix_utility->__vftable->SetColorRGB5(uix_utility, reinterpret_cast<game::fox::ui::ModelNode*>(log_model.modelNodeMesh), 0.f, 0.f, 0.f);
 		}
 
 		void clear_log_text(game::tpp::ui::hud::AnnounceLogViewer* this_)
@@ -44,9 +71,11 @@ namespace text_chat::ui
 
 		void set_log_visible(game::tpp::ui::hud::AnnounceLogViewer* this_, bool visible)
 		{
+			const auto uix_utility = game::fox::uix::impl::GetUixUtilityToFeedQuarkEnvironment();
 			for (auto i = 0; i < 5; i++)
 			{
 				this_->logModels[i].model->__vftable->SetVisible(this_->logModels[i].model, visible);
+				uix_utility->__vftable->SetVisible1(uix_utility, reinterpret_cast<game::fox::ui::ModelNode*>(this_->logModels[i].modelNodeMesh), visible);
 			}
 		}
 

@@ -87,6 +87,11 @@ namespace game
 				namespace impl
 				{
 					WEAK symbol<MenuSystemImpl> g_menuSystem{0x0, 0x141F9C8F0};
+
+					namespace MotherBaseDeviceSystemImpl_
+					{
+						WEAK symbol<bool()> IsDeviceOpend{0x0, 0x148E4AB20};
+					}
 				}
 			}
 
