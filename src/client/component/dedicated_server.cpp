@@ -180,7 +180,7 @@ namespace dedicated_server
 				game::s_MgoMatchmakingManager->state = 11;
 			}
 
-			if (request_match_rotate && game::s_MgoMatchmakingManager->state == 20)
+			if (request_match_rotate && (game::s_MgoMatchmakingManager->state == 20 || game::s_MgoMatchmakingManager->state == 19))
 			{
 				console::info("[matchmaking] Rotating match...\n");
 

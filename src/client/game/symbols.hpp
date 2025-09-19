@@ -125,7 +125,7 @@ namespace game
 	WEAK symbol<fox::nt::impl::SessionIdle*> s_idleSession{0x142B9E000, 0x14209B480};
 
 	WEAK symbol<mgo_match_container_t*> s_unk1{0x0, 0x141F8A930};
-	WEAK symbol<mgo_matchmaking_manager_t> s_MgoMatchmakingManager{0x0, 0x142054190};
+	WEAK symbol<mgo_matchmaking_manager> s_MgoMatchmakingManager{0x0, 0x142054190};
 
 	WEAK symbol<ID3D11Device*> s_deviceD3D{0x142C6B860, 0x1420E4210};
 	WEAK symbol<ID3D11DeviceContext*> s_immediateContextD3D{0x142C6B868, 0x1420E4218};
