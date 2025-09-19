@@ -33,6 +33,7 @@ namespace
 		component_loader::pre_load();
 		component_loader::post_load();
 		component_loader::start();
+		component_loader::post_start();
 		return 1;
 	}
 

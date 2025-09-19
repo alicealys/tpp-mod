@@ -9,6 +9,7 @@
 #include "session.hpp"
 #include "text_chat/text_chat.hpp"
 #include "text_chat/ui.hpp"
+#include "dedicated_server.hpp"
 
 #include <utils/hook.hpp>
 #include <utils/string.hpp>
@@ -19,7 +20,6 @@ namespace session
 	{
 		utils::hook::detour create_lobby_cb_hook;
 
-		game::steam_id current_lobby_id;
 		std::unordered_set<std::uint64_t> kicked_steam_ids;
 
 		struct kick_msg_t
@@ -65,8 +65,14 @@ namespace session
 
 		void set_lobby_data(const std::string& key, const std::string& value)
 		{
+			const auto match_container = game::s_MgoMatchmakingManager->match_container;
+			if (match_container == nullptr)
+			{
+				return;
+			}
+
 			const auto steam_matchmaking = (*game::SteamMatchmaking)();
-			const auto res = steam_matchmaking->__vftable->SetLobbyData(steam_matchmaking, current_lobby_id, key.data(), value.data());
+			const auto res = steam_matchmaking->__vftable->SetLobbyData(steam_matchmaking, match_container->match->lobby_id, key.data(), value.data());
 			printf("[SteamMatchmaking] SetLobbyData(%s, %s) = %i\n", key.data(), value.data(), res);
 		}
 
@@ -77,8 +83,14 @@ namespace session
 
 		const char* get_lobby_data(const std::string& key)
 		{
+			const auto match_container = game::s_MgoMatchmakingManager->match_container;
+			if (match_container == nullptr)
+			{
+				return "";
+			}
+
 			const auto steam_matchmaking = (*game::SteamMatchmaking)();
-			return steam_matchmaking->__vftable->GetLobbyData(steam_matchmaking, current_lobby_id, key.data());
+			return steam_matchmaking->__vftable->GetLobbyData(steam_matchmaking, match_container->match->lobby_id, key.data());
 		}
 
 		void ban_player_from_lobby(const std::uint64_t steam_id)
@@ -96,13 +108,19 @@ namespace session
 
 		void kick_player_from_lobby(const std::uint64_t steam_id)
 		{
+			const auto match_container = game::s_MgoMatchmakingManager->match_container;
+			if (match_container == nullptr)
+			{
+				return;
+			}
+
 			kick_msg_t kick_msg{};
 			kick_msg.type = 1;
 			kick_msg.unk = 0xFFFFFFFF;
 			kick_msg.steam_id = steam_id;
 
 			const auto steam_matchmaking = (*game::SteamMatchmaking)();
-			steam_matchmaking->__vftable->SendLobbyChatMsg(steam_matchmaking, current_lobby_id, &kick_msg, sizeof(kick_msg));
+			steam_matchmaking->__vftable->SendLobbyChatMsg(steam_matchmaking, match_container->match->lobby_id, &kick_msg, sizeof(kick_msg));
 		}
 
 		bool is_host()
@@ -227,7 +245,6 @@ namespace session
 
 		void* create_lobby_cb_stub(void* a1, game::steam_id lobby_id)
 		{
-			current_lobby_id = lobby_id;
 			printf("[SteamMatchmaking] Created lobby %llu\n", lobby_id.bits);
 			return create_lobby_cb_hook.invoke<void*>(a1, lobby_id);
 		}
