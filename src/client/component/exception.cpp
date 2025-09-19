@@ -39,7 +39,7 @@ namespace exception
 			utils::thread::suspend_other_threads();
 			show_mouse_cursor();
 
-			MessageBoxA(nullptr, error_str.data(), "H2-Mod ERROR", MB_ICONERROR);
+			MessageBoxA(nullptr, error_str.data(), "TPP-Mod ERROR", MB_ICONERROR);
 			TerminateProcess(GetCurrentProcess(), exception_data.code);
 		}
 

@@ -65,12 +65,3 @@ extern "C" __declspec(dllexport) HRESULT DirectInput8Create(HINSTANCE inst, DWOR
 {
 	return get_dinput_library().invoke<HRESULT>("DirectInput8Create", inst, version, id, out, outer);
 }
-
-#define EXPORT_FUNC(__name__, __return__) \
-	extern "C" __declspec(dllexport)  __return__ __stdcall __name__() { get_dinput_library().invoke<__return__>(#__name__); } \
-
-//EXPORT_FUNC(DllCanUnloadNow, void);
-//EXPORT_FUNC(DllGetClassObject, void);
-//EXPORT_FUNC(DllRegisterServer, void);
-//EXPORT_FUNC(DllUnregisterServer, void);
-EXPORT_FUNC(GetdfDIJoystick, void);
