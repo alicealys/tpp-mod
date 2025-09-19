@@ -56,9 +56,9 @@ namespace game
 
 	struct /*VFT*/ ISteamNetworking_vtbl
 	{
-		bool(__fastcall* SendP2PPacket)(ISteamNetworking* this_, steam_id steamIDRemote, const void* pubData, unsigned int cubData, int eP2PSendType);
-		bool(__fastcall* IsP2PPacketAvailable)(ISteamNetworking* this_, unsigned int* pcubMsgSize, int idk);
-		bool(__fastcall* ReadP2PPacket)(ISteamNetworking* this_, void* pubDest, unsigned int cubDest, unsigned int* pcubMsgSize, steam_id* psteamIDRemote);
+		bool(__fastcall* SendP2PPacket)(ISteamNetworking* this_, steam_id steamIDRemote, const void* pubData, unsigned int cubData, int eP2PSendType, int nChannel);
+		bool(__fastcall* IsP2PPacketAvailable)(ISteamNetworking* this_, unsigned int* pcubMsgSize, int nChannel);
+		bool(__fastcall* ReadP2PPacket)(ISteamNetworking* this_, void* pubDest, unsigned int cubDest, unsigned int* pcubMsgSize, steam_id* psteamIDRemote, int nChannel);
 		bool(__fastcall* AcceptP2PSessionWithUser)(ISteamNetworking* this_, steam_id steamIDRemote);
 		bool(__fastcall* CloseP2PSessionWithUser)(ISteamNetworking* this_, steam_id steamIDRemote);
 		bool(__fastcall* CloseP2PChannelWithUser)(ISteamNetworking* this_, steam_id steamIDRemote, int iVirtualPort);
@@ -1245,46 +1245,134 @@ namespace game
 
 	struct mgo_match_container_t
 	{
-		char __pad0[8];
+		int unk1;
+		int unk2;
 		mgo_match_t* match;
-		void* unk2;
+		void* unk3;
 	};
 
-	struct mgo_matchmaking_t_vtbl_1
-	{
+	struct mgo_matchmaking_manager;
+	struct mgo_matchmaking_manager_interface1;
+	struct mgo_matchmaking_manager_interface2;
 
+	struct mgo_matchmaking_manager_vtbl
+	{
+		void* (__fastcall* get_number)(mgo_matchmaking_manager* this_); // return 37
+		void* (__fastcall* update_match)(mgo_matchmaking_manager* this_);
+		void* (__fastcall* sub_1408920B0)(mgo_matchmaking_manager* this_);
+		void* (__fastcall* sub_140890ED0)(mgo_matchmaking_manager* this_);
 	};
 
-	struct mgo_matchmaking_t_vtbl_2
+	struct mgo_matchmaking_manager_interface1_vtbl
 	{
-
+		void* (__fastcall* sub_140890DCC)(mgo_matchmaking_manager_interface1* this_);
+		void* (__fastcall* sub_140891150)(mgo_matchmaking_manager_interface1* this_);
+		void* (__fastcall* sub_14089A5B0)(mgo_matchmaking_manager_interface1* this_);
+		void* (__fastcall* sub_1408911A0)(mgo_matchmaking_manager_interface1* this_);
+		void* (__fastcall* sub_140891530)(mgo_matchmaking_manager_interface1* this_);
+		void* (__fastcall* sub_14089FF20)(mgo_matchmaking_manager_interface1* this_);
+		void* (__fastcall* sub_140896DD0)(mgo_matchmaking_manager_interface1* this_);
+		void* (__fastcall* sub_140896DF0)(mgo_matchmaking_manager_interface1* this_);
+		void* (__fastcall* sub_140896DB0)(mgo_matchmaking_manager_interface1* this_);
+		void* (__fastcall* sub_140897F60)(mgo_matchmaking_manager_interface1* this_);
+		void* (__fastcall* sub_14089FCE0)(mgo_matchmaking_manager_interface1* this_);
+		void* (__fastcall* sub_140896DE0)(mgo_matchmaking_manager_interface1* this_);
+		void* (__fastcall* sub_140891320)(mgo_matchmaking_manager_interface1* this_);
+		void* (__fastcall* sub_1408967F0)(mgo_matchmaking_manager_interface1* this_);
+		void* (__fastcall* sub_140896820)(mgo_matchmaking_manager_interface1* this_);
+		void* (__fastcall* sub_140896850)(mgo_matchmaking_manager_interface1* this_);
+		void* (__fastcall* sub_1408993F0)(mgo_matchmaking_manager_interface1* this_);
+		void* (__fastcall* sub_1408A1E70)(mgo_matchmaking_manager_interface1* this_);
+		void* (__fastcall* sub_140896880)(mgo_matchmaking_manager_interface1* this_);
+		void* (__fastcall* sub_140896AB0)(mgo_matchmaking_manager_interface1* this_);
+		void* (__fastcall* sub_1408995B0)(mgo_matchmaking_manager_interface1* this_);
+		void* (__fastcall* sub_1408A0D10)(mgo_matchmaking_manager_interface1* this_);
+		void* (__fastcall* sub_1408A1FE0)(mgo_matchmaking_manager_interface1* this_);
+		void* (__fastcall* sub_140898780)(mgo_matchmaking_manager_interface1* this_);
+		void* (__fastcall* sub_1408995A0)(mgo_matchmaking_manager_interface1* this_);
+		void* (__fastcall* sub_14089A6A0)(mgo_matchmaking_manager_interface1* this_);
+		void* (__fastcall* sub_1408914F0)(mgo_matchmaking_manager_interface1* this_);
+		void* (__fastcall* sub_140898DF0)(mgo_matchmaking_manager_interface1* this_);
+		void* (__fastcall* sub_140898860)(mgo_matchmaking_manager_interface1* this_);
+		void* (__fastcall* sub_140898A70)(mgo_matchmaking_manager_interface1* this_);
+		void* (__fastcall* sub_1408988D0)(mgo_matchmaking_manager_interface1* this_);
+		void* (__fastcall* sub_1408A0450)(mgo_matchmaking_manager_interface1* this_);
+		void* (__fastcall* sub_1408A1930)(mgo_matchmaking_manager_interface1* this_);
+		void* (__fastcall* sub_1408A10E0)(mgo_matchmaking_manager_interface1* this_);
+		void* (__fastcall* sub_1408A1100)(mgo_matchmaking_manager_interface1* this_);
+		void* (__fastcall* sub_1408990A0)(mgo_matchmaking_manager_interface1* this_);
+		void* (__fastcall* sub_1408980B0)(mgo_matchmaking_manager_interface1* this_);
+		void* (__fastcall* sub_140898BF0)(mgo_matchmaking_manager_interface1* this_);
+		void* (__fastcall* sub_140898840)(mgo_matchmaking_manager_interface1* this_);
+		void* (__fastcall* sub_1408A11E0)(mgo_matchmaking_manager_interface1* this_);
+		void* (__fastcall* sub_140899090)(mgo_matchmaking_manager_interface1* this_);
+		void* (__fastcall* sub_1408A0B20)(mgo_matchmaking_manager_interface1* this_);
+		void* (__fastcall* sub_1408A0120)(mgo_matchmaking_manager_interface1* this_);
+		void* (__fastcall* sub_1408A0DC0)(mgo_matchmaking_manager_interface1* this_);
+		void* (__fastcall* sub_140897F80)(mgo_matchmaking_manager_interface1* this_);
+		void* (__fastcall* sub_140896A50)(mgo_matchmaking_manager_interface1* this_);
+		void* (__fastcall* sub_140896D80)(mgo_matchmaking_manager_interface1* this_);
+		void* (__fastcall* sub_140896D90)(mgo_matchmaking_manager_interface1* this_);
+		void* (__fastcall* sub_14089A190)(mgo_matchmaking_manager_interface1* this_);
+		void* (__fastcall* sub_1408A05A0)(mgo_matchmaking_manager_interface1* this_);
+		void* (__fastcall* sub_1408A05C0)(mgo_matchmaking_manager_interface1* this_);
+		void* (__fastcall* sub_1408A05E0)(mgo_matchmaking_manager_interface1* this_);
+		void* (__fastcall* sub_140898330)(mgo_matchmaking_manager_interface1* this_);
+		void* (__fastcall* sub_140898340)(mgo_matchmaking_manager_interface1* this_);
+		void* (__fastcall* sub_140898C10)(mgo_matchmaking_manager_interface1* this_);
+		void* (__fastcall* sub_140891590)(mgo_matchmaking_manager_interface1* this_);
+		void* (__fastcall* sub_140896E90)(mgo_matchmaking_manager_interface1* this_);
+		void* (__fastcall* sub_14089A230)(mgo_matchmaking_manager_interface1* this_);
+		void* (__fastcall* sub_140899680)(mgo_matchmaking_manager_interface1* this_);
+		void* (__fastcall* sub_1408A0680)(mgo_matchmaking_manager_interface1* this_);
+		void* (__fastcall* sub_140898990)(mgo_matchmaking_manager_interface1* this_);
+		void* (__fastcall* sub_140898EF0)(mgo_matchmaking_manager_interface1* this_);
+		void* (__fastcall* sub_14089A290)(mgo_matchmaking_manager_interface1* this_);
+		void* (__fastcall* sub_1408994C0)(mgo_matchmaking_manager_interface1* this_);
+		void* (__fastcall* sub_140896DA0)(mgo_matchmaking_manager_interface1* this_);
+		void* (__fastcall* sub_140898C20)(mgo_matchmaking_manager_interface1* this_);
+		void* (__fastcall* sub_140896FA0)(mgo_matchmaking_manager_interface1* this_);
+		void* (__fastcall* sub_1408970E0)(mgo_matchmaking_manager_interface1* this_);
+		void* (__fastcall* sub_140898EA0)(mgo_matchmaking_manager_interface1* this_);
+		void* (__fastcall* sub_1408A0D00)(mgo_matchmaking_manager_interface1* this_);
+		void* (__fastcall* nullsub_1)(mgo_matchmaking_manager_interface1* this_);
+		void* (__fastcall* nullsub_2)(mgo_matchmaking_manager_interface1* this_);
+		void* (__fastcall* sub_140899C40)(mgo_matchmaking_manager_interface1* this_);
+		void* (__fastcall* sub_140897F20)(mgo_matchmaking_manager_interface1* this_);
+		void* (__fastcall* sub_140897F40)(mgo_matchmaking_manager_interface1* this_);
+		void* (__fastcall* sub_140898E90)(mgo_matchmaking_manager_interface1* this_);
+		void* (__fastcall* sub_14089FCB0)(mgo_matchmaking_manager_interface1* this_);
+		void* (__fastcall* sub_140896E20)(mgo_matchmaking_manager_interface1* this_);
+		void* (__fastcall* sub_140897260)(mgo_matchmaking_manager_interface1* this_);
+		void* (__fastcall* sub_1408A0150)(mgo_matchmaking_manager_interface1* this_);
 	};
 
-	struct mgo_matchmaking_t_vtbl_3
+	struct mgo_matchmaking_manager_interface2_vtbl
 	{
-
+		void* (__fastcall* sub_140899C50)(mgo_matchmaking_manager_interface2* this_);
+		void* (__fastcall* sub_140890DD8)(mgo_matchmaking_manager_interface2* this_);
 	};
 
-	struct mgo_matchmaking_t_2
+	struct mgo_matchmaking_manager_interface1
 	{
-		mgo_matchmaking_t_vtbl_2* __vftable;
+		mgo_matchmaking_manager_interface1_vtbl* __vftable;
 	};
 
-	struct mgo_matchmaking_t_3
+	struct mgo_matchmaking_manager_interface2
 	{
-		mgo_matchmaking_t_vtbl_3* __vftable;
+		mgo_matchmaking_manager_interface2_vtbl* __vftable;
 	};
 
-	struct mgo_matchmaking_manager_t
+	struct mgo_matchmaking_manager
 	{
-		mgo_matchmaking_t_vtbl_1* __vftable;
-		mgo_matchmaking_t_2 interface1;
-		mgo_matchmaking_t_3 interface2;
+		mgo_matchmaking_manager_vtbl* __vftable;
+		mgo_matchmaking_manager_interface1 interface1;
+		mgo_matchmaking_manager_interface2 interface2;
 		char __pad0[16];
 		mgo_match_container_t* match_container;
 		char __pad1[4480];
 		match_settings_t match_settings;
-		char __pad2[788]; 
+		char __pad2[788];
 		int state;
 		char __pad3[26];
 		char unk1;
@@ -1305,4 +1393,5 @@ namespace game
 	static_assert(sizeof(match_settings_t) == 184);
 
 	static_assert(offsetof(match_settings_t, member_max) == 32);
+	static_assert(offsetof(mgo_matchmaking_manager, state) == 5500);
 }
