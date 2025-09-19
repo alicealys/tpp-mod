@@ -187,6 +187,43 @@ namespace dedicated_server
 			console::info("[SteamNetworking] Using channel %i\n", net_channel);
 			vars::set_var(var_net_channel, net_channel, vars::var_source_internal);
 		}
+
+		void update_console_title()
+		{
+			std::string title = "MGO Dedicated Server";
+
+			auto player_count = -1;
+			auto player_limit = -1;
+
+			const auto get_player_count = [&]
+			{
+				const auto session = *game::s_pSession;
+				if (session == nullptr)
+				{
+					return;
+				}
+
+				player_count = 0;
+				player_limit = session->allMembers.size;
+
+				for (auto i = 0; i < player_limit; i++)
+				{
+					const auto member = session->allMembers.members[i];
+					if (member != nullptr && member->flags != 0)
+					{
+						++player_count;
+					}
+				}
+			};
+
+			get_player_count();
+			if (player_count != -1)
+			{
+				title = utils::string::va("%s (%i / %i)", title.data(), player_count, player_limit);
+			}
+
+			SetConsoleTitle(title.data());
+		}
 	}
 
 	class component final : public component_interface
@@ -215,6 +252,7 @@ namespace dedicated_server
 			}
 
 			SetConsoleTitle("MGO Dedicated Server");
+			scheduler::loop(update_console_title, scheduler::net, 1s);
 
 			utils::hook::set<std::uint8_t>(0x140A9F880, 0xC3); // dont build scene
 			utils::hook::set<std::uint8_t>(0x149865F0B, 0xEB); // ^
