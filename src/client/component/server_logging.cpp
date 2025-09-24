@@ -32,15 +32,15 @@ namespace server_logging
 			return name;
 		}
 
-		std::string get_fox_buffer(void* buffer)
+		std::string get_fox_buffer(game::fox::Buffer* buffer)
 		{
-			const auto buf = game::fox::Buffer::GetBuffer(buffer);
-			const auto buf_size = game::fox::Buffer::GetSize(buffer);
+			const auto buf = game::fox::Buffer_::GetBuffer(buffer);
+			const auto buf_size = game::fox::Buffer_::GetSize(buffer);
 			const auto data = std::string{buf, buf + buf_size};
 			return data;
 		}
 
-		void* http_codec_end_decode_stub(void* this_, void* ctx, void* buffer)
+		void* http_codec_end_decode_stub(void* this_, void* ctx, game::fox::Buffer* buffer)
 		{
 			const auto res = http_codec_end_decode_hook.invoke<void*>(this_, ctx, buffer);
 
@@ -59,7 +59,7 @@ namespace server_logging
 			return res;
 		}
 
-		void* http_codec_begin_encode_stub(void* this_, void* ctx, void* buffer, void* session_key)
+		void* http_codec_begin_encode_stub(void* this_, void* ctx, game::fox::Buffer* buffer, void* session_key)
 		{
 			if (var_server_logging->current.enabled())
 			{

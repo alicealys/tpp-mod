@@ -257,6 +257,55 @@ namespace game
 		struct Color;
 		struct Path;
 
+		struct Buffer
+		{
+			char* data;
+			void* a2;
+			size_t offset;
+			size_t size;
+			size_t capacity;
+			int flags;
+		};
+
+		static_assert(offsetof(Buffer, data) == 0);
+		static_assert(offsetof(Buffer, size) == 24);
+		static_assert(offsetof(Buffer, capacity) == 32);
+		static_assert(offsetof(Buffer, flags) == 40);
+		static_assert(sizeof(Buffer) == 0x30);
+
+		namespace impl
+		{
+			struct TimeSystemImpl;
+
+			struct TimeSystemImpl_vtbl
+			{
+				unsigned __int64(__fastcall* GetCurrentTickTime)(TimeSystemImpl* this_);
+				double(__fastcall* GetSecondWithTickTime)(TimeSystemImpl* this_, __int64);
+				double(__fastcall* GetSecond)(TimeSystemImpl* this_);
+				unsigned __int64(__fastcall* GetTickTimeFrequency)(TimeSystemImpl* this_);
+				void(__fastcall* __destructor)(TimeSystemImpl* this_);
+			};
+
+			struct TimeSystemImpl
+			{
+				TimeSystemImpl_vtbl* __vftable;
+				char __pad0[8];
+				double deltaGameTime;
+				char __pad1[8];
+				double gameTimeRate;
+				double frameTime;
+				double elapsedTimeSinceStartup;
+				int frameIndex;
+			};
+
+			static_assert(offsetof(TimeSystemImpl, deltaGameTime) == 16);
+			static_assert(offsetof(TimeSystemImpl, gameTimeRate) == 32);
+			static_assert(offsetof(TimeSystemImpl, frameTime) == 40);
+			static_assert(offsetof(TimeSystemImpl, elapsedTimeSinceStartup) == 48);
+			static_assert(offsetof(TimeSystemImpl, frameIndex) == 56);
+
+		}
+
 		struct StringId_fields
 		{
 			std::uint32_t l;

@@ -230,7 +230,7 @@ workspace "tpp-mod"
 	configurations {"Debug", "Release"}
 
 	language "C++"
-	cppdialect "C++20"
+	cppdialect "C++latest"
 
 	architecture "x86_64"
 	platforms "x64"

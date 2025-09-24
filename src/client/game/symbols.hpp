@@ -8,10 +8,15 @@ namespace game
 
 	namespace fox
 	{
-		namespace Buffer
+		WEAK symbol<fox::impl::TimeSystemImpl()> GetTimeSystem{0x1400F28F0, 0x1400F3940};
+
+		namespace Buffer_
 		{
-			WEAK symbol<size_t(void* buffer)> GetSize{0x140A839C0, 0x1406C4D70};
-			WEAK symbol<char* (void* buffer)> GetBuffer{0x14C240CB0, 0x14CB3BB00};
+			WEAK symbol<size_t(fox::Buffer* buffer)> GetSize{0x140A839C0, 0x1406C4D70};
+			WEAK symbol<char* (fox::Buffer* buffer)> GetBuffer{0x14C240CB0, 0x14CB3BB00};
+			WEAK symbol<void (fox::Buffer* buffer)> Clear{0x141A43FA0, 0x0};
+			WEAK symbol<size_t(fox::Buffer* buffer, const void*, size_t)> Write{0x141A44180, 0x0};
+			WEAK symbol<void (fox::Buffer* buffer, size_t)> Resize{0x141A44050, 0x0};
 		}
 
 		namespace nt
