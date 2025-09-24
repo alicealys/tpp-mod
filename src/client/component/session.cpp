@@ -40,7 +40,7 @@ namespace session
 			const auto steam_friends = (*game::SteamFriends)();
 			const auto is_host = main_session->sessionInterface.__vftable->IsHost(&main_session->sessionInterface);
 			const auto state = main_session->__vftable->GetState(main_session);
-			const auto all_members = main_session->__vftable->GetAllMembers(main_session);
+			const auto all_members = &main_session->allMembers;
 
 			printf("is host: %i\n", is_host);
 			printf("state: %i\n", state);
@@ -322,15 +322,15 @@ namespace session
 	public:
 		void start() override
 		{
-			if (!game::environment::is_mgo())
-			{
-				return;
-			}
-
 			command::add("status", []
 			{
 				scheduler::once(print_status, scheduler::session);
 			});
+
+			if (!game::environment::is_mgo())
+			{
+				return;
+			}
 
 			command::add("kick", [](const command::params& params)
 			{
