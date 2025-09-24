@@ -113,6 +113,7 @@ namespace matchmaking
 			const auto iter = match_slot_fields.find(field);
 			if (slot_number >= 5 || iter == match_slot_fields.end())
 			{
+				console::warn("field \"%s\" does not exist\n", field.data());
 				return;
 			}
 
@@ -124,6 +125,7 @@ namespace matchmaking
 			const auto iter = match_settings_fields.find(field);
 			if (iter == match_settings_fields.end())
 			{
+				console::warn("field \"%s\" does not exist\n", field.data());
 				return;
 			}
 
@@ -135,6 +137,7 @@ namespace matchmaking
 			const auto iter = match_rules_fields.find(field);
 			if (iter == match_rules_fields.end())
 			{
+				console::warn("field \"%s\" does not exist\n", field.data());
 				return;
 			}
 
