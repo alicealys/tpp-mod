@@ -16,6 +16,8 @@ namespace patches
 		vars::var_ptr var_worker_count;
 		vars::var_ptr var_unlock_fps;
 		vars::var_ptr var_skip_intro;
+		vars::var_ptr var_player_ramble_speed_scale;
+		vars::var_ptr var_player_ramble_speed_patch;
 
 		void set_timer_resolution()
 		{
@@ -76,6 +78,28 @@ namespace patches
 		{
 			return CreateMutexW(attributes, owner, NULL);
 		}
+
+		float scale_ramble_speed(float speed)
+		{
+			if (var_unlock_fps->latched.enabled() && var_player_ramble_speed_patch->current.enabled())
+			{
+				constexpr auto frame_time_60fps = 1000.0 / (60.0 * 1000.0);
+				const auto time_system = game::fox::GetTimeSystem();
+				const auto frame_time_scale = static_cast<float>(time_system.frameTime / frame_time_60fps);
+				return speed * frame_time_scale * var_player_ramble_speed_scale->current.get_float();
+			}
+			else
+			{
+				return speed;
+			}
+		}
+
+		utils::hook::detour get_ramble_speed_hook;
+		float get_ramble_speed_stub(void* a1)
+		{
+			const auto value = get_ramble_speed_hook.invoke<float>(a1);
+			return scale_ramble_speed(value);
+		}
 	}
 
 	class component final : public component_interface
@@ -89,6 +113,9 @@ namespace patches
 			var_unlock_fps = vars::register_bool("com_unlock_fps", false, vars::var_flag_saved | vars::var_flag_latched, "unlock fps");
 
 			var_skip_intro = vars::register_bool("ui_skip_intro", false, vars::var_flag_saved | vars::var_flag_latched, "skip intro splashscreens");
+
+			var_player_ramble_speed_scale = vars::register_float("player_ramble_speed_scale", 1.51f, 0.f, 5.f, vars::var_flag_saved, "player sleep wake up scale (while player is trying to wake up)");
+			var_player_ramble_speed_patch = vars::register_bool("player_ramble_speed_patch", true, vars::var_flag_saved, "enable high fps player sleep wake up patch");
 		}
 
 		void start() override
@@ -105,15 +132,17 @@ namespace patches
 					// disable intro splash screen
 					utils::hook::jump(0x145E59910, 0x145E5991B);
 				}
+
+				get_ramble_speed_hook.create(0x1468DA3F0, get_ramble_speed_stub);
 			}
 
 			utils::hook::nop(SELECT_VALUE(0x142E4ED98, 0x1422339D8), 6);
 			utils::hook::call(SELECT_VALUE(0x142E4ED98, 0x1422339D8), create_mutex_stub);
 			
 			// disable _purecall error
-			utils::hook::set<std::uint8_t>(0x141461F6A, 0xC3);
+			utils::hook::set<std::uint8_t>(SELECT_VALUE(0x141A05B96, 0x141461F6A), 0xC3);
 
-			if (!game::environment::is_dedi() && (utils::flags::has_flag("unlock-fps") || var_unlock_fps->latched.enabled()))
+			if (!game::environment::is_dedi() && var_unlock_fps->latched.enabled())
 			{
 				unlock_fps();
 			}
