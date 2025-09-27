@@ -114,6 +114,21 @@ namespace game
 				WEAK symbol<bool(fox::ui::ModelNodeText*, fox::ui::TextUnit*, const char*)> SetTextForModelNodeText{0x0, 0x140689CD0};
 			}
 		}
+
+		namespace net
+		{
+			namespace ServerManager_
+			{
+				WEAK symbol<FobTarget*(ServerManager*)> GetFobTarget{0x1407D57C0, 0x0};
+				WEAK symbol<ServerManager*> s_instance{0x142BEFBF0, 0x0};
+			}
+
+			namespace FobTarget_
+			{
+				WEAK symbol<char(FobTarget*)> CreateHostSession{0x1459F3E20, 0x0};
+				WEAK symbol<char(FobTarget*, SessionConnectInfo*)> CreateClientSession{0x1459F3910, 0x0};
+			}
+		}
 	}
 
 	namespace lua
