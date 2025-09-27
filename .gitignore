@@ -149,4 +149,4 @@ user*.bat
 # Premake binary
 #premake5.exe
 
-src/client/component/stuff.cpp
+src/client/component/experiments/*
