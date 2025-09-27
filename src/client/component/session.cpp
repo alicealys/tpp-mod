@@ -39,7 +39,7 @@ namespace session
 
 			const auto steam_friends = (*game::SteamFriends)();
 			const auto is_host = main_session->sessionInterface.__vftable->IsHost(&main_session->sessionInterface);
-			const auto state = main_session->__vftable->GetState(main_session);
+			const auto state = main_session->__vftable->tpp.GetState(main_session);
 			const auto all_members = &main_session->allMembers;
 
 			printf("is host: %i\n", is_host);
@@ -142,7 +142,7 @@ namespace session
 				return nullptr;
 			}
 
-			const auto local_member = main_session->__vftable->GetLocalMember(main_session);
+			const auto local_member = main_session->__vftable->mgo.GetLocalMember(main_session);
 			const auto target_member = main_session->allMembers.members[index];
 
 			if (target_member == nullptr || target_member->flags == 0)
@@ -163,8 +163,7 @@ namespace session
 				return nullptr;
 			}
 
-			const auto local_member = main_session->__vftable->GetLocalMember(main_session);
-
+			const auto local_member = main_session->__vftable->mgo.GetLocalMember(main_session);
 
 			for (auto i = 0u; i < main_session->allMembers.size; i++)
 			{
@@ -194,7 +193,7 @@ namespace session
 
 			const auto lower = utils::string::to_lower(name);
 
-			const auto local_member = main_session->__vftable->GetLocalMember(main_session);
+			const auto local_member = main_session->__vftable->mgo.GetLocalMember(main_session);
 			const auto steam_friends = (*game::SteamFriends)();
 
 			for (auto i = 0u; i < main_session->allMembers.size; i++)

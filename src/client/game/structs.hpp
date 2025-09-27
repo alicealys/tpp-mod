@@ -750,9 +750,9 @@ namespace game
 
 				struct SessionImpl2;
 
-				struct SessionImpl2_vtbl
+				struct SessionImpl2_vtbl_mgo
 				{
-					void*(__fastcall* __destructor)(SessionImpl2* this_);
+					void* (__fastcall* __destructor)(SessionImpl2* this_);
 					void(__fastcall* Release)(SessionImpl2* this_);
 					unsigned int(__fastcall* GetState)(SessionImpl2* this_);
 					Group* (__fastcall* GetPeerMembers)(SessionImpl2* this_);
@@ -769,13 +769,45 @@ namespace game
 					void(__fastcall* Start)(SessionImpl2* this_);
 					void(__fastcall* EnableAccept)(SessionImpl2* this_, bool);
 					void(__fastcall* DisconnectPreparingMembers)(SessionImpl2* this_);
-					void*(__fastcall* GetP2pConnectionManager)(SessionImpl2* this_);
+					void* (__fastcall* GetP2pConnectionManager)(SessionImpl2* this_);
 					void(__fastcall* SetP2pConnectionManager)(SessionImpl2* this_, void*);
 					void(__fastcall* FixFrameTime)(SessionImpl2* this_);
 					void(__fastcall* Update)(SessionImpl2* this_);
 					unsigned __int64(__fastcall* GetResult)(SessionImpl2* this_);
 					void(__fastcall* InitAcceptedMember)(SessionImpl2* this_, void*, void*);
+					Group* (__fastcall* GetAllMembers)(SessionImpl2* this_);
+				};
+
+				struct SessionImpl2_vtbl_tpp
+				{
+					void*(__fastcall* __destructor)(SessionImpl2* this_);
+					void(__fastcall* Release)(SessionImpl2* this_);
+					unsigned int(__fastcall* GetState)(SessionImpl2* this_);
+					Group* (__fastcall* GetPeerMembers)(SessionImpl2* this_);
+					void(__fastcall* Initialize)(SessionImpl2* this_, void*);
+					void(__fastcall* Terminate)(SessionImpl2* this_);
+					Member* (__fastcall* GetLocalMember)(SessionImpl2* this_);
+					Member* (__fastcall* GetHostMember)(SessionImpl2* this_);
+					Member* (__fastcall* DeleteMember)(SessionImpl2* this_, Member* member);
+					unsigned __int64(__fastcall* GetSppTimeInMsec)(SessionImpl2* this_);
+					bool(__fastcall* IsEnabled)(SessionImpl2* this_);
+					void(__fastcall* SetHeartBeat)(SessionImpl2* this_, bool, float, float);
+					void(__fastcall* PrepareP2PConnection)(SessionImpl2* this_, void* sessionReserveManager);
+					void(__fastcall* Start)(SessionImpl2* this_);
+					void(__fastcall* EnableAccept)(SessionImpl2* this_, bool);
+					void(__fastcall* DisconnectPreparingMembers)(SessionImpl2* this_);
+					void(__fastcall* FixFrameTime)(SessionImpl2* this_);
+					void(__fastcall* Update)(SessionImpl2* this_);
+					void* (__fastcall* GetP2pConnectionManager)(SessionImpl2* this_);
+					unsigned __int64(__fastcall* GetResult)(SessionImpl2* this_);
+					void(__fastcall* InitAcceptedMember)(SessionImpl2* this_, void*, void*);
 					Group*(__fastcall* GetAllMembers)(SessionImpl2* this_);
+				};
+
+				union SessionImpl2_vtbl
+				{
+					SessionImpl2_vtbl_tpp tpp;
+					SessionImpl2_vtbl_mgo mgo;
 				};
 
 				struct SessionImpl2_SessionInterface;
@@ -841,7 +873,11 @@ namespace game
 					void* sPtr7;
 					void* sPtr8;
 					void* sPtr9;
-					void* a10;
+					char a10_1;
+					char started;
+					char acceptEnabled;
+					char a10_4;
+					int lastError;
 				};
 
 				static_assert(sizeof(SessionImpl2) == 232);
@@ -870,6 +906,29 @@ namespace game
 
 	namespace tpp::net
 	{
+		struct ServerManager_vtbl
+		{
+
+		};
+
+		struct ServerManager
+		{
+			ServerManager_vtbl* __vftable;
+		};
+
+		struct SessionConnectInfo
+		{
+			int a1;
+			char __pad0[180];
+			std::uint64_t hostParam;
+		};
+
+		struct FobTarget
+		{
+			char __pad0[64];
+			SessionConnectInfo* sessionConnectInfo;
+		};
+
 		struct CmdGetFobTargetDetailResult
 		{
 			char __pad0[7144];

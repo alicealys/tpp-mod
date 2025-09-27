@@ -11,6 +11,7 @@ namespace command
 		std::string operator[](const size_t index) const;
 
 		int get_int(const size_t index) const;
+		std::uint64_t get_uint64(const size_t index) const;
 
 		size_t size() const;
 

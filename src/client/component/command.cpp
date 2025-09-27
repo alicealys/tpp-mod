@@ -184,6 +184,16 @@ namespace command
 		return std::atoi(this->tokens_[index].data());
 	}
 
+	std::uint64_t params::get_uint64(const size_t index) const
+	{
+		if (this->tokens_.size() <= index)
+		{
+			return 0;
+		}
+
+		return std::strtoull(this->tokens_[index].data(), nullptr, 0);
+	}
+
 	std::string params::operator[](const size_t index) const
 	{
 		return this->get(index);
