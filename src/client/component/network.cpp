@@ -201,7 +201,7 @@ namespace network
 
 		void start() override
 		{
-			if (!game::environment::is_mgsv())
+			if (!game::environment::is_tpp())
 			{
 				return;
 			}

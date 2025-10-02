@@ -27,7 +27,7 @@ function l_u_a.project()
 		}
 
 		removefiles {
-			path.join(l_u_a.source, "onelua.c"),
+			path.join(l_u_a.source, "luac.c"),
 		}
 
 		warnings "Off"

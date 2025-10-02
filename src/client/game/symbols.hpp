@@ -112,6 +112,11 @@ namespace game
 				WEAK symbol<bool(fox::ui::SoundControl*, unsigned int)> StopSound{0x14091B0D0, 0x14068D2B0};
 
 				WEAK symbol<bool(fox::ui::ModelNodeText*, fox::ui::TextUnit*, const char*)> SetTextForModelNodeText{0x0, 0x140689CD0};
+
+				namespace UiUtilityImpl_
+				{
+					WEAK symbol<void()> CallFoxQuit{0x145FD5EA0, 0x146204DC0};
+				}
 			}
 		}
 
@@ -136,7 +141,31 @@ namespace game
 		WEAK symbol<int(lua_State* s, const char* buffer, 
 			size_t size, const char* name)> luaL_loadbuffer{0x14C200F90, 0x1414750E0};
 
-		WEAK symbol<const char*(lua_State* L, int idx, size_t* len)> lua_tolstring{0x14C1ECA70, 0x14CA2C890};
+		WEAK symbol<int(lua_State* s, const char*)> luaL_loadstring{0x14C201320, 0x14CA4F750};
+		WEAK symbol<int(lua_State* s, int, int)> lua_call{0x141A10F30, 0x14146D200};
+		WEAK symbol<int(lua_State* s, int, int, int)> lua_pcall{0x141A11930, 0x14CA24AB0};
+
+		WEAK symbol<void(lua_State* L, int, const char*)> lua_getfield{0x141A11450, 0x14CA200E0};
+		WEAK symbol<void(lua_State* L, int, const char*)> lua_setfield{0x141A12070, 0x14CA2A3B0};
+
+		WEAK symbol<int(lua_State* L, int)> lua_type{0x141A12570, 0x14146E850};
+		WEAK symbol<const char*(lua_State* L, int)> lua_typename{0x141A125A0, 0x14146E880};
+		WEAK symbol<int(lua_State* L, int)> lua_next{0x141A11870, 0x14146DB40};
+		WEAK symbol<void(lua_State* L, int)> lua_settop{0x141A121E0, 0x14146E4B0};
+		WEAK symbol<void(lua_State* L, int)> lua_remove{0x141A11E90, 0x14146E160};
+
+		WEAK symbol<bool(lua_State* L, int)> lua_toboolean{0x141A12330, 0x14CA2BC80};
+		WEAK symbol<int(lua_State* L, int)> lua_tointeger{0x141A12390, 0x14146E670};
+		WEAK symbol<const char* (lua_State* L, int idx, size_t* len)> lua_tolstring{0x14C1ECA70, 0x14CA2C890};
+
+		WEAK symbol<void(lua_State* L)> lua_pushnil{0x141A11BA0, 0x14146DE70};
+		WEAK symbol<void(lua_State* L, const char*)> lua_pushstring{0x141A11BE0, 0x14146DEB0};
+		WEAK symbol<void(lua_State* L, double)> lua_pushnumber{0x141A11BC0, 0x14146DE90};
+		WEAK symbol<void(lua_State* L, int)> lua_pushinteger{0x141A11BC0, 0x14146DDC0};
+		WEAK symbol<void(lua_State* L, int)> lua_pushboolean{0x141A11BC0, 0x14146DC90};
+
+#undef lua_pop
+#define lua_pop(L,n) game::lua::lua_settop(L, -(n)-1)
 	}
 
 	// Variables
@@ -157,8 +186,5 @@ namespace game
 
 	WEAK symbol<bool> g_needShowCursor{0x0, 0x141F69E66};
 
-	namespace lua
-	{
-		WEAK symbol<lua_state_container*> state_container{0x142B641F0, 0x141F28240};
-	}
+	WEAK symbol<fox::Lua*> s_instances{0x142B641F0, 0x141F28240};
 }

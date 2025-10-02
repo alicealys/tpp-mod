@@ -1,6 +1,11 @@
 #pragma once
 #include <d3d11.h>
 
+extern "C"
+{
+#include "lapi.h"
+}
+
 namespace game
 {
 	// https://github.com/rlabrecque/SteamworksSDK/tree/f4d127e335a66a1615c0870830d14dcee76ed8aa/public/steam
@@ -272,6 +277,29 @@ namespace game
 		static_assert(offsetof(Buffer, capacity) == 32);
 		static_assert(offsetof(Buffer, flags) == 40);
 		static_assert(sizeof(Buffer) == 0x30);
+
+		struct LuaBase
+		{
+			struct vftable
+			{
+				void(__fastcall* __destructor)();
+			};
+
+			vftable* __vftable;
+			lua_State* state;
+			char initialized;
+		};
+
+		struct Lua : LuaBase
+		{
+			struct vftable
+			{
+				void(__fastcall* __destructor)();
+			};
+
+			void* a2;
+			void* queue;
+		};
 
 		namespace impl
 		{
@@ -1257,16 +1285,6 @@ namespace game
 			IDXGISwapChain* swapChain;
 		};
 
-	}
-
-	namespace lua
-	{
-		struct lua_state_container
-		{
-			void* unk;
-			lua_State* state;
-			// ...
-		};
 	}
 
 #pragma pack(push, 1)

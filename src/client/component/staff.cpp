@@ -291,6 +291,7 @@ namespace staff
 
 			status->unselectable = 0;
 			status->direct_contract = 0;
+			status->enemy = 0;
 
 			switch (status->designation)
 			{
@@ -314,6 +315,7 @@ namespace staff
 				header->stat_distribution = stat_dist_medical_plus_and_combat_plus;
 				break;
 			case des_brig:
+				status->designation = des_waiting_room_1;
 				break;
 			}
 		}
@@ -408,7 +410,7 @@ namespace staff
 
 		void start() override
 		{
-			if (!game::environment::is_mgsv())
+			if (!game::environment::is_tpp())
 			{
 				return;
 			}
