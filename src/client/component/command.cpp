@@ -317,6 +317,8 @@ namespace command
 		{
 			scheduler::loop(run_frame, scheduler::main);
 
+			command::add("quit", game::tpp::ui::utility::UiUtilityImpl_::CallFoxQuit);
+
 			command::add("startsound", [](const command::params& params)
 			{
 				if (params.size() < 2)

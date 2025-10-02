@@ -19,14 +19,14 @@ namespace game
 			return mode;
 		}
 
-		bool is_mgsv()
+		bool is_tpp()
 		{
 			return *reinterpret_cast<int*>(0x141001337) == 0x24448B48;
 		}
 
 		bool is_mgo()
 		{
-			return !is_mgsv();
+			return !is_tpp();
 		}
 
 		bool is_dedi()

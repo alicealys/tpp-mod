@@ -2,7 +2,7 @@
 
 #include "structs.hpp"
 
-#define SELECT_VALUE(mgsv, mgo) (game::environment::is_mgsv() ? (mgsv) : (mgo))
+#define SELECT_VALUE(mgsv, mgo) (game::environment::is_tpp() ? (mgsv) : (mgo))
 
 namespace game
 {
@@ -11,7 +11,7 @@ namespace game
 		enum game_mode
 		{
 			none,
-			mgsv,
+			tpp,
 			mgo,
 			dedi,
 		};
@@ -19,7 +19,7 @@ namespace game
 		game_mode get_mode();
 		void set_mode(game_mode mode);
 
-		bool is_mgsv();
+		bool is_tpp();
 		bool is_mgo();
 		bool is_dedi();
 	}
@@ -28,20 +28,21 @@ namespace game
 	class symbol
 	{
 	public:
-		symbol(const size_t mgsv, const size_t mgo)
-			: mgsv_address_(reinterpret_cast<T*>(mgsv))
-			  , mgo_address_(reinterpret_cast<T*>(mgo))
+		symbol(const size_t tpp, const size_t mgo)
 		{
+			if (environment::is_tpp())
+			{
+				this->address_ = reinterpret_cast<T*>(tpp);
+			}
+			else
+			{
+				this->address_ = reinterpret_cast<T*>(mgo);
+			}
 		}
 
 		T* get() const
 		{
-			if (environment::is_mgsv())
-			{
-				return reinterpret_cast<T*>(this->mgsv_address_);
-			}
-
-			return this->mgo_address_;
+			return this->address_;
 		}
 
 		operator T* () const
@@ -55,8 +56,7 @@ namespace game
 		}
 
 	private:
-		T* mgsv_address_{};
-		T* mgo_address_{};
+		T* address_{};
 
 	};
 }

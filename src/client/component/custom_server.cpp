@@ -197,7 +197,7 @@ namespace custom_server
 			std::memcpy(custom_url, custom_server.data(), custom_server.size());
 			console::info("[net] using server url: \"%s\"\n", custom_url);
 
-			if (game::environment::is_mgsv())
+			if (game::environment::is_tpp())
 			{
 				file_read_hook.create(0x143593E20, file_read_stub);
 				file_write_hook.create(0x143596770, file_write_stub);

@@ -29,6 +29,27 @@ namespace session
 			std::uint64_t steam_id;
 		};
 
+		const char* get_session_state_name(const int state)
+		{
+			switch (state)
+			{
+			case 0:
+				return "none";
+			case 2:
+			case 3:
+				return "host";
+			case 4:
+				return "client connect";
+			case 5:
+				return "client init";
+			case 6:
+			case 7:
+				return "client established";
+			}
+
+			return "unknown";
+		}
+
 		void print_status()
 		{
 			const auto main_session = *game::s_pSession;
@@ -43,7 +64,7 @@ namespace session
 			const auto all_members = &main_session->allMembers;
 
 			printf("is host: %i\n", is_host);
-			printf("state: %i\n", state);
+			printf("state: %s (%i)\n", get_session_state_name(state), state);
 			printf("num flags steam_id                         name                            \n");
 			printf("--- ----- -------------------------------- --------------------------------\n");
 
