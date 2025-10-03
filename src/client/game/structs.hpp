@@ -278,6 +278,17 @@ namespace game
 		static_assert(offsetof(Buffer, flags) == 40);
 		static_assert(sizeof(Buffer) == 0x30);
 
+		struct RawKeyboardData
+		{
+			__int16 makeCode;
+			char __pad0[2];
+			int key;
+			__int16 keyAscii;
+			__int16 keyUnicode;
+			bool isUp;
+			bool unk;
+		};
+
 		struct LuaBase
 		{
 			struct vftable
@@ -300,6 +311,35 @@ namespace game
 			void* a2;
 			void* queue;
 		};
+
+		namespace gr
+		{
+			namespace dg
+			{
+				struct StringFontMetricsCache
+				{
+					__int16 a1;
+					__int16 count;
+					int a3;
+					__int16* buffer;
+				};
+			}
+
+			struct Packet2DString
+			{
+				int a1;
+				int a2;
+				fox::gr::dg::StringFontMetricsCache* fontMetricsCache;
+				__int16 a3;
+				__int16 a4;
+				__int16 a5;
+				__int16 flags;
+				int a7;
+				__int16 a8;
+				__int16 a9;
+			};
+
+		}
 
 		namespace impl
 		{
@@ -392,7 +432,15 @@ namespace game
 
 			struct ModelNodeText_vtbl
 			{
-
+				void(__fastcall* __destructor)(ModelNodeText*);
+				void(__fastcall* GetPacketBuffer)(ModelNodeText*);
+				void(__fastcall* InitializePacketBuffer)(ModelNodeText*);
+				void(__fastcall* ReleasePacketBuffer)(ModelNodeText*);
+				void(__fastcall* UpdatePacket)(ModelNodeText*);
+				void* (__fastcall* GetBoundingBox)(ModelNodeText*);
+				void(__fastcall* nullsub1)(ModelNodeText*);
+				void(__fastcall* nullsub2)(ModelNodeText*);
+				void(__fastcall* nullsub3)(ModelNodeText*);
 			};
 
 #pragma pack(push, 1)
@@ -403,7 +451,7 @@ namespace game
 				char f0;
 				char __pad1[21];
 				void* f1;
-				short f2;
+				short flags;
 				char f3;
 				char __pad2[1];
 				int f4;
@@ -414,7 +462,7 @@ namespace game
 				int f9;
 				void* f10;
 				char __pad3[4];
-				void* f11;
+				void** packetBuffer;
 				void* f12;
 				short f13;
 				char f14;
@@ -458,7 +506,7 @@ namespace game
 			static_assert(offsetof(fox::ui::ModelNodeText, f0) == 114);
 			static_assert(offsetof(fox::ui::ModelNodeText, __pad1) == 115);
 			static_assert(offsetof(fox::ui::ModelNodeText, f1) == 136);
-			static_assert(offsetof(fox::ui::ModelNodeText, f2) == 144);
+			static_assert(offsetof(fox::ui::ModelNodeText, flags) == 144);
 			static_assert(offsetof(fox::ui::ModelNodeText, f3) == 146);
 			static_assert(offsetof(fox::ui::ModelNodeText, __pad2) == 147);
 			static_assert(offsetof(fox::ui::ModelNodeText, f4) == 148);
@@ -469,7 +517,7 @@ namespace game
 			static_assert(offsetof(fox::ui::ModelNodeText, f9) == 184);
 			static_assert(offsetof(fox::ui::ModelNodeText, f10) == 188);
 			static_assert(offsetof(fox::ui::ModelNodeText, __pad3) == 196);
-			static_assert(offsetof(fox::ui::ModelNodeText, f11) == 200);
+			static_assert(offsetof(fox::ui::ModelNodeText, packetBuffer) == 200);
 			static_assert(offsetof(fox::ui::ModelNodeText, f12) == 208);
 			static_assert(offsetof(fox::ui::ModelNodeText, f13) == 216);
 			static_assert(offsetof(fox::ui::ModelNodeText, f14) == 218);
@@ -997,7 +1045,7 @@ namespace game
 	{
 		struct UixUtilityImpl;
 
-		struct UixUtilityImpl_vtbl
+		struct UixUtilityImpl_vtbl_mgo
 		{
 			void* (__fastcall* __constructor)(fox::uix::impl::UixUtilityImpl* this_);
 			void* (__fastcall* __empty1)(fox::uix::impl::UixUtilityImpl* this_);
@@ -1262,6 +1310,277 @@ namespace game
 			void* (__fastcall* GetPaletteColor)(fox::uix::impl::UixUtilityImpl* this_, fox::StringId);
 		};
 
+		struct UixUtilityImpl_vtbl_tpp
+		{
+			void* (__fastcall* __constructor)(fox::uix::impl::UixUtilityImpl* this_);
+			void* (__fastcall* __empty1)(fox::uix::impl::UixUtilityImpl* this_);
+			void* (__fastcall* __empty2)(fox::uix::impl::UixUtilityImpl* this_);
+			void* (__fastcall* GetButtonNumber)(fox::uix::impl::UixUtilityImpl* this_, fox::StringId, bool);
+			void* (__fastcall* GetActivePadNo)(fox::uix::impl::UixUtilityImpl* this_);
+			void* (__fastcall* IsButtonPress)(fox::uix::impl::UixUtilityImpl* this_, unsigned int);
+			void* (__fastcall* IsButtonPressByName)(fox::uix::impl::UixUtilityImpl* this_, fox::StringId);
+			void* (__fastcall* IsButtonPressing)(fox::uix::impl::UixUtilityImpl* this_, unsigned int);
+			void* (__fastcall* IsButtonPressingByName)(fox::uix::impl::UixUtilityImpl* this_, fox::StringId);
+			void* (__fastcall* IsButtonRelease)(fox::uix::impl::UixUtilityImpl* this_, unsigned int);
+			void* (__fastcall* IsButtonReleaseByName)(fox::uix::impl::UixUtilityImpl* this_, fox::StringId);
+			void* (__fastcall* IsButtonStandby)(fox::uix::impl::UixUtilityImpl* this_, unsigned int);
+			void* (__fastcall* IsButtonStandbyByName)(fox::uix::impl::UixUtilityImpl* this_, fox::StringId);
+			void* (__fastcall* IsButtonRepeat)(fox::uix::impl::UixUtilityImpl* this_, unsigned int, float, float);
+			void* (__fastcall* IsButtonRepeatByName)(fox::uix::impl::UixUtilityImpl* this_, fox::StringId, float, float);
+			void* (__fastcall* IsButtonLongPress)(fox::uix::impl::UixUtilityImpl* this_, unsigned int, float);
+			void* (__fastcall* IsButtonLongPressByName)(fox::uix::impl::UixUtilityImpl* this_, fox::StringId, float);
+			void* (__fastcall* GetButtonLongPressResultByName)(fox::uix::impl::UixUtilityImpl* this_, fox::StringId, float);
+			void* (__fastcall* GetAnalogStickAxis)(fox::uix::impl::UixUtilityImpl* this_, unsigned int, float*, float*);
+			void* (__fastcall* SetDisablePad)(fox::uix::impl::UixUtilityImpl* this_, unsigned int);
+			void* (__fastcall* ResetDisablePad)(fox::uix::impl::UixUtilityImpl* this_, unsigned int);
+			void* (__fastcall* IsDisablePad)(fox::uix::impl::UixUtilityImpl* this_, unsigned int);
+			void* (__fastcall* IsUseKeyboard)(fox::uix::impl::UixUtilityImpl* this_);
+			void* (__fastcall* SetUseKeyboard)(fox::uix::impl::UixUtilityImpl* this_, bool);
+			void* (__fastcall* IsEnableKeyboard)(fox::uix::impl::UixUtilityImpl* this_);
+			void* (__fastcall* GetKeyButtonPress)(fox::uix::impl::UixUtilityImpl* this_, fox::KeyCode);
+			void* (__fastcall* GetInputString)(fox::uix::impl::UixUtilityImpl* this_, char*, int);
+			void* (__fastcall* ClearInputString)(fox::uix::impl::UixUtilityImpl* this_);
+			void* (__fastcall* ButtonNameToKeyCode)(fox::uix::impl::UixUtilityImpl* this_, fox::StringId, unsigned int*);
+			void* (__fastcall* IsKeyboardPress)(fox::uix::impl::UixUtilityImpl* this_, unsigned int);
+			void* (__fastcall* IsKeyboardPressByName)(fox::uix::impl::UixUtilityImpl* this_, fox::StringId);
+			void* (__fastcall* IsKeyboardPressing)(fox::uix::impl::UixUtilityImpl* this_, unsigned int);
+			void* (__fastcall* IsKeyboardPressingByName)(fox::uix::impl::UixUtilityImpl* this_, fox::StringId);
+			void* (__fastcall* IsKeyboardRelease)(fox::uix::impl::UixUtilityImpl* this_, unsigned int);
+			void* (__fastcall* IsKeyboardReleaseByName)(fox::uix::impl::UixUtilityImpl* this_, fox::StringId);
+			void* (__fastcall* IsKeyboardStandby)(fox::uix::impl::UixUtilityImpl* this_, unsigned int);
+			void* (__fastcall* IsKeyboardStandbyByName)(fox::uix::impl::UixUtilityImpl* this_, fox::StringId);
+			void* (__fastcall* IsKeyboardRepeat)(fox::uix::impl::UixUtilityImpl* this_, unsigned int);
+			void* (__fastcall* IsKeyboardRepeatByName)(fox::uix::impl::UixUtilityImpl* this_, fox::StringId);
+			void* (__fastcall* IsKeyboardLongPress)(fox::uix::impl::UixUtilityImpl* this_, unsigned int, float);
+			void* (__fastcall* IsKeyboardLongPressByName)(fox::uix::impl::UixUtilityImpl* this_, fox::StringId, float);
+			void* (__fastcall* GetKeyboardLongPressResultByName1)(fox::uix::impl::UixUtilityImpl* this_, fox::StringId, float);
+			void* (__fastcall* GetMouseButtonsByKeyCode)(fox::uix::impl::UixUtilityImpl* this_, unsigned int);
+			void* (__fastcall* GetMouseMoveXY)(fox::uix::impl::UixUtilityImpl* this_, float*, float*);
+			void* (__fastcall* GetMouseAccelXY)(fox::uix::impl::UixUtilityImpl* this_, float*, float*);
+			void* (__fastcall* GetMouseWheel)(fox::uix::impl::UixUtilityImpl* this_);
+			void* (__fastcall* IsMouseButtonDown)(fox::uix::impl::UixUtilityImpl* this_, unsigned int);
+			void* (__fastcall* IsMouseButtonDownByName)(fox::uix::impl::UixUtilityImpl* this_, fox::StringId);
+			void* (__fastcall* IsMouseButtonPressing)(fox::uix::impl::UixUtilityImpl* this_, unsigned int);
+			void* (__fastcall* IsMouseButtonPressingByName)(fox::uix::impl::UixUtilityImpl* this_, fox::StringId);
+			void* (__fastcall* IsMouseButtonUp)(fox::uix::impl::UixUtilityImpl* this_, unsigned int);
+			void* (__fastcall* IsMouseButtonUpByName)(fox::uix::impl::UixUtilityImpl* this_, fox::StringId);
+			void* (__fastcall* GetKeyboardLongPressResultByName2)(fox::uix::impl::UixUtilityImpl* this_, fox::StringId, float);
+			void* (__fastcall* GetMotionSensorOrientation)(fox::uix::impl::UixUtilityImpl* this_);
+			void* (__fastcall* GetMotionSensorAcceleration)(fox::uix::impl::UixUtilityImpl* this_);
+			void* (__fastcall* GetMotionSensorAngularVelocity)(fox::uix::impl::UixUtilityImpl* this_);
+			void* (__fastcall* IsMotionSensorAvailable)(fox::uix::impl::UixUtilityImpl* this_);
+			void* (__fastcall* ResetMotionSensorOrientation)(fox::uix::impl::UixUtilityImpl* this_);
+			void* (__fastcall* SendTrigger)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::WindowInterface const*, unsigned __int64, unsigned __int64);
+			void* (__fastcall* SendTriggerToParent)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::WindowInterface const*, unsigned __int64, unsigned __int64);
+			void* (__fastcall* IsTriggerReceived1)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::TriggerPool const*, unsigned __int64, unsigned __int64*);
+			void* (__fastcall* IsTriggerReceived2)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::TriggerPool const*, unsigned __int64, bool);
+			void* (__fastcall* GetTriggerPool)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::WindowInterface const*);
+			void* (__fastcall* SendVisibleWindowMessage)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::WindowInterface*, bool);
+			void* (__fastcall* SendConnectWindowMessage)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::WindowInterface*, fox::ui::Model*, fox::ui::ModelNode*);
+			void* (__fastcall* GetChildWindowInterface)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::WindowInterface const*, fox::StringId);
+			void* (__fastcall* GetLayout1)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::Layout const*, fox::StringId);
+			void* (__fastcall* GetLayout2)(fox::uix::impl::UixUtilityImpl* this_, void* const, fox::StringId);
+			void* (__fastcall* GetLayout3)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::WindowInterface const*, fox::StringId);
+			void* (__fastcall* IsHaveLayout)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::Layout const*, fox::StringId);
+			void* (__fastcall* GetModel)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::Layout const*, fox::StringId);
+			void* (__fastcall* GetAnimation1)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::Model const*, fox::StringId);
+			void* (__fastcall* GetAnimation2)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::Layout const*, fox::StringId);
+			void* (__fastcall* IsHaveModelNodeCommon)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::Model const*, fox::StringId);
+			void* (__fastcall* GetModelNodeCommon)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::Model const*, fox::StringId);
+			void* (__fastcall* GetModelNodeText)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::Model const*, fox::StringId);
+			void* (__fastcall* GetModelNodeMesh)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::Model const*, fox::StringId);
+			void* (__fastcall* GetModelNodeLine)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::Model const*, fox::StringId);
+			void* (__fastcall* GetOrthogonalProjectionScaleFromModelComponentCamera)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::Model*);
+			void* pad[6];
+			void* (__fastcall* SetVisible1)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::ModelNode*, bool);
+			void* (__fastcall* SetVisible2)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::LayoutComponent*, bool);
+			void* (__fastcall* IsVisible1)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::ModelNode*);
+			void* (__fastcall* IsVisible2)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::LayoutComponent*);
+			void* (__fastcall* SetAlpha1)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::ModelNode*, float);
+			void* (__fastcall* SetAlpha2)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::LayoutComponent*, float);
+			void* (__fastcall* GetAlpha3)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::ModelNode*);
+			void* (__fastcall* GetAlpha4)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::LayoutComponent*);
+			void* (__fastcall* SetColorRGB1)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::ModelNode*, fox::Rgba8);
+			void* (__fastcall* SetColorRGB2)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::LayoutComponent*, fox::Rgba8);
+			void* (__fastcall* SetColorRGB3)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::ModelNode*, fox::Color*);
+			void* (__fastcall* SetColorRGB4)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::LayoutComponent*, fox::Color*);
+			void* (__fastcall* SetColorRGB5)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::ModelNode*, float, float, float);
+			void* (__fastcall* SetColorRGB6)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::LayoutComponent*, float, float, float);
+			void* (__fastcall* SetColorGroup1)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::ModelNode*, unsigned int);
+			void* (__fastcall* SetColorGroup2)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::LayoutComponent*, unsigned int);
+			void* (__fastcall* GetColorGroup3)(fox::uix::impl::UixUtilityImpl* this_, unsigned int);
+			void* (__fastcall* GetTranslation1)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::ModelNode*);
+			void* (__fastcall* GetTranslation2)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::LayoutComponent*);
+			void* (__fastcall* SetTranslation1)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::ModelNode*, Vectormath::Aos::Vector3*);
+			void* (__fastcall* SetTranslation2)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::LayoutComponent*, Vectormath::Aos::Vector3*);
+			void* (__fastcall* SetTranslationX1)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::ModelNode*, float);
+			void* (__fastcall* SetTranslationX2)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::LayoutComponent*, float);
+			void* (__fastcall* SetTranslationY1)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::ModelNode*, float);
+			void* (__fastcall* SetTranslationY2)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::LayoutComponent*, float);
+			void* (__fastcall* SetTranslationZ1)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::ModelNode*, float);
+			void* (__fastcall* SetTranslationZ2)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::LayoutComponent*, float);
+			void* (__fastcall* GetRotation1)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::ModelNode*);
+			void* (__fastcall* GetRotation2)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::LayoutComponent*);
+			void* (__fastcall* GetRotationDegree1)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::ModelNode*);
+			void* (__fastcall* GetRotationDegree2)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::LayoutComponent*);
+			void* (__fastcall* SetRotation1)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::ModelNode*, Vectormath::Aos::Vector3*);
+			void* (__fastcall* SetRotation2)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::LayoutComponent*, Vectormath::Aos::Vector3*);
+			void* (__fastcall* SetRotationDegree1)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::ModelNode*, Vectormath::Aos::Vector3*);
+			void* (__fastcall* SetRotationDegree2)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::LayoutComponent*, Vectormath::Aos::Vector3*);
+			void* (__fastcall* SetRotationDegreeX1)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::ModelNode*, float);
+			void* (__fastcall* SetRotationDegreeX2)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::LayoutComponent*, float);
+			void* (__fastcall* SetRotationDegreeY1)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::ModelNode*, float);
+			void* (__fastcall* SetRotationDegreeY2)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::LayoutComponent*, float);
+			void* (__fastcall* SetRotationDegreeZ1)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::ModelNode*, float);
+			void* (__fastcall* SetRotationDegreeZ2)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::LayoutComponent*, float);
+			void* (__fastcall* SetQuaternion1)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::ModelNode*, Vectormath::Aos::Quat*);
+			void* (__fastcall* SetQuaternion2)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::LayoutComponent*, Vectormath::Aos::Quat*);
+			void* (__fastcall* SetScale1)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::ModelNode*, float);
+			void* (__fastcall* SetScale2)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::LayoutComponent*, float);
+			void* (__fastcall* SetScale3)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::ModelNode*, Vectormath::Aos::Vector3*);
+			void* (__fastcall* SetScale4)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::LayoutComponent*, Vectormath::Aos::Vector3*);
+			void* (__fastcall* GetScale1)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::ModelNode*);
+			void* (__fastcall* GetScale2)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::LayoutComponent*);
+			void* (__fastcall* SetStatus1)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::ModelNodeLine*, unsigned int);
+			void* (__fastcall* SetStatus2)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::ModelNodeText*, unsigned int);
+			void* (__fastcall* SetStatus3)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::ModelNodeLine*, unsigned int);
+			void* (__fastcall* SetStatus4)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::Model*, unsigned int);
+			void* (__fastcall* ResetStatus1)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::ModelNodeLine*, unsigned int);
+			void* (__fastcall* ResetStatus2)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::ModelNodeText*, unsigned int);
+			void* (__fastcall* ResetStatus3)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::ModelNodeLine*, unsigned int);
+			void* (__fastcall* ResetStatus4)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::Model*, unsigned int);
+			void* (__fastcall* SetVerticalAlign)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::ModelNodeText*, char);
+			void* (__fastcall* SetTextAlign)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::ModelNodeText*, char);
+			void* (__fastcall* SetFontSize)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::ModelNodeText*, float, float);
+			void* (__fastcall* GetLineWidth)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::ModelNodeText*, unsigned int);
+			void* (__fastcall* GetLineHeight)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::ModelNodeText*, unsigned int);
+			void* (__fastcall* SetLineWidth)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::ModelNodeText*, unsigned int, float);
+			void* (__fastcall* SetLineHeight)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::ModelNodeText*, unsigned int, float);
+			void* (__fastcall* ConnectComponent1)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::LayoutComponent*, fox::ui::LayoutComponent*, unsigned int);
+			void* (__fastcall* ConnectComponent2)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::LayoutComponent*, fox::ui::LayoutComponent*, fox::StringId);
+			void* (__fastcall* ConnectComponent3)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::LayoutComponent*, fox::ui::LayoutComponent*, fox::ui::ModelNode const*);
+			void* (__fastcall* GetTraversalTranslation)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::LayoutComponent*, fox::ui::ModelNode*);
+			void* (__fastcall* GetTraversalScale)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::LayoutComponent*, fox::ui::ModelNode*);
+			void* (__fastcall* SetTextureName1)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::ModelNodeMesh*, unsigned int, unsigned int, bool, unsigned int, unsigned int, unsigned int);
+			void* (__fastcall* SetTextureName2)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::ModelNodeMesh*, fox::StringId, fox::StringId, bool, fox::StringId, fox::StringId, fox::StringId);
+			void* (__fastcall* SetTextureName3)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::ModelNodeMesh*, fox::Path const*, fox::StringId);
+			void* (__fastcall* SetTextureName4)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::ModelNodeMesh*, char const*, fox::StringId, int);
+			void* (__fastcall* SetTextureName5)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::ModelNodeMesh*, char const*, fox::StringId);
+			void* (__fastcall* SetTextureName6)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::ModelNodeMesh*, fox::PathId, fox::StringId, int);
+			void* (__fastcall* SetTextureName7)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::ModelNodeMesh*, fox::PathId, fox::StringId);
+			void* (__fastcall* CheckAndSetTextureName1)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::ModelNodeMesh*, char const*, fox::StringId, int);
+			void* (__fastcall* CheckAndSetTextureName2)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::ModelNodeMesh*, char const*, fox::StringId);
+			void* (__fastcall* CheckAndSetTextureName3)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::ModelNodeMesh*, fox::PathId, fox::StringId, int);
+			void* (__fastcall* CheckAndSetTextureName4)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::ModelNodeMesh*, fox::PathId, fox::StringId);
+			void* (__fastcall* SetGrTexture)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::ModelNodeMesh*, void*, unsigned int);
+			void* (__fastcall* CreatePrefetchTexture)(fox::uix::impl::UixUtilityImpl* this_, fox::PathId, int);
+			void* (__fastcall* RemovePrefetchTexture)(fox::uix::impl::UixUtilityImpl* this_, fox::PathId);
+			void* (__fastcall* IsReadyPrefetchTexture)(fox::uix::impl::UixUtilityImpl* this_, fox::PathId, int);
+			void* (__fastcall* RegisterLoadingMeshTexture)(fox::uix::impl::UixUtilityImpl* this_, fox::PathId);
+			void* (__fastcall* UnregisterLoadingMeshTexture)(fox::uix::impl::UixUtilityImpl* this_, fox::PathId);
+			void* (__fastcall* SetLoadingTexture)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::ModelNodeMesh*, fox::PathId, int);
+			void* (__fastcall* IsDispLoadingTexture)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::ModelNodeMesh*, unsigned int);
+			void* (__fastcall* IsTextureLoaded)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::ModelNodeMesh*, fox::StringId, int);
+			void* (__fastcall* SetTextureLevel)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::ModelNodeMesh*, fox::StringId, int);
+			void* (__fastcall* SetShaderParameter)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::ModelNodeMesh*, fox::StringId, Vectormath::Aos::Vector4*);
+			void* (__fastcall* SetShaderTechnique)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::ModelNodeMesh*, fox::StringId);
+			void* (__fastcall* SetShaderBaseTexUvShift)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::ModelNodeMesh*, float, float);
+			void* (__fastcall* SetShaderMaskTexUvShift)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::ModelNodeMesh*, float, float);
+			void* (__fastcall* SetShaderScreenTexUvShift)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::ModelNodeMesh*, float, float);
+			void* (__fastcall* SetShaderBaseTexUvRepeat)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::ModelNodeMesh*, float, float);
+			void* (__fastcall* SetShaderMaskTexUvRepeat)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::ModelNodeMesh*, float, float);
+			void* (__fastcall* SetShaderScreenTexUvRepeat)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::ModelNodeMesh*, float, float);
+			void* pad2[3];
+			void* (__fastcall* SetVertexTranslate)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::ModelNodeMesh*, fox::StringId, Vectormath::Aos::Vector3*, Vectormath::Aos::Vector3*);
+			void* (__fastcall* FindWindow_)(fox::uix::impl::UixUtilityImpl* this_, fox::StringId);
+			void* (__fastcall* EnableAllInheritance)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::WindowInterface const*);
+			void* (__fastcall* EnableScaleInheritance)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::WindowInterface const*);
+			void* (__fastcall* EnableRotationInheritance)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::WindowInterface const*);
+			void* (__fastcall* EnableTranslationInheritance)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::WindowInterface const*);
+			void* (__fastcall* EnableColorRGBInheritance)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::WindowInterface const*);
+			void* (__fastcall* EnableColorAlphaInheritance)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::WindowInterface const*);
+			void* (__fastcall* DisableAllInheritance)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::WindowInterface const*);
+			void* (__fastcall* DisableScaleInheritance)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::WindowInterface const*);
+			void* (__fastcall* DisableRotationInheritance)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::WindowInterface const*);
+			void* (__fastcall* DisableTranslationInheritance)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::WindowInterface const*);
+			void* (__fastcall* DisableColorRGBInheritance)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::WindowInterface const*);
+			void* (__fastcall* DisableColorAlphaInheritance)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::WindowInterface const*);
+			void* (__fastcall* PostShowAndStartMessage1)(fox::uix::impl::UixUtilityImpl* this_, void*);
+			void* (__fastcall* PostShowAndStartMessage2)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::WindowInterface const*);
+			void* (__fastcall* PostHideAndStopMessage1)(fox::uix::impl::UixUtilityImpl* this_, void*);
+			void* (__fastcall* PostHideAndStopMessage2)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::WindowInterface const*);
+			void* (__fastcall* PostWakeLayoutMessage)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::WindowInterface const*);
+			void* (__fastcall* PostSleepLayoutMessage)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::WindowInterface const*);
+			void* (__fastcall* StartAnimation)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::Animation*);
+			void* (__fastcall* StartInstantAnimation)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::Animation*, bool);
+			void* (__fastcall* StartLoopAnimation)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::Animation*);
+			void* (__fastcall* StartAnimationWithRatio)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::Animation*, float);
+			void* (__fastcall* StartAnimationWithStartRatio)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::Animation*, float);
+			void* (__fastcall* RecoverForAnimationWithRatio)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::Animation*);
+			void* (__fastcall* PauseAnimation)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::Animation*);
+			void* (__fastcall* PauseInitAnimation)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::Animation*);
+			void* (__fastcall* PauseEndAnimation)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::Animation*);
+			void* (__fastcall* IsAnimationRunning)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::Animation*);
+			void* (__fastcall* SetAnimationStopTime)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::Animation*, float);
+			void* (__fastcall* SetAnimationSpeed)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::Animation*, float);
+			void* (__fastcall* IsAnimationPastTime)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::Animation*, float);
+			void* (__fastcall* CreateTextUnit)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::TextUnit**, int);
+			void* (__fastcall* DeleteTextUnit)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::TextUnit*);
+			void* (__fastcall* SetTextForModelNodeText)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::ModelNodeText*, fox::ui::TextUnit*, char const*, bool);
+			void* (__fastcall* SetScrollTextForModelNodeText)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::ModelNodeText*, fox::ui::TextUnit*, char const*, bool);
+			void* (__fastcall* SetScrollTextForPrefabListRecord)(fox::uix::impl::UixUtilityImpl* this_, fox::uix::PrefabRecordCallFunc*, fox::ui::ModelNodeText*, fox::ui::TextUnit*, char const*, bool);
+			void* (__fastcall* UpdateScrollTextForPrefabListRecord)(fox::uix::impl::UixUtilityImpl* this_, fox::uix::PrefabRecordCallFunc*, bool);
+			void* (__fastcall* SetupTextUnits)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::ModelNodeText*, fox::ui::TextUnit*, unsigned int, char const*, bool, bool);
+			void* (__fastcall* SetTextUnitsForModelNodeText)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::ModelNodeText*, fox::ui::TextUnit*, unsigned int);
+			void* (__fastcall* CreateBoxText)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::ModelNodeText*, fox::ui::TextUnit*, unsigned int, char const*, bool, bool);
+			void* (__fastcall* CreateScrollBoxText)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::ModelNodeText*, fox::ui::TextUnit*, unsigned int, char const*);
+			void* (__fastcall* GetLangText1)(fox::uix::impl::UixUtilityImpl* this_, fox::StringId);
+			void* (__fastcall* GetLangText2)(fox::uix::impl::UixUtilityImpl* this_, fox::StringId);
+			void* (__fastcall* StartTextScroll)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::ModelNodeText*);
+			void* (__fastcall* StopTextScroll)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::ModelNodeText*);
+			void* (__fastcall* GetTextTotalHeightInTextNode)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::ModelNodeText const*);
+			void* (__fastcall* GetTextMaxWidthInTextNode)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::ModelNodeText const*);
+			void* (__fastcall* GetTextNodeWidth)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::ModelNodeText const*);
+			void* (__fastcall* GetTextNodeHeight)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::ModelNodeText const*);
+			void* (__fastcall* SetTextNodeWidth)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::ModelNodeText*, float);
+			void* (__fastcall* SetTextNodeHeight)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::ModelNodeText*, float);
+			void* (__fastcall* SetOneSideVertexControl)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::Model*, fox::StringId, fox::StringId, fox::ui::ModelNodeCommon*, fox::ui::ModelNodeCommon*, float, float, Vectormath::Aos::Vector3*, Vectormath::Aos::Vector3*);
+			void* (__fastcall* SetBodyGauge)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::Layout*, float, float, fox::ui::ModelNodeCommon*, fox::ui::ModelNodeCommon*);
+			void* (__fastcall* SetBodyGaugeWithAxis)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::Layout*, float, float, Vectormath::Aos::Vector3*, fox::ui::ModelNodeCommon*, fox::ui::ModelNodeCommon*);
+			void* (__fastcall* SetBaseGauge)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::Layout*, float, float, fox::ui::ModelNodeCommon*, fox::ui::ModelNodeCommon*);
+			void* (__fastcall* SetBaseGaugeWithAxis)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::Layout*, float, float, Vectormath::Aos::Vector3*, fox::ui::ModelNodeCommon*, fox::ui::ModelNodeCommon*);
+			void* (__fastcall* SetGaugeLayout)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::Layout*, fox::StringId, fox::StringId, float, float, fox::ui::ModelNodeCommon*, fox::ui::ModelNodeCommon*);
+			void* (__fastcall* SetGaugeLayoutWithAxis)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::Layout*, fox::StringId, fox::StringId, float, float, Vectormath::Aos::Vector3*, fox::ui::ModelNodeCommon*, fox::ui::ModelNodeCommon*);
+			void* (__fastcall* SetLineDraw)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::ModelNodeLine*, fox::ui::LineDraw*, Vectormath::Aos::Vector4*);
+			void* (__fastcall* ResetLineDraw)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::ModelNodeLine*);
+			void* (__fastcall* GetReceivePropertyValue)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::GraphState*, fox::StringId);
+			void* (__fastcall* EndUpdateGraphState)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::GraphState*);
+			void* (__fastcall* SetModelNodePriority)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::ModelNodeCommon*, char);
+			void* (__fastcall* UpdateModelDrawOrder)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::Model*);
+			void* (__fastcall* SetModelStencil)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::Model*, bool);
+			void* (__fastcall* SetModelNodeBillboard)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::ModelNodeCommon*, bool);
+			void* (__fastcall* GetDrawPriority)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::Layout*);
+			void* (__fastcall* SetDrawPriority)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::Layout*, char);
+			void* (__fastcall* GetDrawPriorityFromTable)(fox::uix::impl::UixUtilityImpl* this_, unsigned int);
+			void* (__fastcall* DisableShaderReset1)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::ModelNodeMesh*);
+			void* (__fastcall* DisableShaderReset2)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::Model*);
+			void* (__fastcall* DisableShaderReset3)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::Layout*);
+			void* (__fastcall* GetGameFrameRawDeltaTime)(fox::uix::impl::UixUtilityImpl* this_);
+			void* (__fastcall* GetGameFrameElapsedTimeSinceStartup)(fox::uix::impl::UixUtilityImpl* this_);
+			void* (__fastcall* RotQuatToEuler)(fox::uix::impl::UixUtilityImpl* this_, Vectormath::Aos::Quat*);
+			void* (__fastcall* RotEulerToQuat)(fox::uix::impl::UixUtilityImpl* this_, Vectormath::Aos::Vector3*);
+			void* (__fastcall* RotEularRadianToDegree)(fox::uix::impl::UixUtilityImpl* this_, Vectormath::Aos::Vector3*);
+			void* (__fastcall* RotEularDegreeToRadian)(fox::uix::impl::UixUtilityImpl* this_, Vectormath::Aos::Vector3*);
+			void* (__fastcall* GetPathIdFromChar)(fox::uix::impl::UixUtilityImpl* this_, char const*);
+			void* (__fastcall* GetPaletteColor)(fox::uix::impl::UixUtilityImpl* this_, fox::StringId);
+		};
+
+		union UixUtilityImpl_vtbl
+		{
+			UixUtilityImpl_vtbl_tpp tpp;
+			UixUtilityImpl_vtbl_mgo mgo;
+		};
+
 		struct UixUtilityImpl
 		{
 			UixUtilityImpl_vtbl* __vftable;
@@ -1270,10 +1589,22 @@ namespace game
 
 	namespace tpp::ui::hud
 	{
-		struct CommonDataManager
+		struct CommonDataManager_mgo
 		{
 			char __pad0[4440];
 			AnnounceLogViewer* announceLogViewer;
+		};
+
+		struct CommonDataManager_tpp
+		{
+			char __pad0[4392];
+			AnnounceLogViewer* announceLogViewer;
+		};
+
+		union CommonDataManager
+		{
+			CommonDataManager_mgo mgo;
+			CommonDataManager_tpp tpp;
 		};
 	}
 

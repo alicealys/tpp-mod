@@ -15,17 +15,29 @@ namespace text_chat
 	vars::var_ptr var_chat_time;
 	vars::var_ptr var_chat_key;
 	vars::var_ptr var_chat_enable;
+	vars::var_ptr var_console_enable;
 
 	char chat_input_prefix[] = "say: ";
+	char console_input_prefix[] = "";
 
 	utils::concurrency::container<chat_state_t, std::recursive_mutex> chat_state;
 
 	bool is_chat_enabled()
 	{
+		if (!game::environment::is_mgo())
+		{
+			return false;
+		}
+
 		return var_chat_enable->current.enabled();
 	}
 
-	bool can_use_chat()
+	bool is_console_enabled()
+	{
+		return var_console_enable->current.enabled();
+	}
+
+	bool can_show_chat()
 	{
 		const auto inst = game::tpp::ui::hud::CommonDataManager_::GetInstance();
 		const auto ui_inst = game::tpp::ui::menu::UiCommonDataManager_::GetInstance();
@@ -35,8 +47,33 @@ namespace text_chat
 			return false;
 		}
 
-		if (game::tpp::ui::menu::UiCommonDataManager_::GetPauseMenuType(ui_inst) != 0 ||
+		if (game::environment::is_tpp())
+		{
+			if (inst->tpp.announceLogViewer == nullptr)
+			{
+				return false;
+			}
+		}
+		else
+		{
+			if (inst->mgo.announceLogViewer == nullptr)
+			{
+				return false;
+			}
+		}
+
+		if (game::tpp::ui::menu::UiCommonDataManager_::GetPauseMenuType(ui_inst) != 0 || 
 			!game::tpp::ui::hud::CommonDataManager_::IsEndLoadingTips(inst))
+		{
+			return false;
+		}
+
+		return true;
+	}
+
+	bool can_use_chat()
+	{
+		if (!game::environment::is_mgo())
 		{
 			return false;
 		}
@@ -76,8 +113,8 @@ namespace text_chat
 		void pre_load() override
 		{
 			var_chat_time = vars::register_int("chat_time", 10000, 0, 60000, vars::var_flag_saved, "chat message duration");
-			var_chat_key = vars::register_string("chat_key", utils::string::va("%c", chat_key_default), vars::var_flag_saved, "key bind to open text chat");
 			var_chat_enable = vars::register_bool("chat_enable", true, vars::var_flag_saved, "enable mgo text chat");
+			var_console_enable = vars::register_bool("game_console_enable", false, vars::var_flag_saved, "enable console");
 		}
 
 		void start() override
@@ -94,11 +131,6 @@ namespace text_chat
 			// utils::hook::set<std::uint32_t>(0x14508D9E0 + 1, chat_size * 0x58 + 8); // mem size
 			// utils::hook::set<std::uint8_t>(0x1406C9176 + 2, static_cast<std::uint8_t>(chat_size)); // cmp
 			// utils::hook::set<std::uint8_t>(0x1463CBF9F + 2, static_cast<std::uint8_t>(chat_size)); // cmp 2
-
-			command::add("clearchat", [](const command::params& params)
-			{
-				reset_chat();
-			});
 		}
 	};
 }
