@@ -107,4 +107,6 @@ namespace utils::string
 	bool strstr_lower(const char* a, const char* b);
 
 	bool is_numeric(const std::string& text);
+
+	std::string trim(const std::string& str, const std::string& whitespace = " \t\n\r\f\v");
 }

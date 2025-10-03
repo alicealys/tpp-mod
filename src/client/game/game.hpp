@@ -2,7 +2,7 @@
 
 #include "structs.hpp"
 
-#define SELECT_VALUE(mgsv, mgo) (game::environment::is_tpp() ? (mgsv) : (mgo))
+#define SELECT_VALUE(tpp, mgo) (game::environment::is_tpp() ? (tpp) : (mgo))
 
 namespace game
 {
