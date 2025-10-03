@@ -5,6 +5,7 @@
 
 #include "text_chat.hpp"
 #include "ui.hpp"
+#include "input.hpp"
 
 #include <utils/hook.hpp>
 #include <utils/string.hpp>
@@ -30,8 +31,6 @@ namespace text_chat::ui
 			log_model.model->__vftable->SetVisible(log_model.model, true);
 
 			const auto uix_utility = game::fox::uix::impl::GetUixUtilityToFeedQuarkEnvironment();
-			uix_utility->__vftable->SetAlpha1(uix_utility, log_model.modelNode, alpha);
-			uix_utility->__vftable->SetColorRGB5(uix_utility, log_model.modelNode, 1.f, 1.f, 1.f);
 			
 			game::fox::StringId string1{};
 			game::fox::StringId string2{};
@@ -54,11 +53,29 @@ namespace text_chat::ui
 
 			const auto show_bg = *text != '\0' && game::tpp::ui::menu::impl::MotherBaseDeviceSystemImpl_::IsDeviceOpend();
 			const auto bg_alpha = show_bg ? alpha * 0.85f : 0.f;
-			uix_utility->__vftable->SetAlpha1(uix_utility, reinterpret_cast<game::fox::ui::ModelNode*>(log_model.modelNodeMesh), bg_alpha);
 
-			uix_utility->__vftable->SetVertexTranslate(uix_utility, log_model.modelNodeMesh, string1, &vector1, &vector2);
-			uix_utility->__vftable->SetVertexTranslate(uix_utility, log_model.modelNodeMesh, string2, &vector1, &vector2);
-			uix_utility->__vftable->SetColorRGB5(uix_utility, reinterpret_cast<game::fox::ui::ModelNode*>(log_model.modelNodeMesh), 0.f, 0.f, 0.f);
+			if (game::environment::is_tpp())
+			{
+				uix_utility->__vftable->tpp.SetAlpha1(uix_utility, log_model.modelNode, alpha);
+				uix_utility->__vftable->tpp.SetColorRGB5(uix_utility, log_model.modelNode, 1.f, 1.f, 1.f);
+
+				uix_utility->__vftable->tpp.SetAlpha1(uix_utility, reinterpret_cast<game::fox::ui::ModelNode*>(log_model.modelNodeMesh), bg_alpha);
+
+				uix_utility->__vftable->tpp.SetVertexTranslate(uix_utility, log_model.modelNodeMesh, string1, &vector1, &vector2);
+				uix_utility->__vftable->tpp.SetVertexTranslate(uix_utility, log_model.modelNodeMesh, string2, &vector1, &vector2);
+				uix_utility->__vftable->tpp.SetColorRGB5(uix_utility, reinterpret_cast<game::fox::ui::ModelNode*>(log_model.modelNodeMesh), 0.f, 0.f, 0.f);
+			}
+			else
+			{
+				uix_utility->__vftable->mgo.SetAlpha1(uix_utility, log_model.modelNode, alpha);
+				uix_utility->__vftable->mgo.SetColorRGB5(uix_utility, log_model.modelNode, 1.f, 1.f, 1.f);
+
+				uix_utility->__vftable->mgo.SetAlpha1(uix_utility, reinterpret_cast<game::fox::ui::ModelNode*>(log_model.modelNodeMesh), bg_alpha);
+
+				uix_utility->__vftable->mgo.SetVertexTranslate(uix_utility, log_model.modelNodeMesh, string1, &vector1, &vector2);
+				uix_utility->__vftable->mgo.SetVertexTranslate(uix_utility, log_model.modelNodeMesh, string2, &vector1, &vector2);
+				uix_utility->__vftable->mgo.SetColorRGB5(uix_utility, reinterpret_cast<game::fox::ui::ModelNode*>(log_model.modelNodeMesh), 0.f, 0.f, 0.f);
+			}
 		}
 
 		void clear_log_text(game::tpp::ui::hud::AnnounceLogViewer* this_)
@@ -75,7 +92,14 @@ namespace text_chat::ui
 			for (auto i = 0; i < 5; i++)
 			{
 				this_->logModels[i].model->__vftable->SetVisible(this_->logModels[i].model, visible);
-				uix_utility->__vftable->SetVisible1(uix_utility, reinterpret_cast<game::fox::ui::ModelNode*>(this_->logModels[i].modelNodeMesh), visible);
+				if (game::environment::is_tpp())
+				{
+					uix_utility->__vftable->tpp.SetVisible1(uix_utility, reinterpret_cast<game::fox::ui::ModelNode*>(this_->logModels[i].modelNodeMesh), visible);
+				}
+				else
+				{
+					uix_utility->__vftable->mgo.SetVisible1(uix_utility, reinterpret_cast<game::fox::ui::ModelNode*>(this_->logModels[i].modelNodeMesh), visible);
+				}
 			}
 		}
 
@@ -179,10 +203,9 @@ namespace text_chat::ui
 			}
 		}
 
-		void update_chat(chat_state_t& state)
+		void update_chat_internal(chat_state_t& state, game::tpp::ui::hud::AnnounceLogViewer* log_viewer)
 		{
-			const auto inst = game::tpp::ui::hud::CommonDataManager_::GetInstance();
-			if (inst == nullptr || inst->announceLogViewer == nullptr)
+			if (log_viewer == nullptr)
 			{
 				return;
 			}
@@ -199,23 +222,42 @@ namespace text_chat::ui
 			{
 				if (was_chat_enabled)
 				{
-					clear_log_text(inst->announceLogViewer);
+					clear_log_text(log_viewer);
 				}
 
 				return;
 			}
 
-			if (!can_use_chat())
+			if (!can_show_chat())
 			{
-				set_log_visible(inst->announceLogViewer, false);
+				input::stop_typing(state);
+				set_log_visible(log_viewer, false);
 				return;
 			}
 
-			set_log_visible(inst->announceLogViewer, true);
+			set_log_visible(log_viewer, true);
 
 			update_chat_sounds(state);
-			update_chat_input(state, inst->announceLogViewer);
-			update_chat_messages(state, inst->announceLogViewer);
+			update_chat_input(state, log_viewer);
+			update_chat_messages(state, log_viewer);
+		}
+
+		void update_chat(chat_state_t& state)
+		{
+			const auto inst = game::tpp::ui::hud::CommonDataManager_::GetInstance();
+			if (inst == nullptr)
+			{
+				return;
+			}
+
+			if (game::environment::is_tpp())
+			{
+				update_chat_internal(state, inst->tpp.announceLogViewer);
+			}
+			else
+			{
+				update_chat_internal(state, inst->mgo.announceLogViewer);
+			}
 		}
 
 		void* update_ui_stub(void* a1)
@@ -252,7 +294,6 @@ namespace text_chat::ui
 
 		if (!is_chat_enabled())
 		{
-			hud_message(msg);
 			return;
 		}
 

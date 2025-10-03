@@ -169,7 +169,7 @@ namespace matchmaking
 
 			if (prev_state != game::s_MgoMatchmakingManager->state)
 			{
-				console::info("[MgoMatchmakingManager] State updated: %i\n", game::s_MgoMatchmakingManager->state);
+				console::debug("[MgoMatchmakingManager] State updated: %i\n", game::s_MgoMatchmakingManager->state);
 			}
 
 			prev_state = game::s_MgoMatchmakingManager->state;

@@ -9,6 +9,13 @@ namespace game
 	namespace fox
 	{
 		WEAK symbol<fox::impl::TimeSystemImpl()> GetTimeSystem{0x1400F28F0, 0x1400F3940};
+		
+		WEAK symbol<bool(fox::RawKeyboardData*, RAWKEYBOARD*)> GetRawKeyboardData{0x141A45940, 0x1414A1D60};
+
+		namespace KeyboardListener_
+		{
+			WEAK symbol<void(fox::RawKeyboardData*)> SetRawKeyData{0x140030BB0, 0x1400304F0};
+		}
 
 		namespace Buffer_
 		{
@@ -36,7 +43,20 @@ namespace game
 		{
 			namespace impl
 			{
-				WEAK symbol<UixUtilityImpl* ()> GetUixUtilityToFeedQuarkEnvironment{0x0, 0x1402BADD0};
+				WEAK symbol<UixUtilityImpl* ()> GetUixUtilityToFeedQuarkEnvironment{0x14050B2A0, 0x1402BADD0};
+			}
+		}
+
+		namespace ui
+		{
+			namespace ModelNode_
+			{
+				WEAK symbol<bool(fox::ui::ModelNode*)> GetWorldVisible{0x141DACF90, 0x0};
+			}
+
+			namespace ModelNodeText_
+			{
+				WEAK symbol<void(fox::ui::ModelNodeText*)> ReleaseBufferAndCache{0x141DB5F70, 0x0};
 			}
 		}
 
@@ -75,8 +95,8 @@ namespace game
 
 				namespace AnnounceLogViewer_
 				{
-					WEAK symbol<char(void* a1, const char* text, char a3, char a4, char a5)> CallLogView{0x0, 0x1463CA640};
-					WEAK symbol<char(AnnounceLogViewer*, char)> ModelInit{0x0, 0x1406C9150};
+					WEAK symbol<char(void* a1, const char* text, char a3, char a4, char a5)> CallLogView{0x14093E510, 0x1463CA640};
+					WEAK symbol<char(AnnounceLogViewer*, char)> ModelInit{0x14093E810, 0x1406C9150};
 				}
 			}
 
@@ -95,7 +115,7 @@ namespace game
 
 					namespace MotherBaseDeviceSystemImpl_
 					{
-						WEAK symbol<bool()> IsDeviceOpend{0x0, 0x148E4AB20};
+						WEAK symbol<bool()> IsDeviceOpend{0x145DD1FA0, 0x148E4AB20};
 					}
 				}
 			}
@@ -111,7 +131,7 @@ namespace game
 				WEAK symbol<bool(fox::ui::SoundControl*, unsigned int)> StartSound{0x14091AFA0, 0x14068D180};
 				WEAK symbol<bool(fox::ui::SoundControl*, unsigned int)> StopSound{0x14091B0D0, 0x14068D2B0};
 
-				WEAK symbol<bool(fox::ui::ModelNodeText*, fox::ui::TextUnit*, const char*)> SetTextForModelNodeText{0x0, 0x140689CD0};
+				WEAK symbol<bool(fox::ui::ModelNodeText*, fox::ui::TextUnit*, const char*)> SetTextForModelNodeText{0x1409171D0, 0x140689CD0};
 
 				namespace UiUtilityImpl_
 				{
@@ -187,4 +207,9 @@ namespace game
 	WEAK symbol<bool> g_needShowCursor{0x0, 0x141F69E66};
 
 	WEAK symbol<fox::Lua*> s_instances{0x142B641F0, 0x141F28240};
+
+	namespace fox
+	{
+		WEAK symbol<int> g_vkKeyTable{0x142C6C2C0, 0x1420E4C70};
+	}
 }

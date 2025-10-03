@@ -353,11 +353,13 @@ namespace command
 				if (game::environment::is_mgo())
 				{
 					command::execute("exec config_mgo.cfg", true);
+					command::execute("exec keys_mgo.cfg", true);
 
 				}
 				else
 				{
 					command::execute("exec config_tpp.cfg", true);
+					command::execute("exec keys_tpp.cfg", true);
 				}
 			}
 

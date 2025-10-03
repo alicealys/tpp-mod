@@ -27,6 +27,7 @@ namespace text_chat
 	constexpr auto chat_key_default = 'Y';
 
 	extern char chat_input_prefix[];
+	extern char console_input_prefix[];
 
 	using message_buffer_t = char[128];
 
@@ -44,6 +45,13 @@ namespace text_chat
 		std::chrono::milliseconds duration;
 	};
 
+	enum chat_mode_t
+	{
+		mode_none,
+		mode_chat,
+		mode_console,
+	};
+
 	struct chat_state_t
 	{
 		std::deque<chat_message_t> messages;
@@ -51,6 +59,7 @@ namespace text_chat
 		int message_index;
 		bool is_typing;
 		bool block_input;
+		chat_mode_t mode;
 		message_buffer_t input;
 		int cursor;
 		std::vector<sound_play_t> sounds;
@@ -59,6 +68,8 @@ namespace text_chat
 	extern utils::concurrency::container<chat_state_t, std::recursive_mutex> chat_state;
 
 	bool is_chat_enabled();
+	bool is_console_enabled();
+	bool can_show_chat();
 	bool can_use_chat();
 
 	bool is_char_text(char c);
