@@ -60,14 +60,56 @@ namespace command
 		{
 			std::vector<std::string> res;
 
-			const auto args = utils::string::split(str, ' ');
-			for (const auto& arg : args)
+			std::string current_token;
+			auto is_in_quotes = false;
+			auto is_in_word = false;
+
+			const auto add_token = [&]
 			{
-				if (!arg.empty())
+				if (!current_token.empty())
 				{
-					res.emplace_back(arg);
+					res.emplace_back(current_token);
+					current_token.clear();
+				}
+			};
+
+			for (const auto& c : str)
+			{
+				if (c == '"' && !is_in_word)
+				{
+					if (is_in_quotes)
+					{
+						add_token();
+					}
+
+					is_in_quotes = !is_in_quotes;
+					continue;
+				}
+				else if (c == ' ')
+				{
+					if (is_in_quotes)
+					{
+						current_token.push_back(c);
+					}
+					else
+					{
+						is_in_word = false;
+						add_token();
+						continue;
+					}
+				}
+				else
+				{
+					if (!is_in_quotes)
+					{
+						is_in_word = true;
+					}
+
+					current_token.push_back(c);
 				}
 			}
+
+			add_token();
 
 			return res;
 		}
@@ -144,6 +186,7 @@ namespace command
 					else if (!is_in_comment && cur == '"')
 					{
 						is_in_quotes = !is_in_quotes;
+						cmd_buffer += cur;
 					}
 					else if (!is_in_comment)
 					{
@@ -307,7 +350,15 @@ namespace command
 		{
 			if (!game::environment::is_dedi())
 			{
-				command::execute("exec config.cfg", true);
+				if (game::environment::is_mgo())
+				{
+					command::execute("exec config_mgo.cfg", true);
+
+				}
+				else
+				{
+					command::execute("exec config_tpp.cfg", true);
+				}
 			}
 
 			parse_command_line();

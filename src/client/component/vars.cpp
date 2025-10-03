@@ -131,7 +131,8 @@ namespace vars
 
 		std::string get_config_file_path()
 		{
-			return (utils::properties::get_appdata_path() / "config.cfg").generic_string();
+			static const auto file = SELECT_VALUE("config_tpp.cfg", "config_mgo.cfg");
+			return (utils::properties::get_appdata_path() / file).generic_string();
 		}
 
 		void write_config()
@@ -444,10 +445,10 @@ namespace vars
 			const auto latched_str = var->latched.to_string();
 			const auto reset_str = var->reset.to_string();
 
-			printf("\"%s\" is: \"%s\" latched: \"%s\" default: \"%s\" type: \"%s\" flags: %i\n",
+			console::info("\"%s\" is: \"%s\" latched: \"%s\" default: \"%s\" type: \"%s\" flags: %i\n",
 				var->name.data(), current_str.data(), latched_str.data(), reset_str.data(), var->current.type_name(), var->flags);
-			printf("%s\n", var->description.data());
-			printf("   %s\n", get_var_domain(var));
+			console::info("%s\n", var->description.data());
+			console::info("   %s\n", get_var_domain(var));
 			return true;
 		}
 
@@ -499,7 +500,7 @@ namespace vars
 				for (const auto& var : get_var_list())
 				{
 					const auto current_str = var->current.to_string();
-					printf("%s \"%s\"\n", var->name.data(), current_str.data());
+					console::info("%s \"%s\"\n", var->name.data(), current_str.data());
 				}
 			});
 		}
@@ -511,7 +512,7 @@ namespace vars
 
 		void start() override
 		{
-
+			write_config();
 		}
 
 		void post_start() override
