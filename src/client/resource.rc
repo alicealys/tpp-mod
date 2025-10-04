@@ -93,7 +93,8 @@ END
 // Binary Data
 //
 
-
+RESOURCE_KEYS_TPP       RCDATA "resources/keys_tpp.cfg"
+RESOURCE_KEYS_MGO       RCDATA "resources/keys_mgo.cfg"
 
 #endif    // English (United States) resources
 /////////////////////////////////////////////////////////////////////////////

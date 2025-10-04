@@ -5,6 +5,7 @@
 
 #include "console.hpp"
 #include "command.hpp"
+#include "filesystem.hpp"
 
 #include "text_chat/input.hpp"
 
@@ -338,6 +339,9 @@ namespace binds
 	public:
 		void pre_load() override
 		{
+			filesystem::register_resource_file("keys_tpp.cfg", RESOURCE_KEYS_TPP);
+			filesystem::register_resource_file("keys_mgo.cfg", RESOURCE_KEYS_MGO);
+
 			command::add("unbindall", [](const command::params& params)
 			{
 				binds.clear();

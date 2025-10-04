@@ -25,6 +25,9 @@ namespace utils::nt
 		static library load(const std::filesystem::path& path);
 		static library get_by_address(void* address);
 
+		static void set_current_handle(HMODULE handle);
+		static HMODULE get_current_handle();
+
 		library();
 		explicit library(const std::string& name);
 		explicit library(HMODULE handle);
@@ -100,11 +103,10 @@ namespace utils::nt
 
 	private:
 		HMODULE module_;
+		static HMODULE current_handle_;
+
 	};
 
 	__declspec(noreturn) void raise_hard_exception();
 	std::string load_resource(int id);
-
-	void relaunch_self(const std::string& extra_command_line = "", bool override_command_line = false);
-	__declspec(noreturn) void terminate(uint32_t code = 0);
 }

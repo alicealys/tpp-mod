@@ -10,6 +10,8 @@ namespace filesystem
 	void register_path(const std::filesystem::path& path);
 	void unregister_path(const std::filesystem::path& path);
 
+	void register_resource_file(const std::string& path, const int resource_id);
+
 	std::vector<std::string> get_search_paths();
 	std::vector<std::string> get_search_paths_rev();
 

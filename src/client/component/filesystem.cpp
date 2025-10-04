@@ -15,6 +15,18 @@ namespace filesystem
 {
 	namespace
 	{
+		struct resource_file_t
+		{
+			std::string path;
+			int resource_id;
+		};
+
+		std::unordered_map<std::string, int>& get_resource_files()
+		{
+			static std::unordered_map<std::string, int> resource_files{};
+			return resource_files;
+		}
+
 		std::deque<std::filesystem::path>& get_search_paths_internal()
 		{
 			static std::deque<std::filesystem::path> search_paths{};
@@ -55,68 +67,65 @@ namespace filesystem
 
 			return false;
 		}
+
+		bool read_file_internal(const std::string& path, std::string* data = nullptr, std::string* real_path = nullptr)
+		{
+			const auto set_result = [&](const std::string& data_, const std::string& real_path_)
+			{
+				if (data != nullptr)
+				{
+					*data = data_;
+				}
+
+				if (real_path != nullptr)
+				{
+					*real_path = real_path_;
+				}
+			};
+
+			for (const auto& search_path : get_search_paths_internal())
+			{
+				const auto full_path = (search_path / path).generic_string();
+				if (utils::io::file_exists(full_path))
+				{
+					set_result(utils::io::read_file(full_path), full_path);
+					return true;
+				}
+			}
+
+			auto& resource_files = get_resource_files();
+			const auto iter = resource_files.find(path);
+			if (iter == resource_files.end())
+			{
+				return false;
+			}
+
+			set_result(utils::nt::load_resource(iter->second), "");
+			return true;
+		}
 	}
 
 	std::string read_file(const std::string& path)
 	{
-		for (const auto& search_path : get_search_paths_internal())
-		{
-			const auto path_ = search_path / path;
-			if (utils::io::file_exists(path_.generic_string()))
-			{
-				return utils::io::read_file(path_.generic_string());
-			}
-		}
-
-		return {};
+		std::string data;
+		read_file_internal(path, &data);
+		return data;
 	}
 
 	bool read_file(const std::string& path, std::string* data, std::string* real_path)
 	{
-		for (const auto& search_path : get_search_paths_internal())
-		{
-			const auto path_ = search_path / path;
-			if (utils::io::read_file(path_.generic_string(), data))
-			{
-				if (real_path != nullptr)
-				{
-					*real_path = path_.generic_string();
-				}
-
-				return true;
-			}
-		}
-
-		return false;
+		return read_file_internal(path, data, real_path);
 	}
 
 	bool find_file(const std::string& path, std::string* real_path)
 	{
-		for (const auto& search_path : get_search_paths_internal())
-		{
-			const auto path_ = search_path / path;
-			if (utils::io::file_exists(path_.generic_string()))
-			{
-				*real_path = path_.generic_string();
-				return true;
-			}
-		}
-
-		return false;
+		std::string data;
+		return read_file_internal(path, &data, real_path);
 	}
 
 	bool exists(const std::string& path)
 	{
-		for (const auto& search_path : get_search_paths_internal())
-		{
-			const auto path_ = search_path / path;
-			if (utils::io::file_exists(path_.generic_string()))
-			{
-				return true;
-			}
-		}
-
-		return false;
+		return read_file_internal(path);
 	}
 
 	void register_path(const std::filesystem::path& path)
@@ -151,6 +160,11 @@ namespace filesystem
 				}
 			}
 		}
+	}
+
+	void register_resource_file(const std::string& path, const int resource_id)
+	{
+		get_resource_files()[path] = resource_id;
 	}
 
 	std::vector<std::string> get_search_paths()
@@ -193,7 +207,6 @@ namespace filesystem
 
 		static std::vector<std::filesystem::path> allowed_directories =
 		{
-			{std::filesystem::weakly_canonical("mods")},
 			{std::filesystem::weakly_canonical("tpp-mod")},
 		};
 

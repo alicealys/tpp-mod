@@ -3,6 +3,8 @@
 
 namespace utils::nt
 {
+	HMODULE library::current_handle_;
+
 	library library::load(const std::string& name)
 	{
 		return library(LoadLibraryA(name.data()));
@@ -18,6 +20,16 @@ namespace utils::nt
 		HMODULE handle = nullptr;
 		GetModuleHandleExA(GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS | GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT, static_cast<LPCSTR>(address), &handle);
 		return library(handle);
+	}
+
+	void library::set_current_handle(HMODULE handle)
+	{
+		current_handle_ = handle;
+	}
+
+	HMODULE library::get_current_handle()
+	{
+		return current_handle_;
 	}
 
 	library::library()
@@ -94,7 +106,7 @@ namespace utils::nt
 
 		DWORD protection;
 		VirtualProtect(this->get_ptr(), this->get_optional_header()->SizeOfImage, PAGE_EXECUTE_READWRITE,
-		               &protection);
+			&protection);
 	}
 
 	size_t library::get_relative_entry_point() const
@@ -217,51 +229,21 @@ namespace utils::nt
 
 	std::string load_resource(const int id)
 	{
-		auto* const res = FindResource(library(), MAKEINTRESOURCE(id), RT_RCDATA);
-		if (!res) return {};
-
-		auto* const handle = LoadResource(nullptr, res);
-		if (!handle) return {};
-
-		return std::string(LPSTR(LockResource(handle)), SizeofResource(nullptr, res));
-	}
-
-	void relaunch_self(const std::string& extra_command_line, bool override_command_line)
-	{
-		const utils::nt::library self;
-
-		STARTUPINFOA startup_info;
-		PROCESS_INFORMATION process_info;
-
-		ZeroMemory(&startup_info, sizeof(startup_info));
-		ZeroMemory(&process_info, sizeof(process_info));
-		startup_info.cb = sizeof(startup_info);
-
-		char current_dir[MAX_PATH]{};
-		GetCurrentDirectoryA(sizeof(current_dir), current_dir);
-
-		std::string command_line = GetCommandLineA();
-		if (!extra_command_line.empty())
+		const auto self_handle = library::get_current_handle();
+		const auto res = FindResource(self_handle, MAKEINTRESOURCE(id), RT_RCDATA);
+		if (res == nullptr)
 		{
-			if (override_command_line)
-			{
-				command_line = extra_command_line;
-			}
-			else
-			{
-				command_line += " " + extra_command_line;
-			}
+			return {};
 		}
 
-		CreateProcessA(self.get_path().data(), command_line.data(), nullptr, nullptr, false, 
-			CREATE_NEW_CONSOLE, nullptr, current_dir, &startup_info, &process_info);
+		const auto handle = LoadResource(self_handle, res);
+		if (handle == nullptr)
+		{
+			return {};
+		}
 
-		if (process_info.hThread && process_info.hThread != INVALID_HANDLE_VALUE) CloseHandle(process_info.hThread);
-		if (process_info.hProcess && process_info.hProcess != INVALID_HANDLE_VALUE) CloseHandle(process_info.hProcess);
-	}
-
-	void terminate(const uint32_t code)
-	{
-		TerminateProcess(GetCurrentProcess(), code);
+		const auto str = LPSTR(LockResource(handle));
+		const auto size = SizeofResource(self_handle, res);
+		return std::string{str, size};
 	}
 }
