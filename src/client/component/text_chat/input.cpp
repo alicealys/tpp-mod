@@ -77,9 +77,6 @@ namespace text_chat::input
 			{
 				console::info("]%s", state.input);
 				command::execute(state.input);
-				std::memset(state.input, 0, sizeof(state.input));
-				state.cursor = 0;
-				state.mode = mode_console;
 			}
 			else if (state.mode == mode_chat)
 			{
@@ -87,9 +84,9 @@ namespace text_chat::input
 				{
 					lobby::send_chat_message(state.input);
 				}
-
-				stop_typing(state);
 			}
+
+			stop_typing(state);
 		}
 
 		void handle_paste(chat_state_t& state)
@@ -142,88 +139,148 @@ namespace text_chat::input
 				is_first = false;
 			}
 		}
+
+		void handle_up(chat_state_t& state)
+		{
+			if (++state.history_index >= state.history.size())
+			{
+				state.history_index = static_cast<int>(state.history.size()) - 1;
+			}
+
+			std::memset(state.input, 0, sizeof(state.input));
+			state.cursor = 0;
+
+			if (state.history_index != -1)
+			{
+				strncpy_s(state.input, state.history.at(state.history_index).data(), sizeof(state.input));
+				state.cursor = static_cast<int>(std::strlen(state.input));
+			}
+		}
+
+		void handle_down(chat_state_t& state)
+		{
+			if (--state.history_index < -1)
+			{
+				state.history_index = -1;
+			}
+
+			std::memset(state.input, 0, sizeof(state.input));
+			state.cursor = 0;
+
+			if (state.history_index != -1)
+			{
+				strncpy_s(state.input, state.history.at(state.history_index).data(), sizeof(state.input));
+				state.cursor = static_cast<int>(strlen(state.input));
+			}
+		}
+
+		void update_history(chat_state_t& state)
+		{
+			if (state.history_index != -1)
+			{
+				const auto itr = state.history.begin() + state.history_index;
+
+				if (*itr == state.input)
+				{
+					state.history.erase(state.history.begin() + state.history_index);
+				}
+			}
+
+			if (state.input[0])
+			{
+				state.history.push_front(state.input);
+			}
+
+			if (state.history.size() > 10)
+			{
+				state.history.erase(state.history.begin() + 10);
+			}
+
+			state.history_index = -1;
+		}
 	}
 
-	void handle_typing(UINT msg, WPARAM w_param, LPARAM l_param)
+	bool handle_key(const int key, const bool is_down)
 	{
-		chat_state.access([&](chat_state_t& state)
+		return chat_state.access<bool>([&](chat_state_t& state)
 		{
-			if (!is_console_enabled() && !is_chat_enabled())
+			if (!state.is_typing)
 			{
+				return false;
+			}
+
+			if (!is_down)
+			{
+				return true;
+			}
+
+			switch (key)
+			{
+			case VK_UP:
+				handle_up(state);
+				break;
+			case VK_DOWN:
+				handle_down(state);
+				break;
+			case VK_LEFT:
+				move_cursor(state, false);
+				break;
+			case VK_RIGHT:
+				move_cursor(state, true);
+				break;
+			case 0x16:
+				handle_paste(state);
+				break;
+			case VK_TAB:
+				handle_tab(state);
+				break;
+			case VK_ESCAPE:
 				stop_typing(state);
-				return;
-			}
-
-			switch (msg)
-			{
-			case WM_MOUSEWHEEL:
-			{
-				if (state.is_typing)
-				{
-					const auto delta = GET_WHEEL_DELTA_WPARAM(w_param);
-					const auto decrease = delta < 0;
-					const auto max_offset = std::max(0, static_cast<int>(state.messages.size()) - chat_view_size);
-
-					const auto prev_offset = state.chat_offset;
-					state.chat_offset = std::min(std::max(0, state.chat_offset + (1 - 2 * decrease)), max_offset);
-
-					if (state.chat_offset != prev_offset)
-					{
-						ui::add_sound(chat_scroll_sound_id, 1ms);
-					}
-				}
-
 				break;
-			}
-			case WM_KEYDOWN:
-			{
-				switch (w_param)
-				{
-				case VK_LEFT:
-					move_cursor(state, false);
-					break;
-				case VK_RIGHT:
-					move_cursor(state, true);
-					break;
-				}
+			case VK_BACK:
+				handle_backspace(state);
 				break;
-			}
-			case WM_CHAR:
+			case VK_RETURN:
+				update_history(state);
+				handle_return(state);
+				break;
+			case 0x7F:
+				handle_delete(state);
+				break;
+			default:
 			{
-				const auto c = static_cast<char>(w_param);
-
+				const auto c = static_cast<char>(key);
 				if (is_char_text(c))
 				{
 					handle_char(state, c);
 				}
-				else
-				{
-					switch (w_param)
-					{
-					case 0x16:
-						handle_paste(state);
-						break;
-					case VK_TAB:
-						handle_tab(state);
-						break;
-					case VK_ESCAPE:
-						stop_typing(state);
-						break;
-					case VK_BACK:
-						handle_backspace(state);
-						break;
-					case VK_RETURN:
-						handle_return(state);
-						break;
-					case 0x7F:
-						handle_delete(state);
-						break;
-					}
-				}
+			}
+			}
 
-				break;
+			return true;
+		});
+	}
+
+	bool handle_mousewheel(const bool down)
+	{
+		return chat_state.access<bool>([&](chat_state_t& state)
+		{
+			if (!state.is_typing)
+			{
+				return false;
 			}
+
+			const auto max_offset = std::max(0, static_cast<int>(state.messages.size()) - chat_view_size);
+
+			const auto prev_offset = state.chat_offset;
+			state.chat_offset = std::min(std::max(0, state.chat_offset + (1 - 2 * down)), max_offset);
+
+			if (state.chat_offset != prev_offset)
+			{
+				ui::add_sound(chat_scroll_sound_id, 1ms);
 			}
+
+			return true;
 		});
 	}
 

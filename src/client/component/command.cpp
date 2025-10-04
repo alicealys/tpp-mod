@@ -56,64 +56,6 @@ namespace command
 			parsed = true;
 		}
 
-		std::vector<std::string> tokenize_string(const std::string& str)
-		{
-			std::vector<std::string> res;
-
-			std::string current_token;
-			auto is_in_quotes = false;
-			auto is_in_word = false;
-
-			const auto add_token = [&]
-			{
-				if (!current_token.empty())
-				{
-					res.emplace_back(current_token);
-					current_token.clear();
-				}
-			};
-
-			for (const auto& c : str)
-			{
-				if (c == '"' && !is_in_word)
-				{
-					if (is_in_quotes)
-					{
-						add_token();
-					}
-
-					is_in_quotes = !is_in_quotes;
-					continue;
-				}
-				else if (c == ' ')
-				{
-					if (is_in_quotes)
-					{
-						current_token.push_back(c);
-					}
-					else
-					{
-						is_in_word = false;
-						add_token();
-						continue;
-					}
-				}
-				else
-				{
-					if (!is_in_quotes)
-					{
-						is_in_word = true;
-					}
-
-					current_token.push_back(c);
-				}
-			}
-
-			add_token();
-
-			return res;
-		}
-
 		void execute_single(const std::string& cmd)
 		{
 			const auto args = tokenize_string(cmd);
@@ -320,6 +262,64 @@ namespace command
 		}
 
 		return {};
+	}
+
+	std::vector<std::string> tokenize_string(const std::string& str)
+	{
+		std::vector<std::string> res;
+
+		std::string current_token;
+		auto is_in_quotes = false;
+		auto is_in_word = false;
+
+		const auto add_token = [&]
+		{
+			if (!current_token.empty())
+			{
+				res.emplace_back(current_token);
+				current_token.clear();
+			}
+		};
+
+		for (const auto& c : str)
+		{
+			if (c == '"' && !is_in_word)
+			{
+				if (is_in_quotes)
+				{
+					add_token();
+				}
+
+				is_in_quotes = !is_in_quotes;
+				continue;
+			}
+			else if (c == ' ')
+			{
+				if (is_in_quotes)
+				{
+					current_token.push_back(c);
+				}
+				else
+				{
+					is_in_word = false;
+					add_token();
+					continue;
+				}
+			}
+			else
+			{
+				if (!is_in_quotes)
+				{
+					is_in_word = true;
+				}
+
+				current_token.push_back(c);
+			}
+		}
+
+		add_token();
+
+		return res;
 	}
 
 	class component final : public component_interface
