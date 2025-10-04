@@ -43,10 +43,12 @@ namespace
 	}
 }
 
-BOOL WINAPI DllMain(HINSTANCE, const DWORD reason, LPVOID)
+BOOL WINAPI DllMain(HINSTANCE handle, const DWORD reason, LPVOID)
 {
 	if (reason == DLL_PROCESS_ATTACH)
 	{
+		utils::nt::library::set_current_handle(handle);
+
 		if (!start())
 		{
 			return FALSE;
