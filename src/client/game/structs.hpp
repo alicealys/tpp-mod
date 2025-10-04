@@ -259,8 +259,14 @@ namespace game
 	namespace fox
 	{
 		struct Rgba8;
-		struct Color;
 		struct Path;
+
+		union Color
+		{
+			float values[4];
+			__m128 value;
+		};
+
 
 		struct Buffer
 		{
@@ -339,6 +345,16 @@ namespace game
 				__int16 a9;
 			};
 
+			struct Packet2DBuffer
+			{
+				void* a1;
+				void* a2;
+				void* packet;
+				void* a4;
+				int packetSize;
+				int flags;
+				int a6;
+			};
 		}
 
 		namespace impl
@@ -460,9 +476,10 @@ namespace game
 				void* f7;
 				void* f8;
 				int f9;
-				void* f10;
+				int f10;
+				int packetBufferSize;
 				char __pad3[4];
-				void** packetBuffer;
+				fox::gr::Packet2DBuffer* packetBuffer;
 				void* f12;
 				short f13;
 				char f14;

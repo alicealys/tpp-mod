@@ -254,15 +254,31 @@ namespace text_chat::input
 
 		void start() override
 		{
-			if (!game::environment::is_mgo())
+			command::add("openconsole", []
 			{
-				return;
-			}
+				if (!is_console_enabled() || !can_show_chat())
+				{
+					return;
+				}
+
+				chat_state.access([](chat_state_t& state)
+				{
+					stop_typing(state);
+					state.is_typing = true;
+					state.block_input = true;
+					state.mode = mode_console;
+				});
+			});
 
 			command::add("clearchat", [](const command::params& params)
 			{
 				reset_chat();
 			});
+
+			if (!game::environment::is_mgo())
+			{
+				return;
+			}
 
 			command::add("chatall", []
 			{
