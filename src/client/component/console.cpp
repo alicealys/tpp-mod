@@ -5,9 +5,11 @@
 #include "game/game.hpp"
 #include "command.hpp"
 #include "vars.hpp"
+#include "text_chat/ui.hpp"
 
 #include <utils/thread.hpp>
 #include <utils/hook.hpp>
+#include <utils/string.hpp>
 
 #define OUTPUT_HANDLE GetStdHandle(STD_OUTPUT_HANDLE)
 
@@ -128,6 +130,8 @@ namespace console
 			{
 				invoke_printf("\n");
 			}
+
+			text_chat::ui::print(utils::string::trim(message), false);
 
 			update();
 			return res;
