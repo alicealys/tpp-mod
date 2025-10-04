@@ -261,12 +261,30 @@ namespace game
 		struct Rgba8;
 		struct Path;
 
+
+		struct Quark
+		{
+			struct vtable
+			{
+				void(__fastcall* __destructor)(fox::Quark*);
+				void(__fastcall* Initialize)(fox::Quark*);
+				void(__fastcall* Terminate)(fox::Quark*);
+				void(__fastcall* GetInterface)(fox::Quark*);
+				void(__fastcall* CancelPermit)(fox::Quark*);
+				void(__fastcall* GetCreator)(fox::Quark*);
+			};
+
+			vtable* __vftable;
+			void* a1;
+			void* a3;
+			void* a4;
+		};
+
 		union Color
 		{
 			float values[4];
 			__m128 value;
 		};
-
 
 		struct Buffer
 		{
@@ -1055,6 +1073,223 @@ namespace game
 
 			void* a1;
 			LogModel logModels[5];
+		};
+	}
+
+	namespace tpp::gm::player
+	{
+		enum PlayerSlotType : std::uint32_t
+		{
+			PRIMARY_1,
+			PRIMARY_2,
+			SECONDARY,
+			SUPPORT,
+			ITEM,
+			STOLE,
+			HAND,
+		};
+
+		namespace impl
+		{
+			struct EquipControllerImpl_tpp;
+
+			struct EquipControllerImpl_tpp
+			{
+				struct vtable
+				{
+					void(__fastcall* InitializePlayerAtIndex)(tpp::gm::player::impl::EquipControllerImpl_tpp*);
+					void(__fastcall* SetupWeapon)(tpp::gm::player::impl::EquipControllerImpl_tpp*, unsigned int, int, int, unsigned __int8, unsigned int, unsigned int, bool);
+					void(__fastcall* SetCurrentSlot)(tpp::gm::player::impl::EquipControllerImpl_tpp*, unsigned int, PlayerSlotType, unsigned __int8, char, char, int);
+					void(__fastcall* SetSlotDirectly)(tpp::gm::player::impl::EquipControllerImpl_tpp*, unsigned int, unsigned int, int, int, bool, bool);
+					void* (__fastcall* UnsetSlot)(tpp::gm::player::impl::EquipControllerImpl_tpp*, unsigned int, unsigned int);
+					void* (__fastcall* UnsetSlots)(tpp::gm::player::impl::EquipControllerImpl_tpp*, unsigned int);
+					void* (__fastcall* GetCurrentWeapon)(tpp::gm::player::impl::EquipControllerImpl_tpp*, unsigned int);
+					unsigned __int8(__fastcall* GetCurrentEquipSlot)(tpp::gm::player::impl::EquipControllerImpl_tpp*, unsigned int);
+					void* (__fastcall* GetCurrentActiveWeaponSlot)(tpp::gm::player::impl::EquipControllerImpl_tpp*, unsigned int);
+					void* (__fastcall* SetCurrentActiveWeaponSlot)(tpp::gm::player::impl::EquipControllerImpl_tpp*, unsigned int, int);
+					unsigned __int8(__fastcall* GetCurrentSupportIndex)(tpp::gm::player::impl::EquipControllerImpl_tpp*, unsigned int);
+					unsigned __int8(__fastcall* GetCurrentItemIndex)(tpp::gm::player::impl::EquipControllerImpl_tpp*, unsigned int);
+					void* (__fastcall* GetLastItemIndex)(tpp::gm::player::impl::EquipControllerImpl_tpp*, unsigned int);
+					void* (__fastcall* SetCurrentItemIndex)(tpp::gm::player::impl::EquipControllerImpl_tpp*, unsigned int, unsigned int, bool);
+					void* (__fastcall* SetCurrentItemIdToEquipHud)(tpp::gm::player::impl::EquipControllerImpl_tpp*, unsigned int, unsigned int);
+					void* (__fastcall* SetOriginalOwner)(tpp::gm::player::impl::EquipControllerImpl_tpp*, unsigned int, int, int);
+					void* (__fastcall* GetOriginalOwner)(tpp::gm::player::impl::EquipControllerImpl_tpp*, unsigned int, int);
+					void* (__fastcall* GetCurrentEquipId)(tpp::gm::player::impl::EquipControllerImpl_tpp*, unsigned int);
+					void* (__fastcall* GetEquipIdSlot)(tpp::gm::player::impl::EquipControllerImpl_tpp*, unsigned int, int, unsigned int);
+					void* (__fastcall* SetEquipState)(tpp::gm::player::impl::EquipControllerImpl_tpp*, unsigned int, int, unsigned int, int, unsigned __int8, bool, unsigned __int8);
+					void* (__fastcall* SetSlot)(tpp::gm::player::impl::EquipControllerImpl_tpp*, unsigned int, int, int, int, bool, bool);
+					void* (__fastcall* SetAmmoCount)(tpp::gm::player::impl::EquipControllerImpl_tpp*, unsigned int, int, unsigned int, bool);
+					void* (__fastcall* GetAmmoStockIndexBySlot)(tpp::gm::player::impl::EquipControllerImpl_tpp*, int, unsigned int);
+					void* (__fastcall* SetAmmoStockCountWithMax)(tpp::gm::player::impl::EquipControllerImpl_tpp*, int, int, unsigned int, unsigned int);
+					void* (__fastcall* SetAmmoStockCount)(tpp::gm::player::impl::EquipControllerImpl_tpp*, int, int, unsigned int);
+					void* (__fastcall* GetItemStockCount)(tpp::gm::player::impl::EquipControllerImpl_tpp*, int);
+					void* (__fastcall* IncrementItemStockCount)(tpp::gm::player::impl::EquipControllerImpl_tpp*, int, unsigned int);
+					void* (__fastcall* DecrementItemStockCount)(tpp::gm::player::impl::EquipControllerImpl_tpp*, int, unsigned int);
+					void* (__fastcall* SetBatteryByStockCount)(tpp::gm::player::impl::EquipControllerImpl_tpp*, unsigned short, int, int, int, int, unsigned __int8, bool);
+					void* (__fastcall* SetBattery)(tpp::gm::player::impl::EquipControllerImpl_tpp*, float, int, int, int, int, unsigned __int8, bool);
+					void* (__fastcall* UpdateBattery)(tpp::gm::player::impl::EquipControllerImpl_tpp*, unsigned int);
+					void* (__fastcall* RemoveFromAmmoStock)(tpp::gm::player::impl::EquipControllerImpl_tpp*, int);
+					void* (__fastcall* CalcAmmoAndStockIfPickUp)(tpp::gm::player::impl::EquipControllerImpl_tpp*, int, unsigned short, unsigned int, int&, int&, int&);
+					void* (__fastcall* SetCurrentWeaponToEquipHud)(tpp::gm::player::impl::EquipControllerImpl_tpp*);
+					void* (__fastcall* SetWeaponToEquipHud)(tpp::gm::player::impl::EquipControllerImpl_tpp*, int, unsigned __int8, int);
+					void* (__fastcall* ConvertPlayerIndexToAccessType)(tpp::gm::player::impl::EquipControllerImpl_tpp*, unsigned int);
+					void* (__fastcall* UpdateAmmoToEquipHud)(tpp::gm::player::impl::EquipControllerImpl_tpp*);
+					void* (__fastcall* CreateSupplyAmmoBox)(tpp::gm::player::impl::EquipControllerImpl_tpp*, unsigned int, void*, unsigned int, unsigned __int8*);
+					void* (__fastcall* GetItemLevel)(tpp::gm::player::impl::EquipControllerImpl_tpp*, int);
+					void* (__fastcall* SetItemLevel)(tpp::gm::player::impl::EquipControllerImpl_tpp*, int, unsigned int);
+					void* (__fastcall* GetItemLevelDeveloped)(tpp::gm::player::impl::EquipControllerImpl_tpp*, int);
+					void* (__fastcall* SetSuppressorLife)(tpp::gm::player::impl::EquipControllerImpl_tpp*, unsigned int, int, unsigned __int8);
+					void* (__fastcall* SetUseSuppressor)(tpp::gm::player::impl::EquipControllerImpl_tpp*, unsigned int, int, bool, bool);
+					void* (__fastcall* SetUseFlashLight)(tpp::gm::player::impl::EquipControllerImpl_tpp*, unsigned int, int, bool, bool);
+					void* (__fastcall* SetUnderBarrelMode)(tpp::gm::player::impl::EquipControllerImpl_tpp*, unsigned int, int, bool);
+					void* (__fastcall* SetMagAttachTo2nd)(tpp::gm::player::impl::EquipControllerImpl_tpp*, unsigned int, int, bool);
+					void* (__fastcall* IsCurrenWeaponNoUse)(tpp::gm::player::impl::EquipControllerImpl_tpp*);
+					void* (__fastcall* UpdateTextureStreamer)(tpp::gm::player::impl::EquipControllerImpl_tpp*);
+					void* (__fastcall* IsLargeTextureLoaded)(tpp::gm::player::impl::EquipControllerImpl_tpp*);
+					void* (__fastcall* SetVisibilityToEquip)(tpp::gm::player::impl::EquipControllerImpl_tpp*, unsigned int, void*);
+					void* (__fastcall* ChangeEquip)(tpp::gm::player::impl::EquipControllerImpl_tpp*, unsigned int, void*);
+					void* (__fastcall* UnsetEquip)(tpp::gm::player::impl::EquipControllerImpl_tpp*, unsigned int, void*);
+					void* (__fastcall* SetupWeaponToTemporarySlot)(tpp::gm::player::impl::EquipControllerImpl_tpp*, unsigned int, unsigned int, void*, int);
+					void* (__fastcall* UnsetTemporaryWeapon)(tpp::gm::player::impl::EquipControllerImpl_tpp*, unsigned int, bool);
+					void* (__fastcall* RestoreWeaponSlotFromTemporarySlot)(tpp::gm::player::impl::EquipControllerImpl_tpp*, unsigned int, unsigned int, void*, int);
+					void* (__fastcall* GetAlignment)(tpp::gm::player::impl::EquipControllerImpl_tpp*);
+					void* (__fastcall* ForceRemoveItem)(tpp::gm::player::impl::EquipControllerImpl_tpp*, unsigned int);
+					void* (__fastcall* ForceRemoveSpecialItem)(tpp::gm::player::impl::EquipControllerImpl_tpp*, unsigned int, bool);
+					void* (__fastcall* ForceRemoveCBox)(tpp::gm::player::impl::EquipControllerImpl_tpp*, unsigned int);
+					void* (__fastcall* ForceRemoveTimeCigarette)(tpp::gm::player::impl::EquipControllerImpl_tpp*, unsigned int);
+					void* (__fastcall* NotifyShieldDamage)(tpp::gm::player::impl::EquipControllerImpl_tpp*, unsigned int, void*);
+					void* (__fastcall* SetupHandSlot)(tpp::gm::player::impl::EquipControllerImpl_tpp*, unsigned int, int, bool, bool, bool);
+					void* (__fastcall* SetHandSlotEnabled)(tpp::gm::player::impl::EquipControllerImpl_tpp*, unsigned int, bool);
+					void* (__fastcall* DropShield)(tpp::gm::player::impl::EquipControllerImpl_tpp*, unsigned int);
+					void* (__fastcall* SendMessageEquipHudClosed)(tpp::gm::player::impl::EquipControllerImpl_tpp*, unsigned int);
+				};
+
+				vtable* __vftable;
+				char __pad0[240];
+			};
+
+			struct EquipControllerImpl_mgo;
+
+			struct EquipControllerImpl_mgo
+			{
+				struct vtable
+				{
+					void(__fastcall* InitializePlayerAtIndex)(tpp::gm::player::impl::EquipControllerImpl_mgo*);
+					void(__fastcall* SetupWeapon)(tpp::gm::player::impl::EquipControllerImpl_mgo*, unsigned int, int, int, unsigned __int8, unsigned int, unsigned int, bool);
+					void(__fastcall* SetCurrentSlot)(tpp::gm::player::impl::EquipControllerImpl_mgo*, unsigned int, PlayerSlotType, unsigned __int8, char, char, int);
+					void* pad[4];
+					void(__fastcall* SetSlotDirectly)(tpp::gm::player::impl::EquipControllerImpl_mgo*, unsigned int, unsigned int, int, int, bool, bool);
+					void* (__fastcall* UnsetSlot)(tpp::gm::player::impl::EquipControllerImpl_mgo*, unsigned int, unsigned int);
+					void* (__fastcall* UnsetSlots)(tpp::gm::player::impl::EquipControllerImpl_mgo*, unsigned int);
+					void* (__fastcall* GetCurrentWeapon)(tpp::gm::player::impl::EquipControllerImpl_mgo*, unsigned int);
+					unsigned __int8(__fastcall* GetCurrentEquipSlot)(tpp::gm::player::impl::EquipControllerImpl_mgo*, unsigned int);
+					void* (__fastcall* GetCurrentActiveWeaponSlot)(tpp::gm::player::impl::EquipControllerImpl_mgo*, unsigned int);
+					void* (__fastcall* SetCurrentActiveWeaponSlot)(tpp::gm::player::impl::EquipControllerImpl_mgo*, unsigned int, int);
+					unsigned __int8(__fastcall* GetCurrentSupportIndex)(tpp::gm::player::impl::EquipControllerImpl_mgo*, unsigned int);
+					unsigned __int8(__fastcall* GetCurrentItemIndex)(tpp::gm::player::impl::EquipControllerImpl_mgo*, unsigned int);
+					void* (__fastcall* GetLastItemIndex)(tpp::gm::player::impl::EquipControllerImpl_mgo*, unsigned int);
+					void* (__fastcall* SetCurrentItemIndex)(tpp::gm::player::impl::EquipControllerImpl_mgo*, unsigned int, unsigned int, bool);
+					void* (__fastcall* SetCurrentItemIdToEquipHud)(tpp::gm::player::impl::EquipControllerImpl_mgo*, unsigned int, unsigned int);
+					void* (__fastcall* SetOriginalOwner)(tpp::gm::player::impl::EquipControllerImpl_mgo*, unsigned int, int, int);
+					void* (__fastcall* GetOriginalOwner)(tpp::gm::player::impl::EquipControllerImpl_mgo*, unsigned int, int);
+					void* (__fastcall* GetCurrentEquipId)(tpp::gm::player::impl::EquipControllerImpl_mgo*, unsigned int);
+					void* (__fastcall* GetEquipIdSlot)(tpp::gm::player::impl::EquipControllerImpl_mgo*, unsigned int, int, unsigned int);
+					void* (__fastcall* SetEquipState)(tpp::gm::player::impl::EquipControllerImpl_mgo*, unsigned int, int, unsigned int, int, unsigned __int8, bool, unsigned __int8);
+					void* (__fastcall* SetSlot)(tpp::gm::player::impl::EquipControllerImpl_mgo*, unsigned int, int, int, int, bool, bool);
+					void* (__fastcall* SetAmmoCount)(tpp::gm::player::impl::EquipControllerImpl_mgo*, unsigned int, int, unsigned int, bool);
+					void* (__fastcall* GetAmmoStockIndexBySlot)(tpp::gm::player::impl::EquipControllerImpl_mgo*, int, unsigned int);
+					void* (__fastcall* SetAmmoStockCountWithMax)(tpp::gm::player::impl::EquipControllerImpl_mgo*, int, int, unsigned int, unsigned int);
+					void* (__fastcall* SetAmmoStockCount)(tpp::gm::player::impl::EquipControllerImpl_mgo*, int, int, unsigned int);
+					void* (__fastcall* GetItemStockCount)(tpp::gm::player::impl::EquipControllerImpl_mgo*, int);
+					void* (__fastcall* IncrementItemStockCount)(tpp::gm::player::impl::EquipControllerImpl_mgo*, int, unsigned int);
+					void* (__fastcall* DecrementItemStockCount)(tpp::gm::player::impl::EquipControllerImpl_mgo*, int, unsigned int);
+					void* (__fastcall* SetBatteryByStockCount)(tpp::gm::player::impl::EquipControllerImpl_mgo*, unsigned short, int, int, int, int, unsigned __int8, bool);
+					void* (__fastcall* SetBattery)(tpp::gm::player::impl::EquipControllerImpl_mgo*, float, int, int, int, int, unsigned __int8, bool);
+					void* (__fastcall* UpdateBattery)(tpp::gm::player::impl::EquipControllerImpl_mgo*, unsigned int);
+					void* (__fastcall* RemoveFromAmmoStock)(tpp::gm::player::impl::EquipControllerImpl_mgo*, int);
+					void* (__fastcall* CalcAmmoAndStockIfPickUp)(tpp::gm::player::impl::EquipControllerImpl_mgo*, int, unsigned short, unsigned int, int&, int&, int&);
+					void* (__fastcall* SetCurrentWeaponToEquipHud)(tpp::gm::player::impl::EquipControllerImpl_mgo*);
+					void* (__fastcall* SetWeaponToEquipHud)(tpp::gm::player::impl::EquipControllerImpl_mgo*, int, unsigned __int8, int);
+					void* (__fastcall* ConvertPlayerIndexToAccessType)(tpp::gm::player::impl::EquipControllerImpl_mgo*, unsigned int);
+					void* (__fastcall* UpdateAmmoToEquipHud)(tpp::gm::player::impl::EquipControllerImpl_mgo*);
+					void* (__fastcall* CreateSupplyAmmoBox)(tpp::gm::player::impl::EquipControllerImpl_mgo*, unsigned int, void*, unsigned int, unsigned __int8*);
+					void* (__fastcall* GetItemLevel)(tpp::gm::player::impl::EquipControllerImpl_mgo*, int);
+					void* (__fastcall* SetItemLevel)(tpp::gm::player::impl::EquipControllerImpl_mgo*, int, unsigned int);
+					void* (__fastcall* GetItemLevelDeveloped)(tpp::gm::player::impl::EquipControllerImpl_mgo*, int);
+					void* (__fastcall* SetSuppressorLife)(tpp::gm::player::impl::EquipControllerImpl_mgo*, unsigned int, int, unsigned __int8);
+					void* (__fastcall* SetUseSuppressor)(tpp::gm::player::impl::EquipControllerImpl_mgo*, unsigned int, int, bool, bool);
+					void* (__fastcall* SetUseFlashLight)(tpp::gm::player::impl::EquipControllerImpl_mgo*, unsigned int, int, bool, bool);
+					void* (__fastcall* SetUnderBarrelMode)(tpp::gm::player::impl::EquipControllerImpl_mgo*, unsigned int, int, bool);
+					void* (__fastcall* SetMagAttachTo2nd)(tpp::gm::player::impl::EquipControllerImpl_mgo*, unsigned int, int, bool);
+					void* (__fastcall* IsCurrenWeaponNoUse)(tpp::gm::player::impl::EquipControllerImpl_mgo*);
+					void* (__fastcall* UpdateTextureStreamer)(tpp::gm::player::impl::EquipControllerImpl_mgo*);
+					void* (__fastcall* IsLargeTextureLoaded)(tpp::gm::player::impl::EquipControllerImpl_mgo*);
+					void* (__fastcall* SetVisibilityToEquip)(tpp::gm::player::impl::EquipControllerImpl_mgo*, unsigned int, void*);
+					void* (__fastcall* ChangeEquip)(tpp::gm::player::impl::EquipControllerImpl_mgo*, unsigned int, void*);
+					void* (__fastcall* UnsetEquip)(tpp::gm::player::impl::EquipControllerImpl_mgo*, unsigned int, void*);
+					void* (__fastcall* SetupWeaponToTemporarySlot)(tpp::gm::player::impl::EquipControllerImpl_mgo*, unsigned int, unsigned int, void*, int);
+					void* (__fastcall* UnsetTemporaryWeapon)(tpp::gm::player::impl::EquipControllerImpl_mgo*, unsigned int, bool);
+					void* (__fastcall* RestoreWeaponSlotFromTemporarySlot)(tpp::gm::player::impl::EquipControllerImpl_mgo*, unsigned int, unsigned int, void*, int);
+					void* (__fastcall* GetAlignment)(tpp::gm::player::impl::EquipControllerImpl_mgo*);
+					void* (__fastcall* ForceRemoveItem)(tpp::gm::player::impl::EquipControllerImpl_mgo*, unsigned int);
+					void* (__fastcall* ForceRemoveSpecialItem)(tpp::gm::player::impl::EquipControllerImpl_mgo*, unsigned int, bool);
+					void* (__fastcall* ForceRemoveCBox)(tpp::gm::player::impl::EquipControllerImpl_mgo*, unsigned int);
+					void* (__fastcall* ForceRemoveTimeCigarette)(tpp::gm::player::impl::EquipControllerImpl_mgo*, unsigned int);
+					void* (__fastcall* NotifyShieldDamage)(tpp::gm::player::impl::EquipControllerImpl_mgo*, unsigned int, void*);
+					void* (__fastcall* SetupHandSlot)(tpp::gm::player::impl::EquipControllerImpl_mgo*, unsigned int, int, bool, bool, bool);
+					void* (__fastcall* SetHandSlotEnabled)(tpp::gm::player::impl::EquipControllerImpl_mgo*, unsigned int, bool);
+					void* (__fastcall* DropShield)(tpp::gm::player::impl::EquipControllerImpl_mgo*, unsigned int);
+					void* (__fastcall* SendMessageEquipHudClosed)(tpp::gm::player::impl::EquipControllerImpl_mgo*, unsigned int);
+				};
+
+				vtable* __vftable;
+				char __pad0[248];
+			};
+
+			union EquipControllerImpl
+			{
+				EquipControllerImpl_tpp tpp;
+				EquipControllerImpl_mgo mgo;
+			};
+
+			struct Player2SystemImpl_tpp
+			{
+				char __pad0[200];
+				tpp::gm::player::impl::EquipControllerImpl_tpp* controller;
+				char __pad1[324];
+				unsigned int localPlayerIndex;
+			};
+
+			struct Player2SystemImpl_mgo
+			{
+				char __pad0[200];
+				tpp::gm::player::impl::EquipControllerImpl_mgo* controller;
+				char __pad1[404];
+				unsigned int localPlayerIndex;
+			};
+
+			union Player2SystemImpl
+			{
+				Player2SystemImpl_tpp tpp;
+				Player2SystemImpl_mgo mgo;
+			};
+		}
+
+		struct EquipController
+		{
+			fox::Quark quark;
+			tpp::gm::player::impl::EquipControllerImpl controller;
+		};
+
+		struct Player2System
+		{
+			struct vtable
+			{
+
+			};
+
+			vtable* __vftable;
+			tpp::gm::player::impl::Player2SystemImpl* player2System;
 		};
 	}
 

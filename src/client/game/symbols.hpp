@@ -81,6 +81,22 @@ namespace game
 			}
 		}
 
+		namespace gm
+		{
+			namespace player
+			{
+				WEAK symbol<Player2System> player2System{0x142A82C28, 0x141E7F578};
+
+				namespace impl
+				{
+					namespace Player2UtilityImpl_
+					{
+						WEAK symbol<bool()> IsLoading{0x1462AF2F0, 0x1407B8290};
+					}
+				}
+			}
+		}
+
 		namespace ui
 		{
 			namespace hud

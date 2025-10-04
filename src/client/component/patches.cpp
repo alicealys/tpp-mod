@@ -100,6 +100,11 @@ namespace patches
 			const auto value = get_ramble_speed_hook.invoke<float>(a1);
 			return scale_ramble_speed(value);
 		}
+
+		int strncpy_s_stub(char* dst, size_t size, char* src, size_t max_count)
+		{
+			return strncpy_s(dst, size, src, _TRUNCATE);
+		}
 	}
 
 	class component final : public component_interface
@@ -134,6 +139,9 @@ namespace patches
 				}
 
 				get_ramble_speed_hook.create(0x1468DA3F0, get_ramble_speed_stub);
+
+				utils::hook::nop(0x144D21F3E, 6);
+				utils::hook::call(0x144D21F3E, strncpy_s_stub);
 			}
 
 			utils::hook::nop(SELECT_VALUE(0x142E4ED98, 0x1422339D8), 6);

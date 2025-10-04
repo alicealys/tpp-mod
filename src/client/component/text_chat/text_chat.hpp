@@ -63,6 +63,8 @@ namespace text_chat
 		message_buffer_t input;
 		int cursor;
 		std::vector<sound_play_t> sounds;
+		std::deque<std::string> history;
+		std::int32_t history_index = -1;
 	};
 
 	extern utils::concurrency::container<chat_state_t, std::recursive_mutex> chat_state;

@@ -6,6 +6,7 @@
 #include "console.hpp"
 #include "command.hpp"
 #include "filesystem.hpp"
+#include "binds.hpp"
 
 #include "text_chat/input.hpp"
 
@@ -35,7 +36,15 @@ namespace binds
 		};
 
 		std::map<int, bind_t> binds;
+		std::unordered_set<std::string> action_commands;
+
 		std::atomic_bool block_input = false;
+
+		enum custom_keys_t
+		{
+			mouse_wheel_up = 500,
+			mouse_wheel_down = 501,
+		};
 
 		std::unordered_map<std::string, int> key_map =
 		{
@@ -76,6 +85,8 @@ namespace binds
 			{"MOUSE3", VK_MBUTTON},
 			{"MOUSE4", VK_XBUTTON1},
 			{"MOUSE5", VK_XBUTTON2},
+			{"MWHEELUP", mouse_wheel_up},
+			{"MWHEELDOWN", mouse_wheel_down},
 		};
 
 		int find_key(const std::string& key)
@@ -135,7 +146,72 @@ namespace binds
 			}
 		}
 
-		bool handle_bind(int key, bool is_down, bool is_up)
+		bool is_player_action_blocked()
+		{
+			const auto inst = game::tpp::ui::hud::CommonDataManager_::GetInstance();
+			const auto ui_inst = game::tpp::ui::menu::UiCommonDataManager_::GetInstance();
+
+			if (inst == nullptr || ui_inst == nullptr)
+			{
+				return true;
+			}
+
+			if (game::tpp::ui::menu::UiCommonDataManager_::GetPauseMenuType(ui_inst) != 0 ||
+				!game::tpp::ui::hud::CommonDataManager_::IsEndLoadingTips(inst) || 
+				game::tpp::ui::menu::impl::MotherBaseDeviceSystemImpl_::IsDeviceOpend())
+			{
+				return true;
+			}
+
+			if (game::tpp::gm::player::impl::Player2UtilityImpl_::IsLoading())
+			{
+				return true;
+			}
+
+			return false;
+		}
+
+		bool is_action_command(const std::string& cmd)
+		{
+			return action_commands.contains(cmd) || cmd.starts_with("+");
+		}
+
+		bool execute_command(const std::string& cmd, bool is_down, bool was_down)
+		{
+			const auto tokens = command::tokenize_string(cmd);
+			if (tokens.size() < 1)
+			{
+				return true;
+			}
+			
+			const auto& command = tokens[0];
+			if (is_action_command(command) && is_player_action_blocked())
+			{
+				return false;
+			}
+
+			if (command.starts_with("+"))
+			{
+				if (is_down)
+				{
+					std::string up_cmd = cmd;
+					up_cmd[0] = '-';
+					command::execute(up_cmd);
+				}
+				else
+				{
+					command::execute(cmd);
+				}
+			}
+			else if (is_down && !was_down)
+			{
+				command::execute(cmd);
+			}
+
+			return true;
+		}
+
+		bool handle_bind(int key, bool is_down, bool is_up, bool was_down, bool was_up)
 		{
 			const auto iter = binds.find(key);
 			if (iter == binds.end())
@@ -143,16 +219,20 @@ namespace binds
 				return false;
 			}
 
-			if (is_down && iter->second.mode == command)
+			switch (iter->second.mode)
 			{
-				command::execute(iter->second.command);
+			case command:
+			{
+				return execute_command(iter->second.command, is_down, was_down);
 			}
-			else if (iter->second.mode == remap)
+			case remap:
 			{
 				execute_remap(key, iter->second.mapped_key, is_down, is_up);
+				return true;
+			}
 			}
 
-			return true;
+			return false;
 		}
 
 		bool handle_input_keyboard(RAWINPUT* raw_input)
@@ -161,6 +241,7 @@ namespace binds
 			WORD key_char[8]{};
 
 			int key = raw_input->data.keyboard.VKey;
+			int key_upper = key;
 
 			if (!GetKeyboardState(key_state))
 			{
@@ -169,27 +250,54 @@ namespace binds
 
 			if (ToAscii(raw_input->data.keyboard.VKey, raw_input->data.keyboard.MakeCode, key_state, key_char, 0) > 0)
 			{
-				key = toupper(key_char[0]);
+				key = key_char[0];
+				key_upper = toupper(key_char[0]);
 			}
 
-			return handle_bind(key, raw_input->data.keyboard.Flags == RI_KEY_MAKE, raw_input->data.keyboard.Flags == RI_KEY_BREAK);
+			static auto initialized_keys = false;
+			static short keys[256]{};
+			if (!initialized_keys)
+			{
+				std::memset(keys, -1, sizeof(keys));
+				initialized_keys = true;
+			}
+
+			const auto is_down = (raw_input->data.keyboard.Flags == RI_KEY_MAKE || raw_input->data.keyboard.Flags == RI_KEY_E0);
+			const auto is_up = (raw_input->data.keyboard.Flags & RI_KEY_BREAK) != 0;
+			
+			const auto was_down = (keys[key_upper] == RI_KEY_MAKE || keys[key_upper] == RI_KEY_E0);
+			const auto was_up = (keys[key_upper] & RI_KEY_BREAK) != 0;
+
+			keys[key_upper] = raw_input->data.keyboard.Flags;
+
+			if (text_chat::input::handle_key(key, is_down))
+			{
+				return true;
+			}
+
+			return handle_bind(key_upper, is_down, is_up, was_down, was_up);
 		}
 
 		bool handle_input_mouse(RAWINPUT* raw_input)
 		{
 			bool has_bind{};
 
+			static auto prev_flags = 0;
+
 			const auto do_button = [&](int key, int flag_down, int flag_up)
 			{
 				const auto is_down = (raw_input->data.mouse.usButtonFlags & flag_down) != 0;
 				const auto is_up = (raw_input->data.mouse.usButtonFlags & flag_up) != 0;
+
+				const auto was_down = (prev_flags & flag_down) != 0;
+				const auto was_up = (prev_flags & flag_up) != 0;
 
 				if (!is_down && !is_up)
 				{
 					return;
 				}
 
-				if (handle_bind(key, is_down, is_up))
+				if (handle_bind(key, is_down, is_up, was_down, was_up))
 				{
 					has_bind = true;
 				}
@@ -200,6 +308,27 @@ namespace binds
 			do_button(VK_MBUTTON, RI_MOUSE_BUTTON_3_DOWN, RI_MOUSE_BUTTON_3_UP);
 			do_button(VK_XBUTTON1, RI_MOUSE_BUTTON_4_DOWN, RI_MOUSE_BUTTON_4_UP);
 			do_button(VK_XBUTTON2, RI_MOUSE_BUTTON_5_DOWN, RI_MOUSE_BUTTON_5_UP);
+
+			if ((raw_input->data.mouse.usButtonFlags & RI_MOUSE_WHEEL) != 0)
+			{
+				const auto down = static_cast<short>(raw_input->data.mouse.usButtonData) < 0;
+				if (text_chat::input::handle_mousewheel(down))
+				{
+					return true;
+				}
+
+				if (handle_bind(down ? mouse_wheel_down : mouse_wheel_up, true, false, false, false))
+				{
+					return true;
+				}
+			}
+
+			if (text_chat::input::handle_key(-1, false))
+			{
+				return true;
+			}
+
+			prev_flags = raw_input->data.mouse.usButtonFlags;
 
 			return has_bind;
 		}
@@ -243,9 +372,7 @@ namespace binds
 
 		LRESULT wnd_proc_stub(HWND hwnd, UINT msg, WPARAM w_param, LPARAM l_param)
 		{
-			text_chat::input::handle_typing(msg, w_param, l_param);
-
-			if (msg == WM_INPUT && (text_chat::input::is_input_blocked() || handle_input(l_param)))
+			if (msg == WM_INPUT && handle_input(l_param))
 			{
 				return DefWindowProc(hwnd, msg, w_param, l_param);
 			}
@@ -288,7 +415,7 @@ namespace binds
 			utils::io::write_file(path, buffer);
 		}
 
-		void bind_key(const std::string& key, const std::string& cmd)
+		void bind_key(const std::string& key, const std::string& cmd, const bind_mode_t mode)
 		{
 			const auto key_code = find_key(key);
 			if (key_code == -1)
@@ -297,7 +424,7 @@ namespace binds
 			}
 
 			bind_t bind{};
-			bind.mode = command;
+			bind.mode = mode;
 			bind.command = cmd;
 
 			binds[key_code] = bind;
@@ -334,6 +461,12 @@ namespace binds
 		}
 	}
 
+	void add_action_command(const std::string& name, const command::callback& cb)
+	{
+		action_commands.insert(name);
+		command::add(name, cb);
+	}
+
 	class component final : public component_interface
 	{
 	public:
@@ -357,7 +490,7 @@ namespace binds
 
 				const auto key = params.get(1);
 				const auto cmd = params.get(2);
-				bind_key(key, cmd);
+				bind_key(key, cmd, command);
 			});
 
 			command::add("remap", [](const command::params& params)
