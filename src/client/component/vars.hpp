@@ -11,6 +11,10 @@ namespace vars
 		var_type_integer = 2,
 		var_type_float = 3,
 		var_type_string = 4,
+		var_type_vec2 = 5,
+		var_type_vec3 = 6,
+		var_type_vec4 = 7,
+		var_type_color = 8,
 	};
 
 	enum var_flags_t
@@ -46,7 +50,46 @@ namespace vars
 		var_limits_float_t float_;
 	};
 
-	using var_value_variant_t = std::variant<std::monostate, bool, std::int32_t, float, std::string>;
+	struct vec2_t
+	{
+		float x;
+		float y;
+	};
+
+	struct vec3_t
+	{
+		float x;
+		float y;
+		float z;
+	};
+
+	struct vec4_t
+	{
+		float x;
+		float y;
+		float z;
+		float w;
+	};
+
+	struct color_t
+	{
+		float r;
+		float g;
+		float b;
+		float a;
+	};
+
+	using var_value_variant_t = std::variant<
+		std::monostate, 
+		bool, 
+		std::int32_t, 
+		float, 
+		std::string, 
+		vec2_t,
+		vec3_t,
+		vec4_t,
+		color_t
+	>;
 
 	class var_value
 	{
@@ -63,6 +106,11 @@ namespace vars
 		std::int32_t get_int() const;
 		float get_float() const;
 		std::string get_string() const;
+
+		vec2_t get_vec2() const;
+		vec3_t get_vec3() const;
+		vec4_t get_vec4() const;
+		color_t get_color() const;
 
 		std::string to_string() const;
 		const char* type_name() const;
@@ -105,6 +153,18 @@ namespace vars
 		const std::uint32_t flags, const std::string& description);
 
 	var_ptr register_string(const std::string& name, const std::string& value,
+		const std::uint32_t flags, const std::string& description);
+
+	var_ptr register_vec2(const std::string& name, const vec2_t& value, 
+		const std::uint32_t flags, const std::string& description);
+
+	var_ptr register_vec3(const std::string& name, const vec3_t& value,
+		const std::uint32_t flags, const std::string& description);
+
+	var_ptr register_vec4(const std::string& name, const vec4_t& value,
+		const std::uint32_t flags, const std::string& description);
+
+	var_ptr register_color(const std::string& name, const color_t& value,
 		const std::uint32_t flags, const std::string& description);
 
 	std::optional<var_ptr> find(const std::string& name);
