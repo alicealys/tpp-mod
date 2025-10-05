@@ -29,8 +29,7 @@ namespace custom_server
 			{"TPP_GAME_DATA1"},
 		};
 
-		vars::var_ptr var_custom_server_tpp;
-		vars::var_ptr var_custom_server_mgo;
+		vars::var_ptr var_custom_server;
 
 		struct steam_storage;
 
@@ -180,14 +179,12 @@ namespace custom_server
 	public:
 		void pre_load() override
 		{
-			var_custom_server_tpp = vars::register_string("net_custom_server_tpp", "", vars::var_flag_saved | vars::var_flag_latched, "custom server url (tpp)");
-			var_custom_server_mgo = vars::register_string("net_custom_server_mgo", "", vars::var_flag_saved | vars::var_flag_latched, "custom server url (mgo)");
+			var_custom_server = vars::register_string("net_custom_server", "", vars::var_flag_saved | vars::var_flag_latched, "custom server url");
 		}
 
 		void start() override
 		{
-			const auto& custom_server_var = SELECT_VALUE(var_custom_server_tpp, var_custom_server_mgo);
-			const auto custom_server = custom_server_var->current.get_string();
+			const auto custom_server = var_custom_server->current.get_string();
 
 			if (custom_server.empty())
 			{
