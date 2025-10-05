@@ -16,9 +16,16 @@ namespace text_chat::ui
 	{
 		utils::hook::detour announce_log_view_hook;
 
+		vars::var_ptr var_game_console_input_width;
+		vars::var_ptr var_game_console_input_bg;
+		vars::var_ptr var_game_console_scale;
+		vars::var_ptr var_game_console_offset;
+		vars::var_ptr var_game_console_line_spacing;
+
 		bool initialized = false;
 
-		void set_log_text(game::tpp::ui::hud::AnnounceLogViewer* this_, const char* text, int index, float alpha, float min_bg_width = 0.f)
+		void set_log_text(game::tpp::ui::hud::AnnounceLogViewer* this_, const char* text, 
+			int index, float alpha, float min_bg_width = 0.f, float bg_alpha = 0.85f, const float* bg_color = nullptr)
 		{
 			if (!game::tpp::ui::hud::AnnounceLogViewer_::ModelInit(this_, static_cast<char>(index)))
 			{
@@ -71,29 +78,67 @@ namespace text_chat::ui
 			vector1.values[0] = std::max(min_bg_width, vector1.values[0]);
 
 			const auto show_bg = min_bg_width > 0.f || *text != '\0' && game::tpp::ui::menu::impl::MotherBaseDeviceSystemImpl_::IsDeviceOpend();
-			const auto bg_alpha = show_bg ? alpha * 0.85f : 0.f;
+			const auto bg_alpha_ = show_bg ? alpha * bg_alpha : 0.f;
 
 			if (game::environment::is_tpp())
 			{
+				const auto offset = var_game_console_offset->current.get_vec2();
+				const auto scale = var_game_console_scale->current.get_float();
+				const auto line_spacing = var_game_console_line_spacing->current.get_float();
+
+				const auto y_offset = index * (1.f - scale) * line_spacing;
+
+				uix_utility->__vftable->tpp.SetScale1(uix_utility, reinterpret_cast<game::fox::ui::ModelNode*>(log_model.modelNode), scale);
+				uix_utility->__vftable->tpp.SetTranslationX1(uix_utility, reinterpret_cast<game::fox::ui::ModelNode*>(log_model.modelNode), offset.x);
+				uix_utility->__vftable->tpp.SetTranslationY1(uix_utility, reinterpret_cast<game::fox::ui::ModelNode*>(log_model.modelNode), offset.y + y_offset);
+
 				uix_utility->__vftable->tpp.SetAlpha1(uix_utility, log_model.modelNode, alpha);
 				uix_utility->__vftable->tpp.SetColorRGB5(uix_utility, log_model.modelNode, 1.f, 1.f, 1.f);
 
-				uix_utility->__vftable->tpp.SetAlpha1(uix_utility, reinterpret_cast<game::fox::ui::ModelNode*>(log_model.modelNodeMesh), bg_alpha);
+				uix_utility->__vftable->tpp.SetAlpha1(uix_utility, reinterpret_cast<game::fox::ui::ModelNode*>(log_model.modelNodeMesh), bg_alpha_);
 
 				uix_utility->__vftable->tpp.SetVertexTranslate(uix_utility, log_model.modelNodeMesh, string1, &vector1, &vector2);
 				uix_utility->__vftable->tpp.SetVertexTranslate(uix_utility, log_model.modelNodeMesh, string2, &vector1, &vector2);
-				uix_utility->__vftable->tpp.SetColorRGB5(uix_utility, reinterpret_cast<game::fox::ui::ModelNode*>(log_model.modelNodeMesh), 0.f, 0.f, 0.f);
+
+				if (bg_color != nullptr)
+				{
+					uix_utility->__vftable->tpp.SetColorRGB5(uix_utility, reinterpret_cast<game::fox::ui::ModelNode*>(log_model.modelNodeMesh), 
+						bg_color[0], bg_color[1], bg_color[2]);
+				}
+				else
+				{
+					uix_utility->__vftable->tpp.SetColorRGB5(uix_utility, reinterpret_cast<game::fox::ui::ModelNode*>(log_model.modelNodeMesh), 0.f, 0.f, 0.f);
+				}
 			}
 			else
 			{
+				const auto offset = var_game_console_offset->current.get_vec2();
+				const auto scale = var_game_console_scale->current.get_float();
+				const auto line_spacing = var_game_console_line_spacing->current.get_float();
+
+				const auto y_offset = index * (1.f - scale) * line_spacing;
+
+				uix_utility->__vftable->mgo.SetScale1(uix_utility, log_model.modelNode, scale);
+				uix_utility->__vftable->mgo.SetTranslationX1(uix_utility, log_model.modelNode, offset.x);
+				uix_utility->__vftable->mgo.SetTranslationY1(uix_utility, log_model.modelNode, offset.y + y_offset);
+
 				uix_utility->__vftable->mgo.SetAlpha1(uix_utility, log_model.modelNode, alpha);
 				uix_utility->__vftable->mgo.SetColorRGB5(uix_utility, log_model.modelNode, 1.f, 1.f, 1.f);
 
-				uix_utility->__vftable->mgo.SetAlpha1(uix_utility, reinterpret_cast<game::fox::ui::ModelNode*>(log_model.modelNodeMesh), bg_alpha);
+				uix_utility->__vftable->mgo.SetAlpha1(uix_utility, reinterpret_cast<game::fox::ui::ModelNode*>(log_model.modelNodeMesh), bg_alpha_);
 
 				uix_utility->__vftable->mgo.SetVertexTranslate(uix_utility, log_model.modelNodeMesh, string1, &vector1, &vector2);
 				uix_utility->__vftable->mgo.SetVertexTranslate(uix_utility, log_model.modelNodeMesh, string2, &vector1, &vector2);
-				uix_utility->__vftable->mgo.SetColorRGB5(uix_utility, reinterpret_cast<game::fox::ui::ModelNode*>(log_model.modelNodeMesh), 0.f, 0.f, 0.f);
+
+				if (bg_color != nullptr)
+				{
+					uix_utility->__vftable->mgo.SetColorRGB5(uix_utility, reinterpret_cast<game::fox::ui::ModelNode*>(log_model.modelNodeMesh),
+						bg_color[0], bg_color[1], bg_color[2]);
+				}
+				else
+				{
+					uix_utility->__vftable->mgo.SetColorRGB5(uix_utility, reinterpret_cast<game::fox::ui::ModelNode*>(log_model.modelNodeMesh), 0.f, 0.f, 0.f);
+				}
 			}
 		}
 
@@ -198,7 +243,10 @@ namespace text_chat::ui
 
 			postfix[state.cursor] = show_cursor ? chat_cursor_char : ' ';
 
-			set_log_text(log_viewer, log_buffer, chat_message_input_index, 1.f, 50.f);
+			const auto bg_color = var_game_console_input_bg->current.get_color();
+			const auto bg_width = var_game_console_input_width->current.get_float();
+
+			set_log_text(log_viewer, log_buffer, chat_message_input_index, 1.f, bg_width, bg_color.a, &bg_color.r);
 		}
 
 		void update_chat_messages(chat_state_t& state, game::tpp::ui::hud::AnnounceLogViewer* log_viewer)
@@ -220,7 +268,7 @@ namespace text_chat::ui
 			{
 				const auto message_index = state.chat_offset + i;
 
-				auto alpha = 1.f;
+				auto alpha = 0.f;
 
 				if (message_index < state.messages.size())
 				{
@@ -229,6 +277,8 @@ namespace text_chat::ui
 					const auto diff = now - message.time;
 					const auto ms = static_cast<int>(std::chrono::duration_cast<std::chrono::milliseconds>(diff).count());
 					const auto ms_left = var_chat_time->current.get_int() - ms;
+
+					alpha = 1.f;
 
 					if (ms_left <= 0)
 					{
@@ -384,7 +434,20 @@ namespace text_chat::ui
 	public:
 		void pre_load() override
 		{
+			var_game_console_input_width = vars::register_float("game_console_input_width", 
+				50.f, 0.f, 1000.f, vars::var_flag_saved, "game console input background width");
 
+			var_game_console_input_bg = vars::register_color("game_console_input_bg",
+				{}, vars::var_flag_saved, "game console input background color");
+
+			var_game_console_scale = vars::register_float("game_console_scale",
+				1.f, 0.f, 1000.f, vars::var_flag_saved, "game console scale");
+
+			var_game_console_offset = vars::register_vec2("game_console_offset",
+				{}, vars::var_flag_saved, "game console offset");
+
+			var_game_console_line_spacing = vars::register_float("game_console_line_spacing", 
+				2.f, 0.f, 1000.f, vars::var_flag_saved, "game console line spacing");
 		}
 
 		void start() override

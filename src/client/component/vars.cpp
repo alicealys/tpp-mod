@@ -46,6 +46,26 @@ namespace vars
 		return std::get<std::string>(this->value_);
 	}
 
+	vec2_t var_value::get_vec2() const
+	{
+		return std::get<vec2_t>(this->value_);
+	}
+
+	vec3_t var_value::get_vec3() const
+	{
+		return std::get<vec3_t>(this->value_);
+	}
+
+	vec4_t var_value::get_vec4() const
+	{
+		return std::get<vec4_t>(this->value_);
+	}
+
+	color_t var_value::get_color() const
+	{
+		return std::get<color_t>(this->value_);
+	}
+
 	var_type_t var_value::get_type() const
 	{
 		switch (this->value_.index())
@@ -58,9 +78,33 @@ namespace vars
 			return var_type_float;
 		case 4:
 			return var_type_string;
+		case 5:
+			return var_type_vec2;
+		case 6:
+			return var_type_vec3;
+		case 7:
+			return var_type_vec4;
+		case 8:
+			return var_type_color;
 		}
 
 		return var_type_none;
+	}
+
+	template <typename T>
+	var_value parse_vector(const std::string& string)
+	{
+		constexpr auto indices = sizeof(T) / sizeof(float);
+		const auto values_str = utils::string::split(string, ' ');
+
+		T vector{};
+
+		for (auto i = 0u; i < std::min(indices, values_str.size()); i++)
+		{
+			reinterpret_cast<float*>(&vector)[i] = static_cast<float>(std::atof(values_str[i].data()));
+		}
+
+		return var_value(vector);
 	}
 
 	std::optional<var_value> var_value::parse(const std::string& str, const var_type_t type)
@@ -86,6 +130,14 @@ namespace vars
 			return var_value(static_cast<float>(std::atof(string_value.data())));
 		case var_type_string:
 			return var_value(string_value);
+		case var_type_vec2:
+			return parse_vector<vec2_t>(string_value);
+		case var_type_vec3:
+			return parse_vector<vec3_t>(string_value);
+		case var_type_vec4:
+			return parse_vector<vec4_t>(string_value);
+		case var_type_color:
+			return parse_vector<color_t>(string_value);
 		}
 
 		return {};
@@ -103,6 +155,27 @@ namespace vars
 			return utils::string::va("%f", std::get<float>(this->value_));
 		case var_type_string:
 			return std::get<std::string>(this->value_);
+		case var_type_vec2:
+			return utils::string::va("%f %f",
+				std::get<vec2_t>(this->value_).x,
+				std::get<vec2_t>(this->value_).y);
+		case var_type_vec3:
+			return utils::string::va("%f %f %f",
+				std::get<vec3_t>(this->value_).x,
+				std::get<vec3_t>(this->value_).y,
+				std::get<vec3_t>(this->value_).z);
+		case var_type_vec4:
+			return utils::string::va("%f %f %f %f",
+				std::get<vec4_t>(this->value_).x,
+				std::get<vec4_t>(this->value_).y,
+				std::get<vec4_t>(this->value_).z,
+				std::get<vec4_t>(this->value_).w);
+		case var_type_color:
+			return utils::string::va("%f %f %f %f",
+				std::get<color_t>(this->value_).r,
+				std::get<color_t>(this->value_).g,
+				std::get<color_t>(this->value_).b,
+				std::get<color_t>(this->value_).a);
 		}
 
 		return "";
@@ -120,6 +193,14 @@ namespace vars
 			return "float";
 		case var_type_string:
 			return "string";
+		case var_type_vec2:
+			return "vec2";
+		case var_type_vec3:
+			return "vec3";
+		case var_type_vec4:
+			return "vec4";
+		case var_type_color:
+			return "color";
 		}
 
 		return "empty";
@@ -182,6 +263,11 @@ namespace vars
 			return {};
 		}
 
+		bool check_color_component(float v)
+		{
+			return v >= 0.f && v <= 1.f;
+		}
+
 		bool check_domain(const var_ptr& var, const var_value& value)
 		{
 			switch (var->type)
@@ -195,6 +281,11 @@ namespace vars
 			{
 				const auto value_float = value.get_float();
 				return value_float >= var->limits.float_.min && value_float <= var->limits.float_.max;
+			}
+			case var_type_color:
+			{
+				const auto color = value.get_color();
+				return check_color_component(color.r) && check_color_component(color.g) && check_color_component(color.b) && check_color_component(color.a);
 			}
 			}
 
@@ -398,6 +489,29 @@ namespace vars
 		return register_var(name, var_type_string, value, {}, flags, description);
 	}
 
+	var_ptr register_vec2(const std::string& name, const vec2_t& value,
+		const std::uint32_t flags, const std::string& description)
+	{
+		return register_var(name, var_type_vec2, value, {}, flags, description);
+	}
+
+	var_ptr register_vec3(const std::string& name, const vec3_t& value,
+		const std::uint32_t flags, const std::string& description)
+	{
+		return register_var(name, var_type_vec3, value, {}, flags, description);
+	}
+
+	var_ptr register_vec4(const std::string& name, const vec4_t& value,
+		const std::uint32_t flags, const std::string& description)
+	{
+		return register_var(name, var_type_vec4, value, {}, flags, description);
+	}
+
+	var_ptr register_color(const std::string& name, const color_t& value,
+		const std::uint32_t flags, const std::string& description)
+	{
+		return register_var(name, var_type_color, value, {}, flags, description);
+	}
 	std::optional<var_ptr> find(const std::string& name)
 	{
 		const auto lower = utils::string::to_lower(name);
@@ -452,7 +566,7 @@ namespace vars
 			return true;
 		}
 
-		const auto value = params.get(1);
+		const auto value = params.join(1);
 		const auto parsed_value = var_value::parse(value, var->type);
 
 		if (parsed_value.has_value())
@@ -476,7 +590,7 @@ namespace vars
 				}
 
 				const auto name = params.get(1);
-				const auto value = params.get(2);
+				const auto value = params.join(2);
 
 				const auto var = find(name);
 				if (!var.has_value())
