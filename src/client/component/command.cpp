@@ -251,6 +251,11 @@ namespace command
 
 	std::optional<std::string> find_command_name(const std::string& input)
 	{
+		if (input.size() < 2)
+		{
+			return {};
+		}
+
 		const auto lower = utils::string::to_lower(input);
 
 		for (const auto& [name, command] : commands)
