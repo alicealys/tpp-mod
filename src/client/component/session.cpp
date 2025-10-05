@@ -50,6 +50,23 @@ namespace session
 			return "unknown";
 		}
 
+		int get_rtt(game::fox::nt::impl::SessionImpl2* session)
+		{
+			if (session->sppSocket == nullptr)
+			{
+				return 0;
+			}
+
+			if (game::environment::is_tpp())
+			{
+				return session->sppSocket->tpp.rtt_time;
+			}
+			else
+			{
+				return session->sppSocket->mgo.rtt_time;
+			}
+		}
+
 		void print_status()
 		{
 			const auto main_session = *game::s_pSession;
@@ -65,6 +82,7 @@ namespace session
 
 			printf("is host: %i\n", is_host);
 			printf("state: %s (%i)\n", get_session_state_name(state), state);
+			printf("rtt: %ims\n", get_rtt(main_session));
 			printf("num flags steam_id                         name                            \n");
 			printf("--- ----- -------------------------------- --------------------------------\n");
 
@@ -320,6 +338,17 @@ namespace session
 			//utils::hook::set(&steam_matchmaking->__vftable->GetLobbyData, get_lobby_data_stub);
 			utils::hook::set(&steam_matchmaking->__vftable->AddRequestLobbyListNumericalFilter, add_request_lobby_list_numerical_filter);
 		}
+
+		void print_rtt()
+		{
+			const auto main_session = *game::s_pSession;
+			if (!main_session)
+			{
+				return;
+			}
+
+			printf("rtt: %ims\n", get_rtt(main_session));
+		}
 	}
 
 	void connect_to_lobby(game::steam_id lobby_id)
@@ -346,6 +375,8 @@ namespace session
 			{
 				scheduler::once(print_status, scheduler::session);
 			});
+
+			command::add("rtt", print_rtt);
 
 			if (!game::environment::is_mgo())
 			{

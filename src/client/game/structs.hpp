@@ -704,6 +704,37 @@ namespace game
 			{
 
 			};
+
+			namespace impl
+			{
+				struct SppSocketImpl_mgo
+				{
+					char __pad1[248];
+					int error;
+					char __pad2[280];
+					__int16 next_seq;
+					__int16 last_seq;
+					__int8 a2;
+					__int8 a3;
+					__int8 error_count;
+					char __pad3[85];
+					void* a1;
+					char __pad4[4728];
+					int rtt_time;
+				};
+
+				struct SppSocketImpl_tpp
+				{
+					char __pad0[5336];
+					int rtt_time;
+				};
+
+				union SppSocketImpl
+				{
+					SppSocketImpl_tpp tpp;
+					SppSocketImpl_mgo mgo;
+				};
+			}
 		};
 
 		struct Entity
@@ -994,7 +1025,7 @@ namespace game
 					void* a7;
 					int a8;
 					int a9;
-					void* sPtr5;
+					fox::nio::impl::SppSocketImpl* sppSocket;
 					void* sPtr6;
 					void* sPtr7;
 					void* sPtr8;
