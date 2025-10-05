@@ -161,7 +161,30 @@ namespace binds
 		{
 			if (mapped_key >= VK_LBUTTON && mapped_key <= VK_XBUTTON2)
 			{
-				// todo
+				game::fox::RawMouseData data{};
+				std::memcpy(&data, game::g_rawMouseData.get(), sizeof(game::fox::RawMouseData));
+
+				const auto do_button = [&](const int index, const int key_)
+				{
+					if (key_ == mapped_key)
+					{
+						data.buttonsUp = is_up;
+						data.buttonsDown = !is_up;
+						data.buttonStates = !is_up;
+
+						data.buttonsUp <<= index;
+						data.buttonsDown <<= index;
+						data.buttonStates <<= index;
+					}
+				};
+
+				do_button(0, VK_LBUTTON);
+				do_button(1, VK_RBUTTON);
+				do_button(2, VK_MBUTTON);
+				do_button(3, VK_XBUTTON1);
+				do_button(4, VK_XBUTTON2);
+
+				game::fox::MouseListener_::SetRawData(&data);
 			}
 			else
 			{
@@ -360,8 +383,10 @@ namespace binds
 					return true;
 				}
 
-				if (handle_bind(down ? mouse_wheel_down : mouse_wheel_up, true, false, false, false))
+				const auto wheel_key = down ? mouse_wheel_down : mouse_wheel_up;
+				if (handle_bind(wheel_key, true, false, false, false))
 				{
+					handle_bind(wheel_key, false, true, false, false);
 					return true;
 				}
 			}
