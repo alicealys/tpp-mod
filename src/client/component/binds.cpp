@@ -87,6 +87,23 @@ namespace binds
 			{"MOUSE5", VK_XBUTTON2},
 			{"MWHEELUP", mouse_wheel_up},
 			{"MWHEELDOWN", mouse_wheel_down},
+			{"BUTTON_A", VK_GAMEPAD_A},
+			{"BUTTON_B", VK_GAMEPAD_B},
+			{"BUTTON_X", VK_GAMEPAD_X},
+			{"BUTTON_Y", VK_GAMEPAD_Y},
+			{"BUTTON_LSHLDR", VK_GAMEPAD_LEFT_SHOULDER},
+			{"BUTTON_RSHLDR", VK_GAMEPAD_RIGHT_SHOULDER},
+			{"BUTTON_LTRIG", VK_GAMEPAD_LEFT_TRIGGER},
+			{"BUTTON_RTRIG", VK_GAMEPAD_RIGHT_TRIGGER},
+			{"BUTTON_START", VK_GAMEPAD_MENU},
+			{"BUTTON_BACK", VK_GAMEPAD_VIEW},
+			{"DPAD_UP", VK_GAMEPAD_DPAD_UP},
+			{"DPAD_DOWN", VK_GAMEPAD_DPAD_DOWN},
+			{"DPAD_LEFT", VK_GAMEPAD_DPAD_LEFT},
+			{"DPAD_RIGHT", VK_GAMEPAD_DPAD_RIGHT},
+			{"DPAD_RIGHT", VK_GAMEPAD_DPAD_RIGHT},
+			{"BUTTON_LSTICK", VK_GAMEPAD_LEFT_THUMBSTICK_BUTTON},
+			{"BUTTON_RSTICK", VK_GAMEPAD_RIGHT_THUMBSTICK_BUTTON},
 		};
 
 		int find_key(const std::string& key)
@@ -100,7 +117,18 @@ namespace binds
 
 			if (upper.size() == 1)
 			{
-				return upper[0];
+				const auto c = upper[0];
+				if (isprint(c))
+				{
+					if (isalnum(c))
+					{
+						return c;
+					}
+					else
+					{
+						return VkKeyScan(c);
+					}
+				}
 			}
 			else if (upper.size() > 1)
 			{
@@ -126,7 +154,7 @@ namespace binds
 				}
 			}
 
-			return utils::string::va("%c", key);
+			return utils::string::va("%c", MapVirtualKey(key, MAPVK_VK_TO_CHAR));
 		}
 
 		void execute_remap(int key, int mapped_key, bool is_down, bool is_up)
@@ -235,13 +263,24 @@ namespace binds
 			return false;
 		}
 
+		bool is_game_console_bind(const int key)
+		{
+			const auto iter = binds.find(key);
+			if (iter == binds.end())
+			{
+				return false;
+			}
+
+			return iter->second.mode == command && iter->second.command == "toggleconsole";
+		}
+
 		bool handle_input_keyboard(RAWINPUT* raw_input)
 		{
 			BYTE key_state[256]{};
 			WORD key_char[8]{};
 
+			int key_ascii = raw_input->data.keyboard.VKey;
 			int key = raw_input->data.keyboard.VKey;
-			int key_upper = key;
 
 			if (!GetKeyboardState(key_state))
 			{
@@ -250,8 +289,12 @@ namespace binds
 
 			if (ToAscii(raw_input->data.keyboard.VKey, raw_input->data.keyboard.MakeCode, key_state, key_char, 0) > 0)
 			{
-				key = key_char[0];
-				key_upper = toupper(key_char[0]);
+				key_ascii = key_char[0];
+
+				if (key_ascii >= 'a' && key_ascii <= 'z')
+				{
+					key = toupper(key_char[0]);
+				}
 			}
 
 			static auto initialized_keys = false;
@@ -265,17 +308,17 @@ namespace binds
 			const auto is_down = (raw_input->data.keyboard.Flags == RI_KEY_MAKE || raw_input->data.keyboard.Flags == RI_KEY_E0);
 			const auto is_up = (raw_input->data.keyboard.Flags & RI_KEY_BREAK) != 0;
 			
-			const auto was_down = (keys[key_upper] == RI_KEY_MAKE || keys[key_upper] == RI_KEY_E0);
-			const auto was_up = (keys[key_upper] & RI_KEY_BREAK) != 0;
+			const auto was_down = (keys[key] == RI_KEY_MAKE || keys[key] == RI_KEY_E0);
+			const auto was_up = (keys[key] & RI_KEY_BREAK) != 0;
 
-			keys[key_upper] = raw_input->data.keyboard.Flags;
+			keys[key] = raw_input->data.keyboard.Flags;
 
-			if (text_chat::input::handle_key(key, is_down))
+			if (text_chat::input::handle_key(key_ascii, is_down, is_game_console_bind(key)))
 			{
 				return true;
 			}
 
-			return handle_bind(key_upper, is_down, is_up, was_down, was_up);
+			return handle_bind(key, is_down, is_up, was_down, was_up);
 		}
 
 		bool handle_input_mouse(RAWINPUT* raw_input)
@@ -323,7 +366,7 @@ namespace binds
 				}
 			}
 
-			if (text_chat::input::handle_key(-1, false))
+			if (text_chat::input::handle_key(-1, false, false))
 			{
 				return true;
 			}

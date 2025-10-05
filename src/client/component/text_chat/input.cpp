@@ -200,11 +200,11 @@ namespace text_chat::input
 		}
 	}
 
-	bool handle_key(const int key, const bool is_down)
+	bool handle_key(const int key, const bool is_down, const bool is_game_console_bind)
 	{
 		return chat_state.access<bool>([&](chat_state_t& state)
 		{
-			if (!state.is_typing)
+			if (!state.is_typing || (state.mode == mode_console && is_game_console_bind))
 			{
 				return false;
 			}
@@ -250,6 +250,7 @@ namespace text_chat::input
 			default:
 			{
 				const auto c = static_cast<char>(key);
+
 				if (is_char_text(c))
 				{
 					handle_char(state, c);
@@ -289,6 +290,7 @@ namespace text_chat::input
 		state.is_typing = false;
 		state.block_input = false;
 		state.chat_offset = 0;
+		state.mode = mode_none;
 		std::memset(state.input, 0, sizeof(state.input));
 		state.cursor = 0;
 	}
@@ -311,7 +313,7 @@ namespace text_chat::input
 
 		void start() override
 		{
-			command::add("openconsole", []
+			command::add("toggleconsole", []
 			{
 				if (!is_console_enabled() || !can_show_chat())
 				{
@@ -320,10 +322,17 @@ namespace text_chat::input
 
 				chat_state.access([](chat_state_t& state)
 				{
-					stop_typing(state);
-					state.is_typing = true;
-					state.block_input = true;
-					state.mode = mode_console;
+					if (state.mode == mode_console)
+					{
+						stop_typing(state);
+					}
+					else
+					{
+						stop_typing(state);
+						state.is_typing = true;
+						state.block_input = true;
+						state.mode = mode_console;
+					}
 				});
 			});
 
