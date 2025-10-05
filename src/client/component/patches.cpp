@@ -117,10 +117,13 @@ namespace patches
 
 			var_unlock_fps = vars::register_bool("com_unlock_fps", false, vars::var_flag_saved | vars::var_flag_latched, "unlock fps");
 
-			var_skip_intro = vars::register_bool("ui_skip_intro", false, vars::var_flag_saved | vars::var_flag_latched, "skip intro splashscreens");
+			if (game::environment::is_tpp())
+			{
+				var_player_ramble_speed_scale = vars::register_float("player_ramble_speed_scale", 1.51f, 0.f, 5.f, vars::var_flag_saved, "player sleep wake up scale (while player is trying to wake up)");
+				var_player_ramble_speed_patch = vars::register_bool("player_ramble_speed_patch", true, vars::var_flag_saved, "enable high fps player sleep wake up patch");
 
-			var_player_ramble_speed_scale = vars::register_float("player_ramble_speed_scale", 1.51f, 0.f, 5.f, vars::var_flag_saved, "player sleep wake up scale (while player is trying to wake up)");
-			var_player_ramble_speed_patch = vars::register_bool("player_ramble_speed_patch", true, vars::var_flag_saved, "enable high fps player sleep wake up patch");
+				var_skip_intro = vars::register_bool("ui_skip_intro", false, vars::var_flag_saved | vars::var_flag_latched, "skip intro splashscreens");
+			}
 		}
 
 		void start() override

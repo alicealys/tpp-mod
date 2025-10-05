@@ -195,6 +195,11 @@ namespace network
 	public:
 		void pre_load() override
 		{
+			if (!game::environment::is_tpp())
+			{
+				return;
+			}
+
 			var_net_udp = vars::register_bool("net_udp", false, vars::var_flag_saved | vars::var_flag_latched, "use udp sockets instead of steam networking");
 			var_net_port = vars::register_int("net_port", 5377, 0, 65535, vars::var_flag_saved | vars::var_flag_latched, "udp socket port");
 		}
