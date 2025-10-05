@@ -1267,28 +1267,78 @@ namespace game
 				EquipControllerImpl_mgo mgo;
 			};
 
+			struct PadImpl
+			{
+				struct ButtonMask
+				{
+					int id;
+					int mask;
+				};
+
+				struct vtable
+				{
+
+				};
+
+				vtable* __vftable;
+				char __pad0[32];
+				int mask;
+				char __pad1[660];
+				ButtonMask buttonMasks[8];
+				char __pad2[432];
+			};
+
+			static_assert(offsetof(PadImpl, buttonMasks) == 704);
+
 			struct Player2SystemImpl_tpp
 			{
-				char __pad0[200];
+				struct vtable
+				{
+
+				};
+
+				vtable* __vftable;
+				char __pad0[168];
+				tpp::gm::player::impl::PadImpl* pad;
+				char __pad1[16];
 				tpp::gm::player::impl::EquipControllerImpl_tpp* controller;
-				char __pad1[324];
+				char __pad2[324];
 				unsigned int localPlayerIndex;
 			};
 
+			static_assert(offsetof(Player2SystemImpl_tpp, controller) == 200);
+
 			struct Player2SystemImpl_mgo
 			{
-				char __pad0[200];
+				struct vtable
+				{
+
+				};
+
+				vtable* __vftable;
+				char __pad0[168];
+				tpp::gm::player::impl::PadImpl* pad;
+				char __pad1[16];
 				tpp::gm::player::impl::EquipControllerImpl_mgo* controller;
-				char __pad1[404];
+				char __pad2[404];
 				unsigned int localPlayerIndex;
 			};
+
+			static_assert(offsetof(Player2SystemImpl_mgo, controller) == 200);
 
 			union Player2SystemImpl
 			{
 				Player2SystemImpl_tpp tpp;
 				Player2SystemImpl_mgo mgo;
 			};
+
 		}
+
+		struct Pad
+		{
+			fox::Quark quark;
+			tpp::gm::player::impl::PadImpl pad;
+		};
 
 		struct EquipController
 		{

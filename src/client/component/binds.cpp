@@ -214,6 +214,17 @@ namespace binds
 				return true;
 			}
 
+			if (game::tpp::gm::player::player2System->player2System == nullptr ||
+				game::tpp::gm::player::player2System->player2System->tpp.pad == nullptr)
+			{
+				return true;
+			}
+
+			if (game::tpp::gm::player::player2System->player2System->tpp.pad->mask != 0)
+			{
+				return true;
+			}
+
 			if (game::tpp::gm::player::impl::Player2UtilityImpl_::IsLoading())
 			{
 				return true;

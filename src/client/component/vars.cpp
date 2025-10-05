@@ -528,6 +528,11 @@ namespace vars
 
 	std::optional<std::string> find_name(const std::string& name)
 	{
+		if (name.size() < 2)
+		{
+			return {};
+		}
+
 		const auto lower = utils::string::to_lower(name);
 
 		for (const auto& var : get_var_list())
