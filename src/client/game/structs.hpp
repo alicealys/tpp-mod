@@ -261,7 +261,6 @@ namespace game
 		struct Rgba8;
 		struct Path;
 
-
 		struct Quark
 		{
 			struct vtable
@@ -312,6 +311,22 @@ namespace game
 			bool isUp;
 			bool unk;
 		};
+
+#pragma pack(push, 1)
+		struct RawMouseData
+		{
+			int buttonStates;
+			int buttonsDown;
+			int buttonsUp;
+			__int16 pointX;
+			__int16 pointY;
+			__int16 deltaX;
+			__int16 deltaY;
+			__int16 lastX;
+			__int16 lastY;
+			int buttonData;
+		};
+#pragma pack(pop)
 
 		struct LuaBase
 		{

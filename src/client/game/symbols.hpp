@@ -17,6 +17,11 @@ namespace game
 			WEAK symbol<void(fox::RawKeyboardData*)> SetRawKeyData{0x140030BB0, 0x1400304F0};
 		}
 
+		namespace MouseListener_
+		{
+			WEAK symbol<void(fox::RawMouseData*)> SetRawData{0x140031C50, 0x140031670};
+		}
+
 		namespace Buffer_
 		{
 			WEAK symbol<size_t(fox::Buffer* buffer)> GetSize{0x140A839C0, 0x1406C4D70};
@@ -223,6 +228,8 @@ namespace game
 	WEAK symbol<bool> g_needShowCursor{0x0, 0x141F69E66};
 
 	WEAK symbol<fox::Lua*> s_instances{0x142B641F0, 0x141F28240};
+
+	WEAK symbol<fox::RawKeyboardData> g_rawMouseData{0x142C6C6C8, 0x1420E5078};
 
 	namespace fox
 	{
