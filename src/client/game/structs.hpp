@@ -248,6 +248,11 @@ namespace game
 
 		struct Vector4
 		{
+			union
+			{
+				float values[4];
+				__m128 value;
+			};
 		};
 
 		struct Quat
@@ -519,9 +524,11 @@ namespace game
 				char f15;
 				short f16;
 				char __pad4[2];
-				void* f17;
-				void* f18;
-				__m128 f19;
+				float displayAreaOffsetX;
+				float displayAreaOffsetY;
+				float displayAreaWidth;
+				float displayAreaHeight;
+				Vectormath::Aos::Vector4 displaySizes;
 				void* f20;
 				int f21;
 				char __pad5[4];
@@ -536,10 +543,12 @@ namespace game
 				char __pad7[4];
 				void* f29;
 				void* f30;
-				void* f31;
-				void* f32;
-				void* f33;
-				void* f34;
+				int lineWidthsCount;
+				int f31;
+				float* lineWidths;
+				int lineHeightsCount;
+				int f33;
+				float* lineHeights;
 				void* f35;
 				void* f36;
 				void* f37;
@@ -574,9 +583,6 @@ namespace game
 			static_assert(offsetof(fox::ui::ModelNodeText, f15) == 219);
 			static_assert(offsetof(fox::ui::ModelNodeText, f16) == 220);
 			static_assert(offsetof(fox::ui::ModelNodeText, __pad4) == 222);
-			static_assert(offsetof(fox::ui::ModelNodeText, f17) == 224);
-			static_assert(offsetof(fox::ui::ModelNodeText, f18) == 232);
-			static_assert(offsetof(fox::ui::ModelNodeText, f19) == 240);
 			static_assert(offsetof(fox::ui::ModelNodeText, f20) == 256);
 			static_assert(offsetof(fox::ui::ModelNodeText, f21) == 264);
 			static_assert(offsetof(fox::ui::ModelNodeText, __pad5) == 268);
@@ -591,10 +597,6 @@ namespace game
 			static_assert(offsetof(fox::ui::ModelNodeText, __pad7) == 324);
 			static_assert(offsetof(fox::ui::ModelNodeText, f29) == 328);
 			static_assert(offsetof(fox::ui::ModelNodeText, f30) == 336);
-			static_assert(offsetof(fox::ui::ModelNodeText, f31) == 344);
-			static_assert(offsetof(fox::ui::ModelNodeText, f32) == 352);
-			static_assert(offsetof(fox::ui::ModelNodeText, f33) == 360);
-			static_assert(offsetof(fox::ui::ModelNodeText, f34) == 368);
 			static_assert(offsetof(fox::ui::ModelNodeText, f35) == 376);
 			static_assert(offsetof(fox::ui::ModelNodeText, f36) == 384);
 			static_assert(offsetof(fox::ui::ModelNodeText, f37) == 392);
