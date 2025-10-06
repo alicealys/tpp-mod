@@ -8,7 +8,7 @@
 #include "filesystem.hpp"
 #include "binds.hpp"
 
-#include "text_chat/input.hpp"
+#include "game_log/input.hpp"
 
 #include <utils/hook.hpp>
 #include <utils/string.hpp>
@@ -347,7 +347,7 @@ namespace binds
 
 			keys[key] = raw_input->data.keyboard.Flags;
 
-			if (text_chat::input::handle_key(key_ascii, is_down, is_game_console_bind(key)))
+			if (game_log::input::handle_key(key_ascii, is_down, is_game_console_bind(key)))
 			{
 				return true;
 			}
@@ -389,7 +389,7 @@ namespace binds
 			if ((raw_input->data.mouse.usButtonFlags & RI_MOUSE_WHEEL) != 0)
 			{
 				const auto down = static_cast<short>(raw_input->data.mouse.usButtonData) < 0;
-				if (text_chat::input::handle_mousewheel(down))
+				if (game_log::input::handle_mousewheel(down))
 				{
 					return true;
 				}
@@ -402,7 +402,7 @@ namespace binds
 				}
 			}
 
-			if (text_chat::input::handle_key(-1, false, false))
+			if (game_log::input::handle_key(-1, false, false))
 			{
 				return true;
 			}

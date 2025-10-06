@@ -3,9 +3,9 @@
 
 #include "game/game.hpp"
 
-#include "text_chat.hpp"
+#include "../command.hpp"
+#include "../console.hpp"
 #include "mutes.hpp"
-#include "ui.hpp"
 
 #include <utils/io.hpp>
 #include <utils/string.hpp>
@@ -144,12 +144,11 @@ namespace text_chat::mutes
 		std::string name;
 		if (!mute_player_internal(identifier, unmute, name))
 		{
-			ui::print("Player not found", false);
+			console::info("Player not found");
 		}
 		else
 		{
-			const std::string msg = utils::string::va("%s has been %s", name.data(), unmute ? "unmuted" : "muted");
-			ui::print(msg, false);
+			console::info("%s has been %s", name.data(), unmute ? "unmuted" : "muted");
 		}
 	}
 
@@ -185,7 +184,7 @@ namespace text_chat::mutes
 			{
 				if (params.size() < 2)
 				{
-					ui::print("Usage: mute <name|steam_id>", false);
+					console::info("Usage: mute <name|steam_id>", false);
 					return;
 				}
 
@@ -196,7 +195,7 @@ namespace text_chat::mutes
 			{
 				if (params.size() < 2)
 				{
-					ui::print("Usage: unmute <name|steam_id>", false);
+					console::info("Usage: unmute <name|steam_id>", false);
 					return;
 				}
 
@@ -228,7 +227,7 @@ namespace text_chat::mutes
 					write_mute_list();
 				});
 
-				ui::print("Mute list was cleared", false);
+				console::info("Mute list was cleared", false);
 			});
 		}
 	};
