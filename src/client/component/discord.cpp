@@ -6,7 +6,7 @@
 #include "scheduler.hpp"
 #include "console.hpp"
 #include "command.hpp"
-#include "session.hpp"
+#include "matchmaking.hpp"
 #include "vars.hpp"
 
 #include <utils/string.hpp>
@@ -272,7 +272,7 @@ namespace discord
 
 			scheduler::once([=]
 			{
-				session::connect_to_lobby(lobby_id);
+				matchmaking::connect_to_lobby(lobby_id);
 			}, scheduler::pipeline::main);
 		}
 
