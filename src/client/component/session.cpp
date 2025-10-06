@@ -7,8 +7,8 @@
 #include "scheduler.hpp"
 #include "console.hpp"
 #include "session.hpp"
-#include "text_chat/text_chat.hpp"
-#include "text_chat/ui.hpp"
+#include "game_log/defs.hpp"
+#include "game_log/ui.hpp"
 #include "dedicated_server.hpp"
 
 #include <utils/hook.hpp>
@@ -297,14 +297,14 @@ namespace session
 		unsigned __int64 join_lobby_stub(game::ISteamMatchmaking* this_, game::steam_id lobby_id)
 		{
 			console::info("[SteamMatchmaking] JoinLobby %lli", lobby_id.bits);
-			text_chat::reset_chat();
+			game_log::reset_log();
 			return steam_matchmaking_vtbl.JoinLobby(this_, lobby_id);
 		}
 
 		void leave_lobby_stub(game::ISteamMatchmaking* this_, game::steam_id lobby_id)
 		{
 			console::info("[SteamMatchmaking] LeaveLobby %lli", lobby_id.bits);
-			text_chat::reset_chat();
+			game_log::reset_log();
 			return steam_matchmaking_vtbl.LeaveLobby(this_, lobby_id);
 		}
 
@@ -387,7 +387,7 @@ namespace session
 			{
 				if (params.size() < 2)
 				{
-					text_chat::ui::print("Usage: kick <name|index|steam_id>", false);
+					console::info("Usage: kick <name|index|steam_id>", false);
 					return;
 				}
 
@@ -396,7 +396,7 @@ namespace session
 				{
 					if (!is_host())
 					{
-						text_chat::ui::print("Cannot kick as non-host", false);
+						console::info("Cannot kick as non-host", false);
 						return;
 					}
 
@@ -404,13 +404,13 @@ namespace session
 					const auto client = find_client(identifier, &is_self);
 					if (client == nullptr)
 					{
-						text_chat::ui::print("Client not found", false);
+						console::info("Client not found", false);
 						return;
 					}
 
 					if (is_self)
 					{
-						text_chat::ui::print("Cannot kick yourself", false);
+						console::info("Cannot kick yourself", false);
 						return;
 					}
 
@@ -419,7 +419,7 @@ namespace session
 					steam_id.bits = client->sessionUserId->userId;
 					const auto name = steam_friends->__vftable->GetFriendPersonaName(steam_friends, steam_id);
 
-					text_chat::ui::print(utils::string::va("%s has been kicked", name), false);
+					console::info(utils::string::va("%s has been kicked", name), false);
 
 					kick_player_from_lobby(client->sessionUserId->userId);
 					ban_player_from_lobby(client->sessionUserId->userId);

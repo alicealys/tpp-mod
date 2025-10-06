@@ -3,10 +3,10 @@
 
 #include "game/game.hpp"
 
-#include "text_chat.hpp"
 #include "lobby.hpp"
 #include "mutes.hpp"
-#include "ui.hpp"
+#include "../game_log/ui.hpp"
+#include "../game_log/defs.hpp"
 
 #include <utils/io.hpp>
 #include <utils/hook.hpp>
@@ -18,9 +18,12 @@ namespace text_chat::lobby
 	{
 		utils::hook::detour on_lobby_chat_msg_hook;
 
+		constexpr auto max_chat_msg_len = 128;
+		constexpr auto chat_message_msg_id = 20;
+
 		void process_chat_msg(game::LobbyChatMsg_t* msg)
 		{
-			if (!is_chat_enabled())
+			if (!game_log::is_chat_enabled())
 			{
 				return;
 			}
@@ -51,11 +54,11 @@ namespace text_chat::lobby
 			}
 
 			auto text = &buffer[sizeof(chat_message_msg_id)];
-			text[chat_message_max_len] = 0;
+			text[max_chat_msg_len] = 0;
 
 			const auto name = steam_friends->__vftable->GetFriendPersonaName(steam_friends, user);
 			const auto message = utils::string::va("%s: %s", name, text);
-			ui::print(message, true);
+			game_log::ui::print(message, true);
 		}
 
 		int on_lobby_chat_msg_stub(void* a1, game::LobbyChatMsg_t* msg)
