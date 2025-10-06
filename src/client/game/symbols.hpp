@@ -65,6 +65,14 @@ namespace game
 			}
 		}
 
+		namespace gr
+		{
+			namespace Font_
+			{
+				WEAK symbol<int(const char*, float*, bool, unsigned int)> GetStringWidth{0x0, 0x140B00030};
+			}
+		}
+
 		namespace EntityHandle_
 		{
 			WEAK symbol<Entity* (EntityHandle*)> GetRawPtr{0x0, 0x14254B900};

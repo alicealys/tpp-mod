@@ -43,6 +43,13 @@ namespace game_log::ui
 			const auto model_node_text_index = index % 2;
 			const auto model_node_text = model_node_text_index == 0 ? log_model.modelNodeText1 : log_model.modelNodeText2;
 
+			model_node_text->flags |= 2;
+
+			const auto width = var_game_log_width->current.get_float();
+			
+			model_node_text->displayAreaWidth = 0.004f * width - 0.01f;
+			model_node_text->displayAreaHeight = 1.f;
+
 			reset_font_metrics(model_node_text);
 
 			game::tpp::ui::utility::SetTextForModelNodeText(model_node_text, &log_model.textUnit, text);
@@ -132,7 +139,7 @@ namespace game_log::ui
 
 		void set_log_output_background(game::tpp::ui::hud::AnnounceLogViewer* this_, const float* bg_color)
 		{
-			const auto width = var_game_log_width->current.get_int() * 1.f;
+			const auto width = var_game_log_width->current.get_float() * 1.f;
 			const auto height = var_game_log_height->current.get_int() * 1.f *
 				(var_game_log_line_spacing->current.get_float() / 2.f) + 0.2f;
 
@@ -148,7 +155,7 @@ namespace game_log::ui
 
 		void set_log_input_background(game::tpp::ui::hud::AnnounceLogViewer* this_, const float* bg_color)
 		{
-			const auto width = var_game_log_width->current.get_int() * 1.f;
+			const auto width = var_game_log_width->current.get_float() * 1.f;
 			const auto height = 1.2f;
 
 			if (game::environment::is_tpp())
