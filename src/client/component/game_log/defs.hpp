@@ -66,7 +66,6 @@ namespace game_log
 		int chat_offset;
 		int message_index;
 		bool is_typing;
-		bool block_input;
 		game_log_input_mode_t mode;
 		message_buffer_t input;
 		int cursor;

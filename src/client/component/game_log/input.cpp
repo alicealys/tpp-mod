@@ -200,6 +200,12 @@ namespace game_log::input
 
 			state.history_index = -1;
 		}
+
+		void clear_input(game_log_state_t& state)
+		{
+			state.cursor = 0;
+			std::memset(state.input, 0, sizeof(state.input));
+		}
 	}
 
 	bool handle_key(const int key, const bool is_down, const bool is_game_console_bind)
@@ -230,9 +236,6 @@ namespace game_log::input
 			case VK_RIGHT:
 				move_cursor(state, true);
 				break;
-			case 0x16:
-				handle_paste(state);
-				break;
 			case VK_TAB:
 				handle_tab(state);
 				break;
@@ -246,17 +249,45 @@ namespace game_log::input
 				update_history(state);
 				handle_return(state);
 				break;
+			}
+
+			return true;
+		});
+	}
+
+	bool handle_char(const int key, const bool is_down)
+	{
+		return game_log_state.access<bool>([&](game_log_state_t& state)
+		{
+			if (!state.is_typing)
+			{
+				return false;
+			}
+
+			if (!is_down)
+			{
+				return true;
+			}
+
+			switch (key)
+			{
+			case 0x1:
+				clear_input(state);
+				break;
+			case 0x16:
+				handle_paste(state);
+				break;
 			case 0x7F:
 				handle_delete(state);
 				break;
 			default:
 			{
 				const auto c = static_cast<char>(key);
-
 				if (is_char_text(c))
 				{
 					handle_char(state, c);
 				}
+				break;
 			}
 			}
 
@@ -291,18 +322,18 @@ namespace game_log::input
 	void stop_typing(game_log_state_t& state)
 	{
 		state.is_typing = false;
-		state.block_input = false;
 		state.chat_offset = 0;
 		state.mode = mode_none;
 		std::memset(state.input, 0, sizeof(state.input));
 		state.cursor = 0;
+		state.history_index = -1;
 	}
 
 	bool is_input_blocked()
 	{
 		return game_log_state.access<bool>([](game_log_state_t& state)
 		{
-			return state.block_input;
+			return state.is_typing;
 		});
 	}
 
@@ -333,7 +364,6 @@ namespace game_log::input
 					{
 						stop_typing(state);
 						state.is_typing = true;
-						state.block_input = true;
 						state.mode = mode_console;
 					}
 				});
@@ -360,7 +390,6 @@ namespace game_log::input
 				{
 					stop_typing(state);
 					state.is_typing = true;
-					state.block_input = true;
 					state.mode = mode_chat;
 				});
 			});
