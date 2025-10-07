@@ -16,6 +16,30 @@ namespace game_log::ui
 	{
 		utils::hook::detour announce_log_view_hook;
 
+		void reset_font_metrics(game::fox::ui::ModelNodeText* node)
+		{
+			if (node->packetBuffer == nullptr)
+			{
+				return;
+			}
+
+			auto ptr = reinterpret_cast<size_t>(node->packetBuffer->packet);
+			auto offset = 0;
+			auto packet = reinterpret_cast<game::fox::gr::Packet2D*>(ptr);
+
+			while (packet->type != 8 && offset < node->packetBuffer->packetSize && packet->type != 0)
+			{
+				offset += packet->size;
+				packet = reinterpret_cast<game::fox::gr::Packet2D*>(ptr + offset);
+			}
+
+			if (packet->type == 8)
+			{
+				const auto packet_string = reinterpret_cast<game::fox::gr::Packet2DString*>(packet);
+				packet_string->fontMetricsCache = nullptr;
+			}
+		}
+
 		template <typename VtableType>
 		void set_log_text_internal(game::tpp::ui::hud::AnnounceLogViewer* this_, const char* text, int index, int y_offset_count, float alpha)
 		{
@@ -27,18 +51,6 @@ namespace game_log::ui
 			}
 
 			auto& log_model = this_->logModels[model_index];
-
-			const auto reset_font_metrics = [](game::fox::ui::ModelNodeText* node)
-			{
-				if (node->packetBuffer == nullptr)
-				{
-					return;
-				}
-
-				const auto ptr = reinterpret_cast<size_t>(node->packetBuffer->packet) + 100;
-				const auto packet_string = reinterpret_cast<game::fox::gr::Packet2DString*>(ptr);
-				packet_string->fontMetricsCache = nullptr;
-			};
 
 			const auto model_node_text_index = index % 2;
 			const auto model_node_text = model_node_text_index == 0 ? log_model.modelNodeText1 : log_model.modelNodeText2;
@@ -170,7 +182,7 @@ namespace game_log::ui
 
 		void clear_log_text(game::tpp::ui::hud::AnnounceLogViewer* this_)
 		{
-			for (auto i = 0; i < 5; i++)
+			for (auto i = 0; i < 10; i++)
 			{
 				set_log_text(this_, "", i);
 			}
@@ -375,24 +387,6 @@ namespace game_log::ui
 			update_chat_input(state, log_viewer);
 			update_chat_messages(state, log_viewer);
 			update_game_log_background(state, log_viewer);
-
-		}
-
-		void update_chat_post_internal(game::tpp::ui::hud::AnnounceLogViewer* log_viewer)
-		{
-			if (log_viewer == nullptr)
-			{
-				return;
-			}
-
-			for (auto i = 0; i < 5; i++)
-			{
-				log_viewer->logModels[i].modelNodeText1->__vftable->ReleasePacketBuffer(log_viewer->logModels[i].modelNodeText1);
-				log_viewer->logModels[i].modelNodeText2->__vftable->ReleasePacketBuffer(log_viewer->logModels[i].modelNodeText2);
-
-				game::fox::ui::ModelNodeText_::ReleaseBufferAndCache(log_viewer->logModels[i].modelNodeText1);
-				game::fox::ui::ModelNodeText_::ReleaseBufferAndCache(log_viewer->logModels[i].modelNodeText2);
-			}
 		}
 
 		void update_chat()

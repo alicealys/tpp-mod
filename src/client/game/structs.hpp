@@ -393,6 +393,13 @@ namespace game
 				int flags;
 				int a6;
 			};
+
+			struct Packet2D
+			{
+				char type;
+				char command;
+				__int16 size;
+			};
 		}
 
 		namespace impl
