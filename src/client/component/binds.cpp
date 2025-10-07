@@ -313,7 +313,7 @@ namespace binds
 			BYTE key_state[256]{};
 			WORD key_char[8]{};
 
-			int key_ascii = raw_input->data.keyboard.VKey;
+			int key_ascii = -1;
 			int key = raw_input->data.keyboard.VKey;
 
 			if (!GetKeyboardState(key_state))
@@ -339,16 +339,17 @@ namespace binds
 				initialized_keys = true;
 			}
 
-			const auto is_down = (raw_input->data.keyboard.Flags == RI_KEY_MAKE || raw_input->data.keyboard.Flags == RI_KEY_E0);
 			const auto is_up = (raw_input->data.keyboard.Flags & RI_KEY_BREAK) != 0;
-			
-			const auto was_down = (keys[key] == RI_KEY_MAKE || keys[key] == RI_KEY_E0);
+			const auto is_down = !is_up;
+
 			const auto was_up = (keys[key] & RI_KEY_BREAK) != 0;
+			const auto was_down = !was_up;
 
 			keys[key] = raw_input->data.keyboard.Flags;
 
-			if (game_log::input::handle_key(key_ascii, is_down, is_game_console_bind(key)))
+			if (game_log::input::handle_key(key, is_down, is_game_console_bind(key)))
 			{
+				game_log::input::handle_char(key_ascii, is_down);
 				return true;
 			}
 
@@ -402,7 +403,7 @@ namespace binds
 				}
 			}
 
-			if (game_log::input::handle_key(-1, false, false))
+			if (game_log::input::handle_key(-1, false))
 			{
 				return true;
 			}

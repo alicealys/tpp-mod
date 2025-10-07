@@ -149,11 +149,10 @@ namespace game_log::ui
 			vtable->SetAlpha1(uix_utility, reinterpret_cast<game::fox::ui::ModelNode*>(log_model.modelNodeMesh), bg_color[3]);
 		}
 
-		void set_log_output_background(game::tpp::ui::hud::AnnounceLogViewer* this_, const float* bg_color)
+		void set_log_output_background(game::tpp::ui::hud::AnnounceLogViewer* this_, const float* bg_color, int lines)
 		{
 			const auto width = var_game_log_width->current.get_float() * 1.f;
-			const auto height = var_game_log_height->current.get_int() * 1.f *
-				(var_game_log_line_spacing->current.get_float() / 2.f) + 0.2f;
+			const auto height = lines * 1.f * (var_game_log_line_spacing->current.get_float() / 2.f) + 0.2f;
 
 			if (game::environment::is_tpp())
 			{
@@ -284,7 +283,7 @@ namespace game_log::ui
 			set_log_text(log_viewer, log_buffer, game_log_message_input_index, 0, 1.f);
 		}
 
-		void update_chat_messages(game_log_state_t& state, game::tpp::ui::hud::AnnounceLogViewer* log_viewer)
+		int update_chat_messages(game_log_state_t& state, game::tpp::ui::hud::AnnounceLogViewer* log_viewer)
 		{
 			static message_buffer_t log_buffers[game_log_view_size]{};
 			std::memset(log_buffers, 0, sizeof(log_buffers));
@@ -298,6 +297,8 @@ namespace game_log::ui
 					message.time = now;
 				}
 			}
+
+			auto active_messages = 0;
 
 			for (auto i = 0; i < game_log_view_size; i++)
 			{
@@ -324,28 +325,36 @@ namespace game_log::ui
 						alpha = static_cast<float>(ms_left) / static_cast<float>(game_log_message_fade_time);
 					}
 
+					++active_messages;
+
 					std::memcpy(log_buffers[i], message.buffer, sizeof(message.buffer));
 				}
 
 				set_log_text(log_viewer, log_buffers[i], game_log_view_index_begin + i, -1, alpha);
 			}
+
+			return active_messages;
 		}
 
-		void update_game_log_background(game_log_state_t& state, game::tpp::ui::hud::AnnounceLogViewer* log_viewer)
+		void update_game_log_background(game_log_state_t& state, game::tpp::ui::hud::AnnounceLogViewer* log_viewer, int message_count)
 		{
 			const auto input_color = var_game_log_input_bg->current.get_color();
 			const auto output_color = var_game_log_output_bg->current.get_color();
+			const auto height = var_game_log_height->current.get_int();
+
+			float empty_color[4]{};
+			set_log_input_background(log_viewer, empty_color);
+			set_log_output_background(log_viewer, empty_color, 0);
 
 			if (state.is_typing)
 			{
 				set_log_input_background(log_viewer, &input_color.r);
-				set_log_output_background(log_viewer, &output_color.r);
+				set_log_output_background(log_viewer, &output_color.r, height);
 			}
-			else
+			else if (game::tpp::ui::menu::impl::MotherBaseDeviceSystemImpl_::IsDeviceOpend() && message_count > 0)
 			{
-				float color[4]{};
-				set_log_input_background(log_viewer, color);
-				set_log_output_background(log_viewer, color);
+				set_log_input_background(log_viewer, empty_color);
+				set_log_output_background(log_viewer, &output_color.r, message_count);
 			}
 		}
 
@@ -385,8 +394,8 @@ namespace game_log::ui
 
 			update_chat_sounds(state);
 			update_chat_input(state, log_viewer);
-			update_chat_messages(state, log_viewer);
-			update_game_log_background(state, log_viewer);
+			const auto msg_count = update_chat_messages(state, log_viewer);
+			update_game_log_background(state, log_viewer, msg_count);
 		}
 
 		void update_chat()
