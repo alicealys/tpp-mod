@@ -145,7 +145,7 @@ namespace game_log
 				input_bg, vars::var_flag_saved, "game log input background color");
 
 			var_game_log_output_bg = vars::register_color("game_log_output_bg",
-				{}, vars::var_flag_saved, "game log output background color");
+				input_bg, vars::var_flag_saved, "game log output background color");
 
 			var_game_log_scale = vars::register_float("game_log_scale",
 				1.f, 0.f, 1000.f, vars::var_flag_saved, "game log scale");
