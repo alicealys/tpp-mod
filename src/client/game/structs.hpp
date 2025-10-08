@@ -396,7 +396,7 @@ namespace game
 
 			struct Packet2D
 			{
-				char type;
+				unsigned char type;
 				char command;
 				__int16 size;
 			};
@@ -557,7 +557,8 @@ namespace game
 				int lineHeightsCount;
 				int f33;
 				float* lineHeights;
-				void* f35;
+				float lineHeight;
+				float lineWidth;
 				void* f36;
 				void* f37;
 				void* f38;
@@ -565,7 +566,7 @@ namespace game
 				void* f40;
 				void* f41;
 				float scrollSpeed;
-				int textScrollUnk1;
+				float textOffsetX;
 				int textScrollUnk2;
 				int textScrollUnk3;
 			};
@@ -607,7 +608,7 @@ namespace game
 			static_assert(offsetof(fox::ui::ModelNodeText, __pad7) == 324);
 			static_assert(offsetof(fox::ui::ModelNodeText, f29) == 328);
 			static_assert(offsetof(fox::ui::ModelNodeText, f30) == 336);
-			static_assert(offsetof(fox::ui::ModelNodeText, f35) == 376);
+			//static_assert(offsetof(fox::ui::ModelNodeText, f35) == 376);
 			static_assert(offsetof(fox::ui::ModelNodeText, f36) == 384);
 			static_assert(offsetof(fox::ui::ModelNodeText, f37) == 392);
 			static_assert(offsetof(fox::ui::ModelNodeText, f38) == 400);

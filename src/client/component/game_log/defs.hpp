@@ -64,6 +64,8 @@ namespace game_log
 	{
 		std::deque<game_log_message_t> messages;
 		int chat_offset;
+		float view_text_offset_x;
+		bool is_ctrl_down;
 		int message_index;
 		bool is_typing;
 		game_log_input_mode_t mode;

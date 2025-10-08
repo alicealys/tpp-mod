@@ -24,14 +24,16 @@ namespace game_log::ui
 			}
 
 			auto ptr = reinterpret_cast<size_t>(node->packetBuffer->packet);
-			auto offset = 0;
-			auto packet = reinterpret_cast<game::fox::gr::Packet2D*>(ptr);
+			auto offset = 216;
+			auto packet = reinterpret_cast<game::fox::gr::Packet2D*>(ptr + offset);
 
+			/*
+			auto offset = 0;
 			while (packet->type != 8 && offset < node->packetBuffer->packetSize && packet->type != 0)
 			{
 				offset += packet->size;
 				packet = reinterpret_cast<game::fox::gr::Packet2D*>(ptr + offset);
-			}
+			}*/
 
 			if (packet->type == 8)
 			{
@@ -41,13 +43,14 @@ namespace game_log::ui
 		}
 
 		template <typename VtableType>
-		void set_log_text_internal(game::tpp::ui::hud::AnnounceLogViewer* this_, const char* text, int index, int y_offset_count, float alpha)
+		float set_log_text_internal(game::tpp::ui::hud::AnnounceLogViewer* this_, const char* text, int index, 
+			int y_offset_count, float alpha, bool auto_scroll)
 		{
 			const auto model_index = index / 2;
 
 			if (!game::tpp::ui::hud::AnnounceLogViewer_::ModelInit(this_, static_cast<char>(model_index)))
 			{
-				return;
+				return 0.f;
 			}
 
 			auto& log_model = this_->logModels[model_index];
@@ -59,14 +62,22 @@ namespace game_log::ui
 
 			const auto width = var_game_log_width->current.get_float();
 			
-			model_node_text->displayAreaWidth = 0.004f * width - 0.01f;
+			model_node_text->displayAreaWidth = (width - 0.5f) / (model_node_text->displaySizes.values[0]);
 			model_node_text->displayAreaHeight = 1.f;
 
 			reset_font_metrics(model_node_text);
 
 			game::tpp::ui::utility::SetTextForModelNodeText(model_node_text, &log_model.textUnit, text);
+			
+			const auto get_text_width = [&]
+			{
+				float text_width{};
+				game::fox::gr::Font_::GetStringWidth(text, &text_width, false, model_node_text->f4);
+				return text_width * 20.f;
+			};
 
-			log_model.model->__vftable->SetVisible(log_model.model, true);
+			const auto display_width = (model_node_text->displaySizes.values[0] * 10.f) * model_node_text->displayAreaWidth;
+			const auto text_width = get_text_width();
 
 			const auto uix_utility = game::fox::uix::impl::GetUixUtilityToFeedQuarkEnvironment();
 			auto vtable = reinterpret_cast<VtableType*>(&uix_utility->__vftable->tpp);
@@ -74,6 +85,21 @@ namespace game_log::ui
 			const auto offset = var_game_log_offset->current.get_vec2();
 			const auto scale = var_game_log_scale->current.get_float();
 			const auto line_spacing = var_game_log_line_spacing->current.get_float();
+
+			const auto is_text_overflowing = (text_width > display_width + 50.f);
+
+			model_node_text->textOffsetX = 0.f;
+			model_node_text->textAlign = 0;
+			vtable->SetTranslationX1(uix_utility, reinterpret_cast<game::fox::ui::ModelNode*>(model_node_text), 0.f);
+
+			if (auto_scroll && is_text_overflowing)
+			{
+				model_node_text->textAlign = 2;
+				model_node_text->textOffsetX = -1.f * display_width;
+				vtable->SetTranslationX1(uix_utility, reinterpret_cast<game::fox::ui::ModelNode*>(model_node_text), -width);
+			}
+
+			log_model.model->__vftable->SetVisible(log_model.model, true);
 
 			const auto y_offset = model_index * 3.f - 15.f;
 			const auto y_offset_text = (index + y_offset_count) * line_spacing;
@@ -90,20 +116,82 @@ namespace game_log::ui
 
 			vtable->SetAlpha1(uix_utility, reinterpret_cast<game::fox::ui::ModelNode*>(model_node_text), alpha);
 			vtable->SetAlpha1(uix_utility, reinterpret_cast<game::fox::ui::ModelNode*>(log_model.modelNode), 1.f);
+
+			return text_width;
 		}
 
-		void set_log_text(game::tpp::ui::hud::AnnounceLogViewer* this_, const char* text, int index, int y_offset_count = 0, float alpha = 0.f)
+		float set_log_text(game::tpp::ui::hud::AnnounceLogViewer* this_, const char* text, int index, int y_offset_count = 0, float alpha = 0.f,
+			bool auto_scroll = false)
 		{
 			if (game::environment::is_tpp())
 			{
 				return set_log_text_internal<game::fox::uix::impl::UixUtilityImpl_vtbl_tpp>(
-					this_, text, index, y_offset_count, alpha
+					this_, text, index, y_offset_count, alpha, auto_scroll
 				);
 			}
 			else
 			{
 				return set_log_text_internal<game::fox::uix::impl::UixUtilityImpl_vtbl_mgo>(
-					this_, text, index, y_offset_count, alpha
+					this_, text, index, y_offset_count, alpha, auto_scroll
+				);
+			}
+		}
+
+		template <typename VtableType>
+		float update_log_text_offset_internal(game::tpp::ui::hud::AnnounceLogViewer* this_, float max_text_width, float text_offset_x)
+		{
+			const auto get_display_width = [&]
+			{
+				auto& log_model = this_->logModels[0];
+				return (log_model.modelNodeText1->displaySizes.values[0] * 10.f) * log_model.modelNodeText1->displayAreaWidth;
+			};
+
+			const auto display_width = get_display_width();
+			const auto margin = display_width + 50.f;
+
+			if (max_text_width > margin)
+			{
+				text_offset_x = std::min(text_offset_x, max_text_width - display_width);
+			}
+			else
+			{
+				text_offset_x = 0.f;
+			}
+
+			for (auto i = 0; i < game_log_view_size; i++)
+			{
+				const auto index = game_log_view_index_begin + i;
+				const auto model_index = index / 2;
+				auto& log_model = this_->logModels[model_index];
+
+				const auto model_node_text_index = index % 2;
+				const auto model_node_text = model_node_text_index == 0 ? log_model.modelNodeText1 : log_model.modelNodeText2;
+
+				if (max_text_width > margin)
+				{
+					model_node_text->textOffsetX = text_offset_x;
+				}
+				else
+				{
+					model_node_text->textOffsetX = 0.f;
+				}
+			}
+
+			return text_offset_x;
+		}
+
+		float update_log_text_offset(game::tpp::ui::hud::AnnounceLogViewer* this_, float max_text_width, float text_offset_x)
+		{
+			if (game::environment::is_tpp())
+			{
+				return update_log_text_offset_internal<game::fox::uix::impl::UixUtilityImpl_vtbl_tpp>(
+					this_, max_text_width, text_offset_x
+				);
+			}
+			else
+			{
+				return update_log_text_offset_internal<game::fox::uix::impl::UixUtilityImpl_vtbl_mgo>(
+					this_, max_text_width, text_offset_x
 				);
 			}
 		}
@@ -236,51 +324,52 @@ namespace game_log::ui
 			static message_buffer_t log_buffer{};
 			std::memset(log_buffer, 0, sizeof(log_buffer));
 
-			set_log_text(log_viewer, log_buffer, game_log_message_input_index, 0, 1.f);
-
-			if (!state.is_typing)
+			const auto update_buffer = [&]
 			{
-				return;
+				const auto now = std::chrono::high_resolution_clock::now();
+				const auto ms_epoch = static_cast<int>(std::chrono::duration_cast<std::chrono::milliseconds>(now.time_since_epoch()).count());
+				const auto show_cursor = ((ms_epoch % game_log_cursor_interval) > game_log_cursor_interval / 2);
+
+				const auto len = std::strlen(state.input);
+
+				char* postfix{};
+
+				switch (state.mode)
+				{
+				case mode_chat:
+				{
+					static const auto prefix_len = std::strlen(chat_input_prefix);
+					static const auto text_len = sizeof(log_buffer) - prefix_len;
+
+					std::memcpy(log_buffer, chat_input_prefix, prefix_len);
+					postfix = &log_buffer[prefix_len];
+					break;
+				}
+				case mode_console:
+				{
+					static const auto prefix_len = std::strlen(console_input_prefix);
+					static const auto text_len = sizeof(log_buffer) - prefix_len;
+
+					std::memcpy(log_buffer, console_input_prefix, prefix_len);
+					postfix = &log_buffer[prefix_len];
+					break;
+				}
+				default:
+					return;
+				}
+
+				std::memcpy(postfix, state.input, state.cursor);
+				std::memcpy(&postfix[state.cursor + 1], &state.input[state.cursor], len - state.cursor);
+
+				postfix[state.cursor] = show_cursor ? game_log_cursor_char : ' ';
+			};
+
+			if (state.is_typing)
+			{
+				update_buffer();
 			}
 
-			const auto now = std::chrono::high_resolution_clock::now();
-			const auto ms_epoch = static_cast<int>(std::chrono::duration_cast<std::chrono::milliseconds>(now.time_since_epoch()).count());
-			const auto show_cursor = ((ms_epoch % game_log_cursor_interval) > game_log_cursor_interval / 2);
-
-			const auto len = std::strlen(state.input);
-
-			char* postfix{};
-
-			switch (state.mode)
-			{
-			case mode_chat:
-			{
-				static const auto prefix_len = std::strlen(chat_input_prefix);
-				static const auto text_len = sizeof(log_buffer) - prefix_len;
-
-				std::memcpy(log_buffer, chat_input_prefix, prefix_len);
-				postfix = &log_buffer[prefix_len];
-				break;
-			}
-			case mode_console:
-			{
-				static const auto prefix_len = std::strlen(console_input_prefix);
-				static const auto text_len = sizeof(log_buffer) - prefix_len;
-
-				std::memcpy(log_buffer, console_input_prefix, prefix_len);
-				postfix = &log_buffer[prefix_len];
-				break;
-			}
-			default:
-				return;
-			}
-
-			std::memcpy(postfix, state.input, state.cursor);
-			std::memcpy(&postfix[state.cursor + 1], &state.input[state.cursor], len - state.cursor);
-
-			postfix[state.cursor] = show_cursor ? game_log_cursor_char : ' ';
-
-			set_log_text(log_viewer, log_buffer, game_log_message_input_index, 0, 1.f);
+			set_log_text(log_viewer, log_buffer, game_log_message_input_index, 0, 1.f, true);
 		}
 
 		int update_chat_messages(game_log_state_t& state, game::tpp::ui::hud::AnnounceLogViewer* log_viewer)
@@ -299,6 +388,7 @@ namespace game_log::ui
 			}
 
 			auto active_messages = 0;
+			auto max_text_width = 0.f;
 
 			for (auto i = 0; i < game_log_view_size; i++)
 			{
@@ -336,8 +426,11 @@ namespace game_log::ui
 					update_buffer();
 				}
 
-				set_log_text(log_viewer, log_buffers[i], game_log_view_index_begin + i, -1, alpha);
+				const auto width = set_log_text(log_viewer, log_buffers[i], game_log_view_index_begin + i, -1, alpha);
+				max_text_width = std::max(max_text_width, width);
 			}
+
+			state.view_text_offset_x = update_log_text_offset(log_viewer, max_text_width, state.view_text_offset_x);
 
 			return active_messages;
 		}
@@ -463,7 +556,7 @@ namespace game_log::ui
 
 			if (play_sound)
 			{
-				add_sound(game_log_message_sound_id, 1ms);
+				add_sound(game_log_message_sound_id, 0ms);
 			}
 
 			if (state.messages.size() > game_log_history_size)
