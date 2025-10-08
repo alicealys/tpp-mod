@@ -284,9 +284,9 @@ namespace command
 		auto is_in_quotes = false;
 		auto is_in_word = false;
 
-		const auto add_token = [&]
+		const auto add_token = [&](bool force = false)
 		{
-			if (!current_token.empty())
+			if (!current_token.empty() || force)
 			{
 				res.emplace_back(current_token);
 				current_token.clear();
@@ -299,7 +299,7 @@ namespace command
 			{
 				if (is_in_quotes)
 				{
-					add_token();
+					add_token(true);
 				}
 
 				is_in_quotes = !is_in_quotes;
