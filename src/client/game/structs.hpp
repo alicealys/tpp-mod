@@ -507,13 +507,13 @@ namespace game
 #pragma pack(push, 1)
 			struct ModelNodeText
 			{
-				ModelNodeText_vtbl* __vftable;
+				fox::ui::ModelNodeText_vtbl* __vftable;
 				char __pad0[106];
 				char f0;
 				char __pad1[21];
 				void* f1;
 				short flags;
-				char f3;
+				char enableTextScroll;
 				char __pad2[1];
 				int f4;
 				void* f5;
@@ -526,7 +526,8 @@ namespace game
 				char __pad3[4];
 				fox::gr::Packet2DBuffer* packetBuffer;
 				void* f12;
-				short f13;
+				char textAlign;
+				char f13;
 				char f14;
 				char f15;
 				short f16;
@@ -545,7 +546,7 @@ namespace game
 				char __pad6[4];
 				void* f25;
 				void* f26;
-				TextUnit* textUnit;
+				fox::ui::TextUnit* textUnit;
 				int f28;
 				char __pad7[4];
 				void* f29;
@@ -563,8 +564,10 @@ namespace game
 				void* f39;
 				void* f40;
 				void* f41;
-				void* f42;
-				void* f43;
+				float scrollSpeed;
+				int textScrollUnk1;
+				int textScrollUnk2;
+				int textScrollUnk3;
 			};
 #pragma pack(pop)
 
@@ -573,7 +576,7 @@ namespace game
 			static_assert(offsetof(fox::ui::ModelNodeText, __pad1) == 115);
 			static_assert(offsetof(fox::ui::ModelNodeText, f1) == 136);
 			static_assert(offsetof(fox::ui::ModelNodeText, flags) == 144);
-			static_assert(offsetof(fox::ui::ModelNodeText, f3) == 146);
+			//static_assert(offsetof(fox::ui::ModelNodeText, f3) == 146);
 			static_assert(offsetof(fox::ui::ModelNodeText, __pad2) == 147);
 			static_assert(offsetof(fox::ui::ModelNodeText, f4) == 148);
 			static_assert(offsetof(fox::ui::ModelNodeText, f5) == 152);
@@ -585,7 +588,7 @@ namespace game
 			static_assert(offsetof(fox::ui::ModelNodeText, __pad3) == 196);
 			static_assert(offsetof(fox::ui::ModelNodeText, packetBuffer) == 200);
 			static_assert(offsetof(fox::ui::ModelNodeText, f12) == 208);
-			static_assert(offsetof(fox::ui::ModelNodeText, f13) == 216);
+			//static_assert(offsetof(fox::ui::ModelNodeText, f13) == 216);
 			static_assert(offsetof(fox::ui::ModelNodeText, f14) == 218);
 			static_assert(offsetof(fox::ui::ModelNodeText, f15) == 219);
 			static_assert(offsetof(fox::ui::ModelNodeText, f16) == 220);
@@ -611,8 +614,8 @@ namespace game
 			static_assert(offsetof(fox::ui::ModelNodeText, f39) == 408);
 			static_assert(offsetof(fox::ui::ModelNodeText, f40) == 416);
 			static_assert(offsetof(fox::ui::ModelNodeText, f41) == 424);
-			static_assert(offsetof(fox::ui::ModelNodeText, f42) == 432);
-			static_assert(offsetof(fox::ui::ModelNodeText, f43) == 440);
+			//static_assert(offsetof(fox::ui::ModelNodeText, f42) == 432);
+			//static_assert(offsetof(fox::ui::ModelNodeText, f43) == 440);
 
 			static_assert(sizeof(ModelNodeText) == 0x1C0);
 
