@@ -160,7 +160,7 @@ namespace game_log
 				4, 1, game_log_view_size, vars::var_flag_saved, "game log height");
 
 			var_game_log_width = vars::register_float("game_log_width", 
-				60.f, 0.f, 10000.f, vars::var_flag_saved, "game log width");
+				100.f, 0.f, 10000.f, vars::var_flag_saved, "game log width");
 
 			var_game_log_max_message_len = vars::register_int("game_log_message_max_len", 128, 0, 
 				sizeof(message_buffer_t) - 1, vars::var_flag_saved, "game log maximum message length");

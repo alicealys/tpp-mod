@@ -308,26 +308,32 @@ namespace game_log::ui
 
 				if (message_index < state.messages.size() && i < var_game_log_height->current.get_int())
 				{
-					auto& message = state.messages[message_index];
-
-					const auto diff = now - message.time;
-					const auto ms = static_cast<int>(std::chrono::duration_cast<std::chrono::milliseconds>(diff).count());
-					const auto ms_left = var_game_log_message_time->current.get_int() - ms;
-
-					alpha = 1.f;
-
-					if (ms_left <= 0)
+					const auto update_buffer = [&]
 					{
-						continue;
-					}
-					else if (ms_left <= game_log_message_fade_time)
-					{
-						alpha = static_cast<float>(ms_left) / static_cast<float>(game_log_message_fade_time);
-					}
+						auto& message = state.messages[message_index];
 
-					++active_messages;
+						const auto diff = now - message.time;
+						const auto ms = static_cast<int>(std::chrono::duration_cast<std::chrono::milliseconds>(diff).count());
+						const auto ms_left = var_game_log_message_time->current.get_int() - ms;
 
-					std::memcpy(log_buffers[i], message.buffer, sizeof(message.buffer));
+						alpha = 1.f;
+
+						if (ms_left <= 0)
+						{
+							alpha = 0.f;
+							return;
+						}
+						else if (ms_left <= game_log_message_fade_time)
+						{
+							alpha = static_cast<float>(ms_left) / static_cast<float>(game_log_message_fade_time);
+						}
+
+						++active_messages;
+
+						std::memcpy(log_buffers[i], message.buffer, sizeof(message.buffer));
+					};
+
+					update_buffer();
 				}
 
 				set_log_text(log_viewer, log_buffers[i], game_log_view_index_begin + i, -1, alpha);
