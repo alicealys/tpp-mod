@@ -35,6 +35,8 @@ namespace command
 
 			auto inq = false;
 
+			std::vector<const char*> cmds;
+
 			while (*command_line)
 			{
 				if (*command_line == '"')
@@ -46,11 +48,16 @@ namespace command
 				if ((*command_line == '+' && !inq) || *command_line == '\n' || *command_line == '\r')
 				{
 					const auto cmd = command_line + 1;
-					command::execute(cmd, true);
+					cmds.emplace_back(cmd);
 					*command_line = '\0';
 				}
 
 				command_line++;
+			}
+
+			for (const auto& cmd : cmds)
+			{
+				command::execute(cmd, true);
 			}
 
 			parsed = true;

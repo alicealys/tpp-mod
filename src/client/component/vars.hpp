@@ -167,7 +167,7 @@ namespace vars
 	var_ptr register_color(const std::string& name, const color_t& value,
 		const std::uint32_t flags, const std::string& description);
 
-	std::optional<var_ptr> find(const std::string& name);
+	var_ptr find(const std::string& name);
 	std::optional<std::string> find_name(const std::string& name);
 
 	bool var_command(const command::params& params);
