@@ -59,6 +59,7 @@ namespace text_chat::lobby
 			const auto name = steam_friends->__vftable->GetFriendPersonaName(steam_friends, user);
 			const auto message = utils::string::va("%s: %s", name, text);
 			game_log::ui::print(message, true);
+			console::info("%s\n", message);
 		}
 
 		int on_lobby_chat_msg_stub(void* a1, game::LobbyChatMsg_t* msg)
