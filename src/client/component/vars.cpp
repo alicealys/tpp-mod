@@ -512,7 +512,8 @@ namespace vars
 	{
 		return register_var(name, var_type_color, value, {}, flags, description);
 	}
-	std::optional<var_ptr> find(const std::string& name)
+
+	var_ptr find(const std::string& name)
 	{
 		const auto lower = utils::string::to_lower(name);
 		const auto& map = get_var_map();
@@ -520,10 +521,10 @@ namespace vars
 
 		if (iter == map.end())
 		{
-			return {};
+			return nullptr;
 		}
 
-		return {iter->second};
+		return iter->second;
 	}
 
 	std::optional<std::string> find_name(const std::string& name)
@@ -549,14 +550,12 @@ namespace vars
 	bool var_command(const command::params& params)
 	{
 		const auto name = params.get(0);
-		const auto var_opt = find(name);
+		const auto var = find(name);
 
-		if (!var_opt.has_value())
+		if (var == nullptr)
 		{
 			return false;
 		}
-
-		auto& var = var_opt.value();
 
 		if (params.size() == 1)
 		{
@@ -598,19 +597,19 @@ namespace vars
 				const auto value = params.join(2);
 
 				const auto var = find(name);
-				if (!var.has_value())
+				if (var == nullptr)
 				{
 					register_string(name, value, var_flag_external, "");
 				}
 				else
 				{
-					const auto parsed_value = var_value::parse(value, var.value()->type);
+					const auto parsed_value = var_value::parse(value, var->type);
 					if (!parsed_value.has_value())
 					{
 						return;
 					}
 
-					set_var(var.value(), parsed_value.value(), var_source_external);
+					set_var(var, parsed_value.value(), var_source_external);
 				}
 			});
 
