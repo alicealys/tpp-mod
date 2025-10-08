@@ -219,6 +219,25 @@ namespace session
 
 			printf("rtt: %ims\n", get_rtt(main_session));
 		}
+
+		void run_frame()
+		{
+			static auto prev_state = 0u;
+
+			const auto main_session = *game::s_pSession;
+			if (main_session == nullptr)
+			{
+				return;
+			}
+
+			const auto state = main_session->__vftable->tpp.GetState(main_session);
+			if (state != prev_state)
+			{
+				console::debug("[session] state updated: %i\n", state);
+			}
+
+			prev_state = state;
+		}
 	}
 
 	class component final : public component_interface
@@ -226,6 +245,8 @@ namespace session
 	public:
 		void start() override
 		{
+			scheduler::loop(run_frame, scheduler::session);
+
 			command::add("status", []
 			{
 				scheduler::once(print_status, scheduler::session);
