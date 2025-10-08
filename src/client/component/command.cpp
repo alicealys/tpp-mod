@@ -433,6 +433,23 @@ namespace command
 
 				game::tpp::ui::utility::StopSound(sound_control, id);
 			});
+
+			if (game::environment::is_tpp())
+			{
+				command::add("startmgo", []
+				{
+					utils::nt::start_process("mgsvmgo.exe");
+					utils::nt::terminate();
+				});
+			}
+			else
+			{
+				command::add("starttpp", []
+				{
+					utils::nt::start_process("mgsvtpp.exe");
+					utils::nt::terminate();
+				});
+			}
 		}
 	};
 }

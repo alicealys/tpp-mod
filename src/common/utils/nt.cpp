@@ -246,4 +246,30 @@ namespace utils::nt
 		const auto size = SizeofResource(self_handle, res);
 		return std::string{str, size};
 	}
+
+	void start_process(const std::string& path, const std::string& command_line)
+	{
+		STARTUPINFOA startup_info;
+		PROCESS_INFORMATION process_info;
+
+		ZeroMemory(&startup_info, sizeof(startup_info));
+		ZeroMemory(&process_info, sizeof(process_info));
+		startup_info.cb = sizeof(startup_info);
+
+		char current_dir[MAX_PATH]{};
+		GetCurrentDirectoryA(sizeof(current_dir), current_dir);
+
+		std::string command_line_ = command_line;
+
+		CreateProcessA(path.data(), command_line_.data(), nullptr, nullptr, false,
+			CREATE_NEW_CONSOLE, nullptr, current_dir, &startup_info, &process_info);
+
+		if (process_info.hThread && process_info.hThread != INVALID_HANDLE_VALUE) CloseHandle(process_info.hThread);
+		if (process_info.hProcess && process_info.hProcess != INVALID_HANDLE_VALUE) CloseHandle(process_info.hProcess);
+	}
+
+	void terminate(const uint32_t code)
+	{
+		TerminateProcess(GetCurrentProcess(), code);
+	}
 }
