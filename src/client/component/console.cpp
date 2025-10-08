@@ -9,16 +9,16 @@
 #include "game_log/ui.hpp"
 
 #include <utils/thread.hpp>
-#include <utils/hook.hpp>
 #include <utils/string.hpp>
 
 #define OUTPUT_HANDLE GetStdHandle(STD_OUTPUT_HANDLE)
 
 namespace console
 {
+	utils::hook::detour printf_hook;
+
 	namespace
 	{
-		utils::hook::detour printf_hook;
 		std::recursive_mutex print_mutex;
 
 		struct
@@ -46,17 +46,6 @@ namespace console
 			GetConsoleCursorInfo(OUTPUT_HANDLE, &info);
 			info.bVisible = show;
 			SetConsoleCursorInfo(OUTPUT_HANDLE, &info);
-		}
-
-		template <typename... Args>
-		int invoke_printf(const char* fmt, Args&&... args)
-		{
-			if (printf_hook.get_original() == nullptr)
-			{
-				return printf(fmt, std::forward<Args>(args)...);
-			}
-
-			return printf_hook.invoke<int>(fmt, std::forward<Args>(args)...);
 		}
 
 		std::string format(va_list* ap, const char* message)

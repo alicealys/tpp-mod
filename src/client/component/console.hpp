@@ -1,5 +1,7 @@
 #pragma once
 
+#include <utils/hook.hpp>
+
 namespace console
 {
 	enum console_type
@@ -9,6 +11,19 @@ namespace console
 		con_type_warning = 3,
 		con_type_info = 7
 	};
+
+	extern utils::hook::detour printf_hook;
+
+	template <typename... Args>
+	int invoke_printf(const char* fmt, Args&&... args)
+	{
+		if (printf_hook.get_original() == nullptr)
+		{
+			return printf(fmt, std::forward<Args>(args)...);
+		}
+
+		return printf_hook.invoke<int>(fmt, std::forward<Args>(args)...);
+	}
 
 	void print(int type, const char* fmt, ...);
 

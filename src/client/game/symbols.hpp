@@ -69,7 +69,7 @@ namespace game
 		{
 			namespace Font_
 			{
-				WEAK symbol<int(const char*, float*, bool, unsigned int)> GetStringWidth{0x0, 0x140B00030};
+				WEAK symbol<int(const char*, float*, bool, unsigned int)> GetStringWidth{0x141C32000, 0x140B00030};
 			}
 		}
 

@@ -217,6 +217,11 @@ namespace game_log::input
 				return false;
 			}
 
+			if (key == VK_CONTROL)
+			{
+				state.is_ctrl_down = is_down;
+			}
+
 			if (!is_down)
 			{
 				return true;
@@ -304,15 +309,22 @@ namespace game_log::input
 				return false;
 			}
 
-			const auto max_offset = std::max(0, static_cast<int>(state.messages.size()) - 
-				var_game_log_height->current.get_int());
-
-			const auto prev_offset = state.chat_offset;
-			state.chat_offset = std::min(std::max(0, state.chat_offset + (1 - 2 * down)), max_offset);
-
-			if (state.chat_offset != prev_offset)
+			if (state.is_ctrl_down)
 			{
-				ui::add_sound(game_log_scroll_sound_id, 1ms);
+				state.view_text_offset_x = std::max(0.f, state.view_text_offset_x + 30.f * (down ? -1.f : 1.f));
+			}
+			else
+			{
+				const auto max_offset = std::max(0, static_cast<int>(state.messages.size()) -
+					var_game_log_height->current.get_int());
+
+				const auto prev_offset = state.chat_offset;
+				state.chat_offset = std::min(std::max(0, state.chat_offset + (1 - 2 * down)), max_offset);
+
+				if (state.chat_offset != prev_offset)
+				{
+					ui::add_sound(game_log_scroll_sound_id, 1ms);
+				}
 			}
 
 			return true;
@@ -326,6 +338,7 @@ namespace game_log::input
 		state.mode = mode_none;
 		std::memset(state.input, 0, sizeof(state.input));
 		state.cursor = 0;
+		state.view_text_offset_x = 0.f;
 		state.history_index = -1;
 	}
 
@@ -347,6 +360,11 @@ namespace game_log::input
 
 		void start() override
 		{
+			game_log_state.access([](game_log_state_t& state)
+			{
+				state = {};
+			});
+
 			command::add("toggleconsole", []
 			{
 				if (!is_console_enabled() || !can_show_game_log())
