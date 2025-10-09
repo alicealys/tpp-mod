@@ -217,9 +217,9 @@ namespace game_log::input
 				return false;
 			}
 
-			if (key == VK_CONTROL)
+			if (key == VK_SHIFT)
 			{
-				state.is_ctrl_down = is_down;
+				state.is_shift_down = is_down;
 			}
 
 			if (!is_down)
@@ -309,7 +309,7 @@ namespace game_log::input
 				return false;
 			}
 
-			if (state.is_ctrl_down)
+			if (state.is_shift_down)
 			{
 				state.view_text_offset_x = std::max(0.f, state.view_text_offset_x + 30.f * (down ? -1.f : 1.f));
 			}
