@@ -324,10 +324,10 @@ namespace game_log::ui
 			static message_buffer_t log_buffer{};
 			std::memset(log_buffer, 0, sizeof(log_buffer));
 
-			const auto update_buffer = [&]
+			if (state.is_typing)
 			{
 				const auto now = std::chrono::high_resolution_clock::now();
-				const auto ms_epoch = static_cast<int>(std::chrono::duration_cast<std::chrono::milliseconds>(now.time_since_epoch()).count());
+				const auto ms_epoch = static_cast<std::uint64_t>(std::chrono::duration_cast<std::chrono::milliseconds>(now.time_since_epoch()).count());
 				const auto show_cursor = ((ms_epoch % game_log_cursor_interval) > game_log_cursor_interval / 2);
 
 				const auto len = std::strlen(state.input);
@@ -362,11 +362,6 @@ namespace game_log::ui
 				std::memcpy(&postfix[state.cursor + 1], &state.input[state.cursor], len - state.cursor);
 
 				postfix[state.cursor] = show_cursor ? game_log_cursor_char : ' ';
-			};
-
-			if (state.is_typing)
-			{
-				update_buffer();
 			}
 
 			set_log_text(log_viewer, log_buffer, game_log_message_input_index, 0, 1.f, true);

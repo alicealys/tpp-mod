@@ -27,7 +27,7 @@ namespace game_log
 	constexpr auto game_log_view_size = 8;
 	constexpr auto game_log_view_index_begin = 2;
 	constexpr auto game_log_message_input_index = 0;
-	constexpr auto game_log_cursor_interval = 500;
+	constexpr auto game_log_cursor_interval = 500ull;
 	constexpr auto game_log_message_sound_id = 22;
 	constexpr auto game_log_message_fade_time = 1000;
 	constexpr auto game_log_scroll_sound_id = 152;
