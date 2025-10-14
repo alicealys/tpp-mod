@@ -64,6 +64,7 @@ namespace patches
 			if (game::environment::is_mgo())
 			{
 				utils::hook::call(0x14002AFAB, get_processor_count_stub);
+				utils::hook::call(0x142361744, get_processor_count_stub);
 			}
 			else
 			{
@@ -112,7 +113,7 @@ namespace patches
 	public:
 		void pre_load() override
 		{
-			var_worker_count = vars::register_int("com_worker_count", 4, 0, std::numeric_limits<int>::max(), 
+			var_worker_count = vars::register_int("com_worker_count", 4, 2, std::numeric_limits<int>::max(),
 				vars::var_flag_saved | vars::var_flag_latched, "maxiumum number of job executor worker threads");
 
 			var_unlock_fps = vars::register_bool("com_unlock_fps", false, vars::var_flag_saved | vars::var_flag_latched, "unlock fps");
