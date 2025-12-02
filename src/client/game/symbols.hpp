@@ -12,6 +12,8 @@ namespace game
 		
 		WEAK symbol<bool(fox::RawKeyboardData*, RAWKEYBOARD*)> GetRawKeyboardData{0x141A45940, 0x1414A1D60};
 
+		WEAK symbol<void*(__int64, __int64, __int64)> BlockHeapAlloc{0x1400DCAC0, 0x0};
+
 		namespace KeyboardListener_
 		{
 			WEAK symbol<void(fox::RawKeyboardData*)> SetRawKeyData{0x140030BB0, 0x1400304F0};
@@ -70,6 +72,25 @@ namespace game
 			namespace Font_
 			{
 				WEAK symbol<int(const char*, float*, bool, unsigned int)> GetStringWidth{0x141C32000, 0x140B00030};
+			}
+
+			namespace Packet2DBuffer_
+			{
+				WEAK symbol<Packet2DBuffer*(Packet2DBuffer*, unsigned int, int)> Packet2DBuffer_{0x1401BFD30, 0x0};
+			}
+
+			namespace Scene_
+			{
+				WEAK symbol<Scene*()> GetDefaultScene{0x1401B5E20, 0x0};
+				WEAK symbol<void(Scene*, SceneObject*)> Queue{0x1401B5FE0, 0x0};
+			}
+
+			namespace Draw2D_
+			{
+				WEAK symbol<Draw2D*(Draw2D*, unsigned int, unsigned int)> Draw2D_{0x1437C29C0, 0x0};
+				WEAK symbol<Draw2D*(Draw2D*, Packet2DBuffer*)> Add{0x1401C0000, 0x0};
+				WEAK symbol<unsigned int()> GetMaxPacketSize{0x0, 0x0};
+				WEAK symbol<Packet2D*(Packet2D*, unsigned char*, char)> SetCommand{0x1401C2510, 0x0};
 			}
 		}
 

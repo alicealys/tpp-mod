@@ -35,7 +35,7 @@ namespace game_log::ui
 				packet = reinterpret_cast<game::fox::gr::Packet2D*>(ptr + offset);
 			}*/
 
-			if (packet->type == 8)
+			if (packet->command == 8)
 			{
 				const auto packet_string = reinterpret_cast<game::fox::gr::Packet2DString*>(packet);
 				packet_string->fontMetricsCache = nullptr;

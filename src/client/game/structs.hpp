@@ -383,22 +383,43 @@ namespace game
 				__int16 a9;
 			};
 
+			struct Packet2D
+			{
+				unsigned char command;
+				char a2;
+				__int16 size;
+			};
+
 			struct Packet2DBuffer
 			{
 				void* a1;
 				void* a2;
-				void* packet;
+				Packet2D* packet;
 				void* a4;
 				int packetSize;
 				int flags;
 				int a6;
 			};
 
-			struct Packet2D
+			struct Scene
 			{
-				unsigned char type;
-				char command;
-				__int16 size;
+
+			};
+
+			struct SceneObject
+			{
+
+			};
+
+			struct Draw2D
+			{
+				struct vtable
+				{
+
+				};
+
+				vtable* __vftable;
+				char __pad0[88];
 			};
 		}
 
@@ -673,6 +694,9 @@ namespace game
 			struct Model
 			{
 				fox::ui::Model_vtbl* __vftable;
+				char __pad0[192];
+				fox::gr::SceneObject* sceneObject;
+				char __pad1[40];
 			};
 
 			struct WindowInterface;
