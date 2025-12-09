@@ -7,7 +7,8 @@ https://discord.gg/hYfW9MEEGF
 
 ## Installation
 
-Download [dinput8.dll](https://github.alicent.cat/tpp-mod/dinput8.dll) and copy it to the game folder
+- Requires **latest steam release** of MGSV (JPN or pirated versions are **NOT** supported)
+- Download [dinput8.dll](https://github.alicent.cat/tpp-mod/dinput8.dll) and copy it to the game folder
 
 ## Features
 
