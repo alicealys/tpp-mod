@@ -46,6 +46,7 @@ jobs:
           name: ${{matrix.configuration}} binaries
           path: |
             build/bin/x64/${{matrix.configuration}}/dinput8.dll
+            build/bin/x64/${{matrix.configuration}}/dinput8.pdb
   deploy:
     name: Deploy artifacts
     needs: build
