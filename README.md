@@ -14,7 +14,7 @@ Currently, **japanese** versions are not supported.
 | --- | --- | --- |
 | mgsvtpp.exe (eng, 1.0.15.3) | 17AC94A4BC9F88B035A45122C8A67EFA38D03F2A | ✔️ |
 | mgsvmgo.exe (eng, 1.1.2.7) | 8690C7C27C94DD6A452BA6A612B7B485918F3BAF | ✔️ |
-| mgsvtpp.exe (jpn, 1.0.15.3) | 3A87F626732158890A07688D32A2523CD8EADA71 | ❌ |
+| mgsvtpp.exe (jpn, 1.0.15.3) | 3A87F626732158890A07688D32A2523CD8EADA71 | ✔️ |
 | mgsvmgo.exe (jpn, 1.1.2.7) | D6ADF7685B0F0639B2A949D0E96A06E853DAEEB8 | ❌ |
 
 - Download [dinput8.dll](https://github.alicent.cat/tpp-mod/dinput8.dll) and copy it to the game folder.  
