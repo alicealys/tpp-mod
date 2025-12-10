@@ -7,8 +7,7 @@ https://discord.gg/hYfW9MEEGF
 
 ## Installation
 
-tpp-mod only supports original steam releases (latest), any kind of modified or pirated version is **NOT** supported.  
-Currently, **japanese** versions are not supported.  
+tpp-mod only supports original steam releases (latest), any kind of modified or pirated version is **NOT** supported.   
 
 | version | sha1 | support |
 | --- | --- | --- |
