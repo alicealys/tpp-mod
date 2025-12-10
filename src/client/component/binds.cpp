@@ -462,7 +462,7 @@ namespace binds
 
 		std::string get_config_file_path()
 		{
-			static const auto file = SELECT_VALUE("keys_tpp.cfg", "keys_mgo.cfg", "keys_tpp.cfg", "keys_mgo.cfg");
+			static const auto file = SELECT_VALUE_NOLANG("keys_tpp.cfg", "keys_mgo.cfg");
 			return (utils::properties::get_appdata_path() / file).generic_string();
 		}
 

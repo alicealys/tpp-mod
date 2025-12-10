@@ -3,6 +3,7 @@
 #include "structs.hpp"
 
 #define SELECT_VALUE(...) game::select(__VA_ARGS__)
+#define SELECT_VALUE_NOLANG(tpp, mgo) (game::environment::is_tpp() ? (tpp) : (mgo))
 
 namespace game
 {
