@@ -258,7 +258,7 @@ namespace discord
 		{
 			Discord_RunCallbacks();
 
-			SELECT_VALUE(update_discord_mgsv, update_discord_mgo)();
+			SELECT_VALUE_NOLANG(update_discord_mgsv, update_discord_mgo)();
 
 			Discord_UpdatePresence(&discord_presence);
 		}

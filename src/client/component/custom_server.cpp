@@ -99,7 +99,7 @@ namespace custom_server
 			a.pop(rax);
 
 			a.test(eax, eax);
-			a.jmp(0x143593E88);
+			a.jmp(SELECT_VALUE_LANG(0x143593E88, 0x14357A208));
 		}
 
 		void* file_read_stub(void* data, const char* file_name, size_t* result_file_size, void* buffer, 
@@ -196,18 +196,18 @@ namespace custom_server
 
 			if (game::environment::is_tpp())
 			{
-				file_read_hook.create(0x143593E20, file_read_stub);
-				file_write_hook.create(0x143596770, file_write_stub);
+				file_read_hook.create(SELECT_VALUE_LANG(0x143593E20, 0x14357A1A0), file_read_stub);
+				file_write_hook.create(SELECT_VALUE_LANG(0x143596770, 0x14357B660), file_write_stub);
 
-				utils::hook::set(0x14DB4F0B8, create_file_stub);
+				utils::hook::set(SELECT_VALUE_LANG(0x14DB4F0B8, 0x14E1300B8), create_file_stub);
 
 				const auto folder = get_custom_server_data_folder();
 				utils::io::write_file(std::format("{}\\server_url.txt", folder), custom_url);
 
-				utils::hook::jump(0x143593E7B, utils::hook::assemble(steam_storage_read_file_stub), true);
+				utils::hook::jump(SELECT_VALUE_LANG(0x143593E7B, 0x14357A1FB), utils::hook::assemble(steam_storage_read_file_stub), true);
 			}
 
-			utils::hook::inject(SELECT_VALUE(0x1407D27AC, 0x140572AD6) + 3, custom_url);
+			utils::hook::inject(SELECT_VALUE(0x1407D27AC, 0x140572AD6, 0x1407D23EC, 0x0) + 3, custom_url);
 		}
 	};
 }
