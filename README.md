@@ -17,7 +17,9 @@ Currently, **japanese** versions are not supported.
 | mgsvtpp.exe (jpn, 1.0.15.3) | 3A87F626732158890A07688D32A2523CD8EADA71 | ❌ |
 | mgsvmgo.exe (jpn, 1.1.2.7) | D6ADF7685B0F0639B2A949D0E96A06E853DAEEB8 | ❌ |
 
-- Download [dinput8.dll](https://github.alicent.cat/tpp-mod/dinput8.dll) and copy it to the game folder
+- Download [dinput8.dll](https://github.alicent.cat/tpp-mod/dinput8.dll) and copy it to the game folder.  
+
+Configuration files are stored in `%localappdata%\tpp-mod`
 
 ## Features
 
