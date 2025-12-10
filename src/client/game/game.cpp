@@ -26,7 +26,6 @@ namespace game
 			{"D6ADF7685B0F0639B2A949D0E96A06E853DAEEB8", {"mgsvmgo.exe (jpn, 1.1.2.7)", mode_mgo_jpn, false}},
 		};
 
-		bool initialized = false;
 		game_mode mode = game_mode::mode_none;
 
 		void set_mode(const game_mode mode_)

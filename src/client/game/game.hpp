@@ -45,7 +45,7 @@ namespace game
 	class symbol
 	{
 	public:
-		symbol(const size_t tpp_eng, const size_t mgo_eng, const size_t tpp_jpn = 0u, const size_t mgo_jpn = 0u)
+		symbol(const size_t tpp_eng, const size_t mgo_eng, const size_t tpp_jpn, const size_t mgo_jpn)
 		{
 			this->addresses_[environment::mode_tpp_eng] = tpp_eng;
 			this->addresses_[environment::mode_mgo_eng] = mgo_eng;
