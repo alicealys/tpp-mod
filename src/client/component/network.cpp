@@ -195,7 +195,7 @@ namespace network
 	public:
 		void pre_load() override
 		{
-			if (!game::environment::is_tpp())
+			if (!game::environment::is_tpp() || !game::environment::is_eng())
 			{
 				return;
 			}
@@ -206,7 +206,7 @@ namespace network
 
 		void start() override
 		{
-			if (!game::environment::is_tpp())
+			if (!game::environment::is_tpp() || !game::environment::is_eng())
 			{
 				return;
 			}

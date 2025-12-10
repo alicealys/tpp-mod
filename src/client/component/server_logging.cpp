@@ -91,14 +91,14 @@ namespace server_logging
 
 			a.xor_(esi, esi);
 			a.comiss(xmm6, xmm0);
-			a.jmp(SELECT_VALUE(0x1407DF0CE, 0x14057D1BE));
+			a.jmp(SELECT_VALUE(0x1407DF0CE, 0x14057D1BE, 0x1407DED0E, 0x0));
 		}
 
 		void net_daemon_set_heartbeat(void* this_, int value)
 		{
 			vars::set_var(var_net_server_heartbeat, value, vars::var_source_internal);
 			console::info("[server logging] set heartbeat: %i\n", value);
-			utils::hook::invoke<void>(SELECT_VALUE(0x1407DDBE0, 0x14057BC90), this_, value);
+			utils::hook::invoke<void>(SELECT_VALUE(0x1407DDBE0, 0x14057BC90, 0x1407DD820, 0x0), this_, value);
 		}
 	}
 
@@ -113,11 +113,11 @@ namespace server_logging
 
 		void start() override
 		{
-			http_codec_begin_encode_hook.create(SELECT_VALUE(0x14D343690, 0x14A4E7640), http_codec_begin_encode_stub);
-			http_codec_end_decode_hook.create(SELECT_VALUE(0x141CE3210, 0x140C42A20), http_codec_end_decode_stub);
+			http_codec_begin_encode_hook.create(SELECT_VALUE(0x14D343690, 0x14A4E7640, 0x14D88F960, 0x0), http_codec_begin_encode_stub);
+			http_codec_end_decode_hook.create(SELECT_VALUE(0x141CE3210, 0x140C42A20, 0x141CE3090, 0x0), http_codec_end_decode_stub);
 
-			utils::hook::far_jump<BASE_ADDRESS>(SELECT_VALUE(0x1407DF0C8, 0x14057D1B8), utils::hook::assemble(session_daemon_update_stub));
-			utils::hook::call(SELECT_VALUE(0x1407D1A76, 0x144DA6856), net_daemon_set_heartbeat);
+			utils::hook::far_jump<BASE_ADDRESS>(SELECT_VALUE(0x1407DF0C8, 0x14057D1B8, 0x1407DED08, 0x0), utils::hook::assemble(session_daemon_update_stub));
+			utils::hook::call(SELECT_VALUE(0x1407D1A76, 0x144DA6856, 0x1407D16B6, 0x0), net_daemon_set_heartbeat);
 		}
 	};
 }

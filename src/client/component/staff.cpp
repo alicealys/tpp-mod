@@ -396,7 +396,7 @@ namespace staff
 			a.mov(rax, qword_ptr(rcx, 0x9C88));
 			a.mov(r15d, dword_ptr(rax, rdx, 2));
 			a.mov(rax, qword_ptr(rcx, 0x9C90));
-			a.jmp(0x14A5BD3D7);
+			a.jmp(SELECT_VALUE_LANG(0x14A5BD3D7, 0x14B05B797));
 		}
 	}
 
@@ -415,7 +415,7 @@ namespace staff
 				return;
 			}
 			
-			utils::hook::jump(0x14A5BD39D, utils::hook::assemble(something_stub), true);
+			utils::hook::jump(SELECT_VALUE_LANG(0x14A5BD39D, 0x14B05B75D), utils::hook::assemble(something_stub), true);
 		}
 	};
 }
