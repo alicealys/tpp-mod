@@ -321,7 +321,8 @@ namespace discord
 			handlers.spectateGame = nullptr;
 			handlers.joinRequest = nullptr;
 
-			Discord_Initialize(SELECT_VALUE("1104156817845665792", "1416421354365911124"), &handlers, 1, nullptr);
+			Discord_Initialize(SELECT_VALUE(
+				"1104156817845665792", "1416421354365911124", "1104156817845665792", "1416421354365911124"), &handlers, 1, nullptr);
 
 			scheduler::loop(update_discord, scheduler::pipeline::net, 1s);
 		}

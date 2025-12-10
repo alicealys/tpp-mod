@@ -24,7 +24,7 @@ namespace server_logging
 
 		std::string get_dump_path(const std::string cmd_name, const bool request)
 		{
-			static const auto game_name = SELECT_VALUE("tpp", "mgo");
+			static const auto game_name = SELECT_VALUE("tpp", "mgo", "tpp", "mgo");
 			static const auto folder = custom_server::is_using_custom_server() ? "server_dump/custom" : "server_dump/konami";
 
 			const auto request_folder = request ? "requests" : "responses";
