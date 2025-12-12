@@ -52,7 +52,7 @@ namespace dedicated_server
 		{
 			game::steam_id lobby_id{};
 
-			const auto match_container = game::s_MgoMatchmakingManager->match_container;
+			const auto match_container = game::s_mgoMatchMakingManager->match_container;
 			if (match_container == nullptr)
 			{
 				return lobby_id;

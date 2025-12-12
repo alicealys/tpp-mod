@@ -161,12 +161,12 @@ namespace matchmaking
 
 		void update_match_settings()
 		{
-			if (game::s_MgoMatchmakingManager->match_container == nullptr)
+			if (game::s_mgoMatchMakingManager->match_container == nullptr)
 			{
 				return;
 			}
 
-			std::memcpy(&game::s_MgoMatchmakingManager->match_container->match->match_settings, &match_settings, sizeof(game::match_settings_t));
+			std::memcpy(&game::s_mgoMatchMakingManager->match_container->match->match_settings, &match_settings, sizeof(game::match_settings_t));
 		}
 
 		std::atomic_bool request_match_start = false;
@@ -177,38 +177,38 @@ namespace matchmaking
 		{
 			static auto prev_state = 0;
 
-			if (game::s_MgoMatchmakingManager->match_container == nullptr || game::s_MgoMatchmakingManager->state == 0)
+			if (game::s_mgoMatchMakingManager->match_container == nullptr || game::s_mgoMatchMakingManager->state == 0)
 			{
 				return;
 			}
 
-			if (prev_state != game::s_MgoMatchmakingManager->state)
+			if (prev_state != game::s_mgoMatchMakingManager->state)
 			{
-				console::debug("[MgoMatchmakingManager] State updated: %i\n", game::s_MgoMatchmakingManager->state);
+				console::debug("[MgoMatchmakingManager] State updated: %i\n", game::s_mgoMatchMakingManager->state);
 			}
 
-			prev_state = game::s_MgoMatchmakingManager->state;
+			prev_state = game::s_mgoMatchMakingManager->state;
 
-			if (request_match_start && game::s_MgoMatchmakingManager->state == 2)
+			if (request_match_start && game::s_mgoMatchMakingManager->state == 2)
 			{
 				console::info("[MgoMatchmakingManager] Starting match...\n");
 
 				request_match_start = false;
-				create_lobby(game::s_MgoMatchmakingManager->match_container->match, &match_settings);
-				game::s_MgoMatchmakingManager->state = 11;
+				create_lobby(game::s_mgoMatchMakingManager->match_container->match, &match_settings);
+				game::s_mgoMatchMakingManager->state = 11;
 			}
 
-			if (request_match_rotate && (game::s_MgoMatchmakingManager->state == 20 || game::s_MgoMatchmakingManager->state == 19))
+			if (request_match_rotate && (game::s_mgoMatchMakingManager->state == 20 || game::s_mgoMatchMakingManager->state == 19))
 			{
 				console::info("[MgoMatchmakingManager] Rotating match...\n");
 
-				utils::hook::invoke<void>(0x148D00CE0);
-				game::s_MgoMatchmakingManager->state = 21;
+				utils::hook::invoke<void>(SELECT_VALUE_LANG(0x148D00CE0, 0x147DF7DE0));
+				game::s_mgoMatchMakingManager->state = 21;
 			}
 
 			if (request_disconnect)
 			{
-				utils::hook::invoke<void>(0x140891C80, game::s_MgoMatchmakingManager.get(), 1);
+				utils::hook::invoke<void>(SELECT_VALUE_LANG(0x140891C80, 0x140891740), game::s_mgoMatchMakingManager.get(), 1);
 			}
 
 			request_match_rotate = false;
@@ -217,7 +217,7 @@ namespace matchmaking
 
 		void set_lobby_data(const std::string& key, const std::string& value)
 		{
-			const auto match_container = game::s_MgoMatchmakingManager->match_container;
+			const auto match_container = game::s_mgoMatchMakingManager->match_container;
 			if (match_container == nullptr)
 			{
 				return;
@@ -235,7 +235,7 @@ namespace matchmaking
 
 		const char* get_lobby_data(const std::string& key)
 		{
-			const auto match_container = game::s_MgoMatchmakingManager->match_container;
+			const auto match_container = game::s_mgoMatchMakingManager->match_container;
 			if (match_container == nullptr)
 			{
 				return "";
@@ -319,7 +319,7 @@ namespace matchmaking
 
 	void kick_player_from_lobby(const std::uint64_t steam_id)
 	{
-		const auto match_container = game::s_MgoMatchmakingManager->match_container;
+		const auto match_container = game::s_mgoMatchMakingManager->match_container;
 		if (match_container == nullptr)
 		{
 			return;
@@ -336,12 +336,12 @@ namespace matchmaking
 
 	void connect_to_lobby(game::steam_id lobby_id)
 	{
-		if (game::s_MgoMatchmakingManager->match_container == nullptr)
+		if (game::s_mgoMatchMakingManager->match_container == nullptr)
 		{
 			return;
 		}
 
-		const auto match = game::s_MgoMatchmakingManager->match_container->match;
+		const auto match = game::s_mgoMatchMakingManager->match_container->match;
 
 		match->is_joining_invite = 1;
 		match->invite_lobby_id = lobby_id;
@@ -365,7 +365,7 @@ namespace matchmaking
 				return;
 			}
 
-			create_lobby_cb_hook.create(0x144EF10B0, create_lobby_cb_stub);
+			create_lobby_cb_hook.create(SELECT_VALUE_LANG(0x144EF10B0, 0x1466D0C80), create_lobby_cb_stub);
 
 			scheduler::once(hook_steam_matchmaking, scheduler::net);
 			scheduler::loop(run_frame, scheduler::main);
@@ -402,12 +402,12 @@ namespace matchmaking
 
 			command::add("reconnect", [](const command::params& params)
 			{
-				if (game::s_MgoMatchmakingManager->match_container == nullptr)
+				if (game::s_mgoMatchMakingManager->match_container == nullptr)
 				{
 					return;
 				}
 
-				const auto lobby_id = game::s_MgoMatchmakingManager->match_container->match->lobby_id;
+				const auto lobby_id = game::s_mgoMatchMakingManager->match_container->match->lobby_id;
 
 				request_disconnect = true;
 				scheduler::once([=]
@@ -461,12 +461,12 @@ namespace matchmaking
 
 			command::add("matchprint", []()
 			{
-				if (game::s_MgoMatchmakingManager->match_container == nullptr)
+				if (game::s_mgoMatchMakingManager->match_container == nullptr)
 				{
 					return;
 				}
 
-				const auto match = game::s_MgoMatchmakingManager->match_container->match;
+				const auto match = game::s_mgoMatchMakingManager->match_container->match;
 
 				for (const auto& entry : match_settings_fields)
 				{
@@ -486,7 +486,7 @@ namespace matchmaking
 				{
 					for (const auto& entry : match_slot_fields)
 					{
-						const auto slot = &game::s_MgoMatchmakingManager->match_container->match->match_rules.slots[i];
+						const auto slot = &game::s_mgoMatchMakingManager->match_container->match->match_rules.slots[i];
 						console::info("matchsetslot %i %s %i\n", i, entry.first.data(), read_field(slot, entry.second));
 					}
 

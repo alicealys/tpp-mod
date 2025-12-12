@@ -87,9 +87,10 @@ namespace game_log
 			return false;
 		}
 
-		const auto unk = *game::s_unk1;
+		const auto match_container = game::s_mgoMatchMakingManager->match_container;
 		const auto session = *game::s_pSession;
-		if (unk == nullptr || session == nullptr || unk->match->lobby_id.bits == 0 || session->sessionInterface.__vftable->IsConnecting(&session->sessionInterface))
+		if (match_container == nullptr || session == nullptr || match_container->match->lobby_id.bits == 0 || 
+			session->sessionInterface.__vftable->IsConnecting(&session->sessionInterface))
 		{
 			return false;
 		}

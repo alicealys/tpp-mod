@@ -207,7 +207,7 @@ namespace custom_server
 				utils::hook::jump(SELECT_VALUE_LANG(0x143593E7B, 0x14357A1FB), utils::hook::assemble(steam_storage_read_file_stub), true);
 			}
 
-			utils::hook::inject(SELECT_VALUE(0x1407D27AC, 0x140572AD6, 0x1407D23EC, 0x0) + 3, custom_url);
+			utils::hook::inject(SELECT_VALUE(0x1407D27AC, 0x140572AD6, 0x1407D23EC, 0x1405724C6) + 3, custom_url);
 		}
 	};
 }

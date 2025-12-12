@@ -164,9 +164,9 @@ namespace scheduler
 
 		void start() override
 		{
-			core_framework_enter_frame_hook.create(SELECT_VALUE(0x14007FAA0, 0x140080180, 0x14007FBC0, 0x0), core_framework_enter_frame_stub);
-			net_daemon_update_hook.create(SELECT_VALUE(0x1459B7340, 0x144DF6490, 0x1473FE520, 0x0), net_daemon_update_stub);
-			nt_daemon_update_first_hook.create(SELECT_VALUE(0x14D36E710, 0x14A57FC80, 0x14D8C00C0, 0x0), nt_daemon_update_first_stub);
+			core_framework_enter_frame_hook.create(SELECT_VALUE(0x14007FAA0, 0x140080180, 0x14007FBC0, 0x140080040), core_framework_enter_frame_stub);
+			net_daemon_update_hook.create(SELECT_VALUE(0x1459B7340, 0x144DF6490, 0x1473FE520, 0x1465671E0), net_daemon_update_stub);
+			nt_daemon_update_first_hook.create(SELECT_VALUE(0x14D36E710, 0x14A57FC80, 0x14D8C00C0, 0x149572CE0), nt_daemon_update_first_stub);
 		}
 
 		void end() override
