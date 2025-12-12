@@ -364,12 +364,12 @@ namespace scripting
 
 		void start() override
 		{
-			utils::hook::inject(SELECT_VALUE(0x1435B49B6, 0x142EF23D6, 0x14359C6C6, 0x0) + 3, lua_print<console::con_type_info>);
-			utils::hook::inject(SELECT_VALUE(0x1435B49D9, 0x142EF23F9, 0x14359C6E9, 0x0) + 3, lua_print<console::con_type_warning>);
-			utils::hook::inject(SELECT_VALUE(0x1435B4A03, 0x142EF241C, 0x14359C70C, 0x0) + 3, lua_print<console::con_type_warning>);
-			utils::hook::inject(SELECT_VALUE(0x1435B4A1F, 0x142EF243F, 0x14359C72F, 0x0) + 3, lua_print<console::con_type_error>);
+			utils::hook::inject(SELECT_VALUE(0x1435B49B6, 0x142EF23D6, 0x14359C6C6, 0x142E1C046) + 3, lua_print<console::con_type_info>);
+			utils::hook::inject(SELECT_VALUE(0x1435B49D9, 0x142EF23F9, 0x14359C6E9, 0x142E1C069) + 3, lua_print<console::con_type_warning>);
+			utils::hook::inject(SELECT_VALUE(0x1435B4A03, 0x142EF241C, 0x14359C70C, 0x142E1C08C) + 3, lua_print<console::con_type_warning>);
+			utils::hook::inject(SELECT_VALUE(0x1435B4A1F, 0x142EF243F, 0x14359C72F, 0x142E1C0AF) + 3, lua_print<console::con_type_error>);
 
-			lua_init_hook.create(SELECT_VALUE(0x14319C450, 0x1425E5490, 0x143226240, 0x0), lua_init_stub);
+			lua_init_hook.create(SELECT_VALUE(0x14319C450, 0x1425E5490, 0x143226240, 0x1426F8060), lua_init_stub);
 			lual_load_buffer_hook.create(game::lua::luaL_loadbuffer, lual_load_buffer_stub);
 
 			command::add("script_var", [](const command::params& params)

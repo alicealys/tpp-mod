@@ -98,8 +98,8 @@ namespace text_chat::mutes
 
 		bool mute_player_by_name(const std::string& identifier, bool unmute, std::string& res_name)
 		{
-			const auto unk = *game::s_unk1;
-			if (unk == nullptr)
+			const auto match_container = game::s_mgoMatchMakingManager->match_container;
+			if (match_container == nullptr)
 			{
 				return false;
 			}
@@ -109,11 +109,11 @@ namespace text_chat::mutes
 
 			const auto lower = utils::string::to_lower(identifier);
 
-			const auto num_players = steam_matchmaking->__vftable->GetNumLobbyMembers(steam_matchmaking, unk->match->lobby_id);
+			const auto num_players = steam_matchmaking->__vftable->GetNumLobbyMembers(steam_matchmaking, match_container->match->lobby_id);
 			for (auto i = 0; i < num_players; i++)
 			{
 				game::steam_id steam_id{};
-				steam_matchmaking->__vftable->GetLobbyMemberByIndex(steam_matchmaking, &steam_id, unk->match->lobby_id, i);
+				steam_matchmaking->__vftable->GetLobbyMemberByIndex(steam_matchmaking, &steam_id, match_container->match->lobby_id, i);
 				const std::string name = steam_friends->__vftable->GetFriendPersonaName(steam_friends, steam_id);
 				const auto target_name_lower = utils::string::to_lower(name);
 

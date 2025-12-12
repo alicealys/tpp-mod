@@ -37,7 +37,7 @@ namespace text_chat::lobby
 			const auto size = steam_matchmaking->__vftable->GetLobbyChatEntry(steam_matchmaking, msg->lobby_id, msg->chat_id,
 				&user, buffer, sizeof(buffer), &chat_entry_type);
 
-			const auto match_container = game::s_MgoMatchmakingManager->match_container;
+			const auto match_container = game::s_mgoMatchMakingManager->match_container;
 			if (match_container == nullptr || match_container->match->lobby_id.bits != msg->lobby_id.bits)
 			{
 				return;
@@ -71,7 +71,7 @@ namespace text_chat::lobby
 
 	void send_chat_message(const std::string& text)
 	{
-		const auto match_container = game::s_MgoMatchmakingManager->match_container;
+		const auto match_container = game::s_mgoMatchMakingManager->match_container;
 		if (match_container == nullptr)
 		{
 			return;
@@ -100,7 +100,7 @@ namespace text_chat::lobby
 				return;
 			}
 
-			on_lobby_chat_msg_hook.create(0x1405A3DF0, on_lobby_chat_msg_stub);
+			on_lobby_chat_msg_hook.create(SELECT_VALUE_LANG(0x1405A3DF0, 0x1405A3810), on_lobby_chat_msg_stub);
 
 			command::add("say", [](const command::params& params)
 			{

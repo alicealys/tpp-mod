@@ -53,7 +53,7 @@ namespace patches
 		{
 			unsigned int data{};
 			const char value[] = "99c85cdbf2c837d50d37c82af2c837d5c12d5e80fbc837d5f2c837d5f2c837d5f2";
-			utils::hook::invoke<unsigned int*>(0x1402DCD30, &data, unk + 288, value, sizeof(value) - 1);
+			utils::hook::invoke<unsigned int*>(SELECT_VALUE_LANG(0x1402DCD30, 0x1402DCB70), &data, unk + 288, value, sizeof(value) - 1);
 			*res = 0;
 		}
 
@@ -63,18 +63,19 @@ namespace patches
 			
 			if (game::environment::is_mgo())
 			{
-				utils::hook::call(SELECT_VALUE_LANG(0x14002AFAB, 0x0), get_processor_count_stub);
-				utils::hook::call(SELECT_VALUE_LANG(0x142361744, 0x0), get_processor_count_stub);
+				utils::hook::call(SELECT_VALUE_LANG(0x14002AFAB, 0x14002AFCB), get_processor_count_stub);
+				utils::hook::call(SELECT_VALUE_LANG(0x142361744, 0x1422E6BE4), get_processor_count_stub);
 			}
 			else
 			{
 				utils::hook::jump(SELECT_VALUE_LANG(0x142F308E0, 0x142F1E260), get_processor_count_stub);
 			}
 
-			utils::hook::call(SELECT_VALUE(0x142F2AD7F, 0x14241449F, 0x142F18E1F, 0x0), thread_sleep);
+			utils::hook::call(SELECT_VALUE(0x142F2AD7F, 0x14241449F, 0x142F18E1F, 0x1423F700F), thread_sleep);
 
 			// unlock framerate always
-			utils::hook::jump(SELECT_VALUE(0x14008130A, 0x14008195A, 0x14008142A, 0x0), SELECT_VALUE(0x1400814D8, 0x140081B28, 0x1400815F8, 0x0));
+			utils::hook::jump(SELECT_VALUE(0x14008130A, 0x14008195A, 0x14008142A, 0x14008181A), 
+				SELECT_VALUE(0x1400814D8, 0x140081B28, 0x1400815F8, 0x1400819E8));
 		}
 
 		HANDLE create_mutex_stub(LPSECURITY_ATTRIBUTES attributes, BOOL owner, LPCWSTR name)
@@ -134,7 +135,7 @@ namespace patches
 			if (game::environment::is_mgo())
 			{
 				// /AppData 99c85cdbf2c837d50d37c82af2c837d5c12d5e80fbc837d5f2c837d5f2c837d5f2 (command line arg)
-				utils::hook::jump(SELECT_VALUE_LANG(0x143AA8300, 0x0), sub_143AA8300_stub);
+				utils::hook::jump(SELECT_VALUE_LANG(0x143AA8300, 0x143A76D50), sub_143AA8300_stub);
 			}
 			else
 			{
@@ -150,11 +151,11 @@ namespace patches
 				utils::hook::call(SELECT_VALUE_LANG(0x144D21F3E, 0x144B8861D), strncpy_s_stub);
 			}
 
-			utils::hook::nop(SELECT_VALUE(0x142E4ED98, 0x1422339D8, 0x142E4F8E8, 0x0), 6);
-			utils::hook::call(SELECT_VALUE(0x142E4ED98, 0x1422339D8, 0x142E4F8E8, 0x0), create_mutex_stub);
+			utils::hook::nop(SELECT_VALUE(0x142E4ED98, 0x1422339D8, 0x142E4F8E8, 0x142232258), 6);
+			utils::hook::call(SELECT_VALUE(0x142E4ED98, 0x1422339D8, 0x142E4F8E8, 0x142232258), create_mutex_stub);
 			
 			// disable _purecall error
-			utils::hook::set<std::uint8_t>(SELECT_VALUE(0x141A05B96, 0x141461F6A, 0x141A05CB6, 0x0), 0xC3);
+			utils::hook::set<std::uint8_t>(SELECT_VALUE(0x141A05B96, 0x141461F6A, 0x141A05CB6, 0x141461E0A), 0xC3);
 
 			if (!game::environment::is_dedi() && var_unlock_fps->latched.enabled())
 			{

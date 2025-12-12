@@ -582,7 +582,7 @@ namespace game_log::ui
 
 		void start() override
 		{
-			announce_log_view_hook.create(SELECT_VALUE(0x140863050, 0x1405E7610, 0x140862CE0, 0x0), announce_log_view_stub);
+			announce_log_view_hook.create(SELECT_VALUE(0x140863050, 0x1405E7610, 0x140862CE0, 0x1405E7020), announce_log_view_stub);
 
 			scheduler::loop(update_chat, scheduler::main);
 		}

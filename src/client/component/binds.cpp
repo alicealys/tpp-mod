@@ -599,7 +599,7 @@ namespace binds
 
 		void start() override
 		{
-			wnd_proc_hook.create(SELECT_VALUE(0x14006FF50, 0x140070FC0, 0x140070080, 0x0), wnd_proc_stub);
+			wnd_proc_hook.create(SELECT_VALUE(0x14006FF50, 0x140070FC0, 0x140070080, 0x140070DB0), wnd_proc_stub);
 
 			write_binds();
 		}
