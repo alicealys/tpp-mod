@@ -212,7 +212,7 @@ namespace vars
 
 		std::string get_config_file_path()
 		{
-			static const auto file = SELECT_VALUE_NOLANG("config_tpp.cfg", "config_mgo.cfg");
+			static const auto file = SELECT_VALUE_NOLANG("config/config_tpp.cfg", "config/config_mgo.cfg");
 			return (utils::properties::get_appdata_path() / file).generic_string();
 		}
 
