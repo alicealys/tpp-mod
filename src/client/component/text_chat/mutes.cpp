@@ -5,6 +5,7 @@
 
 #include "../command.hpp"
 #include "../console.hpp"
+#include "../vars.hpp"
 #include "mutes.hpp"
 
 #include <utils/io.hpp>
@@ -16,30 +17,22 @@ namespace text_chat::mutes
 {
 	namespace
 	{
-		utils::concurrency::container<mute_list_t, std::recursive_mutex> mute_list;
+		vars::var_ptr cl_muted_players;
 
-		std::string get_mute_list_path()
-		{
-			const auto path = utils::properties::get_appdata_path() / "mutes.txt";
-			return path.generic_string();
-		}
+		utils::concurrency::container<mute_list_t, std::recursive_mutex> mute_list;
 
 		std::unordered_set<std::uint64_t> load_mute_list()
 		{
 			std::unordered_set<std::uint64_t> list;
 
-			std::string data;
-			if (utils::io::read_file(get_mute_list_path(), &data))
+			const auto str = cl_muted_players->current.get_string();
+			const auto tokens = utils::string::split(str, ';');
+			for (const auto& token : tokens)
 			{
-				const auto lines = utils::string::split_lines(data);
-				for (const auto& line : lines)
+				const auto steam_id = std::strtoull(token.data(), nullptr, 0);
+				if (steam_id != 0)
 				{
-					const auto steam_id = std::strtoull(line.data(), nullptr, 0);
-
-					if (steam_id != 0ull)
-					{
-						list.insert(steam_id);
-					}
+					list.insert(steam_id);
 				}
 			}
 
@@ -48,17 +41,17 @@ namespace text_chat::mutes
 
 		void write_mute_list()
 		{
+			std::string buffer;
+
 			mute_list.access([&](mute_list_t& list)
 			{
-				std::string buffer;
-
 				for (const auto& steam_id : list)
 				{
-					buffer.append(utils::string::va("%lli\n", steam_id));
+					buffer.append(utils::string::va("%lli;", steam_id));
 				}
-
-				utils::io::write_file(get_mute_list_path(), buffer);
 			});
+
+			vars::set_var(cl_muted_players, buffer, vars::var_source_internal);
 		}
 
 		bool mute_steam_id(const std::uint64_t steam_id, bool unmute)
@@ -165,7 +158,7 @@ namespace text_chat::mutes
 	public:
 		void pre_load() override
 		{
-
+			cl_muted_players = vars::register_string("chat_muted_players", "", vars::var_flag_saved, "Muted player list");
 		}
 
 		void start() override
@@ -178,6 +171,7 @@ namespace text_chat::mutes
 			mute_list.access([&](mute_list_t& list)
 			{
 				list = load_mute_list();
+				write_mute_list();
 			});
 
 			command::add("mute", [](const command::params& params)
