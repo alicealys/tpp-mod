@@ -347,24 +347,14 @@ namespace command
 				}
 
 				const auto name = params.get(1);
-
-				const auto try_path = [&](const std::string& path)
-				{
-					const auto file = utils::string::va("%s%s", path.data(), name.data());
-					std::string data;
-					if (!filesystem::read_file(file, &data))
-					{
-						return false;
-					}
-
-					exec_file(data);
-					return true;
-				};
-
-				if (!try_path("") && !try_path("config\\"))
+				const auto file = utils::string::va("config\\%s", name.data());
+				std::string data;
+				if (!filesystem::read_file(file, &data))
 				{
 					console::warn("cfg file \"%s\" not found\n", name.data());
 				}
+
+				exec_file(data);
 			});
 		}
 
