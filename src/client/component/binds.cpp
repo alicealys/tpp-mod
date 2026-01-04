@@ -552,8 +552,8 @@ namespace binds
 	public:
 		void pre_load() override
 		{
-			filesystem::register_resource_file("keys_tpp.cfg", RESOURCE_KEYS_TPP);
-			filesystem::register_resource_file("keys_mgo.cfg", RESOURCE_KEYS_MGO);
+			filesystem::register_resource_file("config\\keys_tpp.cfg", RESOURCE_KEYS_TPP);
+			filesystem::register_resource_file("config\\keys_mgo.cfg", RESOURCE_KEYS_MGO);
 
 			command::add("unbindall", [](const command::params& params)
 			{
