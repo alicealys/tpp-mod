@@ -347,7 +347,7 @@ namespace command
 				}
 
 				const auto name = params.get(1);
-				const auto file = utils::string::va("config\\%s", name.data());
+				const auto file = utils::string::va("config\\%s.cfg", name.data());
 				std::string data;
 				if (!filesystem::read_file(file, &data))
 				{
@@ -364,14 +364,14 @@ namespace command
 			{
 				if (game::environment::is_mgo())
 				{
-					command::execute("exec config_mgo.cfg", true);
-					command::execute("exec keys_mgo.cfg", true);
+					command::execute("exec config_mgo", true);
+					command::execute("exec keys_mgo", true);
 
 				}
 				else
 				{
-					command::execute("exec config_tpp.cfg", true);
-					command::execute("exec keys_tpp.cfg", true);
+					command::execute("exec config_tpp", true);
+					command::execute("exec keys_tpp", true);
 				}
 			}
 

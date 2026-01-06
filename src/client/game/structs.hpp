@@ -2073,18 +2073,18 @@ namespace game
 	{
 		char __pad0[13];
 		char is_joining_invite;
-		game::steam_id invite_lobby_id;
+		steam_id invite_lobby_id;
 		char __pad1[2];
 		match_settings_t match_settings;
 		char __pad2[48];
 		short lobby_member_limit;
 		char __pad3[90];
-		game::steam_id lobby_owner;
+		steam_id lobby_owner;
 		char __pad4[76];
-		game::steam_id lobby_id;
+		steam_id lobby_id;
 		char __pad5[1008];
 		match_rules_t match_rules;
-		game::steam_id lobby_id2;
+		steam_id lobby_id2;
 		char __pad6[1604];
 	};
 #pragma pack(pop)
