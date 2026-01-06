@@ -87,7 +87,7 @@ namespace matchmaking
 		void create_lobby(game::mgo_match_t* match, game::match_settings_t* settings)
 		{
 			std::memcpy(&match->match_settings, settings, sizeof(game::match_settings_t));
-			utils::hook::invoke<void>(0x1405A1970, match, &match->match_settings);
+			utils::hook::invoke<void>(SELECT_VALUE_LANG(0x1405A1970, 0x0), match, &match->match_settings);
 		}
 
 		void set_field(const void* struct_, const match_field_t field, const int value)
@@ -99,10 +99,10 @@ namespace matchmaking
 				*reinterpret_cast<char*>(ptr) = static_cast<char>(value);
 				break;
 			case 2:
-				*reinterpret_cast<char*>(ptr) = static_cast<char>(value);
+				*reinterpret_cast<short*>(ptr) = static_cast<short>(value);
 				break;
 			case 4:
-				*reinterpret_cast<char*>(ptr) = static_cast<char>(value);
+				*reinterpret_cast<int*>(ptr) = value;
 				break;
 			}
 		}
@@ -115,9 +115,9 @@ namespace matchmaking
 			case 1:
 				return static_cast<int>(*reinterpret_cast<char*>(ptr));
 			case 2:
-				return static_cast<int>(*reinterpret_cast<char*>(ptr));
+				return static_cast<int>(*reinterpret_cast<short*>(ptr));
 			case 4:
-				return static_cast<int>(*reinterpret_cast<char*>(ptr));
+				return static_cast<int>(*reinterpret_cast<int*>(ptr));
 			}
 
 			return 0;
@@ -354,11 +354,6 @@ namespace matchmaking
 	{
 	public:
 		void start() override
-		{
-
-		}
-
-		void pre_load() override
 		{
 			if (!game::environment::is_mgo())
 			{
