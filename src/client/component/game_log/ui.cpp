@@ -16,6 +16,8 @@ namespace game_log::ui
 	{
 		utils::hook::detour announce_log_view_hook;
 
+		vars::var_ptr var_ui_draw_fps;
+
 		void reset_font_metrics(game::fox::ui::ModelNodeText* node)
 		{
 			if (node->packetBuffer == nullptr)
@@ -44,7 +46,7 @@ namespace game_log::ui
 
 		template <typename VtableType>
 		float set_log_text_internal(game::tpp::ui::hud::AnnounceLogViewer* this_, const char* text, int index, 
-			int y_offset_count, float alpha, bool auto_scroll)
+			int y_offset_count, float alpha, bool auto_scroll, float x_offset, const float* color)
 		{
 			const auto model_index = index / 2;
 
@@ -90,7 +92,7 @@ namespace game_log::ui
 
 			model_node_text->textOffsetX = 0.f;
 			model_node_text->textAlign = 0;
-			vtable->SetTranslationX1(uix_utility, reinterpret_cast<game::fox::ui::ModelNode*>(model_node_text), 0.f);
+			vtable->SetTranslationX1(uix_utility, reinterpret_cast<game::fox::ui::ModelNode*>(model_node_text), x_offset);
 
 			if (auto_scroll && is_text_overflowing)
 			{
@@ -111,8 +113,14 @@ namespace game_log::ui
 
 			vtable->SetTranslationY1(uix_utility, reinterpret_cast<game::fox::ui::ModelNode*>(model_node_text), y_offset_text);
 
-			vtable->SetColorRGB5(uix_utility, reinterpret_cast<game::fox::ui::ModelNode*>(log_model.modelNodeText1), 1.f, 1.f, 1.f);
-			vtable->SetColorRGB5(uix_utility, reinterpret_cast<game::fox::ui::ModelNode*>(log_model.modelNodeText2), 1.f, 1.f, 1.f);
+			if (color != nullptr)
+			{
+				vtable->SetColorRGB5(uix_utility, reinterpret_cast<game::fox::ui::ModelNode*>(model_node_text), color[0], color[1], color[2]);
+			}
+			else
+			{
+				vtable->SetColorRGB5(uix_utility, reinterpret_cast<game::fox::ui::ModelNode*>(model_node_text), 1.f, 1.f, 1.f);
+			}
 
 			vtable->SetAlpha1(uix_utility, reinterpret_cast<game::fox::ui::ModelNode*>(model_node_text), alpha);
 			vtable->SetAlpha1(uix_utility, reinterpret_cast<game::fox::ui::ModelNode*>(log_model.modelNode), 1.f);
@@ -121,18 +129,18 @@ namespace game_log::ui
 		}
 
 		float set_log_text(game::tpp::ui::hud::AnnounceLogViewer* this_, const char* text, int index, int y_offset_count = 0, float alpha = 0.f,
-			bool auto_scroll = false)
+			bool auto_scroll = false, float x_offset = 0.f, const float* color = nullptr)
 		{
 			if (game::environment::is_tpp())
 			{
 				return set_log_text_internal<game::fox::uix::impl::UixUtilityImpl_vtbl_tpp>(
-					this_, text, index, y_offset_count, alpha, auto_scroll
+					this_, text, index, y_offset_count, alpha, auto_scroll, x_offset, color
 				);
 			}
 			else
 			{
 				return set_log_text_internal<game::fox::uix::impl::UixUtilityImpl_vtbl_mgo>(
-					this_, text, index, y_offset_count, alpha, auto_scroll
+					this_, text, index, y_offset_count, alpha, auto_scroll, x_offset, color
 				);
 			}
 		}
@@ -198,7 +206,7 @@ namespace game_log::ui
 
 		template <typename VtableType>
 		void set_log_background_internal(game::tpp::ui::hud::AnnounceLogViewer* this_,
-			const int model_index, float width, float height, float y_offset, const float* bg_color)
+			const int model_index, float width, float height, float y_offset, float x_offset, const float* bg_color)
 		{
 			if (!game::tpp::ui::hud::AnnounceLogViewer_::ModelInit(this_, static_cast<char>(model_index)))
 			{
@@ -230,6 +238,7 @@ namespace game_log::ui
 			vtable->SetVertexTranslate(uix_utility, log_model.modelNodeMesh, 0x27571000, &vector1_1, &vector2_2);
 
 			vtable->SetTranslationY1(uix_utility, reinterpret_cast<game::fox::ui::ModelNode*>(log_model.modelNodeMesh), y_offset);
+			vtable->SetTranslationX1(uix_utility, reinterpret_cast<game::fox::ui::ModelNode*>(log_model.modelNodeMesh), x_offset);
 
 			vtable->SetColorRGB5(uix_utility, reinterpret_cast<game::fox::ui::ModelNode*>(log_model.modelNodeMesh),
 				bg_color[0], bg_color[1], bg_color[2]);
@@ -237,19 +246,25 @@ namespace game_log::ui
 			vtable->SetAlpha1(uix_utility, reinterpret_cast<game::fox::ui::ModelNode*>(log_model.modelNodeMesh), bg_color[3]);
 		}
 
+		void set_log_background(game::tpp::ui::hud::AnnounceLogViewer* this_,
+			const int model_index, float width, float height, float y_offset, float x_offset, const float* bg_color)
+		{
+			if (game::environment::is_tpp())
+			{
+				set_log_background_internal<game::fox::uix::impl::UixUtilityImpl_vtbl_tpp>(this_, model_index, width, height, y_offset, x_offset, bg_color);
+			}
+			else
+			{
+				set_log_background_internal<game::fox::uix::impl::UixUtilityImpl_vtbl_mgo>(this_, model_index, width, height, y_offset, x_offset, bg_color);
+			}
+		}
+
 		void set_log_output_background(game::tpp::ui::hud::AnnounceLogViewer* this_, const float* bg_color, int lines)
 		{
 			const auto width = var_game_log_width->current.get_float() * 1.f;
 			const auto height = lines * 1.f * (var_game_log_line_spacing->current.get_float() / 2.f) + 0.2f;
 
-			if (game::environment::is_tpp())
-			{
-				set_log_background_internal<game::fox::uix::impl::UixUtilityImpl_vtbl_tpp>(this_, 1, width, height, 1.4f, bg_color);
-			}
-			else
-			{
-				set_log_background_internal<game::fox::uix::impl::UixUtilityImpl_vtbl_mgo>(this_, 1, width, height, 1.4f, bg_color);
-			}
+			set_log_background(this_, 1, width, height, 1.4f, 0.f, bg_color);
 		}
 
 		void set_log_input_background(game::tpp::ui::hud::AnnounceLogViewer* this_, const float* bg_color)
@@ -257,14 +272,7 @@ namespace game_log::ui
 			const auto width = var_game_log_width->current.get_float() * 1.f;
 			const auto height = 1.2f;
 
-			if (game::environment::is_tpp())
-			{
-				set_log_background_internal<game::fox::uix::impl::UixUtilityImpl_vtbl_tpp>(this_, 0, width, height, -1.2f, bg_color);
-			}
-			else
-			{
-				set_log_background_internal<game::fox::uix::impl::UixUtilityImpl_vtbl_mgo>(this_, 0, width, height, -1.2f, bg_color);
-			}
+			set_log_background(this_, 0, width, height, -1.2f, 0.f, bg_color);
 		}
 
 		void clear_log_text(game::tpp::ui::hud::AnnounceLogViewer* this_)
@@ -365,6 +373,95 @@ namespace game_log::ui
 			}
 
 			set_log_text(log_viewer, log_buffer, game_log_message_input_index, 0, 1.f, true);
+		}
+
+		struct cg_perf_data
+		{
+			std::chrono::time_point<std::chrono::steady_clock> perf_start;
+			std::int32_t current_ms;
+			std::int32_t previous_ms;
+			std::int32_t frame_ms;
+			std::int32_t history[32];
+			std::int32_t count;
+			std::int32_t index;
+			std::int32_t instant;
+			std::int32_t total;
+			float average;
+			float variance;
+			std::int32_t min;
+			std::int32_t max;
+		};
+
+		cg_perf_data cg_perf{};
+
+		void perf_calc_fps(cg_perf_data* data, const std::int32_t value)
+		{
+			data->history[data->index % 32] = value;
+			data->instant = value;
+			data->min = 0x7FFFFFFF;
+			data->max = 0;
+			data->average = 0.0f;
+			data->variance = 0.0f;
+			data->total = 0;
+
+			for (auto i = 0; i < data->count; ++i)
+			{
+				const std::int32_t idx = (data->index - i) % 32;
+
+				if (idx < 0)
+				{
+					break;
+				}
+
+				data->total += data->history[idx];
+
+				if (data->min > data->history[idx])
+				{
+					data->min = data->history[idx];
+				}
+
+				if (data->max < data->history[idx])
+				{
+					data->max = data->history[idx];
+				}
+			}
+
+			data->average = static_cast<float>(data->total) / static_cast<float>(data->count);
+			++data->index;
+		}
+
+		void perf_update()
+		{
+			cg_perf.count = 32;
+
+			const auto time_system = game::fox::GetTimeSystem();
+
+			perf_calc_fps(&cg_perf, static_cast<int>(1.f / time_system.frameTime));
+		}
+
+		float fps_color_good[4] = {0.6f, 1.0f, 0.0f, 1.0f};
+		float fps_color_ok[4] = {1.0f, 0.7f, 0.3f, 1.0f};
+		float fps_color_bad[4] = {1.0f, 0.3f, 0.3f, 1.0f};
+
+		void update_fps_counter(game::tpp::ui::hud::AnnounceLogViewer* log_viewer)
+		{
+			float empty_color[4]{};
+
+			if (!var_ui_draw_fps->current.enabled())
+			{
+				set_log_text(log_viewer, "", 1, 25, 1.f, false, 160.f, empty_color);
+				return;
+			}
+
+			perf_update();
+
+			const auto fps = static_cast<int>(cg_perf.average);
+			const auto color = fps >= 60 ? fps_color_good : (fps >= 30 ? fps_color_ok : fps_color_bad);
+
+			static message_buffer_t fps_text_buffer{};
+			sprintf_s(fps_text_buffer, sizeof(fps_text_buffer), "%i", fps);
+
+			set_log_text(log_viewer, fps_text_buffer, 1, 25, 1.f, false, 160.f, color);
 		}
 
 		int update_chat_messages(game_log_state_t& state, game::tpp::ui::hud::AnnounceLogViewer* log_viewer)
@@ -490,6 +587,8 @@ namespace game_log::ui
 			update_chat_input(state, log_viewer);
 			const auto msg_count = update_chat_messages(state, log_viewer);
 			update_game_log_background(state, log_viewer, msg_count);
+
+			update_fps_counter(log_viewer);
 		}
 
 		void update_chat()
@@ -574,7 +673,7 @@ namespace game_log::ui
 	public:
 		void pre_load() override
 		{
-
+			var_ui_draw_fps = vars::register_bool("ui_draw_fps", vars::var_flag_saved, 0, "draw fps counter");
 		}
 
 		void start() override
