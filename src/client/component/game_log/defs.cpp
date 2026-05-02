@@ -109,6 +109,16 @@ namespace game_log
 		return res == msg.end();
 	}
 
+	std::string clean_message(const std::string& msg)
+	{
+		auto cleaned = msg;
+		std::ranges::replace_if(cleaned, [](const char c)
+		{
+			return !is_char_text(c);
+		}, ' ');
+		return cleaned;
+	}
+
 	void reset_log()
 	{
 		game_log_state.access([](game_log_state_t& state)

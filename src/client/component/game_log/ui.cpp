@@ -532,15 +532,12 @@ namespace game_log::ui
 			return;
 		}
 
-		if (!check_message(msg))
-		{
-			return;
-		}
+		const auto cleaned_msg = clean_message(msg);
 
 		game_log_state.access([&](game_log_state_t& state)
 		{
 			game_log_message_t message{};
-			strncpy_s(message.buffer, sizeof(message.buffer), msg.data(), _TRUNCATE);	
+			strncpy_s(message.buffer, sizeof(message.buffer), cleaned_msg.data(), _TRUNCATE);
 			message.time = std::chrono::high_resolution_clock::now();
 
 			const auto max_len = var_game_log_max_message_len->current.get_int();
