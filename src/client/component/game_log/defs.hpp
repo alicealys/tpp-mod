@@ -85,6 +85,7 @@ namespace game_log
 
 	bool is_char_text(char c);
 	bool check_message(const std::string& msg);
+	std::string clean_message(const std::string& msg);
 
 	void reset_log();
 
