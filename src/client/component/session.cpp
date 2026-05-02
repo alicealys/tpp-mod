@@ -38,23 +38,6 @@ namespace session
 			return "unknown";
 		}
 
-		int get_rtt(game::fox::nt::impl::SessionImpl2* session)
-		{
-			if (session->sppSocket == nullptr)
-			{
-				return 0;
-			}
-
-			if (game::environment::is_tpp())
-			{
-				return session->sppSocket->tpp.rtt_time;
-			}
-			else
-			{
-				return session->sppSocket->mgo.rtt_time;
-			}
-		}
-
 		void print_status()
 		{
 			const auto main_session = *game::s_pSession;
@@ -237,6 +220,23 @@ namespace session
 			}
 
 			prev_state = state;
+		}
+	}
+
+	int get_rtt(game::fox::nt::impl::SessionImpl2* session)
+	{
+		if (session == nullptr || session->sppSocket == nullptr)
+		{
+			return 0;
+		}
+
+		if (game::environment::is_tpp())
+		{
+			return session->sppSocket->tpp.rtt_time;
+		}
+		else
+		{
+			return session->sppSocket->mgo.rtt_time;
 		}
 	}
 

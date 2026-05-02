@@ -6,6 +6,7 @@
 #include "defs.hpp"
 #include "ui.hpp"
 #include "input.hpp"
+#include "../session.hpp"
 
 #include <utils/hook.hpp>
 #include <utils/string.hpp>
@@ -17,6 +18,7 @@ namespace game_log::ui
 		utils::hook::detour announce_log_view_hook;
 
 		vars::var_ptr var_ui_draw_fps;
+		vars::var_ptr var_ui_draw_ping;
 
 		void reset_font_metrics(game::fox::ui::ModelNodeText* node)
 		{
@@ -46,7 +48,7 @@ namespace game_log::ui
 
 		template <typename VtableType>
 		float set_log_text_internal(game::tpp::ui::hud::AnnounceLogViewer* this_, const char* text, int index, 
-			int y_offset_count, float alpha, bool auto_scroll, float x_offset, const float* color)
+			int y_offset_count, float alpha, bool auto_scroll, float x_offset, float y_offset, const float* color)
 		{
 			const auto model_index = index / 2;
 
@@ -60,17 +62,13 @@ namespace game_log::ui
 			const auto model_node_text_index = index % 2;
 			const auto model_node_text = model_node_text_index == 0 ? log_model.modelNodeText1 : log_model.modelNodeText2;
 
-			model_node_text->flags |= 2;
-
-			const auto width = var_game_log_width->current.get_float();
-			
-			model_node_text->displayAreaWidth = (width - 0.5f) / (model_node_text->displaySizes.values[0]);
-			model_node_text->displayAreaHeight = 1.f;
-
 			reset_font_metrics(model_node_text);
 
 			game::tpp::ui::utility::SetTextForModelNodeText(model_node_text, &log_model.textUnit, text);
-			
+
+			const auto uix_utility = game::fox::uix::impl::GetUixUtilityToFeedQuarkEnvironment();
+			auto vtable = reinterpret_cast<VtableType*>(&uix_utility->__vftable->tpp);
+
 			const auto get_text_width = [&]
 			{
 				float text_width{};
@@ -78,40 +76,54 @@ namespace game_log::ui
 				return text_width * 20.f;
 			};
 
-			const auto display_width = (model_node_text->displaySizes.values[0] * 10.f) * model_node_text->displayAreaWidth;
 			const auto text_width = get_text_width();
 
-			const auto uix_utility = game::fox::uix::impl::GetUixUtilityToFeedQuarkEnvironment();
-			auto vtable = reinterpret_cast<VtableType*>(&uix_utility->__vftable->tpp);
-
-			const auto offset = var_game_log_offset->current.get_vec2();
-			const auto scale = var_game_log_scale->current.get_float();
-			const auto line_spacing = var_game_log_line_spacing->current.get_float();
-
-			const auto is_text_overflowing = (text_width > display_width + 50.f);
-
-			model_node_text->textOffsetX = 0.f;
-			model_node_text->textAlign = 0;
-			vtable->SetTranslationX1(uix_utility, reinterpret_cast<game::fox::ui::ModelNode*>(model_node_text), x_offset);
-
-			if (auto_scroll && is_text_overflowing)
+			if (index != 1)
 			{
-				model_node_text->textAlign = 2;
-				model_node_text->textOffsetX = -1.f * display_width;
-				vtable->SetTranslationX1(uix_utility, reinterpret_cast<game::fox::ui::ModelNode*>(model_node_text), -width);
+				model_node_text->flags |= 2;
+
+				const auto width = var_game_log_width->current.get_float();
+
+				model_node_text->displayAreaWidth = (width - 0.5f) / (model_node_text->displaySizes.values[0]);
+				model_node_text->displayAreaHeight = 1.f;
+
+				const auto display_width = (model_node_text->displaySizes.values[0] * 10.f) * model_node_text->displayAreaWidth;
+
+				const auto offset = var_game_log_offset->current.get_vec2();
+				const auto scale = var_game_log_scale->current.get_float();
+				const auto line_spacing = var_game_log_line_spacing->current.get_float();
+
+				const auto is_text_overflowing = (text_width > display_width + 50.f);
+
+				model_node_text->textOffsetX = 0.f;
+				model_node_text->textAlign = 0;
+				vtable->SetTranslationX1(uix_utility, reinterpret_cast<game::fox::ui::ModelNode*>(model_node_text), x_offset);
+
+				if (auto_scroll && is_text_overflowing)
+				{
+					model_node_text->textAlign = 2;
+					model_node_text->textOffsetX = -1.f * display_width;
+					vtable->SetTranslationX1(uix_utility, reinterpret_cast<game::fox::ui::ModelNode*>(model_node_text), -width);
+				}
+
+				log_model.model->__vftable->SetVisible(log_model.model, true);
+
+				const auto y_offset_extra = model_index * 3.f - 15.f;
+				const auto y_offset_text = (index + y_offset_count) * line_spacing;
+
+				vtable->SetScale1(uix_utility, reinterpret_cast<game::fox::ui::ModelNode*>(log_model.modelNode), scale);
+
+				vtable->SetTranslationX1(uix_utility, reinterpret_cast<game::fox::ui::ModelNode*>(log_model.modelNode), offset.x);
+				vtable->SetTranslationY1(uix_utility, reinterpret_cast<game::fox::ui::ModelNode*>(log_model.modelNode), offset.y + y_offset_extra);
+
+				vtable->SetTranslationY1(uix_utility, reinterpret_cast<game::fox::ui::ModelNode*>(model_node_text), y_offset_text);
 			}
-
-			log_model.model->__vftable->SetVisible(log_model.model, true);
-
-			const auto y_offset = model_index * 3.f - 15.f;
-			const auto y_offset_text = (index + y_offset_count) * line_spacing;
-
-			vtable->SetScale1(uix_utility, reinterpret_cast<game::fox::ui::ModelNode*>(log_model.modelNode), scale);
-
-			vtable->SetTranslationX1(uix_utility, reinterpret_cast<game::fox::ui::ModelNode*>(log_model.modelNode), offset.x);
-			vtable->SetTranslationY1(uix_utility, reinterpret_cast<game::fox::ui::ModelNode*>(log_model.modelNode), offset.y + y_offset);
-
-			vtable->SetTranslationY1(uix_utility, reinterpret_cast<game::fox::ui::ModelNode*>(model_node_text), y_offset_text);
+			else
+			{
+				vtable->SetTranslationX1(uix_utility, reinterpret_cast<game::fox::ui::ModelNode*>(model_node_text), x_offset);
+				vtable->SetTranslationY1(uix_utility, reinterpret_cast<game::fox::ui::ModelNode*>(model_node_text), y_offset);
+				vtable->SetScale1(uix_utility, reinterpret_cast<game::fox::ui::ModelNode*>(log_model.modelNode), 0.7f);
+			}
 
 			if (color != nullptr)
 			{
@@ -129,18 +141,18 @@ namespace game_log::ui
 		}
 
 		float set_log_text(game::tpp::ui::hud::AnnounceLogViewer* this_, const char* text, int index, int y_offset_count = 0, float alpha = 0.f,
-			bool auto_scroll = false, float x_offset = 0.f, const float* color = nullptr)
+			bool auto_scroll = false, float x_offset = 0.f, float y_offset = 0.f, const float* color = nullptr)
 		{
 			if (game::environment::is_tpp())
 			{
 				return set_log_text_internal<game::fox::uix::impl::UixUtilityImpl_vtbl_tpp>(
-					this_, text, index, y_offset_count, alpha, auto_scroll, x_offset, color
+					this_, text, index, y_offset_count, alpha, auto_scroll, x_offset, y_offset, color
 				);
 			}
 			else
 			{
 				return set_log_text_internal<game::fox::uix::impl::UixUtilityImpl_vtbl_mgo>(
-					this_, text, index, y_offset_count, alpha, auto_scroll, x_offset, color
+					this_, text, index, y_offset_count, alpha, auto_scroll, x_offset, y_offset, color
 				);
 			}
 		}
@@ -439,29 +451,64 @@ namespace game_log::ui
 			perf_calc_fps(&cg_perf, static_cast<int>(1.f / time_system.frameTime));
 		}
 
-		float fps_color_good[4] = {0.6f, 1.0f, 0.0f, 1.0f};
-		float fps_color_ok[4] = {1.0f, 0.7f, 0.3f, 1.0f};
-		float fps_color_bad[4] = {1.0f, 0.3f, 0.3f, 1.0f};
+		float color_good[4] = {0.6f, 1.0f, 0.0f, 1.0f};
+		float color_ok[4] = {1.0f, 0.7f, 0.3f, 1.0f};
+		float color_bad[4] = {1.0f, 0.3f, 0.3f, 1.0f};
+		std::array<float*, 3> quality_colors =
+		{
+			color_good,
+			color_ok,
+			color_bad,
+		};
 
 		void update_fps_counter(game::tpp::ui::hud::AnnounceLogViewer* log_viewer)
 		{
 			float empty_color[4]{};
 
-			if (!var_ui_draw_fps->current.enabled())
+			const auto main_session = *game::s_pSession;
+			const auto rtt = session::get_rtt(main_session);
+			const auto should_draw_ping = var_ui_draw_ping->current.enabled() && main_session != nullptr;
+
+			if (!var_ui_draw_fps->current.enabled() && !should_draw_ping)
 			{
-				set_log_text(log_viewer, "", 1, 25, 1.f, false, 160.f, empty_color);
+				set_log_text(log_viewer, "", 1, 0, 1.f, false, 0.f, 0.f, empty_color);
 				return;
 			}
 
 			perf_update();
 
 			const auto fps = static_cast<int>(cg_perf.average);
-			const auto color = fps >= 60 ? fps_color_good : (fps >= 30 ? fps_color_ok : fps_color_bad);
+			auto fps_score = 0;
+			auto ping_score = 0;
 
 			static message_buffer_t fps_text_buffer{};
-			sprintf_s(fps_text_buffer, sizeof(fps_text_buffer), "%i", fps);
+			std::memset(fps_text_buffer, 0, sizeof(fps_text_buffer));
 
-			set_log_text(log_viewer, fps_text_buffer, 1, 25, 1.f, false, 160.f, color);
+			auto offset = 0;
+			if (var_ui_draw_fps->current.enabled())
+			{
+				fps_score = fps >= 60 ? 0 : (fps >= 30 ? 1 : 2);
+				offset = sprintf_s(fps_text_buffer, sizeof(fps_text_buffer), "fps: %i", fps);
+			}
+
+			auto x = 156.f;
+			if (should_draw_ping)
+			{
+				auto sep = "";
+				if (offset > 0)
+				{
+					sep = " | ";
+					x -= 10.f;
+				}
+
+				sprintf_s(fps_text_buffer + offset, sizeof(fps_text_buffer) - offset, "%sping: %ims", sep, rtt);
+				ping_score = rtt < 100 ? 0 : (rtt < 200 ? 1 : 2);
+			}
+
+			const auto score = std::max(fps_score, ping_score);
+			const auto color = quality_colors[score];
+
+			set_log_text(log_viewer, fps_text_buffer, 1, 0, 1.f, false, x, 78.f, color);
 		}
 
 		int update_chat_messages(game_log_state_t& state, game::tpp::ui::hud::AnnounceLogViewer* log_viewer)
@@ -674,6 +721,7 @@ namespace game_log::ui
 		void pre_load() override
 		{
 			var_ui_draw_fps = vars::register_bool("ui_draw_fps", vars::var_flag_saved, 0, "draw fps counter");
+			var_ui_draw_ping = vars::register_bool("ui_draw_ping", vars::var_flag_saved, 0, "draw ping counter");
 		}
 
 		void start() override
