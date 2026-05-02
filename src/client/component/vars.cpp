@@ -431,8 +431,12 @@ namespace vars
 		const std::string& name, const var_type_t& type, const var_value& value, const var_limits_t limits, const std::uint32_t flags, const std::string& description)
 	{
 		const auto lower = utils::string::to_lower(name);
+		const auto existing = find(lower);
 
-		auto var = std::make_shared<var_t>();
+		auto var = existing != nullptr 
+			? existing 
+			: std::make_shared<var_t>();
+
 		var->name = lower;
 		var->description = description;
 
@@ -444,8 +448,11 @@ namespace vars
 		var->reset = value;
 		var->limits = limits;
 
-		get_var_list().emplace_back(var);
-		get_var_map().insert(std::make_pair(lower, var));
+		if (existing == nullptr)
+		{
+			get_var_list().emplace_back(var);
+			get_var_map().insert(std::make_pair(lower, var));
+		}
 
 		return var;
 	}

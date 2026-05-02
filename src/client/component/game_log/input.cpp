@@ -95,13 +95,14 @@ namespace game_log::input
 			const auto clipboard = utils::string::get_clipboard_data();
 			const auto max_len = var_game_log_max_message_len->current.get_int();
 
-			for (const auto& c : clipboard)
+			for (auto c : clipboard)
 			{
 				if (state.cursor >= max_len)
 				{
 					return;
 				}
 
+				c = normalize_ascii_extended(c);
 				if (is_char_text(c))
 				{
 					handle_char(state, c);
@@ -269,7 +270,7 @@ namespace game_log::input
 				return false;
 			}
 
-			if (!is_down)
+			if (!is_down || key >= 0xFF)
 			{
 				return true;
 			}
@@ -287,7 +288,7 @@ namespace game_log::input
 				break;
 			default:
 			{
-				const auto c = static_cast<char>(key);
+				const auto c = normalize_ascii_extended(static_cast<char>(key));
 				if (is_char_text(c))
 				{
 					handle_char(state, c);
@@ -348,6 +349,18 @@ namespace game_log::input
 		{
 			return state.is_typing;
 		});
+	}
+
+	char normalize_ascii_extended(char c)
+	{
+		auto c_ = static_cast<unsigned char>(c);
+		const auto map = "????????????????????????????????????????????????????????????????AAAAAAACEEEEIIIIDNOOOOOxOUUUUYPSaaaaaaaceeeeiiiionooooo?ouuuuypy";
+		if (c_ > 128 && c_ < 255)
+		{
+			return map[c_ - 128];
+		}
+
+		return c;
 	}
 
 	class component final : public component_interface

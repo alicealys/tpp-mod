@@ -121,7 +121,7 @@ namespace console
 				invoke_printf("\n");
 			}
 
-			if (game_log::is_initialized() && game_log::is_console_enabled())
+			if (type != con_type_debug && game_log::is_initialized() && game_log::is_console_enabled())
 			{
 				game_log::ui::print(utils::string::trim(message), false);
 			}

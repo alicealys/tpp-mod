@@ -5,6 +5,7 @@
 
 #include "defs.hpp"
 #include "ui.hpp"
+#include "input.hpp"
 
 #include <utils/string.hpp>
 
@@ -111,12 +112,21 @@ namespace game_log
 
 	std::string clean_message(const std::string& msg)
 	{
-		auto cleaned = msg;
-		std::ranges::replace_if(cleaned, [](const char c)
+		std::string clean;
+		clean.resize(msg.size());
+		
+		for (auto i = 0; i < msg.size(); i++)
 		{
-			return !is_char_text(c);
-		}, ' ');
-		return cleaned;
+			auto c = input::normalize_ascii_extended(msg[i]);
+			if (!is_char_text(c))
+			{
+				continue;
+			}
+
+			clean[i] = c;
+		}
+
+		return clean;
 	}
 
 	void reset_log()
