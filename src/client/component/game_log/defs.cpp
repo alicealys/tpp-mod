@@ -115,6 +115,7 @@ namespace game_log
 		std::string clean;
 		clean.resize(msg.size());
 		
+		auto index = 0;
 		for (auto i = 0; i < msg.size(); i++)
 		{
 			auto c = input::normalize_ascii_extended(msg[i]);
@@ -123,7 +124,7 @@ namespace game_log
 				continue;
 			}
 
-			clean[i] = c;
+			clean[index++] = c;
 		}
 
 		return clean;
