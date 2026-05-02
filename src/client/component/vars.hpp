@@ -135,6 +135,7 @@ namespace vars
 		var_value reset;
 		var_type_t type;
 		var_limits_t limits;
+		std::optional<std::function<void()>> set_callback;
 	};
 
 	using var_ptr = std::shared_ptr<var_t>;

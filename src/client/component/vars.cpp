@@ -415,6 +415,10 @@ namespace vars
 		if (set_source != var_source_internal)
 		{
 			var->changed = true;
+			if (var->set_callback.has_value())
+			{
+				var->set_callback->operator()();
+			}
 		}
 
 		if ((var->flags & var_flag_saved) != 0 && set_source != var_source_internal)
@@ -611,6 +615,25 @@ namespace vars
 
 					set_var(var, parsed_value.value(), var_source_external);
 				}
+			});
+
+			command::add("reset", [](const command::params& params)
+			{
+				if (params.size() < 2)
+				{
+					return;
+				}
+
+				const auto name = params.get(1);
+				const auto value = params.join(2);
+
+				const auto var = find(name);
+				if (var == nullptr)
+				{
+					return;
+				}
+
+				set_var(var, var->reset, vars::var_source_external);
 			});
 
 			command::add("var_list", []

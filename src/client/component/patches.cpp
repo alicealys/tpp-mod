@@ -4,6 +4,7 @@
 #include "game/game.hpp"
 
 #include "vars.hpp"
+#include "scheduler.hpp"
 
 #include <utils/hook.hpp>
 #include <utils/flags.hpp>
@@ -18,6 +19,7 @@ namespace patches
 		vars::var_ptr var_skip_intro;
 		vars::var_ptr var_player_ramble_speed_scale;
 		vars::var_ptr var_player_ramble_speed_patch;
+		vars::var_ptr var_name;
 
 		void set_timer_resolution()
 		{
@@ -109,6 +111,30 @@ namespace patches
 		{
 			return strncpy_s(dst, size, src, _TRUNCATE);
 		}
+
+		utils::hook::detour get_persona_name_hook;
+		const char* get_persona_name_stub(game::ISteamFriends* this_)
+		{
+			static char buffer[0x200];
+			const auto name = var_name->current.get_string();
+			strncpy_s(buffer, sizeof(buffer), name.data(), name.size());
+			return buffer;
+		}
+
+		void set_player_name_once()
+		{
+			const auto steam_friends = (*game::SteamFriends)();
+			const auto name = steam_friends->__vftable->GetPersonaName(steam_friends);
+
+			var_name->reset = name;
+
+			if (var_name->current.get_string().empty())
+			{
+				vars::set_var(var_name, name, vars::var_source_internal);
+			}
+
+			get_persona_name_hook.create(steam_friends->__vftable->GetPersonaName, get_persona_name_stub);
+		}
 	}
 
 	class component final : public component_interface
@@ -127,6 +153,23 @@ namespace patches
 				var_player_ramble_speed_patch = vars::register_bool("player_ramble_speed_patch", true, vars::var_flag_saved, "enable high fps player sleep wake up patch");
 
 				var_skip_intro = vars::register_bool("ui_skip_intro", false, vars::var_flag_saved | vars::var_flag_latched, "skip intro splashscreens");
+			}
+			else
+			{
+				var_name = vars::register_string("name", "", vars::var_flag_saved, "Player name");
+				scheduler::once(set_player_name_once, scheduler::main);
+				var_name->set_callback = []()
+				{
+					const auto inst = game::tpp::net::Daemon_::GetInstance();
+					if (inst == nullptr || inst->ptr1 == nullptr || inst->ptr1->ptr1 == nullptr ||
+						inst->ptr1->ptr1->ptr2 == nullptr)
+					{
+						return;
+					}
+
+					const auto name = var_name->current.get_string();
+					strncpy_s(inst->ptr1->ptr1->ptr2->name, sizeof(inst->ptr1->ptr1->ptr2->name), name.data(), name.size());
+				};
 			}
 		}
 

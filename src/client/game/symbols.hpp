@@ -177,6 +177,11 @@ namespace game
 				WEAK symbol<char(FobTarget*)> CreateHostSession{0x1459F3E20, 0x0, 0x0, 0x0};
 				WEAK symbol<char(FobTarget*, SessionConnectInfo*)> CreateClientSession{0x1459F3910, 0x0, 0x0, 0x0};
 			}
+
+			namespace Daemon_
+			{
+				WEAK symbol<Daemon*()> GetInstance{0x0, 0x14057B6E0, 0x0, 0x14057B0B0};
+			}
 		}
 	}
 

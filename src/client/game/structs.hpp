@@ -1131,6 +1131,60 @@ namespace game
 			fox::SharedString* ip;
 			std::uint32_t port;
 		};
+
+		struct Daemon_sub_1_sub_1_sub2
+		{
+			steam_id steam_id;
+			char name[0x81];
+			char __pad0[39];
+			bool logged_on;
+		};
+
+		struct Daemon_sub_1_sub_1_sub1_vftable
+		{
+			void* meth_1;
+			void* meth_2;
+			void* meth_3;
+			void* meth_4;
+			void* meth_5;
+			void* meth_6;
+			void* meth_7;
+			void* meth_8;
+			void* meth_9;
+			void* meth_10;
+		};
+
+		struct Daemon_sub_1_sub_1_sub1
+		{
+			Daemon_sub_1_sub_1_sub1_vftable* __vftable;
+		};
+
+		struct Daemon_sub_1_sub_1
+		{
+			Daemon_sub_1_sub_1_sub1 inst;
+			Daemon_sub_1_sub_1_sub2* ptr2;
+		};
+
+#pragma pack(push, 1)
+		struct Daemon_sub_1
+		{
+			Daemon_sub_1_sub_1* ptr1;
+			char __pad1[24];
+			int state;
+			char __pad2[5];
+			char flags;
+			char __pad3[2566];
+			int unk1;
+		};
+#pragma pack(pop)
+
+		struct Daemon
+		{
+			char __pad0[16];
+			Daemon_sub_1* ptr1;
+			char __pad1[56];
+			int flags;
+		};
 	}
 
 	static_assert(offsetof(tpp::net::CmdGetFobTargetDetailResult, steam_id) == 7144);
