@@ -19,8 +19,14 @@ namespace matchmaking
 	namespace
 	{
 		utils::hook::detour create_lobby_cb_hook;
+		utils::hook::detour create_lobby_hook;
 
 		game::match_settings_t match_settings{};
+
+		vars::var_ptr var_match_enable_tweaks;
+		vars::var_ptr var_match_min_players;
+		vars::var_ptr var_match_max_players;
+		vars::var_ptr var_match_briefing_time;
 
 		struct match_field_t
 		{
@@ -87,7 +93,19 @@ namespace matchmaking
 		void create_lobby(game::mgo_match_t* match, game::match_settings_t* settings)
 		{
 			std::memcpy(&match->match_settings, settings, sizeof(game::match_settings_t));
-			utils::hook::invoke<void>(SELECT_VALUE_LANG(0x1405A1970, 0x0), match, &match->match_settings);
+			create_lobby_hook.invoke<void>(match, &match->match_settings);
+		}
+
+		void create_lobby_stub(game::mgo_match_t* match, game::match_settings_t* settings)
+		{
+			if (var_match_enable_tweaks->current.enabled())
+			{
+				settings->rules.pl_member_min = static_cast<char>(var_match_min_players->current.get_int());
+				settings->member_max = var_match_max_players->current.get_int();
+				settings->rules.pl_briefing_time = static_cast<short>(var_match_briefing_time->current.get_int());
+			}
+
+			create_lobby_hook.invoke<void>(match, settings);
 		}
 
 		void set_field(const void* struct_, const match_field_t field, const int value)
@@ -353,6 +371,14 @@ namespace matchmaking
 	class component final : public component_interface
 	{
 	public:
+		void pre_load() override
+		{
+			var_match_enable_tweaks = vars::register_bool("match_enable_tweaks", false, vars::var_flag_saved, "enable match settings tweaks");
+			var_match_min_players = vars::register_int("match_min_players", 2, 0, 16, vars::var_flag_saved, "match minimum players override");
+			var_match_max_players = vars::register_int("match_max_players", 16, 0, 16, vars::var_flag_saved, "match maximum players override");
+			var_match_briefing_time = vars::register_int("match_briefing_time", 60, 0, 600, vars::var_flag_saved, "match briefing time override (seconds)");
+		}
+
 		void start() override
 		{
 			if (!game::environment::is_mgo())
@@ -361,6 +387,7 @@ namespace matchmaking
 			}
 
 			create_lobby_cb_hook.create(SELECT_VALUE_LANG(0x144EF10B0, 0x1466D0C80), create_lobby_cb_stub);
+			create_lobby_hook.create(SELECT_VALUE_LANG(0x1405A1970, 0x1405A1380), create_lobby_stub);
 
 			scheduler::once(hook_steam_matchmaking, scheduler::net);
 			scheduler::loop(run_frame, scheduler::main);
