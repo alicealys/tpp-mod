@@ -78,10 +78,10 @@ namespace game_log::ui
 
 			const auto text_width = get_text_width();
 
+			model_node_text->flags |= 2;
+
 			if (index != 1)
 			{
-				model_node_text->flags |= 2;
-
 				const auto width = var_game_log_width->current.get_float();
 
 				model_node_text->displayAreaWidth = (width - 0.5f) / (model_node_text->displaySizes.values[0]);
