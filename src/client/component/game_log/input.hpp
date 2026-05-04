@@ -12,6 +12,4 @@ namespace game_log::input
 	bool handle_mousewheel(const bool down);
 
 	bool is_input_blocked();
-
-	char normalize_ascii_extended(char c);
 }

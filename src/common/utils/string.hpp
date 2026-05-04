@@ -109,4 +109,7 @@ namespace utils::string
 	bool is_numeric(const std::string& text);
 
 	std::string trim(const std::string& str, const std::string& whitespace = " \t\n\r\f\v");
+
+	char normalize_ascii_extended(char c);
+	bool is_char_text(char c);
 }

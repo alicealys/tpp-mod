@@ -12,7 +12,12 @@ namespace game
 		
 		WEAK symbol<bool(fox::RawKeyboardData*, RAWKEYBOARD*)> GetRawKeyboardData{0x141A45940, 0x1414A1D60, 0x141A45A30, 0x1414A1C60};
 
-		WEAK symbol<void*(__int64, __int64, __int64)> BlockHeapAlloc{0x1400DCAC0, 0x0, 0x0, 0x0};
+		WEAK symbol<void(void*, unsigned int)> FreeAnnotated{0x140015EF0, 0x140016020, 0x140015EE0, 0x140016020};
+
+		namespace Color_
+		{
+			WEAK symbol<unsigned int(Color*)> EncodeUInt32RGBA{0x1401C0350, 0x1402815D0, 0x1401C03E0, 0x140281560};
+		}
 
 		namespace KeyboardListener_
 		{
@@ -58,29 +63,77 @@ namespace game
 
 		namespace gr
 		{
+			namespace dg
+			{
+				namespace FontSystem_
+				{
+					WEAK symbol<FontSystem*> m_instance{0x142B93BB8, 0x14208EFD8, 0x142B93BB8, 0x14208F028};
+
+					WEAK symbol<void*(FontSystem*, const char*, unsigned int)> RegisterString{0x140225760, 0x140B2B600, 0x1402256B0, 0x140B2ABB0};
+					WEAK symbol<void*(FontSystem*, const char*, unsigned int)> UnRegisterString{0x140226850, 0x140B2C5B0, 0x1402267A0, 0x140B2BB60};
+				}
+
+				namespace plugins
+				{
+					namespace Draw2DRenderer_
+					{
+						/* 01 */ WEAK symbol<void*(Draw2DRenderer*, Packet2DLine*)> Execute_Packet2DLine{0x1402E2D40, 0x140BD5A60, 0x1402E27E0, 0x140BD5060};
+						/* 02 */ WEAK symbol<void*(Draw2DRenderer*, Packet2DTriangle*)> Execute_Packet2DTriangle{0x1402E4EC0, 0x140BD7BE0, 0x1402E4960, 0x140BD71E0};
+						/* 03 */ WEAK symbol<void*(Draw2DRenderer*, Packet2DQuad*)> Execute_Packet2DQuad{0x1402E3760, 0x140BD6480, 0x1402E3200, 0x140BD5A80};
+						/* 04 */ WEAK symbol<void*(Draw2DRenderer*, Packet2DBox*)> Execute_Packet2DBox{0x1402E0A40, 0x140BD3760, 0x1402E04E0, 0x140BD2D60};
+						/* 05 */ WEAK symbol<void*(Draw2DRenderer*, Packet2DSprite*)> Execute_Packet2DSprite{0x1402E46E0, 0x140BD7400, 0x1402E4180, 0x140BD6A00};
+						/* 06 */ WEAK symbol<void*(Draw2DRenderer*, Packet2DSprite2D*)> Execute_Packet2DSprite2D{0x1402E42C0, 0x140BD6FE0, 0x1402E3D60, 0x140BD65E0};
+						/* 07 */ WEAK symbol<void*(Draw2DRenderer*, Packet2DRSprite*)> Execute_Packet2DRSprite{0x1402E3AA0, 0x140BD6FE0, 0x1402E3540, 0x140BD5DC0};
+						/* 08 */ WEAK symbol<void*(Draw2DRenderer*, Packet2DString*)> ExecuteOnly_Packet2DString{0x1402E5820, 0x140BD8540, 0x1402E52C0, 0x140BD7B40};
+						/* 09 */ WEAK symbol<void*(Draw2DRenderer*, Packet2DString2D*)> Execute_Packet2DString2D{0x1402E4C20, 0x140BD7940, 0x1402E46C0, 0x140BD6F40};
+						/* 10 */ WEAK symbol<void*(Draw2DRenderer*, Packet2DCube*)> Execute_Packet2DCube{0x1402E1010, 0x140BD3D30, 0x1402E0AB0, 0x140BD3330};
+						/* 11 */ WEAK symbol<void*(Draw2DRenderer*, Packet2DLineStrip*)> Execute_Packet2DLineStrip{0x1402E2F30, 0x140BD5C50, 0x1402E29D0, 0x140BD5250};
+						/* 12 */ WEAK symbol<void*(Draw2DRenderer*, Packet2DTriangleStrip*)> Execute_Packet2DTriangleStrip{0x1402E5150, 0x140BD7E70, 0x1402E4BF0, 0x140BD7470};
+						/* 13 */ WEAK symbol<void*(Draw2DRenderer*, Packet2DViewport*)> Execute_Packet2DViewport{0x1402E54A0, 0x140BD81C0, 0x1402E4F40, 0x140BD77C0};
+						/* 14 */ WEAK symbol<void*(Draw2DRenderer*, Packet2DViewmap*)> Execute_Packet2DViewmap{0x1402E5440, 0x140BD8160, 0x1402E4EE0, 0x140BD7760};
+						/* 15 */ WEAK symbol<void*(Draw2DRenderer*, Packet2DWorldCoords*)> Execute_Packet2DWorldCoords{0x1402E5640, 0x140BD8360, 0x1402E50E0, 0x140BD7960};
+						/* 16 */ WEAK symbol<void*(Draw2DRenderer*, Packet2DScreenCoords*)> Execute_Packet2DScreenCoords{0x1402E41A0, 0x140BD6EC0, 0x1402E3C40, 0x140BD64C0};
+						/* 17 */ WEAK symbol<void*(Draw2DRenderer*, Packet2DMatrix*)> Execute_Packet2DMatrix{0x1402E3200, 0x140BD5F20, 0x1402E2CA0, 0x140BD5520};
+						/* 18 */ WEAK symbol<void*(Draw2DRenderer*, Packet2DRotation*)> Execute_Packet2DRotation{0x1402E40A0, 0x140BD6DC0, 0x1402E3B40, 0x140BD63C0};
+						/* 19 */ WEAK symbol<void*(Draw2DRenderer*, Packet2DTranslation*)> Execute_Packet2DTranslation{0x1402E4E40, 0x140BD7B60, 0x1402E48E0, 0x140BD7160};
+						/* 20 */ WEAK symbol<void*(Draw2DRenderer*, Packet2DScale*)> Execute_Packet2DScale{0x1402E4120, 0x140BD6E40, 0x1402E3BC0, 0x140BD6440};
+						/* 21 */ WEAK symbol<void*(Draw2DRenderer*, Packet2DBillboard*)> Execute_Packet2DBillboard{0x1402DFE80, 0x140BD2BA0, 0x1402DF920, 0x140BD21A0};
+						/* 22 */ WEAK symbol<void*(Draw2DRenderer*, Packet2DPerspective*)> Execute_Packet2DPerspective{0x1402E32B0, 0x140BD5FD0, 0x1402E2D50, 0x140BD55D0};
+						/* 23 */ WEAK symbol<void*(Draw2DRenderer*, Packet2DFlat*)> Execute_Packet2DFlat{0x1402E2CF0, 0x140BD5A10, 0x1402E2790, 0x140BD5010};
+						/* 24 */ WEAK symbol<void*(Draw2DRenderer*, char)> SetDepthMode{0x1402E8CA0, 0x140BDB5C0, 0x1402E8740, 0x140BDABC0};
+						/* 25 */ WEAK symbol<void*(Draw2DRenderer*, char)> SetCullMode{0x1402E8BA0, 0x140BDB4C0, 0x1402E8640, 0x140BDAAC0};
+						/* 26 */ WEAK symbol<void*(Draw2DRenderer*, Packet2DTexture*)> Execute_Packet2DTexture{0x1402E4D90, 0x140BD7AB0, 0x1402E4830, 0x140BD70B0};
+						/* 27 */ WEAK symbol<void*(Draw2DRenderer*, char)> SetAlpha{0x1402E8880, 0x140BDB1A0, 0x1402E8320, 0x140BDA7A0};
+						/* 28 */ WEAK symbol<void*(Draw2DRenderer*, Packet2DColor*)> Execute_Packet2DColor{0x1402E0E80, 0x140BD3BA0, 0x1402E0920, 0x140BD31A0};
+						/* 29 */ WEAK symbol<void*(Draw2DRenderer*, Packet2DStencil*)> SetStencil{0x1402E8D50, 0x140BDB670, 0x1402E87F0, 0x140BDAC70};
+						/* 30 */ WEAK symbol<void*(Draw2DRenderer*, Packet2DClearStencil*)> Execute_Packet2DClearStencil{0x1402E0E30, 0x140BD3B50, 0x1402E08D0, 0x140BD3150};
+						/* 32 */ WEAK symbol<void*(Draw2DRenderer*, Packet2DMaterial*)> Execute_Packet2DMaterial{0x1402E30E0, 0x140BD5E00, 0x1402E2B80, 0x140BD5400};
+						/* 33 */ WEAK symbol<void*(Draw2DRenderer*, Packet2DMaterialWork*)> Execute_Packet2DMaterialWork{0x1402E31B0, 0x140BD5ED0, 0x1402E2C50, 0x140BD54D0};
+						/* 34 */ WEAK symbol<void*(Draw2DRenderer*, Packet2DUserMatrix*)> Execute_Packet2DUserMatrix{0x1402E52C0, 0x140BD7FE0, 0x1402E4D60, 0x140BD75E0};
+						/* 38 */ WEAK symbol<void*(Draw2DRenderer*, Packet2DPush*)> Execute_Packet2DPush{0x1402E36D0, 0x140BD63F0, 0x1402E3170, 0x140BD59F0};
+						/* 39 */ WEAK symbol<void*(Draw2DRenderer*, Packet2DPop*)> Execute_Packet2DPop{0x1402E3600, 0x140BD6320, 0x1402E30A0, 0x140BD5920};
+						/* 40 */ WEAK symbol<void*(Draw2DRenderer*, Packet2DResolve*)> Execute_Packet2DResolve{0x1402E4040, 0x140BD6D60, 0x1402E3AE0, 0x140BD6360};
+						/* 41 */ WEAK symbol<void*(Draw2DRenderer*, Packet2DCopyRenderTarget*)> Execute_Packet2DCopyRenderTarget{0x1402E0F80, 0x140BD3CA0, 0x1402E0A20, 0x140BD32A0};
+						/* 45 */ WEAK symbol<void*(Draw2DRenderer*, Packet2DDrawIndices*)> Execute_Packet2DDrawIndices{0x1402E2950, 0x140BD5670, 0x1402E23F0, 0x140BD4C70};
+						/* 46 */ WEAK symbol<void*(Draw2DRenderer*, Packet2DUserVertexBuffer*)> Execute_Packet2DUserVertexBuffer{0x1402E5330, 0x140BD8050, 0x143E14100, 0x140BD7650};
+						/* 47 */ WEAK symbol<void*(Draw2DRenderer*, Packet2DBeginRenderToTemporary*)> Execute_Packet2DBeginRenderToTemporary{0x1402DFD20, 0x140BD2A40, 0x1402DF7C0, 0x140BD2040};
+						/* 48 */ WEAK symbol<void*(Draw2DRenderer*, Packet2DEndRenderToTemporary*)> Execute_Packet2DEndRenderToTemporary{0x1402E2AE0, 0x140BD5800, 0x1402E2580, 0x140BD4E00};
+						/* 49 */ WEAK symbol<void*(Draw2DRenderer*, Packet2DSetTemporaryTexture*)> Execute_Packet2DSetTemporaryTexture{0x1402E4220, 0x140BD6F40, 0x1402E3CC0, 0x140BD6540};
+					}
+				}
+			}
+
 			namespace Font_
 			{
 				WEAK symbol<int(const char*, float*, bool, unsigned int)> GetStringWidth{0x141C32000, 0x140B00030, 0x141C31E70, 0x140AFF4E0};
 			}
 
-			namespace Packet2DBuffer_
-			{
-				WEAK symbol<Packet2DBuffer*(Packet2DBuffer*, unsigned int, int)> Packet2DBuffer_{0x1401BFD30, 0x0, 0x0, 0x0};
-			}
+			WEAK symbol<void*(dg::StringFontMetricsCache*, const char*, int, int)> InitMetrics{0x1402AFB70, 0x140BA6560, 0x1402AF6A0, 0x140BA5B60};
 
-			namespace Scene_
-			{
-				WEAK symbol<Scene*()> GetDefaultScene{0x1401B5E20, 0x0, 0x0, 0x0};
-				WEAK symbol<void(Scene*, SceneObject*)> Queue{0x1401B5FE0, 0x0, 0x0, 0x0};
-			}
+			WEAK symbol<void(_fp16*, Vectormath::Aos::Vector4*)> ConvertFloat4toHalf4{0x140303600, 0x140BF5F40, 0x1403030A0, 0x140BF5540};
+			WEAK symbol<void(Vectormath::Aos::Vector4*, _fp16*)> ConvertHalf4toFloat4{0x141C4EE50, 0x14050CFA0, 0x141C4EDC0, 0x140C18D00};
 
-			namespace Draw2D_
-			{
-				WEAK symbol<Draw2D*(Draw2D*, unsigned int, unsigned int)> Draw2D_{0x1437C29C0, 0x0, 0x0, 0x0};
-				WEAK symbol<Draw2D*(Draw2D*, Packet2DBuffer*)> Add{0x1401C0000, 0x0, 0x0, 0x0};
-				WEAK symbol<unsigned int()> GetMaxPacketSize{0x0, 0x0, 0x0, 0x0};
-				WEAK symbol<Packet2D*(Packet2D*, unsigned char*, char)> SetCommand{0x1401C2510, 0x0, 0x0, 0x0};
-			}
+			WEAK symbol<unsigned char> g_packetSize{0x1429E5130, 0x141E96100, 0x1429E5130, 0x141E96100};
 		}
 	}
 

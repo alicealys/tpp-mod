@@ -364,30 +364,46 @@ namespace game
 				{
 					__int16 a1;
 					__int16 count;
-					int a3;
-					__int16* buffer;
+					int stringWidth;
+					__int16* glyphs;
 				};
-			}
 
-			struct Packet2DString
-			{
-				int a1;
-				int a2;
-				fox::gr::dg::StringFontMetricsCache* fontMetricsCache;
-				__int16 a3;
-				__int16 a4;
-				__int16 a5;
-				__int16 flags;
-				int a7;
-				__int16 a8;
-				__int16 a9;
-			};
+				struct BuildDraw2DParameters
+				{
+
+				};
+
+				struct FontSystem
+				{
+
+				};
+
+				namespace plugins
+				{
+					struct Draw2DRenderer
+					{
+						char __pad0[752];
+						BuildDraw2DParameters* parameters;
+					};
+				}
+			}
 
 			struct Packet2D
 			{
-				unsigned char command;
-				char a2;
-				__int16 size;
+				Packet2D(unsigned char type_, unsigned char size_)
+					: type(type_), size(size_)
+				{
+				}
+
+				template <typename T>
+				T* next()
+				{
+					return reinterpret_cast<T*>(reinterpret_cast<size_t>(this) + this->size);
+				}
+
+				unsigned char type;
+				unsigned char flags;
+				unsigned short size;
 			};
 
 			struct Packet2DBuffer
@@ -421,6 +437,278 @@ namespace game
 				vtable* __vftable;
 				char __pad0[88];
 			};
+
+			struct _fp16
+			{
+				unsigned short v[4];
+			};
+
+			struct Material
+			{
+
+			};
+
+			struct Packet2DLine : Packet2D
+			{
+				Packet2DLine() : Packet2D(1, 24) {}
+				char __pad0[20];
+			};
+
+			struct Packet2DTriangle : Packet2D
+			{
+				Packet2DTriangle() : Packet2D(2, 36) {}
+				char __pad0[32];
+			};
+
+			struct Packet2DQuad : Packet2D
+			{
+				Packet2DQuad() : Packet2D(3, 44) {}
+				char __pad0[40];
+			};
+
+			struct Packet2DBox : Packet2D
+			{
+				Packet2DBox() : Packet2D(4, 20) {}
+				unsigned int color;
+				unsigned __int16 f1;
+				unsigned __int16 f2;
+				unsigned __int16 f3;
+				unsigned __int16 f4;
+				unsigned __int16 f5;
+			};
+
+			struct Packet2DSprite : Packet2D
+			{
+				Packet2DSprite() : Packet2D(5, 28) {}
+				char __pad0[24];
+			};
+
+			struct Packet2DSprite2D : Packet2D
+			{
+				Packet2DSprite2D() : Packet2D(6, 32) {}
+				char __pad0[28];
+			};
+
+			struct Packet2DRSprite : Packet2D
+			{
+				Packet2DRSprite() : Packet2D(7, 28) {}
+				char __pad0[24];
+			};
+
+			struct Packet2DString : Packet2D
+			{
+				Packet2DString() : Packet2D(8, 32) {}
+				fox::gr::dg::StringFontMetricsCache* fontMetricsCache;
+				unsigned short glyphUnk;
+				unsigned short glyphHeight;
+				unsigned short glyphWidth;
+				unsigned short flags;
+				unsigned int fontType;
+				unsigned short glyphSpacing;
+				unsigned short a9;
+			};
+
+			struct Packet2DString2D : Packet2D
+			{
+				Packet2DString2D() : Packet2D(9, 48) {}
+				char __pad0[44];
+			};
+
+			struct Packet2DCube : Packet2D
+			{
+				Packet2DCube() : Packet2D(10, 28) {}
+				char __pad0[24];
+			};
+
+			struct Packet2DLineStrip : Packet2D
+			{
+				Packet2DLineStrip() : Packet2D(11, 8) {}
+				char __pad0[4];
+			};
+
+			struct Packet2DTriangleStrip : Packet2D
+			{
+				Packet2DTriangleStrip() : Packet2D(12, 8) {}
+				char __pad0[4];
+			};
+
+			struct Packet2DViewport : Packet2D
+			{
+				Packet2DViewport() : Packet2D(13, 12) {}
+				char __pad0[8];
+			};
+
+			struct Packet2DViewmap : Packet2D
+			{
+				Packet2DViewmap() : Packet2D(14, 28) {}
+				char __pad0[24];
+			};
+
+			struct Packet2DWorldCoords : Packet2D
+			{
+				Packet2DWorldCoords() : Packet2D(15, 4) {}
+			};
+
+			struct Packet2DScreenCoords : Packet2D
+			{
+				Packet2DScreenCoords() : Packet2D(16, 4) {}
+			};
+
+			struct Packet2DMatrix : Packet2D
+			{
+				Packet2DMatrix() : Packet2D(17, 44) {}
+				float v1[3];
+				float v2[3];
+				float quat[4];
+			};
+
+			struct Packet2DRotation : Packet2D
+			{
+				Packet2DRotation() : Packet2D(18, 20) {}
+				char __pad0[16];
+			};
+
+			struct Packet2DTranslation : Packet2D
+			{
+				Packet2DTranslation() : Packet2D(19, 16) {}
+				float x;
+				float y;
+				float z;
+			};
+
+			struct Packet2DScale : Packet2D
+			{
+				Packet2DScale() : Packet2D(20, 16) {}
+				float x;
+				float y;
+				float z;
+			};
+
+			struct Packet2DBillboard : Packet2D
+			{
+				Packet2DBillboard() : Packet2D(21, 8) {}
+				char __pad0[4];
+			};
+
+			struct Packet2DPerspective : Packet2D
+			{
+				Packet2DPerspective() : Packet2D(22, 24) {}
+				char __pad0[20];
+			};
+
+			struct Packet2DFlat : Packet2D
+			{
+				Packet2DFlat() : Packet2D(23, 4) {}
+			};
+
+			struct Packet2DDepthMode : Packet2D
+			{
+				Packet2DDepthMode() : Packet2D(24, 4) {}
+			};
+
+			struct Packet2DCullMode : Packet2D
+			{
+				Packet2DCullMode() : Packet2D(25, 4) {}
+			};
+
+			struct Packet2DTexture : Packet2D
+			{
+				Packet2DTexture() : Packet2D(26, 8) {}
+				char __pad0[4];
+			};
+
+			struct Packet2DAlpha : Packet2D
+			{
+				Packet2DAlpha() : Packet2D(27, 4) {}
+			};
+
+			struct Packet2DColor : Packet2D
+			{
+				Packet2DColor() : Packet2D(28, 12) {}
+				_fp16 rgba;
+			};
+
+			struct Packet2DStencil : Packet2D
+			{
+				Packet2DStencil() : Packet2D(29, 16) {}
+				char __pad0[12];
+			};
+
+			struct Packet2DClearStencil : Packet2D
+			{
+				Packet2DClearStencil() : Packet2D(30, 8) {}
+				char __pad0[4];
+			};
+
+			struct Packet2DMaterial : Packet2D
+			{
+				Packet2DMaterial() : Packet2D(32, 16) {}
+				Material* material;
+			};
+
+			struct Packet2DMaterialWork : Packet2D
+			{
+				Packet2DMaterialWork() : Packet2D(33, 24) {}
+				char __pad0[20];
+			};
+
+			struct Packet2DUserMatrix : Packet2D
+			{
+				Packet2DUserMatrix() : Packet2D(34, 68) {}
+				char __pad0[64];
+			};
+
+			struct Packet2DPush : Packet2D
+			{
+				Packet2DPush() : Packet2D(38, 4) {}
+			};
+
+			struct Packet2DPop : Packet2D
+			{
+				Packet2DPop() : Packet2D(39, 4) {}
+			};
+
+			struct Packet2DResolve : Packet2D
+			{
+				Packet2DResolve() : Packet2D(40, 8) {}
+				char __pad0[4];
+			};
+
+			struct Packet2DCopyRenderTarget : Packet2D
+			{
+				Packet2DCopyRenderTarget() : Packet2D(41, 12) {}
+				char __pad0[8];
+			};
+
+			struct Packet2DDrawIndices : Packet2D
+			{
+				Packet2DDrawIndices() : Packet2D(45, 24) {}
+				char __pad0[20];
+			};
+
+			struct Packet2DUserVertexBuffer : Packet2D
+			{
+				Packet2DUserVertexBuffer() : Packet2D(46, 24) {}
+				char __pad0[20];
+			};
+
+			struct Packet2DBeginRenderToTemporary : Packet2D
+			{
+				Packet2DBeginRenderToTemporary() : Packet2D(47, 16) {}
+				char __pad0[12];
+			};
+
+			struct Packet2DEndRenderToTemporary : Packet2D
+			{
+				Packet2DEndRenderToTemporary() : Packet2D(48, 4) {}
+			};
+
+			struct Packet2DSetTemporaryTexture : Packet2D
+			{
+				Packet2DSetTemporaryTexture() : Packet2D(49, 8) {}
+				char __pad0[4];
+			};
+
 		}
 
 		namespace impl

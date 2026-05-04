@@ -302,69 +302,6 @@ namespace vars
 			return ((var->flags & var_flag_cheat) == 0) || set_source == var_source_internal || cheats_enabled();
 		}
 
-		const char* get_var_domain(const var_ptr& var)
-		{
-			switch (var->type)
-			{
-			case var_type_boolean:
-				return "domain is 0 or 1";
-			case var_type_float:
-			{
-				if (var->limits.float_.min == std::numeric_limits<float>::min())
-				{
-					if (var->limits.float_.max == std::numeric_limits<float>::max())
-					{
-						return utils::string::va("domain is any number");
-					}
-					else
-					{
-						return utils::string::va("domain is any number %f or smaller", var->limits.float_.max);
-					}
-				}
-				else
-				{
-					if (var->limits.float_.max == std::numeric_limits<float>::max())
-					{
-						return utils::string::va("domain is any number %f or bigger", var->limits.float_.min);
-					}
-					else
-					{
-						return utils::string::va("domain is any number %f to %f", var->limits.float_.min, var->limits.float_.max);
-					}
-				}
-			}
-			case var_type_integer:
-			{
-				if (var->limits.integer.min == std::numeric_limits<std::int32_t>::min())
-				{
-					if (var->limits.integer.max == std::numeric_limits<std::int32_t>::max())
-					{
-						return utils::string::va("domain is any integer");
-					}
-					else
-					{
-						return utils::string::va("domain is any integer %i or smaller", var->limits.integer.max);
-					}
-				}
-				else
-				{
-					if (var->limits.integer.max == std::numeric_limits<std::int32_t>::max())
-					{
-						return utils::string::va("domain is any integer %i or bigger", var->limits.integer.min);
-					}
-					else
-					{
-						return utils::string::va("domain is any integer %i to %i", var->limits.integer.min, var->limits.integer.max);
-					}
-				}
-			}
-			case var_type_string:
-				return "domain is any text";
-			}
-
-			return "";
-		}
-
 		nlohmann::json parse_value_text(const std::string& text)
 		{
 			const auto value_j = nlohmann::json::parse(text, nullptr, false);
@@ -426,6 +363,70 @@ namespace vars
 			write_config();
 		}
 	}
+
+	const char* get_var_domain(const var_ptr& var)
+	{
+		switch (var->type)
+		{
+		case var_type_boolean:
+			return "domain is 0 or 1";
+		case var_type_float:
+		{
+			if (var->limits.float_.min == std::numeric_limits<float>::min())
+			{
+				if (var->limits.float_.max == std::numeric_limits<float>::max())
+				{
+					return utils::string::va("domain is any number");
+				}
+				else
+				{
+					return utils::string::va("domain is any number %f or smaller", var->limits.float_.max);
+				}
+			}
+			else
+			{
+				if (var->limits.float_.max == std::numeric_limits<float>::max())
+				{
+					return utils::string::va("domain is any number %f or bigger", var->limits.float_.min);
+				}
+				else
+				{
+					return utils::string::va("domain is any number %f to %f", var->limits.float_.min, var->limits.float_.max);
+				}
+			}
+		}
+		case var_type_integer:
+		{
+			if (var->limits.integer.min == std::numeric_limits<std::int32_t>::min())
+			{
+				if (var->limits.integer.max == std::numeric_limits<std::int32_t>::max())
+				{
+					return utils::string::va("domain is any integer");
+				}
+				else
+				{
+					return utils::string::va("domain is any integer %i or smaller", var->limits.integer.max);
+				}
+			}
+			else
+			{
+				if (var->limits.integer.max == std::numeric_limits<std::int32_t>::max())
+				{
+					return utils::string::va("domain is any integer %i or bigger", var->limits.integer.min);
+				}
+				else
+				{
+					return utils::string::va("domain is any integer %i to %i", var->limits.integer.min, var->limits.integer.max);
+				}
+			}
+		}
+		case var_type_string:
+			return "domain is any text";
+		}
+
+		return "";
+	}
+
 
 	var_ptr register_var(
 		const std::string& name, const var_type_t& type, const var_value& value, const var_limits_t limits, const std::uint32_t flags, const std::string& description)

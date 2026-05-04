@@ -34,4 +34,6 @@ namespace command
 	std::optional<std::string> find_command_name(const std::string& input);
 
 	std::vector<std::string> tokenize_string(const std::string& str);
+
+	std::unordered_map<std::string, callback>& get_commands();
 }

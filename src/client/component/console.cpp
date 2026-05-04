@@ -5,8 +5,7 @@
 #include "game/game.hpp"
 #include "command.hpp"
 #include "vars.hpp"
-#include "game_log/defs.hpp"
-#include "game_log/ui.hpp"
+#include "game_console.hpp"
 
 #include <utils/thread.hpp>
 #include <utils/string.hpp>
@@ -121,9 +120,9 @@ namespace console
 				invoke_printf("\n");
 			}
 
-			if (type != con_type_debug && game_log::is_initialized() && game_log::is_console_enabled())
+			if (type != con_type_debug)
 			{
-				game_log::ui::print(utils::string::trim(message), false);
+				game_console::print(utils::string::trim(message));
 			}
 
 			update();

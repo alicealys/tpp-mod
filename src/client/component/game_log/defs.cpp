@@ -26,7 +26,6 @@ namespace game_log
 	vars::var_ptr var_game_log_max_message_len;
 
 	char chat_input_prefix[] = "say: ";
-	char console_input_prefix[] = "> ";
 
 	bool initialized;
 
@@ -99,17 +98,6 @@ namespace game_log
 		return true;
 	}
 
-	bool is_char_text(char c)
-	{
-		return c >= 32 && c <= 126;
-	}
-
-	bool check_message(const std::string& msg)
-	{
-		const auto res = std::ranges::find_if_not(msg.begin(), msg.end(), is_char_text);
-		return res == msg.end();
-	}
-
 	std::string clean_message(const std::string& msg)
 	{
 		std::string clean;
@@ -118,8 +106,8 @@ namespace game_log
 		auto index = 0;
 		for (auto i = 0; i < msg.size(); i++)
 		{
-			auto c = input::normalize_ascii_extended(msg[i]);
-			if (!is_char_text(c))
+			auto c = utils::string::normalize_ascii_extended(msg[i]);
+			if (!utils::string::is_char_text(c))
 			{
 				continue;
 			}

@@ -334,6 +334,11 @@ namespace command
 		return res;
 	}
 
+	std::unordered_map<std::string, callback>& get_commands()
+	{
+		return commands;
+	}
+
 	class component final : public component_interface
 	{
 	public:

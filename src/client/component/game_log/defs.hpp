@@ -57,7 +57,6 @@ namespace game_log
 	{
 		mode_none,
 		mode_chat,
-		mode_console,
 	};
 
 	struct game_log_state_t
@@ -83,8 +82,6 @@ namespace game_log
 	bool can_show_game_log();
 	bool can_use_chat();
 
-	bool is_char_text(char c);
-	bool check_message(const std::string& msg);
 	std::string clean_message(const std::string& msg);
 
 	void reset_log();

@@ -44,47 +44,11 @@ namespace game_log::input
 			state.cursor--;
 		}
 
-		void handle_tab(game_log_state_t& state)
-		{
-			if (state.mode != mode_console)
-			{
-				return;
-			}
-
-			auto name_opt = command::find_command_name(state.input);
-			if (!name_opt.has_value())
-			{
-				name_opt = vars::find_name(state.input);
-				if (!name_opt.has_value())
-				{
-					return;
-				}
-			}
-
-			const auto& name = name_opt.value();
-			if (name.size() >= sizeof(state.input) - 1)
-			{
-				return;
-			}
-
-			std::memcpy(state.input, name.data(), name.size());
-			state.cursor = static_cast<int>(name.size());
-			state.input[state.cursor++] = ' ';
-		}
-
 		void handle_return(game_log_state_t& state)
 		{
-			if (state.mode == mode_console)
+			if (state.input[0] != 0)
 			{
-				console::info("]%s", state.input);
-				command::execute(state.input);
-			}
-			else if (state.mode == mode_chat)
-			{
-				if (state.input[0] != 0)
-				{
-					text_chat::lobby::send_chat_message(state.input);
-				}
+				text_chat::lobby::send_chat_message(state.input);
 			}
 
 			stop_typing(state);
@@ -102,8 +66,8 @@ namespace game_log::input
 					return;
 				}
 
-				c = normalize_ascii_extended(c);
-				if (is_char_text(c))
+				c = utils::string::normalize_ascii_extended(c);
+				if (utils::string::is_char_text(c))
 				{
 					handle_char(state, c);
 				}
@@ -213,7 +177,7 @@ namespace game_log::input
 	{
 		return game_log_state.access<bool>([&](game_log_state_t& state)
 		{
-			if (!state.is_typing || (state.mode == mode_console && is_game_console_bind))
+			if (!state.is_typing)
 			{
 				return false;
 			}
@@ -241,9 +205,6 @@ namespace game_log::input
 				break;
 			case VK_RIGHT:
 				move_cursor(state, true);
-				break;
-			case VK_TAB:
-				handle_tab(state);
 				break;
 			case VK_ESCAPE:
 				stop_typing(state);
@@ -288,8 +249,8 @@ namespace game_log::input
 				break;
 			default:
 			{
-				const auto c = normalize_ascii_extended(static_cast<char>(key));
-				if (is_char_text(c))
+				const auto c = utils::string::normalize_ascii_extended(static_cast<char>(key));
+				if (utils::string::is_char_text(c))
 				{
 					handle_char(state, c);
 				}
@@ -351,18 +312,6 @@ namespace game_log::input
 		});
 	}
 
-	char normalize_ascii_extended(char c)
-	{
-		auto c_ = static_cast<unsigned char>(c);
-		const auto map = "????????????????????????????????????????????????????????????????AAAAAAACEEEEIIIIDNOOOOOxOUUUUYPSaaaaaaaceeeeiiiionooooo?ouuuuypy";
-		if (c_ > 128 && c_ < 255)
-		{
-			return map[c_ - 128];
-		}
-
-		return c;
-	}
-
 	class component final : public component_interface
 	{
 	public:
@@ -378,29 +327,7 @@ namespace game_log::input
 				state = {};
 			});
 
-			command::add("toggleconsole", []
-			{
-				if (!is_console_enabled() || !can_show_game_log())
-				{
-					return;
-				}
-
-				game_log_state.access([](game_log_state_t& state)
-				{
-					if (state.mode == mode_console)
-					{
-						stop_typing(state);
-					}
-					else
-					{
-						stop_typing(state);
-						state.is_typing = true;
-						state.mode = mode_console;
-					}
-				});
-			});
-
-			command::add("clearlog", [](const command::params& params)
+			command::add("clearchat", [](const command::params& params)
 			{
 				reset_log();
 			});

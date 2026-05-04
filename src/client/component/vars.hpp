@@ -142,6 +142,8 @@ namespace vars
 
 	void set_var(const var_ptr& var, const var_value& value, const var_source_t set_source);
 
+	const char* get_var_domain(const var_ptr& var);
+
 	var_ptr register_var(
 		const std::string& name, const var_type_t& type, const var_value& value, const var_limits_t limits, const std::uint32_t flags, const std::string& description);
 
@@ -172,4 +174,6 @@ namespace vars
 	std::optional<std::string> find_name(const std::string& name);
 
 	bool var_command(const command::params& params);
+
+	std::vector<var_ptr>& get_var_list();
 }

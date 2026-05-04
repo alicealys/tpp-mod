@@ -17,9 +17,6 @@ namespace game_log::ui
 	{
 		utils::hook::detour announce_log_view_hook;
 
-		vars::var_ptr var_ui_draw_fps;
-		vars::var_ptr var_ui_draw_ping;
-
 		void reset_font_metrics(game::fox::ui::ModelNodeText* node)
 		{
 			if (node->packetBuffer == nullptr)
@@ -39,7 +36,7 @@ namespace game_log::ui
 				packet = reinterpret_cast<game::fox::gr::Packet2D*>(ptr + offset);
 			}*/
 
-			if (packet->command == 8)
+			if (packet->type == 8)
 			{
 				const auto packet_string = reinterpret_cast<game::fox::gr::Packet2DString*>(packet);
 				packet_string->fontMetricsCache = nullptr;
@@ -365,15 +362,6 @@ namespace game_log::ui
 					postfix = &log_buffer[prefix_len];
 					break;
 				}
-				case mode_console:
-				{
-					static const auto prefix_len = std::strlen(console_input_prefix);
-					static const auto text_len = sizeof(log_buffer) - prefix_len;
-
-					std::memcpy(log_buffer, console_input_prefix, prefix_len);
-					postfix = &log_buffer[prefix_len];
-					break;
-				}
 				default:
 					return;
 				}
@@ -385,130 +373,6 @@ namespace game_log::ui
 			}
 
 			set_log_text(log_viewer, log_buffer, game_log_message_input_index, 0, 1.f, true);
-		}
-
-		struct cg_perf_data
-		{
-			std::chrono::time_point<std::chrono::steady_clock> perf_start;
-			std::int32_t current_ms;
-			std::int32_t previous_ms;
-			std::int32_t frame_ms;
-			std::int32_t history[32];
-			std::int32_t count;
-			std::int32_t index;
-			std::int32_t instant;
-			std::int32_t total;
-			float average;
-			float variance;
-			std::int32_t min;
-			std::int32_t max;
-		};
-
-		cg_perf_data cg_perf{};
-
-		void perf_calc_fps(cg_perf_data* data, const std::int32_t value)
-		{
-			data->history[data->index % 32] = value;
-			data->instant = value;
-			data->min = 0x7FFFFFFF;
-			data->max = 0;
-			data->average = 0.0f;
-			data->variance = 0.0f;
-			data->total = 0;
-
-			for (auto i = 0; i < data->count; ++i)
-			{
-				const std::int32_t idx = (data->index - i) % 32;
-
-				if (idx < 0)
-				{
-					break;
-				}
-
-				data->total += data->history[idx];
-
-				if (data->min > data->history[idx])
-				{
-					data->min = data->history[idx];
-				}
-
-				if (data->max < data->history[idx])
-				{
-					data->max = data->history[idx];
-				}
-			}
-
-			data->average = static_cast<float>(data->total) / static_cast<float>(data->count);
-			++data->index;
-		}
-
-		void perf_update()
-		{
-			cg_perf.count = 32;
-
-			const auto time_system = game::fox::GetTimeSystem();
-
-			perf_calc_fps(&cg_perf, static_cast<int>(1.f / time_system.frameTime));
-		}
-
-		float color_good[4] = {0.6f, 1.0f, 0.0f, 1.0f};
-		float color_ok[4] = {1.0f, 0.7f, 0.3f, 1.0f};
-		float color_bad[4] = {1.0f, 0.3f, 0.3f, 1.0f};
-		std::array<float*, 3> quality_colors =
-		{
-			color_good,
-			color_ok,
-			color_bad,
-		};
-
-		void update_fps_counter(game::tpp::ui::hud::AnnounceLogViewer* log_viewer)
-		{
-			float empty_color[4]{};
-
-			const auto main_session = *game::s_pSession;
-			const auto rtt = session::get_rtt(main_session);
-			const auto should_draw_ping = var_ui_draw_ping->current.enabled() && main_session != nullptr;
-
-			if (!var_ui_draw_fps->current.enabled() && !should_draw_ping)
-			{
-				set_log_text(log_viewer, "", 1, 0, 1.f, false, 0.f, 0.f, empty_color);
-				return;
-			}
-
-			perf_update();
-
-			const auto fps = static_cast<int>(cg_perf.average);
-			auto fps_score = 0;
-			auto ping_score = 0;
-
-			static message_buffer_t fps_text_buffer{};
-			std::memset(fps_text_buffer, 0, sizeof(fps_text_buffer));
-
-			auto offset = 0;
-			if (var_ui_draw_fps->current.enabled())
-			{
-				fps_score = fps >= 60 ? 0 : (fps >= 30 ? 1 : 2);
-				offset = sprintf_s(fps_text_buffer, sizeof(fps_text_buffer), "fps: %i", fps);
-			}
-
-			auto x = 156.f;
-			if (should_draw_ping)
-			{
-				auto sep = "";
-				if (offset > 0)
-				{
-					sep = " | ";
-					x -= 10.f;
-				}
-
-				sprintf_s(fps_text_buffer + offset, sizeof(fps_text_buffer) - offset, "%sping: %ims", sep, rtt);
-				ping_score = rtt < 100 ? 0 : (rtt < 200 ? 1 : 2);
-			}
-
-			const auto score = std::max(fps_score, ping_score);
-			const auto color = quality_colors[score];
-
-			set_log_text(log_viewer, fps_text_buffer, 1, 0, 1.f, false, x, 78.f, color);
 		}
 
 		int update_chat_messages(game_log_state_t& state, game::tpp::ui::hud::AnnounceLogViewer* log_viewer)
@@ -634,8 +498,6 @@ namespace game_log::ui
 			update_chat_input(state, log_viewer);
 			const auto msg_count = update_chat_messages(state, log_viewer);
 			update_game_log_background(state, log_viewer, msg_count);
-
-			update_fps_counter(log_viewer);
 		}
 
 		void update_chat()
@@ -720,8 +582,7 @@ namespace game_log::ui
 	public:
 		void pre_load() override
 		{
-			var_ui_draw_fps = vars::register_bool("ui_draw_fps", vars::var_flag_saved, 0, "draw fps counter");
-			var_ui_draw_ping = vars::register_bool("ui_draw_ping", vars::var_flag_saved, 0, "draw ping counter");
+
 		}
 
 		void start() override

@@ -7,6 +7,7 @@
 #include "command.hpp"
 #include "filesystem.hpp"
 #include "binds.hpp"
+#include "game_console.hpp"
 
 #include "game_log/input.hpp"
 
@@ -347,6 +348,12 @@ namespace binds
 
 			keys[key] = raw_input->data.keyboard.Flags;
 
+			if (game_console::handle_key(key, is_down, is_game_console_bind(key)))
+			{
+				game_console::handle_char(key_ascii, is_down);
+				return true;
+			}
+
 			if (game_log::input::handle_key(key, is_down, is_game_console_bind(key)))
 			{
 				game_log::input::handle_char(key_ascii, is_down);
@@ -390,6 +397,12 @@ namespace binds
 			if ((raw_input->data.mouse.usButtonFlags & RI_MOUSE_WHEEL) != 0)
 			{
 				const auto down = static_cast<short>(raw_input->data.mouse.usButtonData) < 0;
+
+				if (game_console::handle_mousewheel(down))
+				{
+					return true;
+				}
+
 				if (game_log::input::handle_mousewheel(down))
 				{
 					return true;
@@ -401,6 +414,11 @@ namespace binds
 					handle_bind(wheel_key, false, true, false, false);
 					return true;
 				}
+			}
+
+			if (game_console::handle_key(-1, false, false))
+			{
+				return true;
 			}
 
 			if (game_log::input::handle_key(-1, false))
