@@ -235,6 +235,15 @@ namespace game
 		struct UiCommonDataManager;
 	}
 
+	namespace gn
+	{
+		struct Buffer
+		{
+			char* data;
+			unsigned int size;
+		};
+	}
+
 	namespace Vectormath::Aos
 	{
 		struct Vector3
@@ -362,20 +371,76 @@ namespace game
 			{
 				struct StringFontMetricsCache
 				{
-					__int16 a1;
+					char a1;
+					char a2;
 					__int16 count;
 					int stringWidth;
 					__int16* glyphs;
 				};
 
-				struct BuildDraw2DParameters
+				struct FontSystem
 				{
 
 				};
 
-				struct FontSystem
+				struct DynamicVertexBuffer_unk1
 				{
+					char __pad0[20];
+					int count;
+				};
 
+				struct DynamicVertexBuffer
+				{
+					char __pad0[64];
+					DynamicVertexBuffer_unk1* unk1;
+					char __pad1[8];
+					gn::Buffer* buffer;
+					char __pad2[16];
+					void* ptr1;
+					unsigned int a1;
+					unsigned int a2;
+				};
+
+				struct BuildDraw2DParameters
+				{
+					char __pad0[24];
+					DynamicVertexBuffer* vertexBuffer;
+				};
+
+				struct FontTextureMetrics
+				{
+					float f1;
+					float f2;
+					float f3;
+					float f4;
+					float f5;
+					float f6;
+					float f7;
+					float f8;
+					float f9;
+				};
+
+				struct _TextureGlyphData
+				{
+					float a1;
+					float a2;
+					char a3_1;
+					char a3_2;
+					char a3_3;
+					char a3_4;
+					char a4_1;
+					char a4_2;
+					char a4_3;
+					char a4_4;
+					float a5;
+					float a6;
+					float a7;
+					float a8;
+				};
+
+				struct CommandBuffer
+				{
+					char __pad0[0x100];
 				};
 
 				namespace plugins
@@ -384,6 +449,12 @@ namespace game
 					{
 						char __pad0[752];
 						BuildDraw2DParameters* parameters;
+						CommandBuffer* commandBuffer;
+						char __pad1[32];
+						gn::Buffer* buffer;
+						unsigned int size;
+						char __pad2[128];
+						_TextureGlyphData* glyphData;
 					};
 				}
 			}
@@ -593,7 +664,11 @@ namespace game
 			struct Packet2DPerspective : Packet2D
 			{
 				Packet2DPerspective() : Packet2D(22, 24) {}
-				char __pad0[20];
+				float f1;
+				float f2;
+				float f3;
+				float f4;
+				float f5;
 			};
 
 			struct Packet2DFlat : Packet2D

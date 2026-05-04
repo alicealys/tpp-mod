@@ -122,7 +122,7 @@ namespace console
 
 			if (type != con_type_debug)
 			{
-				game_console::print(utils::string::trim(message));
+				game_console::print(message);
 			}
 
 			update();

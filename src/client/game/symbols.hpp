@@ -65,18 +65,34 @@ namespace game
 		{
 			namespace dg
 			{
+				namespace CommandBuffer_
+				{
+					WEAK symbol<void(CommandBuffer*, int, unsigned int)> SetTexture{0x1402D93C0, 0x140BCAAD0, 0x1402D8E70, 0x140BCA120};
+					WEAK symbol<void(CommandBuffer*, int, void*, int)> SetVector{0x1402D9490, 0x140BCABA0, 0x1402D8F40, 0x140BCA1F0};
+				}
+
+				namespace DynamicVertexBuffer_
+				{
+					WEAK symbol<char*(DynamicVertexBuffer*, gn::Buffer**, unsigned int*, int)> GetBuffer{0x1402BA320, 0x140BBA240, 0x1402B9DC0, 0x140BB9890};
+				}
+
 				namespace FontSystem_
 				{
 					WEAK symbol<FontSystem*> m_instance{0x142B93BB8, 0x14208EFD8, 0x142B93BB8, 0x14208F028};
 
 					WEAK symbol<void*(FontSystem*, const char*, unsigned int)> RegisterString{0x140225760, 0x140B2B600, 0x1402256B0, 0x140B2ABB0};
 					WEAK symbol<void*(FontSystem*, const char*, unsigned int)> UnRegisterString{0x140226850, 0x140B2C5B0, 0x1402267A0, 0x140B2BB60};
+					WEAK symbol<void(FontSystem*, float*, float*)> GetHalfPixelWH{0x140224C00, 0x140B2AAB0, 0x140224B60, 0x140B2A060};
+					WEAK symbol<unsigned int(FontSystem*)> GetFontTextureHandle{0x140224AA0, 0x140B2A950, 0x140224A00, 0x140B29F00};
+					WEAK symbol<void(FontTextureMetrics*, _TextureGlyphData*, float, float, float)> CalculateMetrics{0x1402241E0, 0x140B2A150, 0x140224140, 0x140B29700};
 				}
 
 				namespace plugins
 				{
 					namespace Draw2DRenderer_
 					{
+						WEAK symbol<void(Draw2DRenderer*, int, int, int)> DrawVertices{0x1402E7BD0, 0x140BDA520, 0x1402E7670, 0x140BD9B20};
+
 						/* 01 */ WEAK symbol<void*(Draw2DRenderer*, Packet2DLine*)> Execute_Packet2DLine{0x1402E2D40, 0x140BD5A60, 0x1402E27E0, 0x140BD5060};
 						/* 02 */ WEAK symbol<void*(Draw2DRenderer*, Packet2DTriangle*)> Execute_Packet2DTriangle{0x1402E4EC0, 0x140BD7BE0, 0x1402E4960, 0x140BD71E0};
 						/* 03 */ WEAK symbol<void*(Draw2DRenderer*, Packet2DQuad*)> Execute_Packet2DQuad{0x1402E3760, 0x140BD6480, 0x1402E3200, 0x140BD5A80};
