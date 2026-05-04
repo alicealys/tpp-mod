@@ -365,6 +365,11 @@ namespace game
 			void* queue;
 		};
 
+		struct HashMapBase
+		{
+			char __pad0[48];
+		};
+
 		namespace gr
 		{
 			namespace dg
@@ -378,9 +383,56 @@ namespace game
 					__int16* glyphs;
 				};
 
+				struct _TextureGlyphData
+				{
+					float a1;
+					float a2;
+					char a3_1;
+					char a3_2;
+					char a3_3;
+					char a3_4;
+					char a4_1;
+					char a4_2;
+					char a4_3;
+					char a4_4;
+					float a5;
+					float a6;
+					float a7;
+					float a8;
+				};
+
+				struct ImageGlyphManager
+				{
+					char __pad0[8];
+					_TextureGlyphData* imageGlyphs;
+					fox::HashMapBase hashMap;
+					char __pad1[24];
+					int numGlyphs;
+					int numUnk;
+					char __pad2[256];
+				};
+
+				struct FontSystem_unk1
+				{
+					char __pad0[10];
+					char c1;
+					char __pad1[53];
+					__int16 s1;
+					char c2;
+				};
+
+				struct FontSystem_unk2
+				{
+					char __pad0[72];
+					ImageGlyphManager* imageGlyphManager;
+				};
+
 				struct FontSystem
 				{
-
+					char __pad0[8];
+					void* ptr_array1[9];
+					fox::gr::dg::FontSystem_unk1* unk1;
+					fox::gr::dg::FontSystem_unk2* unk2;
 				};
 
 				struct DynamicVertexBuffer_unk1
@@ -420,24 +472,6 @@ namespace game
 					float f9;
 				};
 
-				struct _TextureGlyphData
-				{
-					float a1;
-					float a2;
-					char a3_1;
-					char a3_2;
-					char a3_3;
-					char a3_4;
-					char a4_1;
-					char a4_2;
-					char a4_3;
-					char a4_4;
-					float a5;
-					float a6;
-					float a7;
-					float a8;
-				};
-
 				struct CommandBuffer
 				{
 					char __pad0[0x100];
@@ -445,12 +479,21 @@ namespace game
 
 				namespace plugins
 				{
+					struct Draw2DRenderer_unk
+					{
+						unsigned char flags1[8];
+						char __pad0[112];
+						unsigned int flags2;
+						unsigned int flags3;
+					};
+
 					struct Draw2DRenderer
 					{
 						char __pad0[752];
 						BuildDraw2DParameters* parameters;
 						CommandBuffer* commandBuffer;
-						char __pad1[32];
+						Draw2DRenderer_unk* unk;
+						char __pad1[24];
 						gn::Buffer* buffer;
 						unsigned int size;
 						char __pad2[128];
@@ -706,13 +749,21 @@ namespace game
 			struct Packet2DStencil : Packet2D
 			{
 				Packet2DStencil() : Packet2D(29, 16) {}
-				char __pad0[12];
+				unsigned char a1;
+				unsigned char a2;
+				unsigned char a3;
+				unsigned char a4;
+				unsigned char a5;
+				unsigned char a6;
+				unsigned char a7;
+				unsigned char a8;
+				int a9;
 			};
 
 			struct Packet2DClearStencil : Packet2D
 			{
 				Packet2DClearStencil() : Packet2D(30, 8) {}
-				char __pad0[4];
+				int a1;
 			};
 
 			struct Packet2DMaterial : Packet2D

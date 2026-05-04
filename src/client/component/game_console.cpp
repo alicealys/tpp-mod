@@ -79,12 +79,12 @@ namespace game_console
 		float draw_input_branding(game::fox::gr::dg::plugins::Draw2DRenderer* instance)
 		{
 			const auto width = renderer::draw_text(instance, "tpp-mod > ", font_height, margin + 2.f, margin + 1.f, color_tpp, color_black);
-			return margin + 2.f + width;
+			return margin + 4.f + width;
 		}
 
 		void draw_input_text(game::fox::gr::dg::plugins::Draw2DRenderer* instance, float offset)
 		{
-			renderer::draw_text_with_cursor(instance, con.input, con.cursor, font_height, offset, margin + 1.5f, color_white, color_black, true);
+			renderer::draw_text_with_cursor(instance, con.input, con.cursor, font_height, offset, margin + 1.5f, color_white, color_black, true, 1280.f - offset - margin);
 		}
 
 		void find_matches(const std::string& input, std::vector<match_t>& matches)
@@ -163,7 +163,7 @@ namespace game_console
 			float* color, float x_offset = 0.f, float y_offset = 0.f)
 		{
 			const auto y = line_height + margin + 2.f + y_offset + line * line_height + 1.f;
-			renderer::draw_text(instance, text, font_height, x_offset, y, color, color_black, true);
+			renderer::draw_text(instance, text, font_height, x_offset, y, color, color_black, true, 200.f, font_height);
 		}
 
 		void draw_hint_text(game::fox::gr::dg::plugins::Draw2DRenderer* instance, int line, const char* text, 
@@ -323,7 +323,7 @@ namespace game_console
 					break;
 				}
 
-				renderer::draw_text(instance, output.at(index).data(), font_height, margin + 2.f, y + offset, color_white, color_black, true);
+				renderer::draw_text(instance, output.at(index).data(), font_height, margin + 2.f, y + offset, color_white, color_black, true, 1265.f - margin * 2.f, font_height);
 				y += line_height;
 			}
 		}

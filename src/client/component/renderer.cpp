@@ -15,6 +15,8 @@ namespace renderer
 	{
 		std::vector<std::function<void(game::fox::gr::dg::plugins::Draw2DRenderer*)>> render_callbacks;
 
+		game::fox::gr::dg::_TextureGlyphData glyph_data[255]{};
+
 		unsigned short float_to_half(float value)
 		{
 			game::fox::gr::_fp16 values16{};
@@ -223,6 +225,28 @@ namespace renderer
 			game::fox::gr::dg::plugins::Draw2DRenderer_::Execute_Packet2DMaterial(instance, &packet);
 		}
 
+		void set_stencil(game::fox::gr::dg::plugins::Draw2DRenderer* instance, 
+			unsigned char flags, unsigned char a1, unsigned char a2, unsigned char a3, unsigned char a4, unsigned char a5, unsigned char a6, int a9)
+		{
+			game::fox::gr::Packet2DStencil packet{};
+			packet.flags = flags;
+			packet.a1 = a1;
+			packet.a2 = a2;
+			packet.a3 = a3;
+			packet.a4 = a4;
+			packet.a5 = a5;
+			packet.a6 = a6;
+			packet.a9 = a9;
+			game::fox::gr::dg::plugins::Draw2DRenderer_::SetStencil(instance, &packet);
+		}
+
+		void set_clear_stencil(game::fox::gr::dg::plugins::Draw2DRenderer* instance, int a1)
+		{
+			game::fox::gr::Packet2DClearStencil packet{};
+			packet.a1 = a1;
+			game::fox::gr::dg::plugins::Draw2DRenderer_::Execute_Packet2DClearStencil(instance, &packet);
+		}
+
 		void add_string(game::fox::gr::dg::plugins::Draw2DRenderer* instance, const char* text, float height)
 		{
 			game::fox::gr::Packet2DString packet{};
@@ -247,15 +271,7 @@ namespace renderer
 		float add_string_custom(game::fox::gr::dg::plugins::Draw2DRenderer* instance, const char* text, int length, float height, float* color = nullptr,
 			float start_x = 0.f, float start_y = 0.f)
 		{
-			game::fox::gr::dg::StringFontMetricsCache metrics{};
-			game::fox::gr::InitMetrics(&metrics, text, 0, 1);
-
-			const auto count = std::min(static_cast<int>(metrics.count), length);
-
-			const auto _0 = gsl::finally([&]
-			{
-				game::fox::FreeAnnotated(metrics.glyphs, 0x5000F);
-			});
+			const auto count = std::min(static_cast<int>(std::strlen(text)), length);
 
 			const auto width = 1.f * height;
 			const auto spacing = -1.f;
@@ -304,8 +320,7 @@ namespace renderer
 			for (auto i = 0; i < count; i++)
 			{
 				game::fox::gr::dg::FontTextureMetrics font_metrics{};
-				game::fox::gr::dg::FontSystem_::CalculateMetrics(&font_metrics, &instance->glyphData[metrics.glyphs[i]], pixel_width, pixel_height,
-					1.f / static_cast<float>(metrics.a2));
+				game::fox::gr::dg::FontSystem_::CalculateMetrics(&font_metrics, &glyph_data[text[i]], pixel_width, pixel_height, 1.f / 60.f);
 
 				const auto x1 = font_metrics.f7 * width + offset_x;
 				const auto x2 = font_metrics.f5 * width + x1;
@@ -380,6 +395,36 @@ namespace renderer
 			return offset_x - start_x;
 		}
 
+		float calc_text_width(game::fox::gr::dg::plugins::Draw2DRenderer* instance, const char* text, float height)
+		{
+			const auto count = static_cast<int>(std::strlen(text));
+
+
+			const auto width = 1.f * height;
+			const auto spacing = -1.f;
+
+			float pixel_width{};
+			float pixel_height{};
+
+			const auto font_system = *game::fox::gr::dg::FontSystem_::m_instance;
+			if (font_system != nullptr)
+			{
+				game::fox::gr::dg::FontSystem_::GetHalfPixelWH(font_system, &pixel_width, &pixel_height);
+			}
+
+			auto offset_x = 0.f;
+
+			for (auto i = 0; i < count; i++)
+			{
+				game::fox::gr::dg::FontTextureMetrics font_metrics{};
+				game::fox::gr::dg::FontSystem_::CalculateMetrics(&font_metrics, &glyph_data[text[i]], pixel_width, pixel_height, 1.f / 60.f);
+
+				offset_x += (font_metrics.f9 * width) + spacing;
+			}
+
+			return offset_x;
+		}
+
 		void add_box(game::fox::gr::dg::plugins::Draw2DRenderer* instance, float x, float y, float z, float width, float height)
 		{
 			game::fox::gr::Packet2DBox packet{};
@@ -401,10 +446,45 @@ namespace renderer
 			game::fox::gr::dg::plugins::Draw2DRenderer_::Execute_Packet2DBox(instance, &packet);
 		}
 
+		void set_cull_mode(game::fox::gr::dg::plugins::Draw2DRenderer* instance, char cull_mode)
+		{
+			game::fox::gr::dg::plugins::Draw2DRenderer_::SetCullMode(instance, cull_mode);
+		}
+
+		void set_alpha(game::fox::gr::dg::plugins::Draw2DRenderer* instance, char alpha)
+		{
+			game::fox::gr::dg::plugins::Draw2DRenderer_::SetAlpha(instance, alpha);
+		}
+
 		void set_cull_mode_alpha(game::fox::gr::dg::plugins::Draw2DRenderer* instance, char cull_mode, char alpha)
 		{
 			game::fox::gr::dg::plugins::Draw2DRenderer_::SetCullMode(instance, cull_mode);
 			game::fox::gr::dg::plugins::Draw2DRenderer_::SetAlpha(instance, alpha);
+		}
+
+		void set_cmd_31(game::fox::gr::dg::plugins::Draw2DRenderer* instance, unsigned char flags)
+		{
+			const auto flag = 16 * (flags & 0xF);
+			instance->unk->flags1[0] &= 0xF;
+			instance->unk->flags1[1] &= 0xF;
+			instance->unk->flags1[2] &= 0xF;
+			instance->unk->flags1[3] &= 0xF;
+			instance->unk->flags1[4] &= 0xF;
+			instance->unk->flags1[5] &= 0xF;
+			instance->unk->flags1[6] &= 0xF;
+			instance->unk->flags1[7] &= 0xF;
+
+			instance->unk->flags1[0] |= flag;
+			instance->unk->flags1[1] |= flag;
+			instance->unk->flags1[2] |= flag;
+			instance->unk->flags1[3] |= flag;
+			instance->unk->flags1[4] |= flag;
+			instance->unk->flags1[5] |= flag;
+			instance->unk->flags1[6] |= flag;
+			instance->unk->flags1[7] |= flag;
+
+			instance->unk->flags3 &= 0xFFFFFF7F;
+			instance->unk->flags2 |= 0x80;
 		}
 
 		void set_position(game::fox::gr::dg::plugins::Draw2DRenderer* instance, float x, float y)
@@ -438,9 +518,34 @@ namespace renderer
 			add_box(instance, x, y, 0.f, width, height);
 		}
 
-		float draw_text_internal_formatted(game::fox::gr::dg::plugins::Draw2DRenderer* instance, const char* text, float height, float x, float y, float* color)
+		void add_stencil(game::fox::gr::dg::plugins::Draw2DRenderer* instance, float x, float y, float width, float height)
+		{
+			set_cmd_31(instance, 0);
+			set_clear_stencil(instance, 0);
+			set_alpha(instance, 0);
+			set_stencil(instance, 1, 7, 1, 255, 0, 0, 2, -1);
+			add_box(instance, x, y, 0.f, width, height);
+			set_cmd_31(instance, 15);
+			set_stencil(instance, 1, 2, 1, 255, 0, 0, 0, -1);
+		}
+
+		void remove_stencil(game::fox::gr::dg::plugins::Draw2DRenderer* instance)
+		{
+			set_stencil(instance, 0, 7, 1, 255, 0, 0, 0, -1);
+		}
+
+		float draw_text_internal_formatted(game::fox::gr::dg::plugins::Draw2DRenderer* instance, const char* text, float height, float x, float y, float* color,
+			float display_width, float display_height, float scroll_x, float scroll_y)
 		{
 			set_position(instance, x, y + height);
+
+			const auto has_stencil = display_width != 0.f && display_height != 0.f;
+			if (has_stencil)
+			{
+				add_stencil(instance, 0.f, -height, display_width, display_height);
+				set_position(instance, x - scroll_x, y + height - scroll_y);
+			}
+
 			set_material(instance, nullptr);
 			set_cull_mode_alpha(instance, 2, 1);
 			set_color(instance, color);
@@ -497,16 +602,61 @@ namespace renderer
 				offset_x += add_string_custom(instance, text, len, height, string_color, offset_x, offset_y);
 			}
 
+			if (has_stencil)
+			{
+				remove_stencil(instance);
+			}
+
 			return offset_x;
 		}
 
-		float draw_text_internal(game::fox::gr::dg::plugins::Draw2DRenderer* instance, const char* text, float height, float x, float y, float* color)
+		float draw_text_internal(game::fox::gr::dg::plugins::Draw2DRenderer* instance, const char* text, float height, float x, float y, float* color, 
+			float display_width, float display_height, float scroll_x, float scroll_y)
 		{
 			set_position(instance, x, y + height);
+
+			const auto has_stencil = display_width != 0.f && display_height != 0.f;
+			if (has_stencil)
+			{
+				add_stencil(instance, 0.f, -height, display_width, display_height);
+				set_position(instance, x - scroll_x, y + height - scroll_y);
+			}
+
 			set_material(instance, nullptr);
 			set_cull_mode_alpha(instance, 2, 1);
 			set_color(instance, color);
-			return add_string_custom(instance, text, 0xFFFFF, height);
+			const auto width = add_string_custom(instance, text, 0xFFFFF, height);
+			if (has_stencil)
+			{
+				remove_stencil(instance);
+			}
+			return width;
+		}
+
+		bool init_glyph_data(game::fox::gr::dg::plugins::Draw2DRenderer* instance)
+		{
+			const auto font_system = *game::fox::gr::dg::FontSystem_::m_instance;
+			if (!font_system)
+			{
+				return false;
+			}
+
+			const auto chars = " !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~";
+			game::fox::gr::dg::FontSystem_::RegisterString(font_system, chars, 1);
+			game::fox::gr::dg::StringFontMetricsCache metrics{};
+			game::fox::gr::InitMetrics(&metrics, chars, 0, 1);
+
+			if (metrics.count < 0)
+			{
+				return false;
+			}
+
+			for (auto i = 0; i < metrics.count; i++)
+			{
+				std::memcpy(&glyph_data[chars[i]], &instance->glyphData[metrics.glyphs[i]], sizeof(game::fox::gr::dg::_TextureGlyphData));
+			}
+
+			return true;
 		}
 
 		utils::hook::detour execute_draw_hook;
@@ -515,18 +665,13 @@ namespace renderer
 			execute_draw_hook.invoke<void>(instance, parameters);
 			instance->parameters = parameters;
 
-			const auto system = *game::fox::gr::dg::FontSystem_::m_instance;
-			const auto chars = " !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~";
-
-			if (system != nullptr)
+			const auto ui_inst = game::tpp::ui::hud::CommonDataManager_::GetInstance();
+			if (ui_inst != nullptr && init_glyph_data(instance))
 			{
-				game::fox::gr::dg::FontSystem_::UnRegisterString(system, chars, 1);
-				game::fox::gr::dg::FontSystem_::RegisterString(system, chars, 1);
-			}
-
-			for (const auto& cb : render_callbacks)
-			{
-				cb(instance);
+				for (const auto& cb : render_callbacks)
+				{
+					cb(instance);
+				}
 			}
 
 			instance->parameters = nullptr;
@@ -541,7 +686,8 @@ namespace renderer
 	}
 
 	float draw_text(game::fox::gr::dg::plugins::Draw2DRenderer* instance, const char* text, float height, 
-		float x, float y, float* color, float* outline_color, bool formatted)
+		float x, float y, float* color, float* outline_color, bool formatted, float display_width, float display_height, 
+		float scroll_x, float scroll_y)
 	{
 		const auto fn = formatted
 			? draw_text_internal_formatted
@@ -549,14 +695,14 @@ namespace renderer
 
 		if (outline_color != nullptr)
 		{
-			fn(instance, text, height, x + 0.5f, y + 0.5f, outline_color);
+			fn(instance, text, height, x + 0.5f, y + 0.5f, outline_color, display_width, display_height, scroll_x, scroll_y);
 		}
 		
-		return fn(instance, text, height, x, y, color);
+		return fn(instance, text, height, x, y, color, display_width, display_height, scroll_x, scroll_y);
 	}
 
 	float draw_text_with_cursor(game::fox::gr::dg::plugins::Draw2DRenderer* instance, const char* text, int cursor, 
-		float height, float x, float y, float* color, float* outline_color, bool formatted)
+		float height, float x, float y, float* color, float* outline_color, bool formatted, float display_width)
 	{
 		static char buffer[0x2000]{};
 		std::memset(buffer, 0, sizeof(buffer));
@@ -568,7 +714,14 @@ namespace renderer
 		std::memcpy(&buffer[cursor + 1], &text[cursor], len - cursor);
 		buffer[cursor] = show_cursor ? '_' : ' ';
 
-		return draw_text(instance, buffer, height, x, y, color, outline_color, formatted);
+		auto scroll_x = 0.f;
+		const auto text_width = calc_text_width(instance, buffer, height);
+		if (text_width > display_width)
+		{
+			scroll_x = text_width - display_width;
+		}
+
+		return draw_text(instance, buffer, height, x, y, color, outline_color, formatted, display_width, display_width, scroll_x);
 	}
 
 	void draw_box(game::fox::gr::dg::plugins::Draw2DRenderer* instance, float x, float y, float width,
