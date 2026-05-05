@@ -18,6 +18,7 @@ namespace text_chat
 	extern vars::var_ptr var_chat_offset;
 	extern vars::var_ptr var_chat_height;
 	extern vars::var_ptr var_chat_width;
+	extern vars::var_ptr var_chat_scale;
 
 	constexpr auto chat_history_size = 40;
 	constexpr auto chat_message_sound_id = 22;

@@ -45,21 +45,28 @@ namespace text_chat::ui
 			}
 		}
 
-		constexpr const auto margin = 4.f;
-		constexpr const auto font_height = 15.f;
-		constexpr const auto line_height = 17.f;
+		struct
+		{
+			float margin = 4.f;
+			float base_font_height = 18.f;
+			float base_line_height = 20.f;
+			float font_height;
+			float line_height;
+			float width;
+			float height;
+			float display_width_adjust;
+			float scrollbar_width = 6.f;
+		} chat_settings{};
 
 		float outline_color[4] = {0.f, 0.f, 0.f, 0.7f};
 
-		void draw_scrollbar(game::fox::gr::dg::plugins::Draw2DRenderer* r, chat_state_t& state, int lines, float width, 
+		void draw_scrollbar(game::fox::gr::dg::plugins::Draw2DRenderer* r, chat_state_t& state, 
 			float x, float y, float scroll_height, float scroll_amount, float max_scroll)
 		{
-			if (scroll_height <= lines * line_height)
+			if (scroll_height <= chat_settings.height)
 			{
 				return;
 			}
-
-			constexpr const auto scrollbar_width = 4.f;
 
 			float color[4]{};
 			color[0] = 1.f;
@@ -67,16 +74,16 @@ namespace text_chat::ui
 			color[2] = 1.f;
 			color[3] = 0.6f;
 
-			const auto initial_height = (lines * line_height) - margin * 2.f;
+			const auto initial_height = (chat_settings.height) - chat_settings.margin * 2.f;
 			const auto percent = initial_height / scroll_height;
 			const auto height = initial_height * percent;
 			const auto offset = (initial_height - height) * scroll_amount / max_scroll;
-			const auto y_ = y - margin * 2.f - height - offset;
+			const auto y_ = y - chat_settings.margin * 2.f - height - offset;
 
-			renderer::draw_box(r, x + width - scrollbar_width - margin, y_, scrollbar_width, height , color);
+			renderer::draw_box(r, x + chat_settings.width - chat_settings.scrollbar_width - chat_settings.margin, y_, chat_settings.scrollbar_width, height , color);
 		}
 
-		void draw_messages(game::fox::gr::dg::plugins::Draw2DRenderer* r, chat_state_t& state, int lines, float width, float x, float y)
+		void draw_messages(game::fox::gr::dg::plugins::Draw2DRenderer* r, chat_state_t& state, float x, float y)
 		{
 			const auto now = std::chrono::high_resolution_clock::now();
 
@@ -88,33 +95,34 @@ namespace text_chat::ui
 			bg_color[3] = bg_color_var.a;
 
 			auto messages_height = 0.f;
-			const auto stencil_size = lines * line_height - margin * 2.f;
+			const auto stencil_size = chat_settings.height - chat_settings.margin * 2.f;
+
+			for (auto& message : state.messages)
+			{
+				message.time = now;
+
+				const auto display_width = chat_settings.width - chat_settings.margin * 2.f - chat_settings.scrollbar_width - chat_settings.font_height;
+				auto lines = 1;
+				renderer::calc_text_width(r, message.buffer, chat_settings.font_height, true, true, display_width, &lines);
+
+				messages_height += lines * chat_settings.font_height + chat_settings.margin;
+			}
+
+			const auto max_scroll = messages_height - stencil_size;
+			if (messages_height > stencil_size)
+			{
+				state.view_text_offset_y = std::min(state.view_text_offset_y, max_scroll);
+			}
+			else
+			{
+				state.view_text_offset_y = 0.f;
+			}
 
 			if (state.is_typing)
 			{
-				for (auto& message : state.messages)
-				{
-					message.time = now;
-
-					auto text_width = renderer::calc_text_width(r, message.buffer, font_height, true);
-					const auto display_width = width - margin * 2.f - 6.f - font_height;
-
-					messages_height += static_cast<int>(std::ceil(text_width / display_width)) * font_height + margin;
-				}
-
-				const auto max_scroll = messages_height - stencil_size;
-				if (messages_height > stencil_size)
-				{
-					state.view_text_offset_y = std::min(state.view_text_offset_y, max_scroll);
-				}
-				else
-				{
-					state.view_text_offset_y = 0.f;
-				}
-
 				if (messages_height > 0.f)
 				{
-					draw_scrollbar(r, state, lines, width, x, y, messages_height, state.view_text_offset_y, max_scroll);
+					draw_scrollbar(r, state, x, y, messages_height, state.view_text_offset_y, max_scroll);
 				}
 			}
 			else
@@ -124,14 +132,14 @@ namespace text_chat::ui
 
 			if ((state.is_typing || game::tpp::ui::menu::impl::MotherBaseDeviceSystemImpl_::IsDeviceOpend()) && messages_height > 0.f)
 			{
-				const auto box_height = std::min(messages_height, lines * line_height);
-				renderer::draw_box(r, x, y - box_height - margin - 1.f, width, box_height + 1.f, bg_color, bg_color, 1.f);
+				const auto box_height = std::min(messages_height, chat_settings.height);
+				renderer::draw_box(r, x, y - box_height - chat_settings.margin - 1.f, chat_settings.width, box_height + 1.f, bg_color, bg_color, 1.f);
 			}
 
 			renderer::remove_stencil(r);
-			renderer::add_stencil(r, x, y - stencil_size - margin * 2.f, width, stencil_size);
+			renderer::add_stencil(r, x, y - stencil_size - chat_settings.margin * 2.f, chat_settings.width, stencil_size);
 
-			auto y_offset = y - margin;
+			auto y_offset = y - chat_settings.margin;
 
 			for (const auto& message : state.messages)
 			{
@@ -163,19 +171,20 @@ namespace text_chat::ui
 				color_outline[2] = 0.f;
 				color_outline[3] = alpha;
 
-				const auto display_width = width - margin * 2.f - 6.f - font_height;
-				auto text_width = renderer::calc_text_width(r, message.buffer, font_height, true);
+				const auto display_width = chat_settings.width - chat_settings.margin * 2.f - chat_settings.scrollbar_width - chat_settings.font_height;
+				auto lines = 1;
+				renderer::calc_text_width(r, message.buffer, chat_settings.font_height, true, true, display_width, &lines);
 
-				y_offset -= static_cast<int>(std::ceil(text_width / display_width)) * font_height + margin;
+				y_offset -= lines * chat_settings.font_height + chat_settings.margin;
 
-				renderer::draw_text(r, message.buffer, font_height, x + margin, y_offset + state.view_text_offset_y,
+				renderer::draw_text(r, message.buffer, chat_settings.font_height, x + chat_settings.margin, y_offset + state.view_text_offset_y,
 					color, color_outline, true, display_width, 0.f, 0.f, 0.f, true);
 			}
 			
 			renderer::remove_stencil(r);
 		}
 
-		void draw_input_text(game::fox::gr::dg::plugins::Draw2DRenderer* r, chat_state_t& state, float width, float x, float y)
+		void draw_input_text(game::fox::gr::dg::plugins::Draw2DRenderer* r, chat_state_t& state, float x, float y)
 		{
 			float color[4]{};
 			color[0] = 1.f;
@@ -212,15 +221,15 @@ namespace text_chat::ui
 			box_outline_color[2] = 1.f;
 			box_outline_color[3] = pulse_alpha;
 
-			renderer::draw_box(r, x, y, width, line_height, bg_color, box_outline_color, 1.f);
+			renderer::draw_box(r, x, y, chat_settings.width, chat_settings.line_height, bg_color, box_outline_color, 1.f);
 
 			if (state.input[0] == 0)
 			{
-				renderer::draw_text(r, "say to all", font_height, x + margin, y, color_hint, outline_color);
+				renderer::draw_text(r, "say to all", chat_settings.font_height, x + chat_settings.margin, y, color_hint, outline_color);
 			}
 
-			renderer::draw_text_with_cursor(r, state.input, state.cursor, font_height,
-				x + margin, y, color, color_outline, true, width - margin * 2.f);
+			renderer::draw_text_with_cursor(r, state.input, state.cursor, chat_settings.font_height,
+				x + chat_settings.margin, y, color, color_outline, true, chat_settings.width - chat_settings.margin * 2.f);
 		}
 
 		void draw_chat(game::fox::gr::dg::plugins::Draw2DRenderer* r)
@@ -234,13 +243,22 @@ namespace text_chat::ui
 			{
 				const auto pos = var_chat_offset->current.get_vec2();
 				const auto width = var_chat_width->current.get_float();
+				const auto scale = var_chat_scale->current.get_float();
+
+				chat_settings.width = width * scale;
+				chat_settings.margin = 4.f;
+				chat_settings.scrollbar_width = 5.f * scale;
+				chat_settings.font_height = chat_settings.base_font_height * scale;
+				chat_settings.line_height = chat_settings.base_line_height * scale;	
+				chat_settings.display_width_adjust = -chat_settings.font_height;
+				chat_settings.height = var_chat_height->current.get_int() * chat_settings.line_height;
 
 				update_chat_sounds(state);
-				draw_messages(r, state, var_chat_height->current.get_int(), width, pos.x, pos.y);
+				draw_messages(r, state, pos.x, pos.y);
 
 				if (state.is_typing)
 				{
-					draw_input_text(r, state, width, pos.x, pos.y);
+					draw_input_text(r, state, pos.x, pos.y);
 				}
 			});
 		}

@@ -337,7 +337,7 @@ namespace renderer
 		}
 
 		float add_string_custom(game::fox::gr::dg::plugins::Draw2DRenderer* instance, const char* text, int length, float height, float* color = nullptr,
-			float start_x = 0.f, float start_y = 0.f, bool word_breaks = false, float line_width = 0.f)
+			float start_x = 0.f, float start_y = 0.f, bool word_wrapping = false, float line_width = 0.f)
 		{
 			const auto count = std::min(static_cast<int>(std::strlen(text)), length);
 
@@ -390,7 +390,7 @@ namespace renderer
 				game::fox::gr::dg::FontTextureMetrics font_metrics{};
 				game::fox::gr::dg::FontSystem_::CalculateMetrics(&font_metrics, &glyph_data[text[i]], pixel_width, pixel_height, 1.f / 60.f);
 
-				if (word_breaks && offset_x >= line_width)
+				if (word_wrapping && offset_x >= line_width)
 				{
 					offset_x = 0.f;
 					offset_y += height;
@@ -592,7 +592,7 @@ namespace renderer
 		}
 
 		float draw_text_internal_formatted(game::fox::gr::dg::plugins::Draw2DRenderer* instance, const char* text, float height, float x, float y, float* color,
-			float display_width, float display_height, float scroll_x, float scroll_y, bool word_breaks)
+			float display_width, float display_height, float scroll_x, float scroll_y, bool word_wrapping)
 		{
 			height *= get_font_scaling();
 
@@ -659,7 +659,7 @@ namespace renderer
 			
 			if (len > 0)
 			{
-				offset_x += add_string_custom(instance, text, len, height, string_color, offset_x, offset_y, word_breaks, display_width);
+				offset_x += add_string_custom(instance, text, len, height, string_color, offset_x, offset_y, word_wrapping, display_width);
 			}
 
 			if (has_stencil)
@@ -671,7 +671,7 @@ namespace renderer
 		}
 
 		float draw_text_internal(game::fox::gr::dg::plugins::Draw2DRenderer* instance, const char* text, float height, float x, float y, float* color, 
-			float display_width, float display_height, float scroll_x, float scroll_y, bool word_breaks)
+			float display_width, float display_height, float scroll_x, float scroll_y, bool word_wrapping)
 		{
 			height *= get_font_scaling();
 
@@ -702,7 +702,7 @@ namespace renderer
 				set_color(instance, color);
 			}
 
-			const auto width = add_string_custom(instance, text, 0xFFFFF, height, nullptr, 0.f, 0.f, word_breaks, display_width);
+			const auto width = add_string_custom(instance, text, 0xFFFFF, height, nullptr, 0.f, 0.f, word_wrapping, display_width);
 			if (has_stencil)
 			{
 				remove_stencil(instance);
@@ -769,7 +769,8 @@ namespace renderer
 		}
 	}
 
-	float calc_text_width(game::fox::gr::dg::plugins::Draw2DRenderer* instance, const char* text, float height, bool formatted)
+	float calc_text_width(game::fox::gr::dg::plugins::Draw2DRenderer* instance, const char* text, float height, bool formatted, 
+		bool word_wrapping, float line_width, int* line_count)
 	{
 		const auto count = static_cast<int>(std::strlen(text));
 
@@ -799,6 +800,13 @@ namespace renderer
 				continue;
 			}
 
+			if (word_wrapping && offset_x >= line_width)
+			{
+				prev_offset = std::max(prev_offset, offset_x);
+				offset_x = 0.f;
+				(*line_count)++;
+			}
+
 			switch (text[i])
 			{
 			case ' ':
@@ -820,10 +828,9 @@ namespace renderer
 		return std::max(prev_offset, offset_x);
 	}
 
-
 	float draw_text(game::fox::gr::dg::plugins::Draw2DRenderer* instance, const char* text, float height, 
 		float x, float y, float* color, float* outline_color, bool formatted, float display_width, float display_height, 
-		float scroll_x, float scroll_y, bool word_breaks)
+		float scroll_x, float scroll_y, bool word_wrapping)
 	{
 		const auto fn = formatted
 			? draw_text_internal_formatted
@@ -831,10 +838,10 @@ namespace renderer
 
 		if (outline_color != nullptr)
 		{
-			fn(instance, text, height, x + 0.5f, y + 0.5f, outline_color, display_width, display_height, scroll_x, scroll_y, word_breaks);
+			fn(instance, text, height, x + 0.5f, y + 0.5f, outline_color, display_width, display_height, scroll_x, scroll_y, word_wrapping);
 		}
 		
-		return fn(instance, text, height, x, y, color, display_width, display_height, scroll_x, scroll_y, word_breaks);
+		return fn(instance, text, height, x, y, color, display_width, display_height, scroll_x, scroll_y, word_wrapping);
 	}
 
 	float draw_text_with_cursor(game::fox::gr::dg::plugins::Draw2DRenderer* instance, const char* text, int cursor, 

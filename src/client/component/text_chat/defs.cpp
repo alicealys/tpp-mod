@@ -131,6 +131,9 @@ namespace text_chat
 
 			var_chat_width = vars::register_float("chat_width", 
 				350.f, 0.f, 10000.f, vars::var_flag_saved, "chat width");
+
+			var_chat_scale = vars::register_float("chat_scale",
+				1.f, 0.1f, 2.f, vars::var_flag_saved, "chat scale");
 		}
 
 		void start() override
