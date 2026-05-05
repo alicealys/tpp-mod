@@ -245,7 +245,7 @@ namespace utils::string
 
 	bool is_numeric(const std::string& text)
 	{
-		return std::to_string(atoi(text.data())) == text;
+		return std::ranges::all_of(text.begin(), text.end(), isdigit);
 	}
 
 	std::string trim(const std::string& str, const std::string& whitespace)

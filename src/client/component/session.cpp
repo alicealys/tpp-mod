@@ -158,7 +158,7 @@ namespace session
 				steam_id.bits = member->sessionUserId->userId;
 
 				const std::string member_name = steam_friends->__vftable->GetFriendPersonaName(steam_friends, steam_id);
-				const auto member_name_lower = utils::string::to_lower(name);
+				const auto member_name_lower = utils::string::to_lower(member_name);
 
 				if (member_name_lower.starts_with(lower))
 				{
