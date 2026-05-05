@@ -275,6 +275,16 @@ namespace game
 		struct Rgba8;
 		struct Path;
 
+		struct SharedStringData
+		{
+			char* buffer;
+		};
+
+		struct SharedString
+		{
+			SharedStringData* data;
+		};
+
 		struct Quark
 		{
 			struct vtable
@@ -372,14 +382,47 @@ namespace game
 
 		namespace gr
 		{
-			struct Scene
-			{
+			struct Scene;
 
-			};
-
+			struct SceneObject;
 			struct SceneObject
 			{
+				struct vtable
+				{
+					void* f[64];
+				};
+				vtable* __vftable;
+				char __pad0[8];
+				SceneObject* obj1;
+				SceneObject* obj2;
+				__int64 flags1;
+				int priority;
+				char __pad2[4];
+				Scene* scene;
+				short unk;
+				short flags2;
+				char __pad3[64];
+			};
 
+			struct SceneObjectList
+			{
+				SceneObject* obj1;
+				SceneObject* obj2;
+				int count;
+			};
+
+			struct Scene
+			{
+				Scene* next;
+				int index;
+				int flags;
+				char __pad1[16];
+				SharedString id;
+				char __pad2[8];
+				fox::gr::SceneObjectList** objectList1;
+				fox::gr::SceneObjectList* objectList2;
+				char __pad3[16];
+				void* lock;
 			};
 
 			struct Draw2D
@@ -1101,48 +1144,54 @@ namespace game
 
 			struct ComponentTraversalInfo;
 
-			struct Model_vtbl
-			{
-				void* (__fastcall* Model)(fox::ui::Model* this_, void*, unsigned int);
-				void* (__fastcall* Release)(fox::ui::Model* this_, void*);
-				void* (__fastcall* GetComponentInfo)(fox::ui::Model* this_, fox::ui::ModelNode const*);
-				void* (__fastcall* GetModelNodeCommon1)(fox::ui::Model* this_, unsigned int);
-				void* (__fastcall* GetModelNodeCommon2)(fox::ui::Model* this_, fox::StringId);
-				void* (__fastcall* SetupDrawPriority)(fox::ui::Model* this_, char);
-				void* (__fastcall* GetType)(fox::ui::Model* this_);
-				void* (__fastcall* EnableScaleInheritance)(fox::ui::Model* this_);
-				void* (__fastcall* EnableRotationInheritance)(fox::ui::Model* this_);
-				void* (__fastcall* EnableTranslationInheritance)(fox::ui::Model* this_);
-				void* (__fastcall* EnableColorRGBInheritance)(fox::ui::Model* this_);
-				void* (__fastcall* EnableColorAlphaInheritance)(fox::ui::Model* this_);
-				void* (__fastcall* DisableScaleInheritance)(fox::ui::Model* this_);
-				void* (__fastcall* DisableRotationInheritance)(fox::ui::Model* this_);
-				void* (__fastcall* DisableTranslationInheritance)(fox::ui::Model* this_);
-				void* (__fastcall* DisableColorRGBInheritance)(fox::ui::Model* this_);
-				void* (__fastcall* DisableColorAlphaInheritance)(fox::ui::Model* this_);
-				void* (__fastcall* SetTranslate)(fox::ui::Model* this_, Vectormath::Aos::Vector3*);
-				void* (__fastcall* SetScale)(fox::ui::Model* this_, Vectormath::Aos::Vector3*);
-				void* (__fastcall* SetQuaternion)(fox::ui::Model* this_, Vectormath::Aos::Quat*);
-				void* (__fastcall* SetColor)(fox::ui::Model* this_, fox::Color*);
-				void* (__fastcall* SetVisible)(fox::ui::Model* this_, bool);
-				void* (__fastcall* GetTranslate)(fox::ui::Model* this_);
-				void* (__fastcall* GetScale)(fox::ui::Model* this_);
-				void* (__fastcall* GetQuaternion)(fox::ui::Model* this_);
-				void* (__fastcall* GetColor)(fox::ui::Model* this_);
-				void* (__fastcall* GetVisible)(fox::ui::Model* this_);
-				void* (__fastcall* IsInitialized)(fox::ui::Model* this_);
-				void* (__fastcall* UpdateComponent)(fox::ui::Model* this_, fox::ui::ComponentTraversalInfo*);
-				void* (__fastcall* GetWorldTransform)(fox::ui::Model* this_, fox::ui::ModelNode const*, fox::ui::ComponentTraversalInfo*);
-				void* (__fastcall* GetDrawPriorityForChild)(fox::ui::Model* this_);
-				void* (__fastcall* IsValid)(fox::ui::Model* this_);
-			};
 
 			struct Model
 			{
-				fox::ui::Model_vtbl* __vftable;
-				char __pad0[192];
-				fox::gr::SceneObject* sceneObject;
-				char __pad1[40];
+				struct vtable
+				{
+					void* (__fastcall* Model)(fox::ui::Model* this_, void*, unsigned int);
+					void* (__fastcall* Release)(fox::ui::Model* this_, void*);
+					void* (__fastcall* GetComponentInfo)(fox::ui::Model* this_, fox::ui::ModelNode const*);
+					void* (__fastcall* GetModelNodeCommon1)(fox::ui::Model* this_, unsigned int);
+					void* (__fastcall* GetModelNodeCommon2)(fox::ui::Model* this_, fox::StringId);
+					void* (__fastcall* SetupDrawPriority)(fox::ui::Model* this_, char);
+					void* (__fastcall* GetType)(fox::ui::Model* this_);
+					void* (__fastcall* EnableScaleInheritance)(fox::ui::Model* this_);
+					void* (__fastcall* EnableRotationInheritance)(fox::ui::Model* this_);
+					void* (__fastcall* EnableTranslationInheritance)(fox::ui::Model* this_);
+					void* (__fastcall* EnableColorRGBInheritance)(fox::ui::Model* this_);
+					void* (__fastcall* EnableColorAlphaInheritance)(fox::ui::Model* this_);
+					void* (__fastcall* DisableScaleInheritance)(fox::ui::Model* this_);
+					void* (__fastcall* DisableRotationInheritance)(fox::ui::Model* this_);
+					void* (__fastcall* DisableTranslationInheritance)(fox::ui::Model* this_);
+					void* (__fastcall* DisableColorRGBInheritance)(fox::ui::Model* this_);
+					void* (__fastcall* DisableColorAlphaInheritance)(fox::ui::Model* this_);
+					void* (__fastcall* SetTranslate)(fox::ui::Model* this_, Vectormath::Aos::Vector3*);
+					void* (__fastcall* SetScale)(fox::ui::Model* this_, Vectormath::Aos::Vector3*);
+					void* (__fastcall* SetQuaternion)(fox::ui::Model* this_, Vectormath::Aos::Quat*);
+					void* (__fastcall* SetColor)(fox::ui::Model* this_, fox::Color*);
+					void* (__fastcall* SetVisible)(fox::ui::Model* this_, bool);
+					void* (__fastcall* GetTranslate)(fox::ui::Model* this_);
+					void* (__fastcall* GetScale)(fox::ui::Model* this_);
+					void* (__fastcall* GetQuaternion)(fox::ui::Model* this_);
+					void* (__fastcall* GetColor)(fox::ui::Model* this_);
+					void* (__fastcall* GetVisible)(fox::ui::Model* this_);
+					void* (__fastcall* IsInitialized)(fox::ui::Model* this_);
+					void* (__fastcall* UpdateComponent)(fox::ui::Model* this_, fox::ui::ComponentTraversalInfo*);
+					void* (__fastcall* GetWorldTransform)(fox::ui::Model* this_, fox::ui::ModelNode const*, fox::ui::ComponentTraversalInfo*);
+					void* (__fastcall* GetDrawPriorityForChild)(fox::ui::Model* this_);
+					void* (__fastcall* IsValid)(fox::ui::Model* this_);
+				};
+
+				vtable* __vftable;
+				char __pad0[24];
+				int id;
+				char __pad1[156];
+				__int64 sceneName;
+				fox::gr::Draw2D* draw2d;
+				void* unk;
+				fox::gr::Packet2DBuffer* packetBuffer;
+				char __pad2[24];
 			};
 
 			struct WindowInterface;
@@ -1523,16 +1572,6 @@ namespace game
 				static_assert(sizeof(SessionImpl2) == 232);
 			}
 		}
-
-		struct SharedStringData
-		{
-			char* buffer;
-		};
-
-		struct SharedString
-		{
-			SharedStringData* data;
-		};
 	}
 
 	union Session

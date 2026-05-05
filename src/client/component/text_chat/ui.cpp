@@ -107,6 +107,10 @@ namespace text_chat::ui
 				{
 					state.view_text_offset_y = std::min(state.view_text_offset_y, max_scroll);
 				}
+				else
+				{
+					state.view_text_offset_y = 0.f;
+				}
 
 				if (messages_height > 0.f)
 				{
@@ -121,7 +125,7 @@ namespace text_chat::ui
 			if ((state.is_typing || game::tpp::ui::menu::impl::MotherBaseDeviceSystemImpl_::IsDeviceOpend()) && messages_height > 0.f)
 			{
 				const auto box_height = std::min(messages_height, lines * line_height);
-				renderer::draw_box(r, x, y - box_height - margin, width, box_height, bg_color, bg_color, 1.f);
+				renderer::draw_box(r, x, y - box_height - margin - 1.f, width, box_height + 1.f, bg_color, bg_color, 1.f);
 			}
 
 			renderer::remove_stencil(r);
@@ -300,14 +304,12 @@ namespace text_chat::ui
 	public:
 		void pre_load() override
 		{
-
+			renderer::on_frame(draw_chat);
 		}
 
 		void start() override
 		{
 			announce_log_view_hook.create(SELECT_VALUE(0x140863050, 0x1405E7610, 0x140862CE0, 0x1405E7020), announce_log_view_stub);
-
-			renderer::on_frame(draw_chat);
 		}
 	};
 }

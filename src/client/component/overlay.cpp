@@ -180,11 +180,12 @@ namespace overlay
 		{
 			var_ui_draw_fps = vars::register_bool("ui_draw_fps", 0, vars::var_flag_saved, "draw fps counter");
 			var_ui_draw_ping = vars::register_bool("ui_draw_ping", 0, vars::var_flag_saved, "draw ping counter");
+
+			renderer::on_frame(draw_overlay);
 		}
 
 		void start() override
 		{
-			renderer::on_frame(draw_overlay);
 			scheduler::loop(perf_update, scheduler::pipeline::main);
 		}
 	};
