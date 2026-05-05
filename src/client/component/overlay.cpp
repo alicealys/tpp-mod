@@ -111,15 +111,23 @@ namespace overlay
 			auto box_width = 0.f;
 
 			constexpr const auto font_size = 14.f;
+			const auto line_height = 18.f;
 
 			const auto ping_text = utils::string::va("%ims", rtt);
 			const auto fps_text = utils::string::va("%i", fps);
+			
+			const auto fps_value_width = renderer::calc_text_width(instance, fps_text, font_size);
+			const auto fps_label_width = renderer::calc_text_width(instance, "fps: ", font_size);
+			const auto fps_width = fps_label_width + fps_value_width;
 
-			const auto fps_width = renderer::get_text_width("fps: ", font_size) +
-				renderer::get_text_width(fps_text, font_size);
+			const auto ping_value_width = renderer::calc_text_width(instance, ping_text, font_size);
+			const auto ping_label_width = renderer::calc_text_width(instance, "ping: ", font_size);
+			const auto ping_width = ping_label_width + ping_value_width;
 
-			const auto ping_width = renderer::get_text_width("ping: ", font_size) + 
-				renderer::get_text_width(ping_text, font_size);
+			if (ping_width == 0.f || fps_width == 0.f)
+			{
+				return;
+			}
 
 			if (var_ui_draw_fps->current.enabled())
 			{
@@ -128,27 +136,39 @@ namespace overlay
 
 			if (should_draw_ping)
 			{
+				if (var_ui_draw_fps->current.enabled())
+				{
+					box_width += margin;
+				}
+
 				box_width += ping_width;
 			}
 
 			if (box_width > 0.f)
 			{
-				box_width += 3.f;
-				renderer::draw_box(instance, offset_x - box_width, margin, box_width, font_size + 4.f, color_bg);
+				box_width += margin * 2.f;
+				renderer::draw_box(instance, offset_x - box_width, margin, box_width, line_height, color_bg);
 			}
+
+			offset_x -= margin;
+			const auto text_y = margin + 1.5f;
 
 			if (var_ui_draw_fps->current.enabled())
 			{
 				offset_x -= fps_width;
-				renderer::draw_text(instance, "fps:", font_size, offset_x - 1.f, margin + 1.f, color_text, color_outline);
-				renderer::draw_text(instance, utils::string::va("%i", fps), font_size, offset_x + 23.f, margin + 1.5f, fps_color, color_outline);
+				renderer::draw_text(instance, "fps:", font_size, offset_x, text_y, color_text, color_outline);
+				renderer::draw_text(instance, utils::string::va("%i", fps), font_size, offset_x + fps_label_width, text_y, fps_color, color_outline);
 			}
 
 			if (should_draw_ping)
 			{
 				offset_x -= ping_width;
-				renderer::draw_text(instance, "ping:", font_size, offset_x, margin + 1.f, color_text, color_outline);
-				renderer::draw_text(instance, ping_text, font_size, offset_x + 30.f, margin + 1.5f, ping_color, color_outline);
+				if (var_ui_draw_fps->current.enabled())
+				{
+					offset_x -= margin;
+				}
+				renderer::draw_text(instance, "ping:", font_size, offset_x, text_y, color_text, color_outline);
+				renderer::draw_text(instance, ping_text, font_size, offset_x + ping_label_width, text_y, ping_color, color_outline);
 			}
 		}
 	}

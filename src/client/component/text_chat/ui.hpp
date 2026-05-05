@@ -1,6 +1,6 @@
 #pragma once
 
-namespace game_log::ui
+namespace text_chat::ui
 {
 	void print(const std::string& msg, bool play_sound);
 

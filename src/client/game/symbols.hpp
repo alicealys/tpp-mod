@@ -14,6 +14,11 @@ namespace game
 
 		WEAK symbol<void(void*, unsigned int)> FreeAnnotated{0x140015EF0, 0x140016020, 0x140015EE0, 0x140016020};
 
+		namespace AssetConfiguration_
+		{
+			WEAK symbol<SharedString*()> GetLanguage{0x140171180, 0x1401727C0, 0x1401711F0, 0x140172770};
+		}
+
 		namespace Color_
 		{
 			WEAK symbol<unsigned int(Color*)> EncodeUInt32RGBA{0x1401C0350, 0x1402815D0, 0x1401C03E0, 0x140281560};
@@ -80,8 +85,8 @@ namespace game
 				{
 					WEAK symbol<FontSystem*> m_instance{0x142B93BB8, 0x14208EFD8, 0x142B93BB8, 0x14208F028};
 
-					WEAK symbol<void*(FontSystem*, const char*, unsigned int)> RegisterString{0x140225760, 0x140B2B600, 0x1402256B0, 0x140B2ABB0};
-					WEAK symbol<void*(FontSystem*, const char*, unsigned int)> UnRegisterString{0x140226850, 0x140B2C5B0, 0x1402267A0, 0x140B2BB60};
+					WEAK symbol<void*(FontSystem*, const char*, int)> RegisterString{0x140225760, 0x140B2B600, 0x1402256B0, 0x140B2ABB0};
+					WEAK symbol<void*(FontSystem*, const char*, int)> UnRegisterString{0x140226850, 0x140B2C5B0, 0x1402267A0, 0x140B2BB60};
 					WEAK symbol<void(FontSystem*, float*, float*)> GetHalfPixelWH{0x140224C00, 0x140B2AAB0, 0x140224B60, 0x140B2A060};
 					WEAK symbol<unsigned int(FontSystem*)> GetFontTextureHandle{0x140224AA0, 0x140B2A950, 0x140224A00, 0x140B29F00};
 					WEAK symbol<void(FontTextureMetrics*, _TextureGlyphData*, float, float, float)> CalculateMetrics{0x1402241E0, 0x140B2A150, 0x140224140, 0x140B29700};
@@ -91,6 +96,11 @@ namespace game
 				{
 					namespace Draw2DRenderer_
 					{
+						WEAK symbol<void(Draw2DRenderer*)> InitRenderingState{0x1402E84F0, 0x140BDAE40, 0x1402E7F90, 0x140BDA440};
+						WEAK symbol<void(Draw2DRenderer*)> InitPerObject{0x1402E83B0, 0x140BDAD00, 0x1402E7E50, 0x140BDA300};
+
+						WEAK symbol<void(Draw2DRenderer*)> UpdateViewMapping{0x1402EA010, 0x140BDC930, 0x1402E9AB0, 0x140BDBF30};
+
 						WEAK symbol<void(Draw2DRenderer*, int, int, int)> DrawVertices{0x1402E7BD0, 0x140BDA520, 0x1402E7670, 0x140BD9B20};
 
 						/* 01 */ WEAK symbol<void*(Draw2DRenderer*, Packet2DLine*)> Execute_Packet2DLine{0x1402E2D40, 0x140BD5A60, 0x1402E27E0, 0x140BD5060};

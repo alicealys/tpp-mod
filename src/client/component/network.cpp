@@ -182,7 +182,7 @@ namespace network
 
 			net_address address{};
 
-			inet_pton(AF_INET, result->ip->buffer, address.fields.ip);
+			inet_pton(AF_INET, result->ip->data->buffer, address.fields.ip);
 			address.fields.port = static_cast<std::uint16_t>(result->port);
 			result->steam_id = address.value;
 

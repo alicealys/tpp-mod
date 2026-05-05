@@ -9,7 +9,7 @@
 #include "binds.hpp"
 #include "game_console.hpp"
 
-#include "game_log/input.hpp"
+#include "text_chat/input.hpp"
 
 #include <utils/hook.hpp>
 #include <utils/string.hpp>
@@ -354,9 +354,9 @@ namespace binds
 				return true;
 			}
 
-			if (game_log::input::handle_key(key, is_down, is_game_console_bind(key)))
+			if (text_chat::input::handle_key(key, is_down, is_game_console_bind(key)))
 			{
-				game_log::input::handle_char(key_ascii, is_down);
+				text_chat::input::handle_char(key_ascii, is_down);
 				return true;
 			}
 
@@ -403,7 +403,7 @@ namespace binds
 					return true;
 				}
 
-				if (game_log::input::handle_mousewheel(down))
+				if (text_chat::input::handle_mousewheel(down))
 				{
 					return true;
 				}
@@ -421,7 +421,7 @@ namespace binds
 				return true;
 			}
 
-			if (game_log::input::handle_key(-1, false))
+			if (text_chat::input::handle_key(-1, false))
 			{
 				return true;
 			}

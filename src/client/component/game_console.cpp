@@ -78,13 +78,13 @@ namespace game_console
 
 		float draw_input_branding(game::fox::gr::dg::plugins::Draw2DRenderer* instance)
 		{
-			const auto width = renderer::draw_text(instance, "tpp-mod > ", font_height, margin + 2.f, margin + 1.f, color_tpp, color_black);
+			const auto width = renderer::draw_text(instance, "tpp-mod > ", font_height, margin + 2.f, margin + 0.5f, color_tpp, color_black);
 			return margin + 4.f + width;
 		}
 
 		void draw_input_text(game::fox::gr::dg::plugins::Draw2DRenderer* instance, float offset)
 		{
-			renderer::draw_text_with_cursor(instance, con.input, con.cursor, font_height, offset, margin + 1.5f, color_white, color_black, true, 1280.f - offset - margin);
+			renderer::draw_text_with_cursor(instance, con.input, con.cursor, font_height, offset, margin + 0.5f, color_white, color_black, true, 1280.f - offset - margin);
 		}
 
 		void find_matches(const std::string& input, std::vector<match_t>& matches)
@@ -318,7 +318,7 @@ namespace game_console
 			for (auto i = 0; i < std::min(static_cast<int>(output.size()), output_line_count); i++)
 			{
 				const auto index = i + con.display_line_offset;
-				if (index > output.size())
+				if (index >= output.size())
 				{
 					break;
 				}

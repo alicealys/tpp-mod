@@ -10,29 +10,28 @@
 #include <utils/hook.hpp>
 #include <utils/string.hpp>
 
-namespace game_log::input
+namespace text_chat::input
 {
 	namespace
 	{
-		void handle_char(game_log_state_t& state, char c)
+		void handle_char(chat_state_t& state, char c)
 		{
-			const auto max_len = var_game_log_max_message_len->current.get_int();
-			if (std::strlen(state.input) >= max_len)
+			if (std::strlen(state.input) >= chat_message_max_len)
 			{
 				return;
 			}
 
-			std::memmove(state.input + state.cursor + 1, state.input + state.cursor, max_len - state.cursor);
+			std::memmove(state.input + state.cursor + 1, state.input + state.cursor, chat_message_max_len - state.cursor);
 			state.input[state.cursor] = c;
 			state.cursor++;
 
-			if (state.cursor == max_len)
+			if (state.cursor == chat_message_max_len)
 			{
 				state.input[state.cursor] = 0;
 			}
 		}
 
-		void handle_backspace(game_log_state_t& state)
+		void handle_backspace(chat_state_t& state)
 		{
 			if (state.cursor <= 0)
 			{
@@ -44,7 +43,7 @@ namespace game_log::input
 			state.cursor--;
 		}
 
-		void handle_return(game_log_state_t& state)
+		void handle_return(chat_state_t& state)
 		{
 			if (state.input[0] != 0)
 			{
@@ -54,14 +53,13 @@ namespace game_log::input
 			stop_typing(state);
 		}
 
-		void handle_paste(game_log_state_t& state)
+		void handle_paste(chat_state_t& state)
 		{
 			const auto clipboard = utils::string::get_clipboard_data();
-			const auto max_len = var_game_log_max_message_len->current.get_int();
 
 			for (auto c : clipboard)
 			{
-				if (state.cursor >= max_len)
+				if (state.cursor >= chat_message_max_len)
 				{
 					return;
 				}
@@ -74,7 +72,7 @@ namespace game_log::input
 			}
 		}
 
-		void move_cursor(game_log_state_t& state, bool right)
+		void move_cursor(chat_state_t& state, bool right)
 		{
 			if (right && state.input[state.cursor] != '\0')
 			{
@@ -86,7 +84,7 @@ namespace game_log::input
 			}
 		}
 
-		void handle_delete(game_log_state_t& state)
+		void handle_delete(chat_state_t& state)
 		{
 			auto is_first = true;
 			while (state.cursor > 0)
@@ -107,7 +105,7 @@ namespace game_log::input
 			}
 		}
 
-		void handle_up(game_log_state_t& state)
+		void handle_up(chat_state_t& state)
 		{
 			if (++state.history_index >= state.history.size())
 			{
@@ -124,7 +122,7 @@ namespace game_log::input
 			}
 		}
 
-		void handle_down(game_log_state_t& state)
+		void handle_down(chat_state_t& state)
 		{
 			if (--state.history_index < -1)
 			{
@@ -141,7 +139,7 @@ namespace game_log::input
 			}
 		}
 
-		void update_history(game_log_state_t& state)
+		void update_history(chat_state_t& state)
 		{
 			if (state.history_index != -1)
 			{
@@ -166,7 +164,7 @@ namespace game_log::input
 			state.history_index = -1;
 		}
 
-		void clear_input(game_log_state_t& state)
+		void clear_input(chat_state_t& state)
 		{
 			state.cursor = 0;
 			std::memset(state.input, 0, sizeof(state.input));
@@ -175,16 +173,11 @@ namespace game_log::input
 
 	bool handle_key(const int key, const bool is_down, const bool is_game_console_bind)
 	{
-		return game_log_state.access<bool>([&](game_log_state_t& state)
+		return chat_state.access<bool>([&](chat_state_t& state)
 		{
 			if (!state.is_typing)
 			{
 				return false;
-			}
-
-			if (key == VK_SHIFT)
-			{
-				state.is_shift_down = is_down;
 			}
 
 			if (!is_down)
@@ -224,7 +217,7 @@ namespace game_log::input
 
 	bool handle_char(const int key, const bool is_down)
 	{
-		return game_log_state.access<bool>([&](game_log_state_t& state)
+		return chat_state.access<bool>([&](chat_state_t& state)
 		{
 			if (!state.is_typing)
 			{
@@ -264,49 +257,31 @@ namespace game_log::input
 
 	bool handle_mousewheel(const bool down)
 	{
-		return game_log_state.access<bool>([&](game_log_state_t& state)
+		return chat_state.access<bool>([&](chat_state_t& state)
 		{
 			if (!state.is_typing)
 			{
 				return false;
 			}
 
-			if (state.is_shift_down)
-			{
-				state.view_text_offset_x = std::max(0.f, state.view_text_offset_x + 30.f * (down ? -1.f : 1.f));
-			}
-			else
-			{
-				const auto max_offset = std::max(0, static_cast<int>(state.messages.size()) -
-					var_game_log_height->current.get_int());
-
-				const auto prev_offset = state.chat_offset;
-				state.chat_offset = std::min(std::max(0, state.chat_offset + (1 - 2 * down)), max_offset);
-
-				if (state.chat_offset != prev_offset)
-				{
-					ui::add_sound(game_log_scroll_sound_id, 1ms);
-				}
-			}
-
+			state.view_text_offset_y = std::max(0.f, state.view_text_offset_y + 10.f * (down ? -1.f : 1.f));
 			return true;
 		});
 	}
 
-	void stop_typing(game_log_state_t& state)
+	void stop_typing(chat_state_t& state)
 	{
 		state.is_typing = false;
-		state.chat_offset = 0;
 		state.mode = mode_none;
 		std::memset(state.input, 0, sizeof(state.input));
 		state.cursor = 0;
-		state.view_text_offset_x = 0.f;
+		state.view_text_offset_y = 0.f;
 		state.history_index = -1;
 	}
 
 	bool is_input_blocked()
 	{
-		return game_log_state.access<bool>([](game_log_state_t& state)
+		return chat_state.access<bool>([](chat_state_t& state)
 		{
 			return state.is_typing;
 		});
@@ -322,14 +297,14 @@ namespace game_log::input
 
 		void start() override
 		{
-			game_log_state.access([](game_log_state_t& state)
+			chat_state.access([](chat_state_t& state)
 			{
 				state = {};
 			});
 
 			command::add("clearchat", [](const command::params& params)
 			{
-				reset_log();
+				clear();
 			});
 
 			if (!game::environment::is_mgo())
@@ -339,12 +314,12 @@ namespace game_log::input
 
 			command::add("chatall", []
 			{
-				if (!is_chat_enabled() || !can_show_game_log() || !can_use_chat())
+				if (!is_chat_enabled() || !can_use_chat())
 				{
 					return;
 				}
 
-				game_log_state.access([](game_log_state_t& state)
+				chat_state.access([](chat_state_t& state)
 				{
 					stop_typing(state);
 					state.is_typing = true;
@@ -355,4 +330,4 @@ namespace game_log::input
 	};
 }
 
-REGISTER_COMPONENT(game_log::input::component)
+REGISTER_COMPONENT(text_chat::input::component)

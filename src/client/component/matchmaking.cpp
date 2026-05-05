@@ -8,8 +8,8 @@
 #include "console.hpp"
 #include "matchmaking.hpp"
 
-#include "game_log/defs.hpp"
-#include "game_log/ui.hpp"
+#include "text_chat/defs.hpp"
+#include "text_chat/ui.hpp"
 
 #include <utils/hook.hpp>
 #include <utils/string.hpp>
@@ -279,14 +279,14 @@ namespace matchmaking
 		unsigned __int64 join_lobby_stub(game::ISteamMatchmaking* this_, game::steam_id lobby_id)
 		{
 			console::info("[SteamMatchmaking] JoinLobby %lli", lobby_id.bits);
-			game_log::reset_log();
+			text_chat::clear();
 			return steam_matchmaking_vtbl.JoinLobby(this_, lobby_id);
 		}
 
 		void leave_lobby_stub(game::ISteamMatchmaking* this_, game::steam_id lobby_id)
 		{
 			console::info("[SteamMatchmaking] LeaveLobby %lli", lobby_id.bits);
-			game_log::reset_log();
+			text_chat::clear();
 			return steam_matchmaking_vtbl.LeaveLobby(this_, lobby_id);
 		}
 

@@ -5,8 +5,8 @@
 
 #include "lobby.hpp"
 #include "mutes.hpp"
-#include "../game_log/ui.hpp"
-#include "../game_log/defs.hpp"
+#include "../text_chat/ui.hpp"
+#include "../text_chat/defs.hpp"
 
 #include <utils/io.hpp>
 #include <utils/hook.hpp>
@@ -23,7 +23,7 @@ namespace text_chat::lobby
 
 		void process_chat_msg(game::LobbyChatMsg_t* msg)
 		{
-			if (!game_log::is_chat_enabled())
+			if (!text_chat::is_chat_enabled())
 			{
 				return;
 			}
@@ -57,8 +57,8 @@ namespace text_chat::lobby
 			text[max_chat_msg_len] = 0;
 
 			const auto name = steam_friends->__vftable->GetFriendPersonaName(steam_friends, user);
-			const auto message = utils::string::va("%s: %s", name, text);
-			game_log::ui::print(message, true);
+			const auto message = utils::string::va("%s^7: %s", name, text);
+			text_chat::ui::print(message, true);
 			console::info("%s\n", message);
 		}
 

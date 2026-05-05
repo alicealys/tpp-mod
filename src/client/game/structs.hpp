@@ -372,6 +372,33 @@ namespace game
 
 		namespace gr
 		{
+			struct Scene
+			{
+
+			};
+
+			struct SceneObject
+			{
+
+			};
+
+			struct Draw2D
+			{
+				struct vtable
+				{
+
+				};
+
+				vtable* __vftable;
+				char __pad0[16];
+				Draw2D* next;
+				char __pad1[8];
+				int priority;
+				char __pad2[36];
+				int flags;
+				char __pad3[8];
+			};
+
 			namespace dg
 			{
 				struct StringFontMetricsCache
@@ -453,10 +480,26 @@ namespace game
 					unsigned int a2;
 				};
 
+				struct SubCommandContext
+				{
+
+				};
+
 				struct BuildDraw2DParameters
 				{
-					char __pad0[24];
+					char __pad0[8];
+					Draw2D** drawList;
+					SubCommandContext* commandContext;
 					DynamicVertexBuffer* vertexBuffer;
+					void* ptr2;
+					void* ptr3;
+					void* ptr4;
+					char __pad1[4];
+					float f1;
+					int viewX;
+					int viewY;
+					int viewWidth;
+					int viewHeight;
 				};
 
 				struct FontTextureMetrics
@@ -489,16 +532,25 @@ namespace game
 
 					struct Draw2DRenderer
 					{
-						char __pad0[752];
+						char __pad0[720];
+						Vectormath::Aos::Vector4 viewVec1;
+						Vectormath::Aos::Vector4 viewVec2;
 						BuildDraw2DParameters* parameters;
 						CommandBuffer* commandBuffer;
 						Draw2DRenderer_unk* unk;
 						char __pad1[24];
 						gn::Buffer* buffer;
 						unsigned int size;
-						char __pad2[128];
+						char __pad2[14];
+						char unk1;
+						char __pad3[5];
+						DynamicVertexBuffer* vertexBuffer;
+						void* ptr1;
+						char __pad4[92];
 						_TextureGlyphData* glyphData;
 					};
+
+					static_assert(offsetof(Draw2DRenderer, glyphData) == 0x3B0);
 				}
 			}
 
@@ -529,27 +581,6 @@ namespace game
 				int packetSize;
 				int flags;
 				int a6;
-			};
-
-			struct Scene
-			{
-
-			};
-
-			struct SceneObject
-			{
-
-			};
-
-			struct Draw2D
-			{
-				struct vtable
-				{
-
-				};
-
-				vtable* __vftable;
-				char __pad0[88];
 			};
 
 			struct _fp16
@@ -649,13 +680,13 @@ namespace game
 			struct Packet2DViewport : Packet2D
 			{
 				Packet2DViewport() : Packet2D(13, 12) {}
-				char __pad0[8];
+				_fp16 v;
 			};
 
 			struct Packet2DViewmap : Packet2D
 			{
 				Packet2DViewmap() : Packet2D(14, 28) {}
-				char __pad0[24];
+				float v[3][3];
 			};
 
 			struct Packet2DWorldCoords : Packet2D
@@ -701,7 +732,8 @@ namespace game
 			struct Packet2DBillboard : Packet2D
 			{
 				Packet2DBillboard() : Packet2D(21, 8) {}
-				char __pad0[4];
+				float f1;
+				float f2;
 			};
 
 			struct Packet2DPerspective : Packet2D
@@ -1492,9 +1524,14 @@ namespace game
 			}
 		}
 
-		struct SharedString
+		struct SharedStringData
 		{
 			char* buffer;
+		};
+
+		struct SharedString
+		{
+			SharedStringData* data;
 		};
 	}
 
