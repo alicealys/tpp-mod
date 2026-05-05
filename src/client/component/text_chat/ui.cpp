@@ -56,6 +56,7 @@ namespace text_chat::ui
 			float height;
 			float display_width_adjust;
 			float scrollbar_width = 6.f;
+			float chat_direction = 1.f;
 		} chat_settings{};
 
 		float outline_color[4] = {0.f, 0.f, 0.f, 0.7f};
@@ -68,17 +69,28 @@ namespace text_chat::ui
 				return;
 			}
 
+			const auto var_color = var_chat_slider_color->current.get_color();
+
 			float color[4]{};
-			color[0] = 1.f;
-			color[1] = 1.f;
-			color[2] = 1.f;
-			color[3] = 0.6f;
+			color[0] = var_color.r;
+			color[1] = var_color.g;
+			color[2] = var_color.b;
+			color[3] = var_color.a;
 
 			const auto initial_height = (chat_settings.height) - chat_settings.margin * 2.f;
 			const auto percent = initial_height / scroll_height;
 			const auto height = initial_height * percent;
 			const auto offset = (initial_height - height) * scroll_amount / max_scroll;
-			const auto y_ = y - chat_settings.margin * 2.f - height - offset;
+
+			auto y_ = 0.f;
+			if (chat_settings.chat_direction < 0.f)
+			{
+				y_ = y + chat_settings.margin * 2.f + chat_settings.line_height + offset;
+			}
+			else
+			{
+				y_ = y - chat_settings.margin * 2.f - height - offset;
+			}
 
 			renderer::draw_box(r, x + chat_settings.width - chat_settings.scrollbar_width - chat_settings.margin, y_, chat_settings.scrollbar_width, height , color);
 		}
@@ -99,7 +111,19 @@ namespace text_chat::ui
 
 			for (auto& message : state.messages)
 			{
-				message.time = now;
+				if (state.is_typing)
+				{
+					message.time = now;
+				}
+
+				const auto diff = now - message.time;
+				const auto ms = static_cast<int>(std::chrono::duration_cast<std::chrono::milliseconds>(diff).count());
+				const auto ms_left = var_chat_message_time->current.get_int() - ms;
+
+				if (ms_left <= 0)
+				{
+					break;
+				}
 
 				const auto display_width = chat_settings.width - chat_settings.margin * 2.f - chat_settings.scrollbar_width - chat_settings.font_height;
 				auto lines = 1;
@@ -133,13 +157,27 @@ namespace text_chat::ui
 			if ((state.is_typing || game::tpp::ui::menu::impl::MotherBaseDeviceSystemImpl_::IsDeviceOpend()) && messages_height > 0.f)
 			{
 				const auto box_height = std::min(messages_height, chat_settings.height);
-				renderer::draw_box(r, x, y - box_height - chat_settings.margin - 1.f, chat_settings.width, box_height + 1.f, bg_color, bg_color, 1.f);
+				if (chat_settings.chat_direction < 0.f)
+				{
+					renderer::draw_box(r, x, y + chat_settings.line_height + chat_settings.margin + 1.f, chat_settings.width, box_height + 1.f, bg_color, bg_color, 1.f);
+				}
+				else
+				{
+					renderer::draw_box(r, x, y - box_height - chat_settings.margin - 1.f, chat_settings.width, box_height + 1.f, bg_color, bg_color, 1.f);
+				}
 			}
 
 			renderer::remove_stencil(r);
-			renderer::add_stencil(r, x, y - stencil_size - chat_settings.margin * 2.f, chat_settings.width, stencil_size);
+			if (chat_settings.chat_direction < 0.f)
+			{
+				renderer::add_stencil(r, x, y + chat_settings.line_height + chat_settings.margin * 2.f, chat_settings.width, stencil_size);
+			}
+			else
+			{
+				renderer::add_stencil(r, x, y - stencil_size - chat_settings.margin * 2.f, chat_settings.width, stencil_size);
+			}
 
-			auto y_offset = y - chat_settings.margin;
+			auto y_offset = y - chat_settings.chat_direction * (chat_settings.margin);
 
 			for (const auto& message : state.messages)
 			{
@@ -175,9 +213,10 @@ namespace text_chat::ui
 				auto lines = 1;
 				renderer::calc_text_width(r, message.buffer, chat_settings.font_height, true, true, display_width, &lines);
 
-				y_offset -= lines * chat_settings.font_height + chat_settings.margin;
+				y_offset -= chat_settings.chat_direction * (lines * chat_settings.font_height + chat_settings.margin);
 
-				renderer::draw_text(r, message.buffer, chat_settings.font_height, x + chat_settings.margin, y_offset + state.view_text_offset_y,
+				renderer::draw_text(r, message.buffer, chat_settings.font_height, x + chat_settings.margin, y_offset + 
+					chat_settings.chat_direction * state.view_text_offset_y,
 					color, color_outline, true, display_width, 0.f, 0.f, 0.f, true);
 			}
 			
@@ -221,7 +260,14 @@ namespace text_chat::ui
 			box_outline_color[2] = 1.f;
 			box_outline_color[3] = pulse_alpha;
 
-			renderer::draw_box(r, x, y, chat_settings.width, chat_settings.line_height, bg_color, box_outline_color, 1.f);
+			if (var_chat_input_pulse->current.enabled())
+			{
+				renderer::draw_box(r, x, y, chat_settings.width, chat_settings.line_height, bg_color, box_outline_color, 1.f);
+			}
+			else
+			{
+				renderer::draw_box(r, x, y, chat_settings.width, chat_settings.line_height, bg_color);
+			}
 
 			if (state.input[0] == 0)
 			{
@@ -252,6 +298,7 @@ namespace text_chat::ui
 				chat_settings.line_height = chat_settings.base_line_height * scale;	
 				chat_settings.display_width_adjust = -chat_settings.font_height;
 				chat_settings.height = var_chat_height->current.get_int() * chat_settings.line_height;
+				chat_settings.chat_direction = var_chat_direction->current.get_int() == 0 ? 1.f : -1.f;
 
 				update_chat_sounds(state);
 				draw_messages(r, state, pos.x, pos.y);
