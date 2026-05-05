@@ -96,7 +96,7 @@ namespace text_chat::ui
 				{
 					message.time = now;
 
-					auto text_width = renderer::calc_text_width(r, message.buffer, font_height);
+					auto text_width = renderer::calc_text_width(r, message.buffer, font_height, true);
 					const auto display_width = width - margin * 2.f - 6.f - font_height;
 
 					messages_height += static_cast<int>(std::ceil(text_width / display_width)) * font_height + margin;
@@ -164,7 +164,7 @@ namespace text_chat::ui
 				color_outline[3] = alpha;
 
 				const auto display_width = width - margin * 2.f - 6.f - font_height;
-				auto text_width = renderer::calc_text_width(r, message.buffer, font_height);
+				auto text_width = renderer::calc_text_width(r, message.buffer, font_height, true);
 
 				y_offset -= static_cast<int>(std::ceil(text_width / display_width)) * font_height + margin;
 

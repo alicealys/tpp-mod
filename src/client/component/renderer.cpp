@@ -102,66 +102,74 @@ namespace renderer
 			return static_cast<int>(ms_epoch);
 		}
 
-		void set_color_code(char c, float* color)
+		bool get_color_code(char c, float* color)
 		{
+			float out_color[4]{};
+			if (color == nullptr)
+			{
+				color = out_color;
+			}
+
 			switch (c)
 			{
 			case '0': // black
 				color[0] = 0.f;
 				color[1] = 0.f;
 				color[2] = 0.f;
-				break;
+				return true;
 			case '1': // red
 				color[0] = 0.85f;
 				color[1] = 0.f;
 				color[2] = 0.f;
-				break;
+				return true;
 			case '2': // green
 				color[0] = 0.4f;
 				color[1] = 0.9f;
 				color[2] = 0.7f;
-				break;
+				return true;
 			case '3': // yellow
 				color[0] = 1.f;
 				color[1] = 0.8f;
 				color[2] = 0.2f;
-				break;
+				return true;
 			case '4': // blue
 				color[0] = 0.f;
 				color[1] = 0.52f;
 				color[2] = 0.75f;
-				break;
+				return true;
 			case '5': // light blue
 				color[0] = 0.12f;
 				color[1] = 0.77f;
-				color[2] = 1.f;
-				break;
+				color[2] = 1.f;				
+				return true;
 			case '6': // pink
 				color[0] = 0.88f;
 				color[1] = 0.51f;
 				color[2] = 0.69f;
-				break;
+				return true;
 			case '7': // white
 				color[0] = 1.f;
 				color[1] = 1.f;
 				color[2] = 1.f;
-				break;
-			case '8': // team solid
+				return true;
+			case '8': // ally
 				color[0] = 0.29f;
 				color[1] = 0.74f;
 				color[2] = 0.88f;
-				break;
-			case '9': // team liquid
+				return true;
+			case '9': // axis
 				color[0] = 1.0f;
 				color[1] = 0.5f;
 				color[2] = 0.3f;
-				break;
+				return true;
 			case ':':
 			{
 				hsv_to_rgb({static_cast<uint8_t>((get_milliseconds() / 100) % 256), 255, 255}, color);
-				break;
+				return true;
 			}
 			}
+
+			return false;
 		}
 
 		void execute_push(game::fox::gr::dg::plugins::Draw2DRenderer* instance, unsigned char flags)
@@ -599,7 +607,21 @@ namespace renderer
 
 			set_material(instance, nullptr);
 			set_cull_mode_alpha(instance, 2, 1);
-			set_color(instance, color);
+
+			float color_default[4]{};
+			color_default[0] = 1.f;
+			color_default[1] = 1.f;
+			color_default[2] = 1.f;
+			color_default[3] = 1.f;
+
+			if (color == nullptr)
+			{
+				set_color(instance, color_default);
+			}
+			else
+			{
+				set_color(instance, color);
+			}
 
 			auto c = text;
 			auto len = 0;
@@ -623,11 +645,11 @@ namespace renderer
 
 			while (*c != '\0')
 			{
-				if (c[0] == '^' && (c[1] >= '0' && c[1] <= '9' || c[1] == ':'))
+				float next_color[3]{};
+				if (c[0] == '^' && get_color_code(c[1], next_color))
 				{
-					const auto color_index = c[1];
 					draw_current(2);
-					set_color_code(color_index, string_color);
+					std::memcpy(string_color, next_color, sizeof(float[3]));
 					continue;
 				}
 			
@@ -664,7 +686,22 @@ namespace renderer
 
 			set_material(instance, nullptr);
 			set_cull_mode_alpha(instance, 2, 1);
-			set_color(instance, color);
+
+			float color_default[4]{};
+			color_default[0] = 1.f;
+			color_default[1] = 1.f;
+			color_default[2] = 1.f;
+			color_default[3] = 1.f;
+
+			if (color == nullptr)
+			{
+				set_color(instance, color_default);
+			}
+			else
+			{
+				set_color(instance, color);
+			}
+
 			const auto width = add_string_custom(instance, text, 0xFFFFF, height, nullptr, 0.f, 0.f, word_breaks, display_width);
 			if (has_stencil)
 			{
@@ -732,7 +769,7 @@ namespace renderer
 		}
 	}
 
-	float calc_text_width(game::fox::gr::dg::plugins::Draw2DRenderer* instance, const char* text, float height)
+	float calc_text_width(game::fox::gr::dg::plugins::Draw2DRenderer* instance, const char* text, float height, bool formatted)
 	{
 		const auto count = static_cast<int>(std::strlen(text));
 
@@ -755,6 +792,12 @@ namespace renderer
 		{
 			game::fox::gr::dg::FontTextureMetrics font_metrics{};
 			game::fox::gr::dg::FontSystem_::CalculateMetrics(&font_metrics, &glyph_data[text[i]], pixel_width, pixel_height, 1.f / 60.f);
+
+			if (formatted && text[i] == '^' && get_color_code(text[i + 1], nullptr))
+			{
+				++i;
+				continue;
+			}
 
 			switch (text[i])
 			{
@@ -808,7 +851,7 @@ namespace renderer
 		buffer[cursor] = show_cursor ? '_' : ' ';
 
 		auto scroll_x = 0.f;
-		const auto text_width = calc_text_width(instance, buffer, height);
+		const auto text_width = calc_text_width(instance, buffer, height, formatted);
 		if (text_width > display_width)
 		{
 			scroll_x = text_width - display_width;

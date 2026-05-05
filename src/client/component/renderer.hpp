@@ -2,7 +2,7 @@
 
 namespace renderer
 {
-	float calc_text_width(game::fox::gr::dg::plugins::Draw2DRenderer* instance, const char* text, float height);
+	float calc_text_width(game::fox::gr::dg::plugins::Draw2DRenderer* instance, const char* text, float height, bool formatted = false);
 
 	float draw_text(game::fox::gr::dg::plugins::Draw2DRenderer* instance, const char* text, float height,
 		float x, float y, float* color, float* outline_color = nullptr, bool formatted = false, 
