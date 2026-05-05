@@ -410,6 +410,7 @@ namespace game_console
 
 		void handle_return()
 		{
+			printf("]%s", con.input);
 			command::execute(con.input);
 			clear_input();
 		}

@@ -446,9 +446,6 @@ namespace renderer
 
 				switch (text[i])
 				{
-				case ' ':
-					offset_x += font_metrics.f9 * width;
-					break;
 				case '\t':
 					offset_x += width * 2.f;
 					break;
@@ -809,9 +806,6 @@ namespace renderer
 
 			switch (text[i])
 			{
-			case ' ':
-				offset_x += font_metrics.f9 * width;
-				break;
 			case '\t':
 				offset_x += width * 2.f;
 				break;
