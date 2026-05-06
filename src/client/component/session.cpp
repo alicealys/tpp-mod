@@ -190,7 +190,7 @@ namespace session
 		return nullptr;
 	}
 
-	game::fox::nt::Member* get_client_by_name(const std::string& name, bool* is_self)
+	game::fox::nt::Member* get_client_by_name(const std::string& name, bool* is_self, std::string* out_name)
 	{
 		const auto main_session = *game::s_pSession;
 		if (main_session == nullptr)
@@ -220,6 +220,12 @@ namespace session
 			if (member_name_lower.starts_with(lower))
 			{
 				*is_self = local_member->sessionUserId->userId == member->sessionUserId->userId;
+
+				if (out_name != nullptr)
+				{
+					*out_name = member_name;
+				}
+
 				return member;
 			}
 		}

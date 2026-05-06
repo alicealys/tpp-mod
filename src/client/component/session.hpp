@@ -5,7 +5,7 @@ namespace session
 	bool is_host();
 	game::fox::nt::Member* get_client_by_index(const unsigned int index, bool* is_self);
 	game::fox::nt::Member* get_client_by_steam_id(const std::uint64_t steam_id, bool* is_self, int* index = nullptr);
-	game::fox::nt::Member* get_client_by_name(const std::string& name, bool* is_self);
+	game::fox::nt::Member* get_client_by_name(const std::string& name, bool* is_self, std::string* out_name = nullptr);
 	game::fox::nt::Member* find_client(const std::string& identifier, bool* is_self);
 
 	int get_rtt(game::fox::nt::impl::SessionImpl2* session);

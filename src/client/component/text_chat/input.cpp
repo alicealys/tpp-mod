@@ -5,7 +5,8 @@
 
 #include "input.hpp"
 #include "ui.hpp"
-#include "../text_chat/lobby.hpp"
+#include "lobby.hpp"
+#include "../session.hpp"
 
 #include <utils/hook.hpp>
 #include <utils/string.hpp>
@@ -41,6 +42,52 @@ namespace text_chat::input
 			std::memmove(state.input + state.cursor - 1, state.input + state.cursor,
 				std::strlen(state.input) + 1 - state.cursor);
 			state.cursor--;
+		}
+
+		void handle_tab(chat_state_t& state)
+		{
+			std::string input = state.input;
+			const auto space_index = input.find_last_of(' ');
+			if (space_index != std::string::npos)
+			{
+				input = input.substr(space_index + 1);
+			}
+
+			if (input.empty())
+			{
+				return;
+			}
+
+			auto is_self = false;
+			std::string name;
+			const auto client = session::get_client_by_name(input, &is_self, &name);
+			if (client == nullptr)
+			{
+				return;
+			}
+
+			if (name.size() >= sizeof(state.input) - 1)
+			{
+				return;
+			}
+
+			state.cursor -= static_cast<int>(input.size());
+
+			for (auto c : name)
+			{
+				if (state.cursor >= chat_message_max_len)
+				{
+					return;
+				}
+
+				c = utils::string::normalize_ascii_extended(c);
+				if (utils::string::is_char_text(c))
+				{
+					state.input[state.cursor++] = c;
+				}
+			}
+
+			handle_char(state, ' ');
 		}
 
 		void handle_return(chat_state_t& state)
@@ -201,6 +248,9 @@ namespace text_chat::input
 				break;
 			case VK_ESCAPE:
 				stop_typing(state);
+				break;
+			case VK_TAB:
+				handle_tab(state);
 				break;
 			case VK_BACK:
 				handle_backspace(state);
