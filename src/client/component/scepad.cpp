@@ -124,17 +124,7 @@ namespace scepad
         public:
             void pre_load() override
             {
-                HMODULE steam = GetModuleHandleA("steam_api64.dll");
-                if (!steam)
-                    return;
 
-                void *fn = GetProcAddress(steam, "SteamAPI_ISteamController_Init");
-                if (!fn)
-                    return;
-
-                static detour hook;
-                hook.create(fn, hook_ControllerInit);
-                orig_controller_init = (SteamController_Init_t)hook.get_original();
             }
 
             void start() override
