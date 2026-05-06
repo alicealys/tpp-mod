@@ -99,9 +99,6 @@ namespace scepad
 
         void update_scepad()
         {
-            s_ScePadData data {};
-            scePadReadState(padHandle, &data);
-
             int weaponType = get_weapon_type();
             auto triggerIt = triggerPreset.find(static_cast<weapon>(weaponType));
             if (triggerIt != triggerPreset.end())
