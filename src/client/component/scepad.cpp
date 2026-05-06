@@ -27,17 +27,17 @@ namespace scepad
 
         int get_weapon_type()
         {
-            if (!is_player_initialized()) return 0;
+            if (!is_player_initialized()) return -1;
 
-            const auto player = game::tpp::gm::player::player2System->player2System;
-            if (!player) return 0;
-            if (!player->tpp.controller) return 0;
-            if (!player->tpp.controller->__vftable) return 0;
+            //const auto player = game::tpp::gm::player::player2System->player2System;
+            //if (!player) return 0;
+            //if (!player->tpp.controller) return 0;
+            //if (!player->tpp.controller->__vftable) return 0;
 
-            void* weaponPtr = player->tpp.controller->__vftable->GetCurrentWeapon(player->tpp.controller, player->tpp.localPlayerIndex);
-            if(!weaponPtr) return 0;
+            //void* weaponPtr = player->tpp.controller->__vftable->GetCurrentWeapon(player->tpp.controller, player->tpp.localPlayerIndex);
+            //if(!weaponPtr) return 0;
 
-            console::info("[scepad] GetCurrentWeapon returned: %p", weaponPtr);
+            //console::info("[scepad] GetCurrentWeapon returned: %p", weaponPtr);
 
             return 0;
         }
