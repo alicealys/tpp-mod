@@ -10,7 +10,6 @@ end
 
 function hidapi.includes()
     includedirs {
-        hidapi.source,
         path.join(hidapi.source, "hidapi"),
         path.join(hidapi.source, "windows")
     }
@@ -28,11 +27,6 @@ function hidapi.project()
             path.join(hidapi.source, "windows/hid.c"),
             path.join(hidapi.source, "windows/hidapi_winapi.h"),
             path.join(hidapi.source, "windows/hidapi_descriptor_reconstruct.c"),
-        }
-
-        excludes { 
-            "**/version",
-            "**/VERSION" 
         }
         
         warnings "Off"
