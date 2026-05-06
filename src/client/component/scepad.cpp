@@ -3,6 +3,7 @@
 #include "loader/component_loader.hpp"
 #include "scheduler.hpp"
 #include "console.hpp"
+#include "game/game.hpp"
 
 namespace scepad
 {
@@ -10,9 +11,18 @@ namespace scepad
     {
         static int padHandle = 0;
 
+        int get_weapon_type()
+        {
+            const auto player = game::tpp::gm::player::player2System->player2System;
+            int currentWeapon = player->tpp.controller->__vftable->GetCurrentWeapon(player->tpp.controller, player->tpp.localPlayerIndex);
+            return currentWeapon;
+        }
+
         void update_scepad()
         {
-            console::info("[scepad] test from update_scepad");
+            s_SceLightBar lightbar {0,255,0};
+            scePadSetLightBar(padHandle, &lightbar);
+            console::info("[scepad] Current weapon: %d", get_weapon_type());
         }
 
         class component final : public component_interface
@@ -25,7 +35,10 @@ namespace scepad
 
             void start() override
             {
-                int init_res = scePadInit();
+                s_ScePadInitParam initParam {};
+                initParam.allowBT = true;
+
+                int init_res = scePadInit3(&initParam);
                 if(init_res == SCE_OK)
                 {
                     console::info("[scepad] initialized successfully");
