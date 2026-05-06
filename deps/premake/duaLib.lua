@@ -29,6 +29,8 @@ function duaLib.project()
 
 		warnings "Off"
 		kind "StaticLib"
+
+		defines { "DUALIB_EXPORTS" }
 end
 
 table.insert(dependencies, duaLib)
