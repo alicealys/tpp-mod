@@ -1,7 +1,7 @@
 #include "scepad.hpp"
 #include "loader/component_loader.hpp"
 #include "scheduler.hpp"
-
+#include "console.hpp"
 
 namespace scepad
 {
@@ -9,7 +9,7 @@ namespace scepad
     {
         void update_scepad()
         {
-
+            console::info("[scepad] test");
         }
 
         class component final : public component_interface
