@@ -29,7 +29,7 @@ namespace scepad
         {
             if(!is_player_initialized())
             {
-                return;
+                return 0;
             }
 
             const auto player = game::tpp::gm::player::player2System->player2System;
