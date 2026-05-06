@@ -18,7 +18,10 @@ namespace scepad
         public:
             void pre_load() override
             {
-
+                int init_res = scePadInit();
+                if(init_res == SCE_OK){
+                    console::info("[scepad] initialized successfully");
+                }
             }
 
             void start() override

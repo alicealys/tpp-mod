@@ -1,0 +1,1 @@
+bool ReadDualsense(duaLibUtils::controller& controller);

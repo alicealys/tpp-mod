@@ -1,0 +1,1 @@
+bool ReadDualshock4(duaLibUtils::controller& controller);
