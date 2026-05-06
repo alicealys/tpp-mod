@@ -1,3 +1,4 @@
+
 hidapi = {
     source = path.join(dependencies.basePath, "duaLib/src/thirdparty/hidapi")
 }
@@ -8,11 +9,11 @@ function hidapi.import()
 end
 
 function hidapi.includes()
-    includedirs { 
-		hidapi.source,
-		path.join(hidapi.source, "hidapi"),
-		path.join(hidapi.source, "windows")
-	}
+    includedirs {
+        hidapi.source,
+        path.join(hidapi.source, "hidapi"),
+        path.join(hidapi.source, "windows")
+    }
 end
 
 function hidapi.project()
@@ -20,18 +21,20 @@ function hidapi.project()
         language "C"
         kind "StaticLib"
         
-		hidapi.includes()
-		
+        hidapi.includes()
+        
         files {
-            path.join(hidapi.source, "hidapi/*.h"),
-            path.join(hidapi.source, "windows/*.h"),
-			path.join(hidapi.source, "windows/*.c"),
+            path.join(hidapi.source, "hidapi/hidapi.h"),
+            path.join(hidapi.source, "windows/hid.c"),
+            path.join(hidapi.source, "windows/hidapi_winapi.h"),
+            path.join(hidapi.source, "windows/hidapi_descriptor_reconstruct.c"),
         }
         
         warnings "Off"
         
         filter "system:windows"
             defines { "HIDAPI_NO_HIDIO" }
+            links { "setupapi", "hid" }
         filter {}
 end
 
