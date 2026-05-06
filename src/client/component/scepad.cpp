@@ -59,7 +59,7 @@ namespace scepad
             auto triggerIt = triggerPreset.find(static_cast<weapon>(get_weapon_type()));
             if (triggerIt != g_triggerSettings.end())
             {
-                scePadSetTriggerEffect(padHandle, triggerIt);
+                scePadSetTriggerEffect(padHandle, &triggerIt->second);
             }
         }
 
