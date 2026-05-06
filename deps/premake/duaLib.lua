@@ -9,8 +9,8 @@ end
 
 function hidapi.includes()
     includedirs { 
-		path.join(hidapi.source, "hidapi"),
 		hidapi.source,
+		path.join(hidapi.source, "hidapi"),
 		path.join(hidapi.source, "windows")
 	}
 end
@@ -20,6 +20,8 @@ function hidapi.project()
         language "C"
         kind "StaticLib"
         
+		hidapi.includes()
+		
         files {
             path.join(hidapi.source, "hidapi/*.h"),
             path.join(hidapi.source, "windows/*.h"),
