@@ -129,7 +129,7 @@ namespace scepad
 
             void start() override
             {
-                scheduler::schedule(init_scepad, scheduler::async, 10s);
+                scheduler::once(init_scepad, scheduler::async, 10s);
             }
         };
     }
