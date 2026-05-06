@@ -34,25 +34,6 @@ namespace scepad
 
             console::info("[scepad] GetCurrentWeapon returned: %p", weaponPtr);
 
-            if (!weaponPtr) {
-                console::info("[scepad] Weapon pointer is null");
-                return 0;
-            }
-
-            console::info("[scepad] Memory dump around weapon:");
-            for (int i = 0; i < 8; ++i) {
-                uint64_t* p = (uint64_t*)((char*)weaponPtr + i*32);
-                console::info("  +0x%02X: %016llX %016llX %016llX %016llX", 
-                            i*32, p[0], p[1], p[2], p[3]);
-            }
-
-            for (int i = 0; i < 16; ++i) {
-                const char* str = (const char*)weaponPtr + i*8;
-                if (strlen(str) > 3 && strlen(str) < 64) {
-                    console::info("  Possible string @ +0x%02X: %s", i*8, str);
-                }
-            }
-
             return 0;
         }
 
