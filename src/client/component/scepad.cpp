@@ -22,7 +22,7 @@ namespace scepad
 			   {SCE_PAD_TRIGGER_EFFECT_MODE_OFF, {0}, {}},
 			   {SCE_PAD_TRIGGER_EFFECT_MODE_WEAPON, {0}, {.weaponParam = {6,8,8}}}
 		    }}}
-        }
+        };
 
         static int padHandle = 0;
 
