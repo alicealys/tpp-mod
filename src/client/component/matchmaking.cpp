@@ -205,6 +205,11 @@ namespace matchmaking
 				console::debug("[MgoMatchmakingManager] State updated: %i\n", game::s_mgoMatchMakingManager->state);
 			}
 
+			if (prev_state > game::s_mgoMatchMakingManager->state)
+			{
+				text_chat::clear();
+			}
+
 			prev_state = game::s_mgoMatchMakingManager->state;
 
 			if (request_match_start && game::s_mgoMatchMakingManager->state == 2)
