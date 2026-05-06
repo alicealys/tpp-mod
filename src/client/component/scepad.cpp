@@ -38,10 +38,11 @@ namespace scepad
 
             console::info("PlayerIdx: %d", player->tpp.localPlayerIndex);
 
-            console::info("[scepad] calling GetCurrentEquipSlot()");
-            uint8_t weaponSlot = player->tpp.controller->__vftable->GetCurrentEquipSlot(player->tpp.controller, player->tpp.localPlayerIndex);
+            console::info("[scepad] calling GetCurrentWeapon()");
+            int weaponType = 0;
+            player->tpp.controller->__vftable->GetCurrentWeapon(player->tpp.controller, &weaponType, player->tpp.localPlayerIndex);
 
-            console::info("[scepad] GetCurrentEquipSlot returned: %d", weaponSlot);
+            console::info("[scepad] GetCurrentWeapon() returned: %d", weaponType);
 
             return 0;
         }
