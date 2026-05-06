@@ -28,13 +28,15 @@ namespace scepad
         int get_weapon_type()
         {
             if (!is_player_initialized()) return -1;
+            if (!game::environment::is_tpp())
+            {
+                console::warn("[scepad] Not in TPP");
+                return -1;
+            }
 
             const auto player = game::tpp::gm::player::player2System->player2System;
-
-            console::info("Controller: %p | VFT: %p | GetCurrentWeapon: %p", 
-            player->tpp.controller, 
-            player->tpp.controller->__vftable, 
-            player->tpp.controller->__vftable->GetCurrentWeapon);
+            
+            console::info("PlayerIdx: %d", player->tpp.localPlayerIndex);
 
             console::info("[scepad] calling GetCurrentWeapon()");
             void* weaponPtr = player->tpp.controller->__vftable->GetCurrentWeapon(player->tpp.controller, player->tpp.localPlayerIndex);
