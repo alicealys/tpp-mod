@@ -140,7 +140,7 @@ namespace game
 			const auto iter = hashes.find(hash);
 			if (iter == hashes.end())
 			{
-				throw std::runtime_error("Unknown MGSV version");
+				throw std::runtime_error("Unknown MGSV version, use -mode <gamemode> to manually specify it (tppeng, mgoeng, tppjpn, mgojpn)");
 			}
 
 			if (!iter->second.supported)
