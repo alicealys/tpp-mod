@@ -19,6 +19,7 @@ function hidapi.project()
         files {
             path.join(hidapi.source, "hidapi/*.h"),
             path.join(hidapi.source, "windows/hid.c"),
+			path.join(hidapi.source, "windows/hidapi_winapi.h"),
         }
         
         warnings "Off"
