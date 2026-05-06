@@ -35,14 +35,13 @@ namespace scepad
             }
 
             const auto player = game::tpp::gm::player::player2System->player2System;
-            
+
             console::info("PlayerIdx: %d", player->tpp.localPlayerIndex);
 
-            console::info("[scepad] calling GetCurrentWeapon()");
-            void* weaponPtr = player->tpp.controller->__vftable->GetCurrentWeapon(player->tpp.controller, player->tpp.localPlayerIndex);
-            if(!weaponPtr) return 0;
+            console::info("[scepad] calling GetCurrentEquipSlot()");
+            uint8_t weaponSlot = player->tpp.controller->__vftable->GetCurrentEquipSlot(player->tpp.controller, player->tpp.localPlayerIndex);
 
-            console::info("[scepad] GetCurrentWeapon returned: %p", weaponPtr);
+            console::info("[scepad] GetCurrentEquipSlot returned: %d", weaponSlot);
 
             return 0;
         }
