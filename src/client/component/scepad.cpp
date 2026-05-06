@@ -31,7 +31,8 @@ namespace scepad
 
             const auto player = game::tpp::gm::player::player2System->player2System;
 
-            void* weaponPtr = player->tpp.controller->__vftable->GetCurrentWeapon(player->tpp.controller, 0);
+            console::info("[scepad] calling GetCurrentWeapon()")
+            void* weaponPtr = player->tpp.controller->__vftable->GetCurrentWeapon(player->tpp.controller, player->tpp.localPlayerIndex);
             if(!weaponPtr) return 0;
 
             console::info("[scepad] GetCurrentWeapon returned: %p", weaponPtr);
@@ -43,6 +44,13 @@ namespace scepad
         {
             s_SceLightBar lightbar {0,255,58};
             scePadSetLightBar(padHandle, &lightbar);
+            s_ScePadData data {};
+            scePadReadState(padHandle, &data);
+
+            if(data.bitmask_buttons & SCE_BM_CROSS){
+                console::info("[scepad] cross pressed");
+            }
+
             get_weapon_type();
         }
 
