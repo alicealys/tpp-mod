@@ -11,18 +11,41 @@ namespace scepad
     {
         static int padHandle = 0;
 
+        bool is_player_initialized()
+		{
+			if (game::environment::is_tpp())
+			{
+				return game::tpp::gm::player::player2System->player2System != nullptr &&
+					game::tpp::gm::player::player2System->player2System->tpp.controller != nullptr;
+			}
+			else
+			{
+				return game::tpp::gm::player::player2System->player2System != nullptr &&
+					game::tpp::gm::player::player2System->player2System->mgo.controller != nullptr;
+			}
+		}
+
         int get_weapon_type()
         {
+            if(!is_player_initialized())
+            {
+                return;
+            }
+
             const auto player = game::tpp::gm::player::player2System->player2System;
-            int currentWeapon = player->tpp.controller->__vftable->GetCurrentWeapon(player->tpp.controller, player->tpp.localPlayerIndex);
-            return currentWeapon;
+            void* result = player->tpp.controller->__vftable->GetCurrentWeapon(player->tpp.controller, player->tpp.localPlayerIndex);
+            console::info("[scepad] weapon int: %d", reinterpret_cast<int>(result));
+            const char* str = static_cast<const char*>(result);
+            console::info("[scepad] weapon string: %s", str);
+
+            return 0;
         }
 
         void update_scepad()
         {
             s_SceLightBar lightbar {0,255,0};
             scePadSetLightBar(padHandle, &lightbar);
-            console::info("[scepad] Current weapon: %d", get_weapon_type());
+            get_weapon_type();
         }
 
         class component final : public component_interface
