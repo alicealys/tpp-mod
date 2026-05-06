@@ -26,6 +26,14 @@ namespace game
 			{"D6ADF7685B0F0639B2A949D0E96A06E853DAEEB8", {"mgsvmgo.exe (jpn, 1.1.2.7)", mode_mgo_jpn, true}},
 		};
 
+		std::unordered_map<std::string, game_mode> gamemodes =
+		{
+			{"tppeng", mode_tpp_eng},
+			{"mgoeng", mode_mgo_eng},
+			{"tppjpn", mode_tpp_jpn},
+			{"mgojpn", mode_mgo_jpn},
+		};
+
 		game_mode mode = game_mode::mode_none;
 
 		void set_mode(const game_mode mode_)
@@ -64,11 +72,29 @@ namespace game
 			return get_mode() == mode_tpp_jpn || get_mode() == mode_mgo_jpn;
 		}
 
+		void manual_version(const std::string& value)
+		{
+			const auto iter = gamemodes.find(value);
+			if (iter == gamemodes.end())
+			{
+				throw std::runtime_error(utils::string::va("invalid gamemode \"%s\", options: tppeng, mgoeng, tppjpn, mgojpn", value.data()));
+			}
+
+			set_mode(iter->second);
+		}
+
 		void detect_version()
 		{
 			utils::nt::library self;
 			const auto path = self.get_path();
 			std::string data;
+
+			const auto override_ = utils::flags::get_flag("mode");
+			if (override_.has_value())
+			{
+				manual_version(override_.value());
+				return;
+			}
 
 			if (!utils::io::read_file(path, &data))
 			{
