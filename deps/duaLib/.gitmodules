@@ -1,3 +1,0 @@
-[submodule "src/thirdparty/hidapi"]
-	path = src/thirdparty/hidapi
-	url = https://github.com/libusb/hidapi
