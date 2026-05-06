@@ -8,7 +8,10 @@ function hidapi.import()
 end
 
 function hidapi.includes()
-    includedirs { path.join(hidapi.source, "hidapi") }
+    includedirs { 
+		hidapi.source,
+		path.join(hidapi.source, "hidapi") 
+	}
 end
 
 function hidapi.project()
@@ -18,8 +21,8 @@ function hidapi.project()
         
         files {
             path.join(hidapi.source, "hidapi/*.h"),
-            path.join(hidapi.source, "windows/hid.c"),
-			path.join(hidapi.source, "windows/hidapi_winapi.h"),
+            path.join(hidapi.source, "windows/*.h"),
+			path.join(hidapi.source, "windows/*.c"),
         }
         
         warnings "Off"
