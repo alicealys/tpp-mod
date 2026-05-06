@@ -227,6 +227,11 @@ namespace text_chat::input
 				return false;
 			}
 
+			if (key == VK_CONTROL)
+			{
+				state.ctrl_down = is_down;
+			}
+
 			if (!is_down)
 			{
 				return true;
@@ -314,7 +319,8 @@ namespace text_chat::input
 				return false;
 			}
 
-			state.view_text_offset_y = std::max(0.f, state.view_text_offset_y + 10.f * (down ? -1.f : 1.f));
+			const auto scroll_amount = state.ctrl_down ? 50.f : 10.f;
+			state.view_text_offset_y = std::max(0.f, state.view_text_offset_y + scroll_amount * (down ? -1.f : 1.f));
 			return true;
 		});
 	}

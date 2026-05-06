@@ -58,6 +58,7 @@ namespace text_chat
 		std::deque<chat_message_t> messages;
 		float view_text_offset_y;
 		int message_index;
+		bool ctrl_down;
 		bool is_typing;
 		chat_input_mode_t mode;
 		message_buffer_t input;
