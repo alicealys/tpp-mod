@@ -60,6 +60,7 @@
 #endif
 
 #include <map>
+#include <unordered_map>
 #include <atomic>
 #include <vector>
 #include <mutex>

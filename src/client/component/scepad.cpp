@@ -9,6 +9,21 @@ namespace scepad
 {
     namespace
     {
+        enum class weapon
+        {
+            unknown_weapon = 0,
+            am_mrs71_rifle = 27879,
+            count
+        };
+
+        std::unordered_map<weapon, ScePadTriggerEffectParam> triggerPreset = 
+        {
+            {weapon::am_mrs71_rifle, {SCE_PAD_TRIGGER_EFFECT_TRIGGER_MASK_R2, {0}, {
+			   {SCE_PAD_TRIGGER_EFFECT_MODE_OFF, {0}, {}},
+			   {SCE_PAD_TRIGGER_EFFECT_MODE_WEAPON, {0}, {.weaponParam = {6,8,8}}}
+		    }}}
+        }
+
         static int padHandle = 0;
 
         bool is_player_initialized()
@@ -28,37 +43,23 @@ namespace scepad
         int get_weapon_type()
         {
             if (!is_player_initialized()) return -1;
-            if (!game::environment::is_tpp())
-            {
-                console::warn("[scepad] Not in TPP");
-                return -1;
-            }
+            if (!game::environment::is_tpp()) return -1;
 
             const auto player = game::tpp::gm::player::player2System->player2System;
-
-            console::info("PlayerIdx: %d", player->tpp.localPlayerIndex);
-
-            console::info("[scepad] calling GetCurrentWeapon()");
             int weaponType = 0;
-            player->tpp.controller->__vftable->GetCurrentWeapon(player->tpp.controller, &weaponType, player->tpp.localPlayerIndex);
-
-            console::info("[scepad] GetCurrentWeapon() returned: %d", weaponType);
-
-            return 0;
+            return player->tpp.controller->__vftable->GetCurrentWeapon(player->tpp.controller, &weaponType, player->tpp.localPlayerIndex);
         }
 
         void update_scepad()
         {
-            s_SceLightBar lightbar {0,255,58};
-            scePadSetLightBar(padHandle, &lightbar);
             s_ScePadData data {};
             scePadReadState(padHandle, &data);
 
-            if(data.bitmask_buttons & SCE_BM_CROSS){
-                console::info("[scepad] cross pressed");
+            auto triggerIt = triggerPreset.find(get_weapon_type());
+            if (triggerIt != g_triggerSettings.end())
+            {
+                scePadSetTriggerEffect(padHandle, triggerIt)
             }
-
-            get_weapon_type();
         }
 
         class component final : public component_interface
