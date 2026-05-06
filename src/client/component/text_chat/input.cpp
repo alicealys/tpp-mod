@@ -47,7 +47,7 @@ namespace text_chat::input
 		{
 			if (state.input[0] != 0)
 			{
-				text_chat::lobby::send_chat_message(state.input);
+				text_chat::lobby::send_chat_message(state.input, state.mode == mode_chat_team);
 			}
 
 			stop_typing(state);
@@ -324,6 +324,21 @@ namespace text_chat::input
 					stop_typing(state);
 					state.is_typing = true;
 					state.mode = mode_chat;
+				});
+			});
+
+			command::add("chatteam", []
+			{
+				if (!is_chat_enabled() || !can_use_chat())
+				{
+					return;
+				}
+
+				chat_state.access([](chat_state_t& state)
+				{
+					stop_typing(state);
+					state.is_typing = true;
+					state.mode = mode_chat_team;
 				});
 			});
 		}

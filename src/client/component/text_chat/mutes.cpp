@@ -158,6 +158,11 @@ namespace text_chat::mutes
 	public:
 		void pre_load() override
 		{
+			if (!game::environment::is_mgo())
+			{
+				return;
+			}
+
 			cl_muted_players = vars::register_string("chat_muted_players", "", vars::var_flag_saved, "Muted player list");
 		}
 

@@ -254,10 +254,30 @@ namespace text_chat::ui
 			const auto ms_epoch = static_cast<std::uint64_t>(std::chrono::duration_cast<std::chrono::milliseconds>(now.time_since_epoch()).count());
 			const auto pulse_alpha = 1.f - (static_cast<float>(ms_epoch % 1500) / 1500.f) * 0.7f;
 
+			auto prefix = "say to all";
+
 			float box_outline_color[4]{};
 			box_outline_color[0] = 1.f;
 			box_outline_color[1] = 1.f;
 			box_outline_color[2] = 1.f;
+
+			if (state.mode == mode_chat_team)
+			{
+				prefix = "say to team";
+				box_outline_color[0] = 0.7f;
+				box_outline_color[1] = 0.89f;
+				box_outline_color[2] = 0.99f;
+
+				color_hint[0] = box_outline_color[0];
+				color_hint[1] = box_outline_color[1];
+				color_hint[2] = box_outline_color[2];
+				color_hint[3] = 0.7f;
+
+				color[0] = color_hint[0];
+				color[1] = color_hint[1];
+				color[2] = color_hint[2];
+			}
+
 			box_outline_color[3] = pulse_alpha;
 
 			if (var_chat_input_pulse->current.enabled())
@@ -271,7 +291,7 @@ namespace text_chat::ui
 
 			if (state.input[0] == 0)
 			{
-				renderer::draw_text(r, "say to all", chat_settings.font_height, x + chat_settings.margin, y, color_hint, outline_color);
+				renderer::draw_text(r, prefix, chat_settings.font_height, x + chat_settings.margin, y, color_hint, outline_color);
 			}
 
 			renderer::draw_text_with_cursor(r, state.input, state.cursor, chat_settings.font_height,

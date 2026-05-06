@@ -2547,6 +2547,38 @@ namespace game
 
 	}
 
+	namespace tpp::mp
+	{
+		struct TeamInfo
+		{
+
+		};
+
+		struct RuleSet
+		{
+			char __pad0[192];
+			int numTeams;
+			TeamInfo** teams;
+			char __pad1[326];
+			unsigned char localPlayerSessionIndex;
+			char __pad2[961];
+			char playerTeams[16];
+		};
+
+		struct RuleSetManager_unk1
+		{
+			char __pad0[24];
+			RuleSet* activeRuleset;
+		};
+
+		struct RuleSetManager
+		{
+			char __pad0[16];
+			RuleSetManager_unk1* unk1;
+		};
+
+	}
+
 #pragma pack(push, 1)
 	struct match_slot_t
 	{

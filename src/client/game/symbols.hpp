@@ -262,6 +262,14 @@ namespace game
 				WEAK symbol<Daemon*()> GetInstance{0x0, 0x14057B6E0, 0x0, 0x14057B0B0};
 			}
 		}
+
+		namespace mp
+		{
+			namespace RulsetManager_
+			{
+				WEAK symbol<RuleSetManager*> s_instance{0x0, 0x14204CB18, 0x0, 0x0};
+			}
+		}
 	}
 
 	namespace lua

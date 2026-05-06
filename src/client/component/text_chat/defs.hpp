@@ -48,8 +48,9 @@ namespace text_chat
 
 	enum chat_input_mode_t
 	{
-		mode_none,
-		mode_chat,
+		mode_none = 0,
+		mode_chat = 1,
+		mode_chat_team = 2,
 	};
 
 	struct chat_state_t

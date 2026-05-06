@@ -119,8 +119,8 @@ namespace renderer
 				return true;
 			case '1': // red
 				color[0] = 0.85f;
-				color[1] = 0.f;
-				color[2] = 0.f;
+				color[1] = 0.34f;
+				color[2] = 0.3f;
 				return true;
 			case '2': // green
 				color[0] = 0.4f;
@@ -132,15 +132,15 @@ namespace renderer
 				color[1] = 0.8f;
 				color[2] = 0.2f;
 				return true;
-			case '4': // blue
-				color[0] = 0.f;
-				color[1] = 0.52f;
-				color[2] = 0.75f;
+			case '4': // purple
+				color[0] = 0.55f;
+				color[1] = 0.35f;
+				color[2] = 0.79f;
 				return true;
 			case '5': // light blue
-				color[0] = 0.12f;
-				color[1] = 0.77f;
-				color[2] = 1.f;				
+				color[0] = 0.29f;
+				color[1] = 0.82f;
+				color[2] = 0.78f;				
 				return true;
 			case '6': // pink
 				color[0] = 0.88f;
@@ -162,11 +162,14 @@ namespace renderer
 				color[1] = 0.5f;
 				color[2] = 0.3f;
 				return true;
-			case ':':
-			{
+			case ':': // rainbow
 				hsv_to_rgb({static_cast<uint8_t>((get_milliseconds() / 100) % 256), 255, 255}, color);
 				return true;
-			}
+			case ';': // grey
+				color[0] = 0.5f;
+				color[1] = 0.5f;
+				color[2] = 0.5f;
+				return true;
 			}
 
 			return false;

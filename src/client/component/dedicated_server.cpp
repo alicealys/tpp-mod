@@ -25,6 +25,8 @@ namespace dedicated_server
 
 		int current_host_channel{};
 
+		std::unordered_set<std::uint64_t> banned_players;
+
 		__int64 gn_execute_stub()
 		{
 			return -1;
@@ -105,8 +107,23 @@ namespace dedicated_server
 		bool send_p2p_packet_stub(game::ISteamNetworking* this_, game::steam_id remote, 
 			void* pub_data, unsigned int cub_data, int type, int /*channel*/)
 		{
+			if (is_host() && banned_players.contains(remote.bits))
+			{
+				return true;
+			}
+
 			const auto channel = get_client_net_channel(get_lobby_id(), remote);
 			return steam_networking_vtbl.SendP2PPacket(this_, remote, pub_data, cub_data, type, channel);
+		}
+
+		bool accept_p2p_session_with_user_stub(game::ISteamNetworking* this_, game::steam_id remote)
+		{
+			if (is_host() && banned_players.contains(remote.bits))
+			{
+				return true;
+			}
+
+			return steam_networking_vtbl.AcceptP2PSessionWithUser(this_, remote);
 		}
 
 		bool is_p2p_packet_available(game::ISteamNetworking* this_, unsigned int* msg_size, int /*channel*/)
@@ -121,10 +138,12 @@ namespace dedicated_server
 			steam_networking_vtbl.ReadP2PPacket = steam_networking->__vftable->ReadP2PPacket;
 			steam_networking_vtbl.SendP2PPacket = steam_networking->__vftable->SendP2PPacket;
 			steam_networking_vtbl.IsP2PPacketAvailable = steam_networking->__vftable->IsP2PPacketAvailable;
+			steam_networking_vtbl.AcceptP2PSessionWithUser = steam_networking->__vftable->AcceptP2PSessionWithUser;
 
 			utils::hook::set(&steam_networking->__vftable->ReadP2PPacket, read_p2p_packet_stub);
 			utils::hook::set(&steam_networking->__vftable->SendP2PPacket, send_p2p_packet_stub);
 			utils::hook::set(&steam_networking->__vftable->IsP2PPacketAvailable, is_p2p_packet_available);
+			utils::hook::set(&steam_networking->__vftable->AcceptP2PSessionWithUser, accept_p2p_session_with_user_stub);
 		}
 
 		void set_lobby_data()
@@ -224,6 +243,19 @@ namespace dedicated_server
 
 			SetConsoleTitle(title.data());
 		}
+	}
+
+	void unban_player_from_session(const game::steam_id steam_id)
+	{
+		banned_players.erase(steam_id.bits);
+	}
+
+	void ban_player_from_session(const game::steam_id steam_id)
+	{
+		const auto steam_networking = (*game::SteamNetworking)();
+		const auto channel = get_client_net_channel(get_lobby_id(), steam_id);
+		steam_networking->__vftable->CloseP2PChannelWithUser(steam_networking, steam_id, channel);
+		banned_players.insert(steam_id.bits);
 	}
 
 	class component final : public component_interface
