@@ -29,6 +29,11 @@ function hidapi.project()
             path.join(hidapi.source, "windows/hidapi_winapi.h"),
             path.join(hidapi.source, "windows/hidapi_descriptor_reconstruct.c"),
         }
+
+		removefiles { 
+            path.join(hidapi.source, "version"),
+            path.join(hidapi.source, "VERSION")
+        }
         
         warnings "Off"
         
