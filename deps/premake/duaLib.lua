@@ -10,6 +10,7 @@ end
 function duaLib.includes()
 	includedirs {
 		path.join(duaLib.source, "src/include")
+		path.join(duaLib.source, "src/thirdparty/hidapi/hidapi")
 	}
 end
 
