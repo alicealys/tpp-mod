@@ -81,6 +81,7 @@
 #include <udis86.h>
 #include <MinHook.h>
 #include <tomcrypt.h>
+#define DUALIB_EXPORTS
 #include <duaLib.h>
 
 #define RAPIDJSON_NOEXCEPT
