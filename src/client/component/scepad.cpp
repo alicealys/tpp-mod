@@ -29,8 +29,8 @@ namespace scepad
         {
             if (!is_player_initialized()) return 0;
 
-            auto controller = player->tpp.controller;
-            void* weaponPtr = controller->__vftable->GetCurrentWeapon(controller, player->tpp.localPlayerIndex);
+            const auto player = game::tpp::gm::player::player2System->player2System;
+            void* weaponPtr = player->tpp.controller->__vftable->GetCurrentWeapon(player->tpp.controller, player->tpp.localPlayerIndex);
 
             console::info("[scepad] GetCurrentWeapon returned: %p", weaponPtr);
 
@@ -38,7 +38,7 @@ namespace scepad
                 console::info("[scepad] Weapon pointer is null");
                 return 0;
             }
-            
+
             console::info("[scepad] Memory dump around weapon:");
             for (int i = 0; i < 8; ++i) {
                 uint64_t* p = (uint64_t*)((char*)weaponPtr + i*32);
