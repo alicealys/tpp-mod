@@ -56,6 +56,16 @@ namespace scepad
 
         static int padHandle = 0;
 
+        using InputHandle_t = uint64_t;
+
+        using SteamAPI_SteamInput_t = void*(*)();
+        SteamAPI_SteamInput_t  fn_get_interface = nullptr;
+
+        using SteamInput_SetDualSenseTriggerEffect_t = void(*)(void*, InputHandle_t, const void*);
+        SteamInput_SetDualSenseTriggerEffect_t fn_set_trigger_effect = nullptr;
+
+        void* steam_input = nullptr;
+
         bool is_player_initialized()
 		{
 			if (game::environment::is_tpp())
@@ -90,7 +100,7 @@ namespace scepad
             auto triggerIt = triggerPreset.find(static_cast<weapon>(weaponType));
             if (triggerIt != triggerPreset.end())
             {
-                scePadSetTriggerEffect(padHandle, &triggerIt->second);
+                //scePadSetTriggerEffect(padHandle, &triggerIt->second);
                 console::info("[scepad] trigger effect applied: %d", weaponType);
             }
             
@@ -100,23 +110,45 @@ namespace scepad
         class component final : public component_interface
         {
         public:
-            void pre_load() override {}
+            void pre_load() override 
+            {
+
+            }
 
             void start() override
             {
-                s_ScePadInitParam initParam {};
-                initParam.allowBT = true;
+                //s_ScePadInitParam initParam {};
+                //initParam.allowBT = true;
 
-                int init_res = scePadInit3(&initParam);
-                if(init_res == SCE_OK)
+                //int init_res = scePadInit3(&initParam);
+                //if(init_res == SCE_OK)
+                //{
+                    //console::info("[scepad] initialized successfully");
+                    //padHandle = scePadOpen(1, 0, 0);
+                    //console::info("[scepad] opened handle %d", padHandle);
+                //}
+                //else
+                //{
+                    //console::error("[scepad] failed to initialize duaLib");
+                //}
+
+                HMODULE steam = GetModuleHandleA("steam_api64.dll");
+                if (!steam) return;
+
+                fn_get_interface = (SteamAPI_SteamInput_t)GetProcAddress(steam, "SteamAPI_SteamInput_v006");
+                fn_set_trigger_effect = (SteamInput_SetDualSenseTriggerEffect_t) GetProcAddress(steam, "SteamAPI_ISteamInput_SetDualSenseTriggerEffect");
+
+                if (!fn_get_interface || !fn_set_trigger_effect)
                 {
-                    console::info("[scepad] initialized successfully");
-                    padHandle = scePadOpen(1, 0, 0);
-                    console::info("[scepad] opened handle %d", padHandle);
+                    console::warn("[scepad] steam input functions couldn't be loaded!");
+                    return;
                 }
-                else
+
+                steam_input = fn_get_interface();
+                if(!steam_input)
                 {
-                    console::error("[scepad] failed to initialize duaLib");
+                    console::warn("[scepad] couldn't get steam input interface");
+                    return;
                 }
 
                 scheduler::loop(update_scepad, scheduler::pipeline::main, 10ms);
