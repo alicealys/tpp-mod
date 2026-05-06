@@ -24,7 +24,7 @@ jobs:
       - name: Check out files
         uses: actions/checkout@v4
         with:
-          submodules: true
+          submodules: recursive
           fetch-depth: 0
           lfs: false
 
