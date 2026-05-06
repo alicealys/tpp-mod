@@ -22,6 +22,8 @@ function duaLib.project()
 		files {
 			path.join(duaLib.source, "src/include/**.h"),
 			path.join(duaLib.source, "src/source/**.c"),
+			path.join(duaLib.source, "src/include/**.hpp"),
+			path.join(duaLib.source, "src/source/**.cpp"),
 		}
 
 		warnings "Off"
