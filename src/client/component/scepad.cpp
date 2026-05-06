@@ -31,6 +31,11 @@ namespace scepad
 
             const auto player = game::tpp::gm::player::player2System->player2System;
 
+            console::info("Controller: %p | VFT: %p | GetCurrentWeapon: %p", 
+            player->tpp.controller, 
+            player->tpp.controller->__vftable, 
+            player->tpp.controller->__vftable->GetCurrentWeapon);
+
             console::info("[scepad] calling GetCurrentWeapon()");
             void* weaponPtr = player->tpp.controller->__vftable->GetCurrentWeapon(player->tpp.controller, player->tpp.localPlayerIndex);
             if(!weaponPtr) return 0;
