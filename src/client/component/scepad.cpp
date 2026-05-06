@@ -12,6 +12,27 @@ namespace scepad
         enum class weapon
         {
             unknown_weapon = 0,
+
+            // Pistols
+            wu_spistol,
+            wu_spistol_cb,
+            wu_spistol_sb,
+            wu_spistol_ap,
+            wu_spistol_9,
+            am_d114,
+            am_d114_cb,
+            am_d114_9,
+            am_d114lb_45,
+            am_d114lb_9,
+            burkov,
+            burkov_tb,
+            burkov_hs,
+            geist_p3,
+            geist_p3_cb,
+            wu_s333,
+            wu_s324lb
+
+            // Sniper rifles
             am_mrs71_rifle = 27879,
             count
         };
@@ -56,11 +77,14 @@ namespace scepad
             s_ScePadData data {};
             scePadReadState(padHandle, &data);
 
-            auto triggerIt = triggerPreset.find(static_cast<weapon>(get_weapon_type()));
+            int weaponType = get_weapon_type();
+            auto triggerIt = triggerPreset.find(static_cast<weapon>(weaponType));
             if (triggerIt != triggerPreset.end())
             {
                 scePadSetTriggerEffect(padHandle, &triggerIt->second);
             }
+            
+            console::info("[scepad] weapon id: %d", weaponType);
         }
 
         class component final : public component_interface
@@ -85,7 +109,7 @@ namespace scepad
                     console::error("[scepad] failed to initialize duaLib");
                 }
 
-                scheduler::loop(update_scepad, scheduler::pipeline::main, 1s);
+                scheduler::loop(update_scepad, scheduler::pipeline::main, 10ms);
             }
         };
     }
