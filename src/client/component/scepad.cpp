@@ -32,8 +32,12 @@ namespace scepad
             wu_s333,
             wu_s324lb,
 
+            // Granade launchers
+            rgl_220_stun = 27879,
+            zorn_kp_sleep = 159074,
+
             // Sniper rifles
-            am_mrs71_rifle = 27879,
+            am_mrs71_rifle = 93476,
             count
         };
 
@@ -42,7 +46,12 @@ namespace scepad
             {weapon::am_mrs71_rifle, {SCE_PAD_TRIGGER_EFFECT_TRIGGER_MASK_R2, {0}, {
 			   {SCE_PAD_TRIGGER_EFFECT_MODE_OFF, {0}, {}},
 			   {SCE_PAD_TRIGGER_EFFECT_MODE_WEAPON, {0}, {.weaponParam = {6,8,8}}}
-		    }}}
+		    }}},
+
+           {weapon::rgl_220_stun, {SCE_PAD_TRIGGER_EFFECT_TRIGGER_MASK_R2, {0}, {
+			   {SCE_PAD_TRIGGER_EFFECT_MODE_OFF, {0}, {}},
+			   {SCE_PAD_TRIGGER_EFFECT_MODE_VIBRATION, {0}, {.vibrationParam = {6,8,10}}}
+            }}},
         };
 
         static int padHandle = 0;
@@ -82,6 +91,7 @@ namespace scepad
             if (triggerIt != triggerPreset.end())
             {
                 scePadSetTriggerEffect(padHandle, &triggerIt->second);
+                console::info("[scepad] trigger effect applied: %d", weaponType);
             }
             
             console::info("[scepad] weapon id: %d", weaponType);
