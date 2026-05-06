@@ -1,3 +1,4 @@
+#include <std_include.hpp>
 #include "scepad.hpp"
 #include "loader/component_loader.hpp"
 #include "scheduler.hpp"
