@@ -9,7 +9,7 @@ namespace scepad
     {
         void update_scepad()
         {
-            console::info("[scepad] test");
+            console::info("[scepad] test from update_scepad");
         }
 
         class component final : public component_interface
