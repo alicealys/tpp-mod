@@ -47,7 +47,8 @@ namespace scepad
 
             const auto player = game::tpp::gm::player::player2System->player2System;
             int weaponType = 0;
-            return player->tpp.controller->__vftable->GetCurrentWeapon(player->tpp.controller, &weaponType, player->tpp.localPlayerIndex);
+            player->tpp.controller->__vftable->GetCurrentWeapon(player->tpp.controller, &weaponType, player->tpp.localPlayerIndex);
+            return weaponType;
         }
 
         void update_scepad()
