@@ -9,8 +9,9 @@ end
 
 function hidapi.includes()
     includedirs { 
+		path.join(hidapi.source, "hidapi"),
 		hidapi.source,
-		path.join(hidapi.source, "hidapi") 
+		path.join(hidapi.source, "windows")
 	}
 end
 
