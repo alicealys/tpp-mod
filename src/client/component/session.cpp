@@ -355,7 +355,7 @@ namespace session
 
 					matchmaking::kick_player_from_lobby(client->sessionUserId->userId);
 					matchmaking::ban_player_from_lobby(client->sessionUserId->userId);
-					//dedicated_server::ban_player_from_session(steam_id);
+					dedicated_server::ban_player_from_session(steam_id);
 					game::fox::nt::Member_::Reset(client);
 				}, scheduler::session);
 			});
