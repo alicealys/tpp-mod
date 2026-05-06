@@ -30,7 +30,7 @@ namespace scepad
             geist_p3,
             geist_p3_cb,
             wu_s333,
-            wu_s324lb
+            wu_s324lb,
 
             // Sniper rifles
             am_mrs71_rifle = 27879,
