@@ -54,15 +54,21 @@ namespace scepad
             }}},
         };
 
-        static int padHandle = 0;
-
+        #define STEAM_INPUT_MAX_COUNT 16
         using InputHandle_t = uint64_t;
+        InputHandle_t controllers[STEAM_INPUT_MAX_COUNT];
 
         using SteamAPI_SteamInput_t = void*(*)();
-        SteamAPI_SteamInput_t  fn_get_interface = nullptr;
+        SteamAPI_SteamInput_t fn_get_interface = nullptr;
 
         using SteamInput_SetDualSenseTriggerEffect_t = void(*)(void*, InputHandle_t, const void*);
         SteamInput_SetDualSenseTriggerEffect_t fn_set_trigger_effect = nullptr;
+
+        using SteamInput_GetConnectedControllers_t = int(*)(void*, InputHandle_t*);
+        SteamInput_GetConnectedControllers_t fn_get_controllers = nullptr;
+
+        using SteamInput_Init_t = bool(*)(void*, bool);
+        SteamInput_Init_t fn_init = nullptr;
 
         void* steam_input = nullptr;
 
@@ -100,6 +106,7 @@ namespace scepad
             auto triggerIt = triggerPreset.find(static_cast<weapon>(weaponType));
             if (triggerIt != triggerPreset.end())
             {
+                fn_set_trigger_effect(steam_input, controllers[0], &triggerIt->second);
                 //scePadSetTriggerEffect(padHandle, &triggerIt->second);
                 console::info("[scepad] trigger effect applied: %d", weaponType);
             }
@@ -136,9 +143,11 @@ namespace scepad
                 if (!steam) return;
 
                 fn_get_interface = (SteamAPI_SteamInput_t)GetProcAddress(steam, "SteamAPI_SteamInput_v006");
-                fn_set_trigger_effect = (SteamInput_SetDualSenseTriggerEffect_t) GetProcAddress(steam, "SteamAPI_ISteamInput_SetDualSenseTriggerEffect");
+                fn_set_trigger_effect = (SteamInput_SetDualSenseTriggerEffect_t)GetProcAddress(steam, "SteamAPI_ISteamInput_SetDualSenseTriggerEffect");
+                fn_get_controllers = (SteamInput_GetConnectedControllers_t)GetProcAddress(steam, "SteamAPI_ISteamInput_GetConnectedControllers");
+                fn_init = (SteamInput_Init_t)GetProcAddress(steam, "SteamAPI_ISteamInput_Init");
 
-                if (!fn_get_interface || !fn_set_trigger_effect)
+                if (!fn_get_interface || !fn_set_trigger_effect || !fn_get_controllers || !fn_init)
                 {
                     console::warn("[scepad] steam input functions couldn't be loaded!");
                     return;
@@ -151,6 +160,7 @@ namespace scepad
                     return;
                 }
 
+                console::info("[scepad] initialized");
                 scheduler::loop(update_scepad, scheduler::pipeline::main, 10ms);
             }
         };
