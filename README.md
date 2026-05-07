@@ -22,6 +22,14 @@ Configuration files are stored in `%localappdata%\tpp-mod`
 
 ## Features
 
+| <img src="assets/github/1.png?raw=true" /> |
+|:-:|
+| in game text chat & ping/fps counter |
+
+| <img src="assets/github/2.png?raw=true" /> |
+|:-:|
+| in game console |
+
 - Allows overriding of existing lua scripts (working directory is `[mgsv game folder]/tpp-mod`)
 - **variables**:  
   similar to cod dvars (can be set through the console or through the config file `localappdata/tpp-mod/config.json`):  
