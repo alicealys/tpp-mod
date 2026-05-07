@@ -48,8 +48,9 @@ namespace text_chat
 
 	enum chat_input_mode_t
 	{
-		mode_none,
-		mode_chat,
+		mode_none = 0,
+		mode_chat = 1,
+		mode_chat_team = 2,
 	};
 
 	struct chat_state_t
@@ -57,6 +58,7 @@ namespace text_chat
 		std::deque<chat_message_t> messages;
 		float view_text_offset_y;
 		int message_index;
+		bool ctrl_down;
 		bool is_typing;
 		chat_input_mode_t mode;
 		message_buffer_t input;

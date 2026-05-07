@@ -405,6 +405,11 @@ namespace staff
 	public:
 		void pre_load() override
 		{
+			if (!game::environment::is_tpp())
+			{
+				return;
+			}
+
 			var_staff_cheat = vars::register_bool("staff_cheat", false, vars::var_flag_cheat, "max staff ranks and skills");
 		}
 

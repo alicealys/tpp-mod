@@ -77,22 +77,28 @@ namespace text_chat::ui
 			color[2] = var_color.b;
 			color[3] = var_color.a;
 
-			const auto initial_height = (chat_settings.height) - chat_settings.margin * 2.f;
+			float color_outer[4]{};
+
+			const auto initial_height = chat_settings.height;
 			const auto percent = initial_height / scroll_height;
 			const auto height = initial_height * percent;
 			const auto offset = (initial_height - height) * scroll_amount / max_scroll;
 
 			auto y_ = 0.f;
+			auto static_y = 0.f;
 			if (chat_settings.chat_direction < 0.f)
 			{
-				y_ = y + chat_settings.margin * 2.f + chat_settings.line_height + offset;
+				static_y = y + chat_settings.line_height + chat_settings.margin + 1.f;
+				y_ = y + chat_settings.line_height + offset + chat_settings.margin + 1.f;
 			}
 			else
 			{
-				y_ = y - chat_settings.margin * 2.f - height - offset;
+				static_y = y - initial_height - chat_settings.margin - 1.f;
+				y_ = y - height - offset - chat_settings.margin - 1.f;
 			}
 
-			renderer::draw_box(r, x + chat_settings.width - chat_settings.scrollbar_width - chat_settings.margin, y_, chat_settings.scrollbar_width, height , color);
+			renderer::draw_box(r, x + chat_settings.width - chat_settings.scrollbar_width, static_y, chat_settings.scrollbar_width, initial_height, color_outer, color);
+			renderer::draw_box(r, x + chat_settings.width - chat_settings.scrollbar_width, y_, chat_settings.scrollbar_width, height, color);
 		}
 
 		void draw_messages(game::fox::gr::dg::plugins::Draw2DRenderer* r, chat_state_t& state, float x, float y)
@@ -142,6 +148,19 @@ namespace text_chat::ui
 				state.view_text_offset_y = 0.f;
 			}
 
+			if ((state.is_typing || game::tpp::ui::menu::impl::MotherBaseDeviceSystemImpl_::IsDeviceOpend()) && messages_height > 0.f)
+			{
+				const auto box_height = std::min(messages_height, chat_settings.height);
+				if (chat_settings.chat_direction < 0.f)
+				{
+					renderer::draw_box(r, x, y + chat_settings.line_height + chat_settings.margin + 1.f, chat_settings.width, box_height, bg_color, bg_color, 1.f);
+				}
+				else
+				{
+					renderer::draw_box(r, x, y - box_height - chat_settings.margin - 1.f, chat_settings.width, box_height, bg_color, bg_color, 1.f);
+				}
+			}
+
 			if (state.is_typing)
 			{
 				if (messages_height > 0.f)
@@ -152,19 +171,6 @@ namespace text_chat::ui
 			else
 			{
 				state.view_text_offset_y = 0.f;
-			}
-
-			if ((state.is_typing || game::tpp::ui::menu::impl::MotherBaseDeviceSystemImpl_::IsDeviceOpend()) && messages_height > 0.f)
-			{
-				const auto box_height = std::min(messages_height, chat_settings.height);
-				if (chat_settings.chat_direction < 0.f)
-				{
-					renderer::draw_box(r, x, y + chat_settings.line_height + chat_settings.margin + 1.f, chat_settings.width, box_height + 1.f, bg_color, bg_color, 1.f);
-				}
-				else
-				{
-					renderer::draw_box(r, x, y - box_height - chat_settings.margin - 1.f, chat_settings.width, box_height + 1.f, bg_color, bg_color, 1.f);
-				}
 			}
 
 			renderer::remove_stencil(r);
@@ -254,10 +260,30 @@ namespace text_chat::ui
 			const auto ms_epoch = static_cast<std::uint64_t>(std::chrono::duration_cast<std::chrono::milliseconds>(now.time_since_epoch()).count());
 			const auto pulse_alpha = 1.f - (static_cast<float>(ms_epoch % 1500) / 1500.f) * 0.7f;
 
+			auto prefix = "say to all";
+
 			float box_outline_color[4]{};
 			box_outline_color[0] = 1.f;
 			box_outline_color[1] = 1.f;
 			box_outline_color[2] = 1.f;
+
+			if (state.mode == mode_chat_team)
+			{
+				prefix = "say to team";
+				box_outline_color[0] = 0.7f;
+				box_outline_color[1] = 0.89f;
+				box_outline_color[2] = 0.99f;
+
+				color_hint[0] = box_outline_color[0];
+				color_hint[1] = box_outline_color[1];
+				color_hint[2] = box_outline_color[2];
+				color_hint[3] = 0.7f;
+
+				color[0] = color_hint[0];
+				color[1] = color_hint[1];
+				color[2] = color_hint[2];
+			}
+
 			box_outline_color[3] = pulse_alpha;
 
 			if (var_chat_input_pulse->current.enabled())
@@ -271,7 +297,7 @@ namespace text_chat::ui
 
 			if (state.input[0] == 0)
 			{
-				renderer::draw_text(r, "say to all", chat_settings.font_height, x + chat_settings.margin, y, color_hint, outline_color);
+				renderer::draw_text(r, prefix, chat_settings.font_height, x + chat_settings.margin, y, color_hint, outline_color);
 			}
 
 			renderer::draw_text_with_cursor(r, state.input, state.cursor, chat_settings.font_height,

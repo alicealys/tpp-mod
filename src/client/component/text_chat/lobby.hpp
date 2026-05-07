@@ -2,5 +2,5 @@
 
 namespace text_chat::lobby
 {
-	void send_chat_message(const std::string& text);
+	void send_chat_message(const std::string& text, bool team);
 }

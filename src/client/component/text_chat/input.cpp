@@ -5,7 +5,8 @@
 
 #include "input.hpp"
 #include "ui.hpp"
-#include "../text_chat/lobby.hpp"
+#include "lobby.hpp"
+#include "../session.hpp"
 
 #include <utils/hook.hpp>
 #include <utils/string.hpp>
@@ -43,11 +44,57 @@ namespace text_chat::input
 			state.cursor--;
 		}
 
+		void handle_tab(chat_state_t& state)
+		{
+			std::string input = state.input;
+			const auto space_index = input.find_last_of(' ');
+			if (space_index != std::string::npos)
+			{
+				input = input.substr(space_index + 1);
+			}
+
+			if (input.empty())
+			{
+				return;
+			}
+
+			auto is_self = false;
+			std::string name;
+			const auto client = session::get_client_by_name(input, &is_self, &name);
+			if (client == nullptr)
+			{
+				return;
+			}
+
+			if (name.size() >= sizeof(state.input) - 1)
+			{
+				return;
+			}
+
+			state.cursor -= static_cast<int>(input.size());
+
+			for (auto c : name)
+			{
+				if (state.cursor >= chat_message_max_len)
+				{
+					return;
+				}
+
+				c = utils::string::normalize_ascii_extended(c);
+				if (utils::string::is_char_text(c))
+				{
+					state.input[state.cursor++] = c;
+				}
+			}
+
+			handle_char(state, ' ');
+		}
+
 		void handle_return(chat_state_t& state)
 		{
 			if (state.input[0] != 0)
 			{
-				text_chat::lobby::send_chat_message(state.input);
+				text_chat::lobby::send_chat_message(state.input, state.mode == mode_chat_team);
 			}
 
 			stop_typing(state);
@@ -180,6 +227,11 @@ namespace text_chat::input
 				return false;
 			}
 
+			if (key == VK_CONTROL)
+			{
+				state.ctrl_down = is_down;
+			}
+
 			if (!is_down)
 			{
 				return true;
@@ -201,6 +253,9 @@ namespace text_chat::input
 				break;
 			case VK_ESCAPE:
 				stop_typing(state);
+				break;
+			case VK_TAB:
+				handle_tab(state);
 				break;
 			case VK_BACK:
 				handle_backspace(state);
@@ -264,7 +319,8 @@ namespace text_chat::input
 				return false;
 			}
 
-			state.view_text_offset_y = std::max(0.f, state.view_text_offset_y + 10.f * (down ? -1.f : 1.f));
+			const auto scroll_amount = state.ctrl_down ? 50.f : 10.f;
+			state.view_text_offset_y = std::max(0.f, state.view_text_offset_y + scroll_amount * (down ? -1.f : 1.f));
 			return true;
 		});
 	}
@@ -324,6 +380,21 @@ namespace text_chat::input
 					stop_typing(state);
 					state.is_typing = true;
 					state.mode = mode_chat;
+				});
+			});
+
+			command::add("chatteam", []
+			{
+				if (!is_chat_enabled() || !can_use_chat())
+				{
+					return;
+				}
+
+				chat_state.access([](chat_state_t& state)
+				{
+					stop_typing(state);
+					state.is_typing = true;
+					state.mode = mode_chat_team;
 				});
 			});
 		}

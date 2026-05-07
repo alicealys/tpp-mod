@@ -205,6 +205,11 @@ namespace matchmaking
 				console::debug("[MgoMatchmakingManager] State updated: %i\n", game::s_mgoMatchMakingManager->state);
 			}
 
+			if (prev_state > game::s_mgoMatchMakingManager->state)
+			{
+				text_chat::clear();
+			}
+
 			prev_state = game::s_mgoMatchMakingManager->state;
 
 			if (request_match_start && game::s_mgoMatchMakingManager->state == 2)
@@ -373,6 +378,11 @@ namespace matchmaking
 	public:
 		void pre_load() override
 		{
+			if (!game::environment::is_mgo())
+			{
+				return;
+			}
+
 			var_match_enable_tweaks = vars::register_bool("match_enable_tweaks", false, vars::var_flag_saved, "enable match settings tweaks");
 			var_match_min_players = vars::register_int("match_min_players", 2, 0, 16, vars::var_flag_saved, "match minimum players override");
 			var_match_max_players = vars::register_int("match_max_players", 16, 0, 16, vars::var_flag_saved, "match maximum players override");
