@@ -997,6 +997,11 @@ namespace renderer
 	float calc_text_width_artist(game::fox::gr::dg::plugins::Draw2DRenderer* instance, const char* text, float height, bool formatted,
 		bool word_wrapping, float line_width, int* line_count, int caret_index, int max_len)
 	{
+		if (text == nullptr)
+		{
+			return 0.f;
+		}
+
 		if (max_len < 0)
 		{
 			max_len = static_cast<int>(std::strlen(text));
@@ -1045,6 +1050,11 @@ namespace renderer
 	float calc_text_width(game::fox::gr::dg::plugins::Draw2DRenderer* instance, const char* text, float height, bool formatted,
 		bool word_wrapping, float line_width, int* line_count, int caret_index, int max_len)
 	{
+		if (text == nullptr)
+		{
+			return 0.f;
+		}
+
 		const auto count = static_cast<int>(std::strlen(text));
 		if (max_len == -1)
 		{
