@@ -248,18 +248,17 @@ namespace scepad
             void start() override
             {
                 if (!game::environment::is_tpp()) return;
-
+                if (DSX::init() != DSX::Success) {
+                    console::warn("[scepad] DSX++ client failed to initialize!");
+                    return;
+                }
+                console::info("[scepad] DSX++ client initialized successfully!");
+                
             	command::add("printweaponid", []
                 {
                     scheduler::once(print_weapon_id, scheduler::main);
                 });
 
-                if (DSX::init() != DSX::Success) {
-                    console::warn("[scepad] DSX++ client failed to initialize!");
-                    return;
-                }
-
-                console::info("[scepad] DSX++ client initialized successfully!");
                 scheduler::loop(update_scepad, scheduler::main, 30ms);
             }
         };
