@@ -184,7 +184,7 @@ namespace scepad
 
         void update_scepad()
         {
-            if (var_send_dsx_packets->current.enabled())
+            if (!var_send_dsx_packets->current.enabled())
             {
                 return;
             }
