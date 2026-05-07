@@ -82,8 +82,6 @@
 #include <udis86.h>
 #include <MinHook.h>
 #include <tomcrypt.h>
-#define DUALIB_EXPORTS
-#include <duaLib.h>
 
 #define RAPIDJSON_NOEXCEPT
 #define RAPIDJSON_ASSERT(cond) if(cond); else throw std::runtime_error("rapidjson assert fail");

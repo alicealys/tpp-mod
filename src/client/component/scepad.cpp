@@ -38,6 +38,7 @@ namespace scepad
 
             // Sniper rifles
             am_mrs71_rifle = 93476,
+            
             count
         };
 
@@ -47,16 +48,6 @@ namespace scepad
 
                 {weapon::rgl_220_stun, {SCE_PAD_TRIGGER_EFFECT_TRIGGER_MASK_R2, {0}, {{SCE_PAD_TRIGGER_EFFECT_MODE_OFF, {0}, {}}, {SCE_PAD_TRIGGER_EFFECT_MODE_VIBRATION, {0}, {.vibrationParam = {6, 8, 10}}}}}},
         };
-
-        using SteamController_Init_t = bool (*)(void *);
-        SteamController_Init_t orig_controller_init = nullptr;
-
-        bool hook_ControllerInit(void *self)
-        {
-            return true;
-        }
-
-        static int padHandle = 0;
 
         bool is_player_initialized()
         {
@@ -87,36 +78,7 @@ namespace scepad
 
         void update_scepad()
         {
-            int weaponType = get_weapon_type();
-            auto triggerIt = triggerPreset.find(static_cast<weapon>(weaponType));
-            if (triggerIt != triggerPreset.end())
-            {
-                scePadSetTriggerEffect(padHandle, &triggerIt->second);
-                console::info("[scepad] trigger effect applied: %d", weaponType);
-            }
 
-            console::info("[scepad] weapon id: %d", weaponType);
-        }
-
-        void init_scepad()
-        {
-            s_ScePadInitParam initParam{};
-            initParam.allowBT = true;
-
-            int init_res = scePadInit3(&initParam);
-            if (init_res == SCE_OK)
-            {
-                console::info("[scepad] initialized successfully");
-                padHandle = scePadOpen(1, 0, 0);
-                console::info("[scepad] opened handle %d", padHandle);
-            }
-            else
-            {
-                console::error("[scepad] failed to initialize duaLib");
-            }
-
-            console::info("[scepad] initialized");
-            scheduler::loop(update_scepad, scheduler::pipeline::main, 10ms);
         }
 
         class component final : public component_interface
@@ -129,7 +91,7 @@ namespace scepad
 
             void start() override
             {
-                scheduler::once(init_scepad, scheduler::async, 10s);
+
             }
         };
     }
