@@ -152,26 +152,26 @@ namespace vars
 		case var_type_integer:
 			return utils::string::va("%i", std::get<std::int32_t>(this->value_));
 		case var_type_float:
-			return utils::string::va("%f", std::get<float>(this->value_));
+			return utils::string::va("%g", std::get<float>(this->value_));
 		case var_type_string:
 			return std::get<std::string>(this->value_);
 		case var_type_vec2:
-			return utils::string::va("%f %f",
+			return utils::string::va("%g %g",
 				std::get<vec2_t>(this->value_).x,
 				std::get<vec2_t>(this->value_).y);
 		case var_type_vec3:
-			return utils::string::va("%f %f %f",
+			return utils::string::va("%g %g %g",
 				std::get<vec3_t>(this->value_).x,
 				std::get<vec3_t>(this->value_).y,
 				std::get<vec3_t>(this->value_).z);
 		case var_type_vec4:
-			return utils::string::va("%f %f %f %f",
+			return utils::string::va("%g %g %g %g",
 				std::get<vec4_t>(this->value_).x,
 				std::get<vec4_t>(this->value_).y,
 				std::get<vec4_t>(this->value_).z,
 				std::get<vec4_t>(this->value_).w);
 		case var_type_color:
-			return utils::string::va("%f %f %f %f",
+			return utils::string::va("%g %g %g %g",
 				std::get<color_t>(this->value_).r,
 				std::get<color_t>(this->value_).g,
 				std::get<color_t>(this->value_).b,
@@ -287,6 +287,27 @@ namespace vars
 				const auto color = value.get_color();
 				return check_color_component(color.r) && check_color_component(color.g) && check_color_component(color.b) && check_color_component(color.a);
 			}
+			case var_type_vec2:
+			{
+				const auto vec = value.get_vec2();
+				return vec.x >= var->limits.float_.min && vec.x <= var->limits.float_.max &&
+					vec.y >= var->limits.float_.min && vec.y <= var->limits.float_.max;
+			}
+			case var_type_vec3:
+			{
+				const auto vec = value.get_vec3();
+				return vec.x >= var->limits.float_.min && vec.x <= var->limits.float_.max &&
+					vec.y >= var->limits.float_.min && vec.y <= var->limits.float_.max &&
+					vec.z >= var->limits.float_.min && vec.z <= var->limits.float_.max;
+			}
+			case var_type_vec4:
+			{
+				const auto vec = value.get_vec4();
+				return vec.x >= var->limits.float_.min && vec.x <= var->limits.float_.max &&
+					vec.y >= var->limits.float_.min && vec.y <= var->limits.float_.max &&
+					vec.z >= var->limits.float_.min && vec.z <= var->limits.float_.max &&
+					vec.w >= var->limits.float_.min && vec.w <= var->limits.float_.max;
+			}
 			}
 
 			return true;
@@ -364,6 +385,32 @@ namespace vars
 		}
 	}
 
+	const char* get_vec_var_domain(const var_limits_t& domain, const std::uint32_t components)
+	{
+		if (domain.float_.min == -FLT_MAX)
+		{
+			if (domain.float_.max == FLT_MAX)
+			{
+				return utils::string::va("domain is any %iD vector", components);
+			}
+			else
+			{
+				return utils::string::va("domain is any %iD vector with components %g or smaller", components,
+					domain.float_.max);
+			}
+		}
+		else if (domain.float_.max == FLT_MAX)
+		{
+			return utils::string::va("domain is any %iD vector with components %g or bigger", components,
+				domain.float_.min);
+		}
+		else
+		{
+			return utils::string::va("domain is any %iD vector with components from %g to %g", components,
+				domain.float_.min, domain.float_.max);
+		}
+	}
+
 	const char* get_var_domain(const var_ptr& var)
 	{
 		switch (var->type)
@@ -380,18 +427,18 @@ namespace vars
 				}
 				else
 				{
-					return utils::string::va("domain is any number %f or smaller", var->limits.float_.max);
+					return utils::string::va("domain is any number %g or smaller", var->limits.float_.max);
 				}
 			}
 			else
 			{
 				if (var->limits.float_.max == std::numeric_limits<float>::max())
 				{
-					return utils::string::va("domain is any number %f or bigger", var->limits.float_.min);
+					return utils::string::va("domain is any number %g or bigger", var->limits.float_.min);
 				}
 				else
 				{
-					return utils::string::va("domain is any number %f to %f", var->limits.float_.min, var->limits.float_.max);
+					return utils::string::va("domain is any number %g to %g", var->limits.float_.min, var->limits.float_.max);
 				}
 			}
 		}
@@ -422,6 +469,14 @@ namespace vars
 		}
 		case var_type_string:
 			return "domain is any text";
+		case var_type_color:
+			return "domain is any 4-component color, in RGBA format";
+		case var_type_vec2:
+			return get_vec_var_domain(var->limits, 2);
+		case var_type_vec3:
+			return get_vec_var_domain(var->limits, 3);
+		case var_type_vec4:
+			return get_vec_var_domain(var->limits, 4);
 		}
 
 		return "";
@@ -502,21 +557,51 @@ namespace vars
 	}
 
 	var_ptr register_vec2(const std::string& name, const vec2_t& value,
-		const std::uint32_t flags, const std::string& description)
+		float min, float max, const std::uint32_t flags, const std::string& description)
 	{
-		return register_var(name, var_type_vec2, value, {}, flags, description);
+		var_limits_t limits{};
+		limits.float_.min = min;
+		limits.float_.max = max;
+
+		if (min == max)
+		{
+			limits.float_.min = std::numeric_limits<float>::min();
+			limits.float_.max = std::numeric_limits<float>::max();
+		}
+
+		return register_var(name, var_type_vec2, value, limits, flags, description);
 	}
 
 	var_ptr register_vec3(const std::string& name, const vec3_t& value,
-		const std::uint32_t flags, const std::string& description)
+		float min, float max, const std::uint32_t flags, const std::string& description)
 	{
-		return register_var(name, var_type_vec3, value, {}, flags, description);
+		var_limits_t limits{};
+		limits.float_.min = min;
+		limits.float_.max = max;
+
+		if (min == max)
+		{
+			limits.float_.min = std::numeric_limits<float>::min();
+			limits.float_.max = std::numeric_limits<float>::max();
+		}
+
+		return register_var(name, var_type_vec3, value, limits, flags, description);
 	}
 
 	var_ptr register_vec4(const std::string& name, const vec4_t& value,
-		const std::uint32_t flags, const std::string& description)
+		float min, float max, const std::uint32_t flags, const std::string& description)
 	{
-		return register_var(name, var_type_vec4, value, {}, flags, description);
+		var_limits_t limits{};
+		limits.float_.min = min;
+		limits.float_.max = max;
+
+		if (min == max)
+		{
+			limits.float_.min = std::numeric_limits<float>::min();
+			limits.float_.max = std::numeric_limits<float>::max();
+		}
+
+		return register_var(name, var_type_vec4, value, limits, flags, description);
 	}
 
 	var_ptr register_color(const std::string& name, const color_t& value,

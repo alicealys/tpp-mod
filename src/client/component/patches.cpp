@@ -20,6 +20,8 @@ namespace patches
 		vars::var_ptr var_player_ramble_speed_scale;
 		vars::var_ptr var_player_ramble_speed_patch;
 		vars::var_ptr var_name;
+		vars::var_ptr var_max_fps;
+		vars::var_ptr var_sensitivity;
 
 		void set_timer_resolution()
 		{
@@ -59,6 +61,29 @@ namespace patches
 			*res = 0;
 		}
 
+		utils::hook::detour leave_frame_hook;
+
+		void leave_frame_stub(void* a1)
+		{
+			leave_frame_hook.invoke<void>(a1);
+
+			const auto max_fps = var_max_fps->current.get_int();
+			if (max_fps == 0)
+			{
+				return;
+			}
+
+			constexpr auto nano_secs = std::chrono::duration_cast<std::chrono::nanoseconds>(1s);
+			const auto target_frame_time = nano_secs / max_fps;
+			const auto frame_time = std::chrono::steady_clock::now() - scheduler::main_frame_begin;
+			const auto diff = target_frame_time - frame_time;
+
+			if (diff > 0ms)
+			{	
+				std::this_thread::sleep_for(diff);
+			}
+		}
+
 		void unlock_fps()
 		{
 			set_timer_resolution();
@@ -78,6 +103,8 @@ namespace patches
 			// unlock framerate always
 			utils::hook::jump(SELECT_VALUE(0x14008130A, 0x14008195A, 0x14008142A, 0x14008181A), 
 				SELECT_VALUE(0x1400814D8, 0x140081B28, 0x1400815F8, 0x1400819E8));
+
+			leave_frame_hook.create(SELECT_VALUE(0x1431882F0, 0x1425CA340, 0x14320E630, 0x1426DABC0), leave_frame_stub);
 		}
 
 		HANDLE create_mutex_stub(LPSECURITY_ATTRIBUTES attributes, BOOL owner, LPCWSTR name)
@@ -115,7 +142,7 @@ namespace patches
 		utils::hook::detour get_persona_name_hook;
 		const char* get_persona_name_stub(game::ISteamFriends* this_)
 		{
-			static char buffer[0x200];
+			static char buffer[0x200]{};
 			const auto name = var_name->current.get_string();
 			strncpy_s(buffer, sizeof(buffer), name.data(), name.size());
 			return buffer;
@@ -135,6 +162,21 @@ namespace patches
 
 			get_persona_name_hook.create(steam_friends->__vftable->GetPersonaName, get_persona_name_stub);
 		}
+
+		void patch_sensitivity()
+		{
+			constexpr const auto base_value = 0.016683333f;
+			static auto value = base_value;
+
+			utils::hook::inject(SELECT_VALUE(0x149A977B4, 0x1411B869B, 0x142ADAE18, 0x141EE0A14) + 4, &value);
+
+			var_sensitivity->set_callback = []()
+			{
+				value = base_value * var_sensitivity->current.get_float();
+			};
+
+			var_sensitivity->set_callback->operator()();
+		}
 	}
 
 	class component final : public component_interface
@@ -145,14 +187,24 @@ namespace patches
 			var_worker_count = vars::register_int("com_worker_count", 4, 2, std::numeric_limits<int>::max(),
 				vars::var_flag_saved | vars::var_flag_latched, "maxiumum number of job executor worker threads");
 
-			var_unlock_fps = vars::register_bool("com_unlock_fps", false, vars::var_flag_saved | vars::var_flag_latched, "unlock fps");
+			var_unlock_fps = vars::register_bool("com_unlock_fps", false, 
+				vars::var_flag_saved | vars::var_flag_latched, "unlock fps");
+
+			var_max_fps = vars::register_int("com_max_fps", 0, 0, 1000, 
+				vars::var_flag_saved, "max fps (only works when com_unlock_fps is enabled)");
+
+			var_sensitivity = vars::register_float("sensitivity", 1.f, 0.f, 10.f, 
+				vars::var_flag_saved, "mouse sensitivity scale");
 
 			if (game::environment::is_tpp())
 			{
-				var_player_ramble_speed_scale = vars::register_float("player_ramble_speed_scale", 1.51f, 0.f, 5.f, vars::var_flag_saved, "player sleep wake up scale (while player is trying to wake up)");
-				var_player_ramble_speed_patch = vars::register_bool("player_ramble_speed_patch", true, vars::var_flag_saved, "enable high fps player sleep wake up patch");
+				var_player_ramble_speed_scale = vars::register_float("player_ramble_speed_scale", 1.51f, 0.f, 5.f, 
+					vars::var_flag_saved, "player sleep wake up scale (while player is trying to wake up)");
+				var_player_ramble_speed_patch = vars::register_bool("player_ramble_speed_patch", true, 
+					vars::var_flag_saved, "enable high fps player sleep wake up patch");
 
-				var_skip_intro = vars::register_bool("ui_skip_intro", false, vars::var_flag_saved | vars::var_flag_latched, "skip intro splashscreens");
+				var_skip_intro = vars::register_bool("ui_skip_intro", false, 
+					vars::var_flag_saved | vars::var_flag_latched, "skip intro splashscreens");
 			}
 			else
 			{
@@ -204,6 +256,8 @@ namespace patches
 			{
 				unlock_fps();
 			}
+
+			patch_sensitivity();
 		}
 	};
 }

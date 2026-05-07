@@ -2,6 +2,8 @@
 
 namespace scheduler
 {
+	extern std::chrono::steady_clock::time_point main_frame_begin;
+
 	enum pipeline
 	{
 		async = 0,

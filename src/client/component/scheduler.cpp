@@ -10,6 +10,8 @@
 
 namespace scheduler
 {
+	std::chrono::steady_clock::time_point main_frame_begin;
+
 	namespace
 	{
 		utils::hook::detour core_framework_enter_frame_hook;
@@ -97,6 +99,7 @@ namespace scheduler
 
 		void core_framework_enter_frame_stub(void* a1, void* a2)
 		{
+			main_frame_begin = std::chrono::steady_clock::now();
 			core_framework_enter_frame_hook.invoke<void>(a1, a2);
 			execute(main);
 		}
