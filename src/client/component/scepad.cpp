@@ -5,12 +5,14 @@
 #include "console.hpp"
 #include "game/game.hpp"
 #include <utils/hook.hpp>
+#include "vars.hpp"
+#include "command.hpp"
 
 namespace scepad
 {
     namespace
     {
-        struct TriggerEffect 
+        struct TriggerEffect
         {
             TriggerMode left_trigger_mode = TriggerMode::Normal;
             std::vector<int> left_parameters;
@@ -18,6 +20,7 @@ namespace scepad
             std::vector<int> right_parameters;
         };
 
+        vars::var_ptr var_send_dsx_packets;
         static TriggerEffect generic_effect = { TriggerMode::Normal, {0}, TriggerMode::SemiAutomaticGun, {5,8,2} };
         static bool gun_empty = false;
         static std::chrono::steady_clock::time_point last_time_fired = std::chrono::steady_clock::now();
@@ -54,16 +57,16 @@ namespace scepad
 
             // Sniper rifles
             am_mrs71_rifle = 93476,
-            
+
             count
         };
 
         utils::hook::detour try_fire_hook;
-        void* try_fire_stub(__int64 a1, __int64 a2, unsigned int a3) 
+        void* try_fire_stub(__int64 a1, __int64 a2, unsigned int a3)
         {
             void* result = try_fire_hook.invoke<void*>(a1, a2, a3);
 
-            if ((int*)result == 0) 
+            if ((int*)result == 0)
             {
                 gun_empty = true;
             }
@@ -90,10 +93,10 @@ namespace scepad
             {weapon::zorn_kp_sleep, {TriggerMode::Normal, {0}, TriggerMode::SemiAutomaticGun, {6,8,6}}},
         };
 
-        bool is_player_firing() 
+        bool is_player_firing()
         {
             auto now = std::chrono::steady_clock::now();
-            if ((now - last_time_fired) <= 100ms) 
+            if ((now - last_time_fired) <= 100ms)
             {
                 return true;
             }
@@ -144,16 +147,16 @@ namespace scepad
             if (game::environment::is_tpp())
             {
                 return game::tpp::gm::player::player2System->player2System != nullptr &&
-                       game::tpp::gm::player::player2System->player2System->tpp.controller != nullptr;
+                    game::tpp::gm::player::player2System->player2System->tpp.controller != nullptr;
             }
             else
             {
                 return game::tpp::gm::player::player2System->player2System != nullptr &&
-                       game::tpp::gm::player::player2System->player2System->mgo.controller != nullptr;
+                    game::tpp::gm::player::player2System->player2System->mgo.controller != nullptr;
             }
         }
 
-        int get_weapon_type()
+        int get_weapon_id()
         {
             if (!is_player_initialized())
                 return -1;
@@ -166,7 +169,7 @@ namespace scepad
             return weaponType;
         }
 
-        int get_current_equip_slot() 
+        int get_current_equip_slot()
         {
             if (!is_player_initialized())
                 return -1;
@@ -181,37 +184,42 @@ namespace scepad
 
         void update_scepad()
         {
+            if (var_send_dsx_packets->current.enabled())
+            {
+                return;
+            }
+
             DSX::clearPayload();
 
-            int weaponType = get_weapon_type();
+            int weaponType = get_weapon_id();
             auto triggerIt = triggerPreset.find(static_cast<weapon>(weaponType));
-            if (is_player_action_blocked()) 
+            if (is_player_action_blocked())
             {
-                DSX::setLeftTrigger(TriggerMode::Normal, {0});
+                DSX::setLeftTrigger(TriggerMode::Normal, { 0 });
                 DSX::setRightTrigger(TriggerMode::Normal, { 0 });
                 DSX::setRGB(255, 255, 255, 255);
             }
-            else if (triggerIt != triggerPreset.end() && !gun_empty) 
+            else if (triggerIt != triggerPreset.end() && !gun_empty)
             {
                 TriggerEffect mode = triggerIt->second;
-                if (mode.right_trigger_mode == TriggerMode::AutomaticGun && !is_player_firing()) 
+                if (mode.right_trigger_mode == TriggerMode::AutomaticGun && !is_player_firing())
                 {
                     DSX::setLeftTrigger(generic_effect.left_trigger_mode, generic_effect.left_parameters);
                     DSX::setRightTrigger(generic_effect.right_trigger_mode, generic_effect.right_parameters);
                 }
-                else 
+                else
                 {
                     DSX::setLeftTrigger(mode.left_trigger_mode, mode.left_parameters);
                     DSX::setRightTrigger(mode.right_trigger_mode, mode.right_parameters);
                 }
             }
-            else 
+            else
             {
                 DSX::setLeftTrigger(generic_effect.left_trigger_mode, generic_effect.left_parameters);
                 DSX::setRightTrigger(generic_effect.right_trigger_mode, generic_effect.right_parameters);
             }
 
-            if (!is_player_action_blocked()) 
+            if (!is_player_action_blocked())
             {
                 DSX::setRGB(0, 0, 100, 255);
             }
@@ -221,9 +229,9 @@ namespace scepad
             }
         }
 
-        void print_weapon_type() 
+        void print_weapon_id()
         {
-            console::info("[scepad] held weapon: %d", get_weapon_type());
+            console::info("[scepad] held weapon: %d", get_weapon_id());
         }
 
         class component final : public component_interface
@@ -233,19 +241,26 @@ namespace scepad
             {
                 if (!game::environment::is_tpp()) return;
                 state_gun_fire_hook.create(game::tpp::gm::player::impl::attack::AttackActionImpl_::StateGunFire.get(), state_gun_fire_stub);
-                try_fire_hook.create(game::tpp::gm::player::impl::attack::AttackActionImpl_::TryFire.get(), try_fire_stub);   
+                try_fire_hook.create(game::tpp::gm::player::impl::attack::AttackActionImpl_::TryFire.get(), try_fire_stub);
+                var_send_dsx_packets = vars::register_bool("send_dsx_packets", true, vars::var_flag_saved, "send sony controller gimmick data to DSX/DSY");
             }
 
             void start() override
             {
+                if (!game::environment::is_tpp()) return;
+
+                command::add("printweaponid", []
+                {
+                    scheduler::once(print_weapon_id, scheduler::main);
+                });
+
                 if (DSX::init() != DSX::Success) {
                     console::warn("[scepad] DSX++ client failed to initialize!");
                     return;
                 }
+
                 console::info("[scepad] DSX++ client initialized successfully!");
-                
                 scheduler::loop(update_scepad, scheduler::main, 30ms);
-                scheduler::loop(print_weapon_type, scheduler::main, 2s);
             }
         };
     }
