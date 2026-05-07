@@ -53,9 +53,17 @@ namespace session
 
 			printf("is host: %i\n", is_host);
 			printf("state: %s (%i)\n", get_session_state_name(state), state);
-			printf("rtt: %ims\n", get_rtt(main_session));
-			printf("num flags steam_id                         name                             team\n");
-			printf("--- ----- -------------------------------- -------------------------------- ----\n");
+			printf("ping: %ims\n", get_rtt(main_session));
+			if (game::environment::is_tpp())
+			{
+				printf("num flags ping  steam_id                         name                            \n");
+				printf("--- ----- ----- -------------------------------- --------------------------------\n");
+			}
+			else
+			{
+				printf("num flags ping steam_id                         name                             team\n");
+				printf("--- ----- ----- -------------------------------- -------------------------------- ----\n");
+			}
 
 			const auto ruleset = get_active_ruleset();
 
@@ -70,10 +78,23 @@ namespace session
 				game::steam_id steam_id{};
 				steam_id.bits = member->sessionUserId->userId;
 				const auto name = steam_friends->__vftable->GetFriendPersonaName(steam_friends, steam_id);
-				const auto team = ruleset != nullptr
-					? ruleset->playerTeams[i] : -1;
 
-				printf("%3i %5i %32lli %32s %4i", i, member->flags, steam_id.bits, name, team);
+				if (game::environment::is_tpp())
+				{
+					const auto ping = member->sppSocket != nullptr
+						? member->sppSocket->tpp.rtt_time
+						: -1;
+					printf("%3i %5i %5i %32lli %32s", i, member->flags, ping, steam_id.bits, name);
+				}
+				else
+				{
+					const auto team = ruleset != nullptr
+						? ruleset->playerTeams[i] : -1;
+					const auto ping = member->sppSocket != nullptr
+						? member->sppSocket->mgo.rtt_time
+						: -1;
+					printf("%3i %5i %5i %32lli %32s %4i", i, member->flags, ping, steam_id.bits, name, team);
+				}
 			}
 		}
 
@@ -122,6 +143,33 @@ namespace session
 		else
 		{
 			return session->sppSocket->mgo.rtt_time;
+		}
+	}
+
+	bool is_host(game::fox::nt::impl::SessionImpl2* session)
+	{
+		if (session == nullptr)
+		{
+			return false;
+		}
+
+		return session->sessionInterface.__vftable->IsHost(&session->sessionInterface);
+	}
+
+	int get_state(game::fox::nt::impl::SessionImpl2* session)
+	{
+		if (session == nullptr)
+		{
+			return 0;
+		}
+
+		if (game::environment::is_tpp())
+		{
+			return session->__vftable->tpp.GetState(session);
+		}
+		else
+		{
+			return session->__vftable->mgo.GetState(session);
 		}
 	}
 
@@ -257,6 +305,11 @@ namespace session
 
 	game::tpp::mp::RuleSet* get_active_ruleset()
 	{
+		if (game::environment::is_tpp())
+		{
+			return nullptr;
+		}
+
 		const auto ruleset_manager = *game::tpp::mp::RulsetManager_::s_instance;
 		if (ruleset_manager == nullptr || ruleset_manager->unk1 == nullptr || ruleset_manager->unk1->activeRuleset == nullptr)
 		{
