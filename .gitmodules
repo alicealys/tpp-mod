@@ -37,3 +37,6 @@
 [submodule "deps/duaLib"]
 	path = deps/duaLib
 	url = https://github.com/WujekFoliarz/duaLib
+[submodule "deps/DSXpp"]
+	path = deps/DSXpp
+	url = https://github.com/tpetsas/DSXpp/
