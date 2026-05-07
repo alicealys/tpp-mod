@@ -1730,7 +1730,7 @@ namespace game
 					void(__fastcall* SetSlotDirectly)(tpp::gm::player::impl::EquipControllerImpl_tpp*, unsigned int, unsigned int, int, int, bool, bool);
 					void* (__fastcall* UnsetSlot)(tpp::gm::player::impl::EquipControllerImpl_tpp*, unsigned int, unsigned int);
 					void* (__fastcall* UnsetSlots)(tpp::gm::player::impl::EquipControllerImpl_tpp*, unsigned int);
-					void* (__fastcall* GetCurrentWeapon)(tpp::gm::player::impl::EquipControllerImpl_tpp*, int*, int);
+					void* (__fastcall* GetCurrentWeapon)(tpp::gm::player::impl::EquipControllerImpl_tpp*, int*, unsigned int);
 					unsigned __int8(__fastcall* GetCurrentEquipSlot)(tpp::gm::player::impl::EquipControllerImpl_tpp*, unsigned int);
 					void* (__fastcall* GetCurrentActiveWeaponSlot)(tpp::gm::player::impl::EquipControllerImpl_tpp*, unsigned int);
 					void* (__fastcall* SetCurrentActiveWeaponSlot)(tpp::gm::player::impl::EquipControllerImpl_tpp*, unsigned int, int);
