@@ -22,6 +22,12 @@ Configuration files are stored in `%localappdata%\tpp-mod`
 
 ## Features
 
+<p align="center">
+  <img src="assets/github/1.png?raw=true" />
+</p>
+
+<br/>
+
 - Allows overriding of existing lua scripts (working directory is `[mgsv game folder]/tpp-mod`)
 - **variables**:  
   similar to cod dvars (can be set through the console or through the config file `localappdata/tpp-mod/config.json`):  
