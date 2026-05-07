@@ -246,6 +246,14 @@ namespace game
 
 	namespace Vectormath::Aos
 	{
+		struct Vector2
+		{
+			union
+			{
+				float values[2];
+			};
+		};
+
 		struct Vector3
 		{
 			union
@@ -440,6 +448,12 @@ namespace game
 				char __pad2[36];
 				int flags;
 				char __pad3[8];
+			};
+
+			struct Texture
+			{
+				char __pad0[24];
+				int id;
 			};
 
 			namespace dg
@@ -714,10 +728,22 @@ namespace game
 				char __pad0[4];
 			};
 
+			struct Packet2DVertex : Packet2D
+			{
+				Packet2DVertex() : Packet2D(0, 16) {}
+				unsigned int color;
+				unsigned short v[5];
+			};
+
+			template <size_t Count>
 			struct Packet2DTriangleStrip : Packet2D
 			{
-				Packet2DTriangleStrip() : Packet2D(12, 8) {}
-				char __pad0[4];
+				Packet2DTriangleStrip() : Packet2D(12, 8) 
+				{
+					this->size += Count * sizeof(Packet2DVertex);
+				}
+				int count = Count;
+				Packet2DVertex vertices[Count];
 			};
 
 			struct Packet2DViewport : Packet2D
@@ -807,7 +833,7 @@ namespace game
 			struct Packet2DTexture : Packet2D
 			{
 				Packet2DTexture() : Packet2D(26, 8) {}
-				char __pad0[4];
+				int id;
 			};
 
 			struct Packet2DAlpha : Packet2D
@@ -958,6 +984,14 @@ namespace game
 				StringId_fields f;
 				std::uint64_t id;
 			};
+		};
+
+		struct KernelString
+		{
+			const char* buffer;
+			__int64 unk1;
+			__int64 unk2;
+			__int64 unk3;
 		};
 
 		struct PathId
@@ -1201,6 +1235,32 @@ namespace game
 			struct GraphState;
 			struct ModelNodeCommon;
 			struct Animation;
+
+			struct Font
+			{
+				char __pad0[8];
+				fox::gr::Texture* texture;
+				char __pad1[64];
+			};
+
+			struct RawDaemon
+			{
+
+			};
+
+			struct FontManager
+			{
+				struct FontGroup
+				{
+					Font* font;
+					float width;
+					float height;
+					float spacing;
+					float f3;
+					float f4;
+					char __pad0[16];
+				};
+			};
 		}
 
 		namespace math
@@ -1730,7 +1790,7 @@ namespace game
 					void(__fastcall* SetSlotDirectly)(tpp::gm::player::impl::EquipControllerImpl_tpp*, unsigned int, unsigned int, int, int, bool, bool);
 					void* (__fastcall* UnsetSlot)(tpp::gm::player::impl::EquipControllerImpl_tpp*, unsigned int, unsigned int);
 					void* (__fastcall* UnsetSlots)(tpp::gm::player::impl::EquipControllerImpl_tpp*, unsigned int);
-					void* (__fastcall* GetCurrentWeapon)(tpp::gm::player::impl::EquipControllerImpl_tpp*, unsigned int);
+					int* (__fastcall* GetCurrentWeapon)(tpp::gm::player::impl::EquipControllerImpl_tpp*, int*, unsigned int);
 					unsigned __int8(__fastcall* GetCurrentEquipSlot)(tpp::gm::player::impl::EquipControllerImpl_tpp*, unsigned int);
 					void* (__fastcall* GetCurrentActiveWeaponSlot)(tpp::gm::player::impl::EquipControllerImpl_tpp*, unsigned int);
 					void* (__fastcall* SetCurrentActiveWeaponSlot)(tpp::gm::player::impl::EquipControllerImpl_tpp*, unsigned int, int);

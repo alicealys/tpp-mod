@@ -63,7 +63,21 @@ namespace game
 
 		namespace ui
 		{
+			namespace RawDaemon_
+			{
+				WEAK symbol<FontManager*> s_fontManager{0x142C8FA98, 0x1420A5668, 0x0, 0x0};
+			}
 
+			namespace Font_
+			{
+				WEAK symbol<bool(Font*, const char*, float, float, float, 
+					Vectormath::Aos::Vector2*, Vectormath::Aos::Vector2*, float*, float*)> CreateText{0x141DF6110, 0x140E67FD0, 0x0, 0x0};
+			}
+
+			namespace FontManager_
+			{
+				WEAK symbol<FontManager::FontGroup*(FontManager*, StringId, unsigned int)> GetFontGroup{0x141DD53E0, 0x14B35A370, 0x0, 0x0};
+			}
 		}
 
 		namespace gr
@@ -89,6 +103,7 @@ namespace game
 					WEAK symbol<void*(FontSystem*, const char*, int)> UnRegisterString{0x140226850, 0x140B2C5B0, 0x1402267A0, 0x140B2BB60};
 					WEAK symbol<void(FontSystem*, float*, float*)> GetHalfPixelWH{0x140224C00, 0x140B2AAB0, 0x140224B60, 0x140B2A060};
 					WEAK symbol<unsigned int(FontSystem*)> GetFontTextureHandle{0x140224AA0, 0x140B2A950, 0x140224A00, 0x140B29F00};
+					WEAK symbol<_TextureGlyphData*(FontSystem*)> GetFontTextureGlyphDataTop{0x1402249F0, 0x140B2A8A0, 0x0, 0x0};
 					WEAK symbol<void(FontTextureMetrics*, _TextureGlyphData*, float, float, float)> CalculateMetrics{0x1402241E0, 0x140B2A150, 0x140224140, 0x140B29700};
 				}
 
@@ -114,7 +129,7 @@ namespace game
 						/* 09 */ WEAK symbol<void*(Draw2DRenderer*, Packet2DString2D*)> Execute_Packet2DString2D{0x1402E4C20, 0x140BD7940, 0x1402E46C0, 0x140BD6F40};
 						/* 10 */ WEAK symbol<void*(Draw2DRenderer*, Packet2DCube*)> Execute_Packet2DCube{0x1402E1010, 0x140BD3D30, 0x1402E0AB0, 0x140BD3330};
 						/* 11 */ WEAK symbol<void*(Draw2DRenderer*, Packet2DLineStrip*)> Execute_Packet2DLineStrip{0x1402E2F30, 0x140BD5C50, 0x1402E29D0, 0x140BD5250};
-						/* 12 */ WEAK symbol<void*(Draw2DRenderer*, Packet2DTriangleStrip*)> Execute_Packet2DTriangleStrip{0x1402E5150, 0x140BD7E70, 0x1402E4BF0, 0x140BD7470};
+						/* 12 */ template<size_t Count> symbol<void*(Draw2DRenderer*, Packet2DTriangleStrip<Count>*)> Execute_Packet2DTriangleStrip{0x1402E5150, 0x140BD7E70, 0x1402E4BF0, 0x140BD7470};
 						/* 13 */ WEAK symbol<void*(Draw2DRenderer*, Packet2DViewport*)> Execute_Packet2DViewport{0x1402E54A0, 0x140BD81C0, 0x1402E4F40, 0x140BD77C0};
 						/* 14 */ WEAK symbol<void*(Draw2DRenderer*, Packet2DViewmap*)> Execute_Packet2DViewmap{0x1402E5440, 0x140BD8160, 0x1402E4EE0, 0x140BD7760};
 						/* 15 */ WEAK symbol<void*(Draw2DRenderer*, Packet2DWorldCoords*)> Execute_Packet2DWorldCoords{0x1402E5640, 0x140BD8360, 0x1402E50E0, 0x140BD7960};
