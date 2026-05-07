@@ -22,11 +22,13 @@ Configuration files are stored in `%localappdata%\tpp-mod`
 
 ## Features
 
-<p align="center">
-  <img src="assets/github/1.png?raw=true" />
-</p>
+| <img src="assets/github/1.png?raw=true" /> |
+|:-:|
+| in game text chat & ping/fps counter |
 
-<br/>
+| <img src="assets/github/2.png?raw=true" /> |
+|:-:|
+| in game console |
 
 - Allows overriding of existing lua scripts (working directory is `[mgsv game folder]/tpp-mod`)
 - **variables**:  
