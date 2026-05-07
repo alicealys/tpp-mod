@@ -21,7 +21,7 @@ namespace scepad
         };
 
         vars::var_ptr var_send_dsx_packets;
-        static TriggerEffect generic_effect = { TriggerMode::Normal, {0}, TriggerMode::SemiAutomaticGun, {5,8,2} };
+        static TriggerEffect generic_effect = { TriggerMode::Normal, {0}, TriggerMode::Resistance, {7,1} };
         static bool gun_empty = false;
         static std::chrono::steady_clock::time_point last_time_fired = std::chrono::steady_clock::now();
 
@@ -29,34 +29,14 @@ namespace scepad
         {
             unknown_weapon = 0,
 
-            // Pistols
-            wu_spistol,
-            wu_spistol_cb,
-            wu_spistol_sb,
-            wu_spistol_ap,
-            wu_spistol_9,
-            am_d114,
-            am_d114_cb,
-            am_d114_9,
-            am_d114lb_45,
-            am_d114lb_9,
-            burkov,
-            burkov_tb,
-            burkov_hs,
-            geist_p3,
-            geist_p3_cb,
-            wu_s333,
-            wu_s324lb,
-
-            // Rifles
-            am_mrs_4r = 27873,
-
-            // Granade launchers
-            rgl_220_stun = 27879,
-            zorn_kp_sleep = 159074,
-
-            // Sniper rifles
-            am_mrs71_rifle = 93476,
+            submachine_gun = 159075,
+            automatic_rifle = 27873,
+            machine_gun = 93478,
+            granade_launcher = 27879,
+            pistol = 159074,
+            sniper_rifle = 93476,
+            //bionic_arm = 16654,
+            //hand_of_jehuty = 16526,
 
             count
         };
@@ -87,10 +67,12 @@ namespace scepad
 
         std::unordered_map<weapon, TriggerEffect> triggerPreset =
         {
-            {weapon::am_mrs_4r, {TriggerMode::Normal, {0}, TriggerMode::AutomaticGun, {3,8,11}}},
-            {weapon::am_mrs71_rifle, {TriggerMode::Normal, {0}, TriggerMode::SemiAutomaticGun, {5,8,8}}},
-            {weapon::rgl_220_stun, {TriggerMode::Normal, {0}, TriggerMode::SemiAutomaticGun, {6,8,8}}},
-            {weapon::zorn_kp_sleep, {TriggerMode::Normal, {0}, TriggerMode::SemiAutomaticGun, {6,8,6}}},
+            {weapon::automatic_rifle, {TriggerMode::Normal, {0}, TriggerMode::AutomaticGun, {3,6,11}}},
+            {weapon::machine_gun, {TriggerMode::Normal, {0}, TriggerMode::AutomaticGun, {3,8,13}}},
+            {weapon::submachine_gun, {TriggerMode::Normal, {0}, TriggerMode::AutomaticGun, {3,8,15}}},
+            {weapon::sniper_rifle, {TriggerMode::Normal, {0}, TriggerMode::SemiAutomaticGun, {2,3,7}}},
+            {weapon::granade_launcher, {TriggerMode::Normal, {0}, TriggerMode::SemiAutomaticGun, {2,3,8}}},
+            {weapon::pistol, {TriggerMode::Normal, {0}, TriggerMode::SemiAutomaticGun, {2,3,6}}},
         };
 
         bool is_player_firing()
@@ -212,11 +194,6 @@ namespace scepad
                     DSX::setLeftTrigger(mode.left_trigger_mode, mode.left_parameters);
                     DSX::setRightTrigger(mode.right_trigger_mode, mode.right_parameters);
                 }
-            }
-            else
-            {
-                DSX::setLeftTrigger(generic_effect.left_trigger_mode, generic_effect.left_parameters);
-                DSX::setRightTrigger(generic_effect.right_trigger_mode, generic_effect.right_parameters);
             }
 
             if (!is_player_action_blocked())
