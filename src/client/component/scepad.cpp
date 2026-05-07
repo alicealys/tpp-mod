@@ -5,6 +5,8 @@
 #include "console.hpp"
 #include "game/game.hpp"
 #include <utils/hook.hpp>
+#include "vars.hpp"
+#include "command.hpp"
 
 namespace scepad
 {
@@ -18,6 +20,7 @@ namespace scepad
             std::vector<int> right_parameters;
         };
 
+        vars::var_ptr var_send_dsx_packets;
         static TriggerEffect generic_effect = { TriggerMode::Normal, {0}, TriggerMode::SemiAutomaticGun, {5,8,2} };
         static bool gun_empty = false;
         static std::chrono::steady_clock::time_point last_time_fired = std::chrono::steady_clock::now();
@@ -153,7 +156,7 @@ namespace scepad
             }
         }
 
-        int get_weapon_type()
+        int get_weapon_id()
         {
             if (!is_player_initialized())
                 return -1;
@@ -181,9 +184,14 @@ namespace scepad
 
         void update_scepad()
         {
+            if(var_send_dsx_packets->current.enabled())
+            {
+                return;
+            }
+
             DSX::clearPayload();
 
-            int weaponType = get_weapon_type();
+            int weaponType = get_weapon_id();
             auto triggerIt = triggerPreset.find(static_cast<weapon>(weaponType));
             if (is_player_action_blocked()) 
             {
@@ -221,9 +229,9 @@ namespace scepad
             }
         }
 
-        void print_weapon_type() 
+        void print_weapon_id() 
         {
-            console::info("[scepad] held weapon: %d", get_weapon_type());
+            console::info("[scepad] held weapon: %d", get_weapon_id());
         }
 
         class component final : public component_interface
@@ -234,18 +242,24 @@ namespace scepad
                 if (!game::environment::is_tpp()) return;
                 state_gun_fire_hook.create(game::tpp::gm::player::impl::attack::AttackActionImpl_::StateGunFire.get(), state_gun_fire_stub);
                 try_fire_hook.create(game::tpp::gm::player::impl::attack::AttackActionImpl_::TryFire.get(), try_fire_stub);   
+                var_send_dsx_packets = vars::register_bool("send_dsx_packets", true, vars::var_flag_saved, "send sony controller gimmick data to DSX/DSY");
             }
 
             void start() override
             {
+                if (!game::environment::is_tpp()) return;
                 if (DSX::init() != DSX::Success) {
                     console::warn("[scepad] DSX++ client failed to initialize!");
                     return;
                 }
                 console::info("[scepad] DSX++ client initialized successfully!");
                 
+            	command::add("printweaponid", []
+                {
+                    scheduler::once(print_weapon_id, scheduler::main);
+                });
+
                 scheduler::loop(update_scepad, scheduler::main, 30ms);
-                scheduler::loop(print_weapon_type, scheduler::main, 2s);
             }
         };
     }

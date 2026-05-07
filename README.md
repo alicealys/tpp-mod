@@ -43,6 +43,7 @@ Configuration files are stored in `%localappdata%\tpp-mod`
   - `chat_key`: key to open the chat
   - `chat_enable`: enable chat
   - `discord_enable`: enable discord rpc
+  - `send_dsx_packets`: send sony controller gimmick data to DSX/DSY
   
 - **commands**:
   - mgo only:
@@ -66,6 +67,7 @@ Configuration files are stored in `%localappdata%\tpp-mod`
   - `startsound <id>`: starts playing the specified sound
   - `stopsound <id>`: stops playing the specified sound
   - `set <var name> <var value>`: creates or sets a var
+  - `printweaponid`: prints id of currently held weapon
 
 - Metal Gear Online:
   - Text chat ([video](https://www.youtube.com/watch?v=wlzHqPy7XYA))
