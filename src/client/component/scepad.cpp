@@ -9,6 +9,16 @@ namespace scepad
 {
     namespace
     {
+        struct TriggerEffect 
+        {
+            TriggerMode left_trigger_mode = TriggerMode::Normal;
+            std::vector<int> left_parameters;
+            TriggerMode right_trigger_mode = TriggerMode::Normal;
+            std::vector<int> right_parameters;
+        };
+
+        static TriggerEffect generic_effect = { TriggerMode::Normal, {0}, TriggerMode::SemiAutomaticGun, {5,8,8} };
+
         enum class weapon
         {
             unknown_weapon = 0,
@@ -32,6 +42,9 @@ namespace scepad
             wu_s333,
             wu_s324lb,
 
+            // Rifles
+            am_mrs_4r = 27873,
+
             // Granade launchers
             rgl_220_stun = 27879,
             zorn_kp_sleep = 159074,
@@ -42,12 +55,49 @@ namespace scepad
             count
         };
 
-        std::unordered_map<weapon, ScePadTriggerEffectParam> triggerPreset =
-            {
-                {weapon::am_mrs71_rifle, {SCE_PAD_TRIGGER_EFFECT_TRIGGER_MASK_R2, {0}, {{SCE_PAD_TRIGGER_EFFECT_MODE_OFF, {0}, {}}, {SCE_PAD_TRIGGER_EFFECT_MODE_WEAPON, {0}, {.weaponParam = {6, 8, 8}}}}}},
-
-                {weapon::rgl_220_stun, {SCE_PAD_TRIGGER_EFFECT_TRIGGER_MASK_R2, {0}, {{SCE_PAD_TRIGGER_EFFECT_MODE_OFF, {0}, {}}, {SCE_PAD_TRIGGER_EFFECT_MODE_VIBRATION, {0}, {.vibrationParam = {6, 8, 10}}}}}},
+        std::unordered_map<weapon, TriggerEffect> triggerPreset =
+        {
+            {weapon::am_mrs_4r, {TriggerMode::Normal, {0}, TriggerMode::AutomaticGun, {3,8,11}}},
+            {weapon::am_mrs71_rifle, {TriggerMode::Normal, {0}, TriggerMode::SemiAutomaticGun, {5,8,8}}},
+            {weapon::rgl_220_stun, {TriggerMode::Normal, {0}, TriggerMode::SemiAutomaticGun, {6,8,8}}},
+            {weapon::zorn_kp_sleep, {TriggerMode::Normal, {0}, TriggerMode::SemiAutomaticGun, {6,8,6}}},
         };
+
+        bool is_player_action_blocked()
+        {
+            const auto inst = game::tpp::ui::hud::CommonDataManager_::GetInstance();
+            const auto ui_inst = game::tpp::ui::menu::UiCommonDataManager_::GetInstance();
+
+            if (inst == nullptr || ui_inst == nullptr)
+            {
+                return true;
+            }
+
+            if (game::tpp::ui::menu::UiCommonDataManager_::GetPauseMenuType(ui_inst) != 0 ||
+                !game::tpp::ui::hud::CommonDataManager_::IsEndLoadingTips(inst) ||
+                game::tpp::ui::menu::impl::MotherBaseDeviceSystemImpl_::IsDeviceOpend())
+            {
+                return true;
+            }
+
+            if (game::tpp::gm::player::player2System->player2System == nullptr ||
+                game::tpp::gm::player::player2System->player2System->tpp.pad == nullptr)
+            {
+                return true;
+            }
+
+            if (game::tpp::gm::player::player2System->player2System->tpp.pad->mask != 0)
+            {
+                return true;
+            }
+
+            if (game::tpp::gm::player::impl::Player2UtilityImpl_::IsLoading())
+            {
+                return true;
+            }
+
+            return false;
+        }
 
         bool is_player_initialized()
         {
@@ -78,7 +128,41 @@ namespace scepad
 
         void update_scepad()
         {
+            DSX::clearPayload();
 
+            int weaponType = get_weapon_type();
+            auto triggerIt = triggerPreset.find(static_cast<weapon>(weaponType));
+            if (is_player_action_blocked()) 
+            {
+                DSX::setLeftTrigger(TriggerMode::Normal, {0});
+                DSX::setRightTrigger(TriggerMode::Normal, { 0 });
+                DSX::setRGB(255, 255, 255, 255);
+            }
+            else if (triggerIt != triggerPreset.end()) 
+            {
+                TriggerEffect mode = triggerIt->second;
+                DSX::setLeftTrigger(mode.left_trigger_mode, mode.left_parameters);
+                DSX::setRightTrigger(mode.right_trigger_mode, mode.right_parameters);
+            }
+            else 
+            {
+                DSX::setLeftTrigger(generic_effect.left_trigger_mode, generic_effect.left_parameters);
+                DSX::setRightTrigger(generic_effect.right_trigger_mode, generic_effect.right_parameters);
+            }
+
+            if (!is_player_action_blocked()) 
+            {
+                DSX::setRGB(0, 0, 100, 255);
+            }
+
+            if (DSX::sendPayload() != DSX::Success) {
+                console::warn("[scepad] DSX++ client failed to send data!");
+            }
+        }
+
+        void print_weapon_type() 
+        {
+            console::info("[scepad] held weapon: %d", get_weapon_type());
         }
 
         class component final : public component_interface
@@ -91,7 +175,14 @@ namespace scepad
 
             void start() override
             {
-
+                if (DSX::init() != DSX::Success) {
+                    console::warn("[scepad] DSX++ client failed to initialize!");
+                    return;
+                }
+                console::info("[scepad] DSX++ client initialized successfully!");
+                
+                scheduler::loop(update_scepad, scheduler::main, 30ms);
+                scheduler::loop(print_weapon_type, scheduler::main, 2s);
             }
         };
     }
