@@ -65,18 +65,18 @@ namespace game
 		{
 			namespace RawDaemon_
 			{
-				WEAK symbol<FontManager*> s_fontManager{0x142C8FA98, 0x1420A5668, 0x0, 0x0};
+				WEAK symbol<FontManager*> s_fontManager{0x142C8FA98, 0x1420A5668, 0x142C8FA98, 0x1420A56C8};
 			}
 
 			namespace Font_
 			{
 				WEAK symbol<bool(Font*, const char*, float, float, float, 
-					Vectormath::Aos::Vector2*, Vectormath::Aos::Vector2*, float*, float*)> CreateText{0x141DF6110, 0x140E67FD0, 0x0, 0x0};
+					Vectormath::Aos::Vector2*, Vectormath::Aos::Vector2*, float*, float*)> CreateText{0x141DF6110, 0x140E67FD0, 0x141DF6150, 0x140E67A80};
 			}
 
 			namespace FontManager_
 			{
-				WEAK symbol<FontManager::FontGroup*(FontManager*, StringId, unsigned int)> GetFontGroup{0x141DD53E0, 0x14B35A370, 0x0, 0x0};
+				WEAK symbol<FontManager::FontGroup*(FontManager*, StringId, unsigned int)> GetFontGroup{0x141DD53E0, 0x14B35A370, 0x141DD5410, 0x140E45B10};
 			}
 		}
 
@@ -103,7 +103,7 @@ namespace game
 					WEAK symbol<void*(FontSystem*, const char*, int)> UnRegisterString{0x140226850, 0x140B2C5B0, 0x1402267A0, 0x140B2BB60};
 					WEAK symbol<void(FontSystem*, float*, float*)> GetHalfPixelWH{0x140224C00, 0x140B2AAB0, 0x140224B60, 0x140B2A060};
 					WEAK symbol<unsigned int(FontSystem*)> GetFontTextureHandle{0x140224AA0, 0x140B2A950, 0x140224A00, 0x140B29F00};
-					WEAK symbol<_TextureGlyphData*(FontSystem*)> GetFontTextureGlyphDataTop{0x1402249F0, 0x140B2A8A0, 0x0, 0x0};
+					WEAK symbol<_TextureGlyphData*(FontSystem*)> GetFontTextureGlyphDataTop{0x1402249F0, 0x140B2A8A0, 0x140224950, 0x140B29E50};
 					WEAK symbol<void(FontTextureMetrics*, _TextureGlyphData*, float, float, float)> CalculateMetrics{0x1402241E0, 0x140B2A150, 0x140224140, 0x140B29700};
 				}
 
@@ -262,19 +262,19 @@ namespace game
 		{
 			namespace ServerManager_
 			{
-				WEAK symbol<FobTarget*(ServerManager*)> GetFobTarget{0x1407D57C0, 0x0, 0x0, 0x0};
-				WEAK symbol<ServerManager*> s_instance{0x142BEFBF0, 0x0, 0x0, 0x0};
+				WEAK symbol<FobTarget*(ServerManager*)> GetFobTarget{0x1407D57C0, 0x0, 0x1407D5410, 0x0};
+				WEAK symbol<ServerManager*> s_instance{0x142BEFBF0, 0x0, 0x142BEFBF0, 0x0};
 			}
 
 			namespace FobTarget_
 			{
-				WEAK symbol<char(FobTarget*)> CreateHostSession{0x1459F3E20, 0x0, 0x0, 0x0};
-				WEAK symbol<char(FobTarget*, SessionConnectInfo*)> CreateClientSession{0x1459F3910, 0x0, 0x0, 0x0};
+				WEAK symbol<char(FobTarget*)> CreateHostSession{0x1459F3E20, 0x0, 0x147441470, 0x0};
+				WEAK symbol<char(FobTarget*, SessionConnectInfo*)> CreateClientSession{0x1459F3910, 0x0, 0x147440F30, 0x0};
 			}
 
 			namespace Daemon_
 			{
-				WEAK symbol<Daemon*()> GetInstance{0x0, 0x14057B6E0, 0x0, 0x14057B0B0};
+				WEAK symbol<Daemon*()> GetInstance{0x1407DD550, 0x14057B6E0, 0x1407DD190, 0x14057B0B0};
 			}
 		}
 
@@ -282,7 +282,7 @@ namespace game
 		{
 			namespace RulsetManager_
 			{
-				WEAK symbol<RuleSetManager*> s_instance{0x0, 0x14204CB18, 0x0, 0x0};
+				WEAK symbol<RuleSetManager*> s_instance{0x0, 0x14204CB18, 0x0, 0x14204CB48};
 			}
 		}
 	}
@@ -331,8 +331,8 @@ namespace game
 
 	WEAK symbol<mgo_matchmaking_manager> s_mgoMatchMakingManager{0x0, 0x142054190, 0x0, 0x1420541C0};
 
-	WEAK symbol<ID3D11Device*> s_deviceD3D{0x142C6B860, 0x1420E4210, 0x0, 0x0};
-	WEAK symbol<ID3D11DeviceContext*> s_immediateContextD3D{0x142C6B868, 0x1420E4218, 0x0, 0x0};
+	WEAK symbol<ID3D11Device*> s_deviceD3D{0x142C6B860, 0x1420E4210, 0x142C6B860, 0x1420E4260};
+	WEAK symbol<ID3D11DeviceContext*> s_immediateContextD3D{0x142C6B868, 0x1420E4218, 0x142C6B868, 0x1420E4268};
 
 	WEAK symbol<fox::Lua*> s_instances{0x142B641F0, 0x141F28240, 0x142B641F0, 0x141F28240};
 

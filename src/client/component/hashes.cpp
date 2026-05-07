@@ -17,6 +17,7 @@ namespace hashes
 	{
 		utils::memory::allocator allocator;
 
+		std::mutex map_mutex;
 		std::unordered_map<std::uint64_t, const char*> string_map;
 
 		utils::hook::detour fox_str_hash_hook;
@@ -24,14 +25,16 @@ namespace hashes
 
 		game::fox::StringId fox_str_hash_stub(const char* str, size_t size)
 		{
+			std::lock_guard _0(map_mutex);
 			const auto result = fox_str_hash_hook.invoke<game::fox::StringId>(str, size);
-			const auto copy = allocator.duplicate_string(str);
+			const auto copy = allocator.duplicate_string(std::string{str, str + size});
 			string_map.insert(std::make_pair(result.id, copy));
 			return result;
 		}
 
 		game::fox::StringId* shared_string_to_string_id_stub(game::fox::SharedString* str, game::fox::StringId* id)
 		{
+			std::lock_guard _0(map_mutex);
 			const auto result = shared_string_to_string_id_hook.invoke<game::fox::StringId*>(str, id);
 			const auto copy = allocator.duplicate_string(str->data->buffer);
 			string_map.insert(std::make_pair(result->id, copy));
@@ -75,13 +78,8 @@ namespace hashes
 
 		void start() override
 		{
-			if (!game::environment::is_tpp() || !game::environment::is_eng())
-			{
-				return;
-			}
-
-			fox_str_hash_hook.create(SELECT_VALUE(0x140023260, 0x0, 0x0, 0x0), fox_str_hash_stub);
-			shared_string_to_string_id_hook.create(SELECT_VALUE(0x14001D660, 0x0, 0x0, 0x0), shared_string_to_string_id_stub);
+			fox_str_hash_hook.create(SELECT_VALUE(0x140023260, 0x140022F30, 0x140023220, 0x140022FD0), fox_str_hash_stub);
+			shared_string_to_string_id_hook.create(SELECT_VALUE(0x14001D660, 0x14001D4C0, 0x14001D620, 0x14001D490), shared_string_to_string_id_stub);
 
 			command::add("dumpstrings", []
 			{
@@ -99,4 +97,6 @@ namespace hashes
 	};
 }
 
+#ifdef DEBUG
 REGISTER_COMPONENT(hashes::component)
+#endif

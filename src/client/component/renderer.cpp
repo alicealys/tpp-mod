@@ -1248,7 +1248,7 @@ namespace renderer
 	public:
 		void start() override
 		{
-			load_font_data_hook.create(SELECT_VALUE(0x140224E90, 0x140B2AD30, 0x0, 0x0), load_font_data_stub);
+			load_font_data_hook.create(SELECT_VALUE(0x140224E90, 0x140B2AD30, 0x140224DE0, 0x140B2A2E0), load_font_data_stub);
 			execute_draw_hook.create(SELECT_VALUE(0x143DC6CF0, 0x14A1E36B0, 0x143E18FF0, 0x149234EB0), execute_draw_stub);
 		}
 	};
