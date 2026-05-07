@@ -51,7 +51,7 @@ Configuration files are stored in `%localappdata%\tpp-mod`
   - `chat_key`: key to open the chat
   - `chat_enable`: enable chat
   - `discord_enable`: enable discord rpc
-  - `send_dsx_packets` send sony controller gimmick data to DSX/DSY
+  - `send_dsx_packets` send sony controller gimmick data to [DSX](https://store.steampowered.com/app/1812620/DSX/)/[DSY](https://github.com/WujekFoliarz/DualSenseY-v2)
   
 - **commands**:
   - mgo only:
