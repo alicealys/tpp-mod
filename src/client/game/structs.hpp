@@ -1770,7 +1770,7 @@ namespace game
 					void* (__fastcall* SetUseFlashLight)(tpp::gm::player::impl::EquipControllerImpl_tpp*, unsigned int, int, bool, bool);
 					void* (__fastcall* SetUnderBarrelMode)(tpp::gm::player::impl::EquipControllerImpl_tpp*, unsigned int, int, bool);
 					void* (__fastcall* SetMagAttachTo2nd)(tpp::gm::player::impl::EquipControllerImpl_tpp*, unsigned int, int, bool);
-					void* (__fastcall* IsCurrenWeaponNoUse)(tpp::gm::player::impl::EquipControllerImpl_tpp*);
+					void* (__fastcall* IsCurrentWeaponNoUse)(tpp::gm::player::impl::EquipControllerImpl_tpp*, int*, int);
 					void* (__fastcall* UpdateTextureStreamer)(tpp::gm::player::impl::EquipControllerImpl_tpp*);
 					void* (__fastcall* IsLargeTextureLoaded)(tpp::gm::player::impl::EquipControllerImpl_tpp*);
 					void* (__fastcall* SetVisibilityToEquip)(tpp::gm::player::impl::EquipControllerImpl_tpp*, unsigned int, void*);

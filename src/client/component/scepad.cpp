@@ -4,6 +4,7 @@
 #include "scheduler.hpp"
 #include "console.hpp"
 #include "game/game.hpp"
+#include <utils/hook.hpp>
 
 namespace scepad
 {
@@ -17,7 +18,9 @@ namespace scepad
             std::vector<int> right_parameters;
         };
 
-        static TriggerEffect generic_effect = { TriggerMode::Normal, {0}, TriggerMode::SemiAutomaticGun, {5,8,8} };
+        static TriggerEffect generic_effect = { TriggerMode::Normal, {0}, TriggerMode::SemiAutomaticGun, {5,8,2} };
+        static bool gun_empty = false;
+        static std::chrono::steady_clock::time_point last_time_fired = std::chrono::steady_clock::now();
 
         enum class weapon
         {
@@ -55,6 +58,30 @@ namespace scepad
             count
         };
 
+        utils::hook::detour try_fire_hook;
+        void* try_fire_stub(__int64 a1, __int64 a2, unsigned int a3) 
+        {
+            void* result = try_fire_hook.invoke<void*>(a1, a2, a3);
+
+            if ((int*)result == 0) 
+            {
+                gun_empty = true;
+            }
+            else
+            {
+                gun_empty = false;
+            }
+
+            return result;
+        }
+
+        utils::hook::detour state_gun_fire_hook;
+        void state_gun_fire_stub(__int64 a1, unsigned int a2, int a3)
+        {
+            last_time_fired = std::chrono::steady_clock::now();
+            state_gun_fire_hook.invoke<void>(a1, a2, a3);
+        }
+
         std::unordered_map<weapon, TriggerEffect> triggerPreset =
         {
             {weapon::am_mrs_4r, {TriggerMode::Normal, {0}, TriggerMode::AutomaticGun, {3,8,11}}},
@@ -62,6 +89,19 @@ namespace scepad
             {weapon::rgl_220_stun, {TriggerMode::Normal, {0}, TriggerMode::SemiAutomaticGun, {6,8,8}}},
             {weapon::zorn_kp_sleep, {TriggerMode::Normal, {0}, TriggerMode::SemiAutomaticGun, {6,8,6}}},
         };
+
+        bool is_player_firing() 
+        {
+            auto now = std::chrono::steady_clock::now();
+            if ((now - last_time_fired) <= 100ms) 
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
 
         bool is_player_action_blocked()
         {
@@ -126,6 +166,19 @@ namespace scepad
             return weaponType;
         }
 
+        int get_current_equip_slot() 
+        {
+            if (!is_player_initialized())
+                return -1;
+            if (!game::environment::is_tpp())
+                return -1;
+
+            const auto player = game::tpp::gm::player::player2System->player2System;
+            int equipSlot = 0;
+            player->tpp.controller->__vftable->GetCurrentEquipSlot(player->tpp.controller, player->tpp.localPlayerIndex);
+            return equipSlot;
+        }
+
         void update_scepad()
         {
             DSX::clearPayload();
@@ -138,11 +191,19 @@ namespace scepad
                 DSX::setRightTrigger(TriggerMode::Normal, { 0 });
                 DSX::setRGB(255, 255, 255, 255);
             }
-            else if (triggerIt != triggerPreset.end()) 
+            else if (triggerIt != triggerPreset.end() && !gun_empty) 
             {
                 TriggerEffect mode = triggerIt->second;
-                DSX::setLeftTrigger(mode.left_trigger_mode, mode.left_parameters);
-                DSX::setRightTrigger(mode.right_trigger_mode, mode.right_parameters);
+                if (mode.right_trigger_mode == TriggerMode::AutomaticGun && !is_player_firing()) 
+                {
+                    DSX::setLeftTrigger(generic_effect.left_trigger_mode, generic_effect.left_parameters);
+                    DSX::setRightTrigger(generic_effect.right_trigger_mode, generic_effect.right_parameters);
+                }
+                else 
+                {
+                    DSX::setLeftTrigger(mode.left_trigger_mode, mode.left_parameters);
+                    DSX::setRightTrigger(mode.right_trigger_mode, mode.right_parameters);
+                }
             }
             else 
             {
@@ -170,7 +231,9 @@ namespace scepad
         public:
             void pre_load() override
             {
-
+                if (!game::environment::is_tpp()) return;
+                state_gun_fire_hook.create(game::tpp::gm::player::impl::attack::AttackActionImpl_::StateGunFire.get(), state_gun_fire_stub);
+                try_fire_hook.create(game::tpp::gm::player::impl::attack::AttackActionImpl_::TryFire.get(), try_fire_stub);   
             }
 
             void start() override
