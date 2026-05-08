@@ -257,13 +257,13 @@ namespace binds
 			{
 				if (is_down)
 				{
-					std::string up_cmd = cmd;
-					up_cmd[0] = '-';
-					command::execute(up_cmd);
+					command::execute(cmd);
 				}
 				else
 				{
-					command::execute(cmd);
+					std::string up_cmd = cmd;
+					up_cmd[0] = '-';
+					command::execute(up_cmd);
 				}
 			}
 			else if (is_down && !was_down)
@@ -484,35 +484,6 @@ namespace binds
 			return (utils::properties::get_appdata_path() / file).generic_string();
 		}
 
-		void write_binds()
-		{
-			const auto path = get_config_file_path();
-			std::string buffer;
-
-			buffer.append("unbindall\r\n");
-
-			for (const auto& [key, bind] : binds)
-			{
-				if (bind.mode == command)
-				{
-					const auto key_name = find_key_rev(key);
-					buffer.append(utils::string::va("bind %s \"%s\"\r\n", key_name.data(), bind.command.data()));
-				}
-			}
-
-			for (const auto& [key, bind] : binds)
-			{
-				if (bind.mode == remap)
-				{
-					const auto source_key_name = find_key_rev(key);
-					const auto target_key_name = find_key_rev(bind.mapped_key);
-					buffer.append(utils::string::va("remap %s %s\r\n", source_key_name.data(), target_key_name.data()));
-				}
-			}
-
-			utils::io::write_file(path, buffer);
-		}
-
 		void bind_key(const std::string& key, const std::string& cmd, const bind_mode_t mode)
 		{
 			const auto key_code = find_key(key);
@@ -563,6 +534,40 @@ namespace binds
 	{
 		action_commands.insert(name);
 		command::add(name, cb);
+	}
+
+	void write_binds()
+	{
+		const auto path = get_config_file_path();
+		std::string buffer;
+
+		buffer.append("unbindall\r\n");
+
+		for (const auto& alias : command::get_aliases())
+		{
+			buffer.append(utils::string::va("alias \"%s\" \"%s\"\r\n", alias.first.data(), alias.second.data()));
+		}
+
+		for (const auto& [key, bind] : binds)
+		{
+			if (bind.mode == command)
+			{
+				const auto key_name = find_key_rev(key);
+				buffer.append(utils::string::va("bind %s \"%s\"\r\n", key_name.data(), bind.command.data()));
+			}
+		}
+
+		for (const auto& [key, bind] : binds)
+		{
+			if (bind.mode == remap)
+			{
+				const auto source_key_name = find_key_rev(key);
+				const auto target_key_name = find_key_rev(bind.mapped_key);
+				buffer.append(utils::string::va("remap %s %s\r\n", source_key_name.data(), target_key_name.data()));
+			}
+		}
+
+		utils::io::write_file(path, buffer);
 	}
 
 	class component final : public component_interface

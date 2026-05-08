@@ -9,6 +9,7 @@
 #include "scheduler.hpp"
 #include "vars.hpp"
 #include "filesystem.hpp"
+#include "binds.hpp"
 
 #include <utils/io.hpp>
 #include <utils/string.hpp>
@@ -19,14 +20,14 @@ namespace command
 	namespace
 	{
 		std::unordered_map<std::string, callback> commands;
+		std::unordered_map<std::string, std::string> aliases;
 
 		std::mutex queue_mutex;
 
 		struct command_queue_entry_t
 		{
 			std::string cmd;
-			std::chrono::steady_clock::time_point insertion;
-			std::chrono::milliseconds delay;
+			std::uint32_t wait;
 		};
 
 		using command_queue_t = std::vector<command_queue_entry_t>;
@@ -75,13 +76,28 @@ namespace command
 			parsed = true;
 		}
 
+		void execute_commands(const std::string& cmd);
+
+		bool execute_alias(const std::string& name)
+		{
+			const auto iter = aliases.find(name);
+			if (iter != aliases.end())
+			{
+				execute_commands(iter->second);
+				return true;
+			}
+
+			return false;
+		}
+
 		void execute_args(const std::vector<std::string>& args)
 		{
 			const auto name = utils::string::to_lower(args[0]);
 			const auto command = commands.find(name);
+
 			if (command == commands.end())
 			{
-				if (!vars::var_command(args))
+				if (!vars::var_command(args) && !execute_alias(name))
 				{
 					console::warn("Command \"%s\" not found\n", name.data());
 				}
@@ -110,22 +126,51 @@ namespace command
 			execute_args(args);
 		}
 
-		void queue_command(const std::string& cmd, const std::chrono::milliseconds delay = 0ms)
+		void queue_command(const std::string& cmd, const std::uint32_t wait = 0)
 		{
-			const auto now = std::chrono::steady_clock::now();
 			next_command_queue.access([&](command_queue_t& queue)
 			{
 				command_queue_entry_t entry{};
 				entry.cmd = cmd;
-				entry.insertion = now;
-				entry.delay = delay;
+				entry.wait = wait;
 				queue.emplace_back(entry);
 			});
 		}
 
+		std::vector<std::string> split_commands(const std::string& line)
+		{
+			std::vector<std::string> cmds;
+
+			auto is_in_quotes = false;
+			std::string current;
+			for (auto i = 0; i < line.size(); i++)
+			{
+				if (line[i] == '"')
+				{
+					is_in_quotes = !is_in_quotes;
+				}
+				if (!is_in_quotes && line[i] == ';')
+				{
+					cmds.emplace_back(current);
+					current.clear();
+				}
+				else
+				{
+					current.push_back(line[i]);
+				}
+			}
+
+			if (!current.empty())
+			{
+				cmds.emplace_back(current);
+			}
+
+			return cmds;
+		}
+
 		void execute_commands(const std::string& line)
 		{
-			const auto cmds = utils::string::split(line, ';');
+			const auto cmds = split_commands(line);
 			for (auto i = 0; i < cmds.size(); i++)
 			{
 				const auto args = tokenize_string(cmds[i]);
@@ -148,7 +193,7 @@ namespace command
 						}
 					}
 
-					queue_command(next_commands, std::chrono::milliseconds(wait_time));
+					queue_command(next_commands, wait_time);
 					return;
 				}
 				else
@@ -172,6 +217,7 @@ namespace command
 				for (auto i = 0ull; i < line.size(); i++)
 				{
 					const auto cur = line[i];
+					const auto prev = i > 0 ? line[i - 1] : 0;
 					const auto next = i < line.size() - 1 ? line[i + 1] : 0;
 
 					if (!is_in_quotes && !is_in_comment && cur == '/' && next == '*')
@@ -188,7 +234,7 @@ namespace command
 					{
 						break;
 					}
-					else if (!is_in_comment && cur == '"')
+					else if (!is_in_comment && cur == '"' && prev != '\\')
 					{
 						is_in_quotes = !is_in_quotes;
 						cmd_buffer += cur;
@@ -204,6 +250,19 @@ namespace command
 					execute(cmd_buffer, true);
 				}
 			}
+		}
+
+		bool exec_cfg(const std::string& name)
+		{
+			const auto file = utils::string::va("config\\%s.cfg", name.data());
+			std::string data;
+			if (!filesystem::read_file(file, &data))
+			{
+				return false;
+			}
+
+			exec_file(data);
+			return true;
 		}
 	}
 
@@ -279,14 +338,17 @@ namespace command
 				next_queue.clear();
 			});
 
-			const auto now = std::chrono::steady_clock::now();
 			for (auto i = queue.begin(); i != queue.end(); )
 			{
-				if ((now - i->insertion) > i->delay)
+				if (i->wait == 0)
 				{
 					execute_commands(i->cmd);
 					i = queue.erase(i);
 					continue;
+				}
+				else
+				{
+					--i->wait;
 				}
 
 				++i;
@@ -352,14 +414,17 @@ namespace command
 		{
 			if (!current_token.empty() || force)
 			{
-				res.emplace_back(current_token);
+				res.emplace_back();
 				current_token.clear();
 			}
 		};
 
-		for (const auto& c : str)
+		for (auto i = 0; i < str.size(); i++)
 		{
-			if (c == '"' && !is_in_word)
+			const auto c = str[i];
+			const auto prev = i > 0 ? str[i - 1] : 0;
+
+			if (c == '"' && !is_in_word && prev != '\\')
 			{
 				if (is_in_quotes)
 				{
@@ -403,6 +468,11 @@ namespace command
 		return commands;
 	}
 
+	std::unordered_map<std::string, std::string>& get_aliases()
+	{
+		return aliases;
+	}
+
 	class component final : public component_interface
 	{
 	public:
@@ -416,14 +486,28 @@ namespace command
 				}
 
 				const auto name = params.get(1);
-				const auto file = utils::string::va("config\\%s.cfg", name.data());
-				std::string data;
-				if (!filesystem::read_file(file, &data))
+				if (!exec_cfg(name))
 				{
 					console::warn("cfg file \"%s\" not found\n", name.data());
 				}
+			});
 
-				exec_file(data);
+			command::add("alias", [](const params& params)
+			{
+				if (params.size() < 3)
+				{
+					for (const auto& alias : aliases)
+					{
+						console::info("alias \"%s\" \"%s\"\n", alias.first.data(), alias.second.data());
+					}
+				}
+				else
+				{
+					const auto name = params.get(1);
+					const auto cmd = params.get(2);
+					aliases[name] = cmd;
+					binds::write_binds();
+				}
 			});
 		}
 
@@ -433,15 +517,19 @@ namespace command
 			{
 				if (game::environment::is_mgo())
 				{
-					command::execute("exec config_mgo", true);
-					command::execute("exec keys_mgo", true);
+					exec_cfg("config_mgo");
+					exec_cfg("keys_mgo");
+					exec_cfg("autoexec_mgo");
 
 				}
 				else
 				{
-					command::execute("exec config_tpp", true);
-					command::execute("exec keys_tpp", true);
+					exec_cfg("config_tpp");
+					exec_cfg("keys_tpp");
+					exec_cfg("autoexec_tpp");
 				}
+
+				exec_cfg("autoexec");
 			}
 
 			parse_command_line();

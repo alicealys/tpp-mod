@@ -36,4 +36,5 @@ namespace command
 	std::vector<std::string> tokenize_string(const std::string& str);
 
 	std::unordered_map<std::string, callback>& get_commands();
+	std::unordered_map<std::string, std::string>& get_aliases();
 }

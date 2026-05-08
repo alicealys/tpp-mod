@@ -241,28 +241,6 @@ namespace vars
 			utils::io::write_file(path, buffer, false);
 		}
 
-		nlohmann::json read_config()
-		{
-			const auto path = get_config_file_path();
-			if (!utils::io::file_exists(path))
-			{
-				return {};
-			}
-
-			try
-			{
-				const auto data = utils::io::read_file(path);
-				return nlohmann::json::parse(data);
-			}
-			catch (const std::exception& e)
-			{
-				console::error("Failed to parse config file: %s\n", e.what());
-				utils::io::write_file(path, "{}", false);
-			}
-
-			return {};
-		}
-
 		bool check_color_component(float v)
 		{
 			return v >= 0.f && v <= 1.f;
