@@ -34,3 +34,6 @@
 [submodule "deps/GSL"]
 	path = deps/GSL
 	url = https://github.com/Microsoft/GSL.git
+[submodule "deps/DSXpp"]
+	path = deps/DSXpp
+	url = https://github.com/WujekFoliarz/DSXpp
