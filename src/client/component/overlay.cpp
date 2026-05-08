@@ -12,6 +12,7 @@
 #include <utils/hook.hpp>
 #include <utils/memory.hpp>
 #include <utils/string.hpp>
+#include "console.hpp"
 
 namespace overlay
 {
@@ -99,6 +100,7 @@ namespace overlay
 			const auto main_session = *game::s_pSession;
 			if (!main_session || !game::environment::is_tpp())
 			{
+				console::info("Game session was null");
 				return "";
 			}
 
@@ -109,6 +111,7 @@ namespace overlay
 
 				if (member == nullptr || member->flags == 0)
 				{
+					console::info("Member not valid!");
 					continue;
 				}
 
@@ -116,6 +119,7 @@ namespace overlay
 
 				if (ping == -1)
 				{
+					console::info("Ping -1");
 					continue;
 				}
 
@@ -124,10 +128,13 @@ namespace overlay
 				steam_id.bits = member->sessionUserId->userId;
 				const auto name = steam_friends->__vftable->GetFriendPersonaName(steam_friends, steam_id);
 
-				std::string result = utils::string::va("%s - %ims", name, ping);
+				console::info("found player name - %s", name);
+
+				std::string result = std::format("{} - {}ms", name, ping);
 				return result;
 			}
 
+			console::info("Couldn't find another player");
 			return "";
 		}
 
