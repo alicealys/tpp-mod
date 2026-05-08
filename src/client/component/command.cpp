@@ -414,7 +414,7 @@ namespace command
 		{
 			if (!current_token.empty() || force)
 			{
-				res.emplace_back();
+				res.emplace_back(current_token);
 				current_token.clear();
 			}
 		};
