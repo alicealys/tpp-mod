@@ -12,6 +12,7 @@
 
 #include <utils/io.hpp>
 #include <utils/string.hpp>
+#include <utils/concurrency.hpp>
 
 namespace command
 {
@@ -20,7 +21,18 @@ namespace command
 		std::unordered_map<std::string, callback> commands;
 
 		std::mutex queue_mutex;
-		std::vector<std::string> command_queue;
+
+		struct command_queue_entry_t
+		{
+			std::string cmd;
+			std::chrono::steady_clock::time_point insertion;
+			std::chrono::milliseconds delay;
+		};
+
+		using command_queue_t = std::vector<command_queue_entry_t>;
+
+		utils::concurrency::container<command_queue_t> next_command_queue;
+		utils::concurrency::container<command_queue_t> command_queue;
 
 		void parse_command_line()
 		{
@@ -63,14 +75,8 @@ namespace command
 			parsed = true;
 		}
 
-		void execute_single(const std::string& cmd)
+		void execute_args(const std::vector<std::string>& args)
 		{
-			const auto args = tokenize_string(cmd);
-			if (args.size() == 0)
-			{
-				return;
-			}
-
 			const auto name = utils::string::to_lower(args[0]);
 			const auto command = commands.find(name);
 			if (command == commands.end())
@@ -93,12 +99,62 @@ namespace command
 			}
 		}
 
+		void execute_single(const std::string& cmd)
+		{
+			const auto args = tokenize_string(cmd);
+			if (args.size() == 0)
+			{
+				return;
+			}
+
+			execute_args(args);
+		}
+
+		void queue_command(const std::string& cmd, const std::chrono::milliseconds delay = 0ms)
+		{
+			const auto now = std::chrono::steady_clock::now();
+			next_command_queue.access([&](command_queue_t& queue)
+			{
+				command_queue_entry_t entry{};
+				entry.cmd = cmd;
+				entry.insertion = now;
+				entry.delay = delay;
+				queue.emplace_back(entry);
+			});
+		}
+
 		void execute_commands(const std::string& line)
 		{
 			const auto cmds = utils::string::split(line, ';');
-			for (const auto& cmd : cmds)
+			for (auto i = 0; i < cmds.size(); i++)
 			{
-				execute_single(cmd);
+				const auto args = tokenize_string(cmds[i]);
+				if (args[0] == "wait")
+				{
+					auto wait_time = 0;
+					if (args.size() > 1)
+					{
+						wait_time = std::atoi(args[1].data());
+					}
+
+					std::string next_commands;
+					for (auto o = i + 1; o < cmds.size(); o++)
+					{
+						next_commands.append(cmds[o]);
+
+						if (o < cmds.size() - 1)
+						{
+							next_commands.append(";");
+						}
+					}
+
+					queue_command(next_commands, std::chrono::milliseconds(wait_time));
+					return;
+				}
+				else
+				{
+					execute_args(args);
+				}
 			}
 		}
 
@@ -215,18 +271,27 @@ namespace command
 
 	void run_frame()
 	{
-		std::vector<std::string> queue_copy;
-
+		command_queue.access([](command_queue_t& queue)
 		{
-			std::lock_guard _0(queue_mutex);
-			queue_copy = command_queue;
-			command_queue.clear();
-		}
+			next_command_queue.access([&](command_queue_t& next_queue)
+			{
+				queue.insert(queue.end(), next_queue.begin(), next_queue.end());
+				next_queue.clear();
+			});
 
-		for (const auto& cmd : queue_copy)
-		{
-			execute_commands(cmd);
-		}
+			const auto now = std::chrono::steady_clock::now();
+			for (auto i = queue.begin(); i != queue.end(); )
+			{
+				if ((now - i->insertion) > i->delay)
+				{
+					execute_commands(i->cmd);
+					i = queue.erase(i);
+					continue;
+				}
+
+				++i;
+			}
+		});
 	}
 
 	void execute(const std::string& cmd, bool sync)
@@ -237,8 +302,7 @@ namespace command
 		}
 		else
 		{
-			std::lock_guard _0(queue_mutex);
-			command_queue.emplace_back(cmd);
+			queue_command(cmd);
 		}
 	}
 
@@ -437,6 +501,12 @@ namespace command
 				}
 
 				game::tpp::ui::utility::StopSound(sound_control, id);
+			});
+
+			// console hint
+			command::add("wait", []()
+			{
+
 			});
 
 			if (game::environment::is_tpp())
