@@ -637,9 +637,9 @@ namespace game
 					return reinterpret_cast<T*>(reinterpret_cast<size_t>(this) + this->size);
 				}
 
-				unsigned char type;
-				unsigned char flags;
-				unsigned short size;
+				unsigned char type{};
+				unsigned char flags{};
+				unsigned short size{};
 			};
 
 			struct Packet2DBuffer
@@ -784,9 +784,9 @@ namespace game
 			struct Packet2DMatrix : Packet2D
 			{
 				Packet2DMatrix() : Packet2D(17, 44) {}
-				float v1[3];
-				float v2[3];
-				float quat[4];
+				float v1[3]{};
+				float v2[3]{};
+				float quat[4]{};
 			};
 
 			struct Packet2DRotation : Packet2D
