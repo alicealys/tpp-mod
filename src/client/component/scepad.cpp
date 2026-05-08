@@ -22,7 +22,7 @@ namespace scepad
 
         vars::var_ptr var_send_dsx_packets;
         static TriggerEffect generic_effect = { TriggerMode::Normal, {0}, TriggerMode::Resistance, {7,1} };
-        static bool gun_empty = false;
+
         static std::chrono::steady_clock::time_point last_time_fired = std::chrono::steady_clock::now();
 
         enum class weapon
@@ -43,23 +43,6 @@ namespace scepad
 
             count
         };
-
-        utils::hook::detour try_fire_hook;
-        void* try_fire_stub(__int64 a1, __int64 a2, unsigned int a3)
-        {
-            void* result = try_fire_hook.invoke<void*>(a1, a2, a3);
-
-            if ((int*)result == 0)
-            {
-                gun_empty = true;
-            }
-            else
-            {
-                gun_empty = false;
-            }
-
-            return result;
-        }
 
         utils::hook::detour state_gun_fire_hook;
         void state_gun_fire_stub(__int64 a1, unsigned int a2, int a3)
@@ -187,7 +170,7 @@ namespace scepad
                 DSX::setRightTrigger(TriggerMode::Normal, { 0 });
                 DSX::setRGB(255, 255, 255, 255);
             }
-            else if (triggerIt != triggerPreset.end() && !gun_empty)
+            else if (triggerIt != triggerPreset.end())
             {
                 TriggerEffect mode = triggerIt->second;
                 if (mode.right_trigger_mode == TriggerMode::AutomaticGun && !is_player_firing())
@@ -224,7 +207,6 @@ namespace scepad
             {
                 if (!game::environment::is_tpp()) return;
                 state_gun_fire_hook.create(game::tpp::gm::player::impl::attack::AttackActionImpl_::StateGunFire.get(), state_gun_fire_stub);
-                try_fire_hook.create(game::tpp::gm::player::impl::attack::AttackActionImpl_::TryFire.get(), try_fire_stub);
                 var_send_dsx_packets = vars::register_bool("send_dsx_packets", true, vars::var_flag_saved, "send sony controller gimmick data to DSX/DSY");
             }
 
