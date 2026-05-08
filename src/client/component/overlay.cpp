@@ -94,12 +94,90 @@ namespace overlay
 			return game::tpp::ui::menu::impl::MotherBaseDeviceSystemImpl_::IsDeviceOpend();
 		}
 
+		std::string get_opponent_fob_name_and_rtt() 
+		{	
+			const auto main_session = *game::s_pSession;
+			if (!main_session || !game::environment::is_tpp())
+			{
+				return "";
+			}
+
+			const auto all_members = &main_session->allMembers;
+			for (auto i = 0u; i < all_members->size; i++)
+			{
+				const auto member = all_members->members[i];
+
+				if (member == nullptr || member->flags == 0)
+				{
+					continue;
+				}
+
+				const auto ping = member->sppSocket != nullptr ? member->sppSocket->tpp.rtt_time : -1;
+
+				if (ping == -1)
+				{
+					continue;
+				}
+
+				const auto steam_friends = (*game::SteamFriends)();
+				game::steam_id steam_id{};
+				steam_id.bits = member->sessionUserId->userId;
+				const auto name = steam_friends->__vftable->GetFriendPersonaName(steam_friends, steam_id);
+
+				std::string result = utils::string::va("%s - %ims", name, ping);
+				return result;
+			}
+
+			return "";
+		}
+
+		int get_opponent_fob_rtt()
+		{
+			const auto main_session = *game::s_pSession;
+			if (!main_session || !game::environment::is_tpp())
+			{
+				return -1;
+			}
+
+			const auto all_members = &main_session->allMembers;
+			for (auto i = 0u; i < all_members->size; i++)
+			{
+				const auto member = all_members->members[i];
+
+				if (member == nullptr || member->flags == 0)
+				{
+					continue;
+				}
+
+				const auto ping = member->sppSocket != nullptr ? member->sppSocket->tpp.rtt_time : -1;
+
+				if (ping == -1)
+				{
+					continue;
+				}
+
+				return ping;
+			}
+
+			return -1;
+		}
+
 		void draw_overlay(game::fox::gr::dg::plugins::Draw2DRenderer* instance)
 		{
 			const auto fps = static_cast<int>(cg_perf.average);
 
 			const auto main_session = *game::s_pSession;
-			auto rtt = session::get_rtt(main_session);
+			int rtt = -1;
+
+			if (game::environment::is_tpp()) 
+			{
+				rtt = get_opponent_fob_rtt();
+			}
+			
+			if(game::environment::is_mgo() || rtt == -1)
+			{
+				rtt = session::get_rtt(main_session);
+			}
 
 			const auto fps_color = fps >= 60 ? color_good : (fps >= 30 ? color_ok : color_bad);
 			auto ping_color = rtt < 100 ? color_good : (rtt < 200 ? color_ok : color_bad);
@@ -121,7 +199,18 @@ namespace overlay
 				case 2:
 				case 3:
 					ping_text = "HOST";
-					ping_color = color_good;
+
+					if (game::environment::is_tpp())
+					{
+						ping_text = "0ms";
+
+						std::string fob_ui_ping = get_opponent_fob_name_and_rtt();
+						if (fob_ui_ping != "") 
+						{
+							ping_text = fob_ui_ping.c_str();
+						}
+					}
+
 					break;
 				case 4:
 				case 5:
@@ -131,6 +220,15 @@ namespace overlay
 					break;
 				case 7:
 					ping_text = utils::string::va("%ims", rtt);
+
+					if (game::environment::is_tpp())
+					{
+						std::string fob_ui_ping = get_opponent_fob_name_and_rtt();
+						if (fob_ui_ping != "")
+						{
+							ping_text = fob_ui_ping.c_str();
+						}
+					}
 					break;
 				}
 			}
@@ -188,6 +286,8 @@ namespace overlay
 				{
 					offset_x -= margin;
 				}
+
+
 				renderer::draw_text(instance, "ping:", font_size, offset_x, text_y, color_text, color_outline);
 				renderer::draw_text(instance, ping_text, font_size, offset_x + ping_label_width, text_y, ping_color, color_outline);
 			}
