@@ -9,6 +9,8 @@ namespace session
 	game::fox::nt::Member* find_client(const std::string& identifier, bool* is_self);
 
 	int get_rtt(game::fox::nt::impl::SessionImpl2* session);
+	bool is_host(game::fox::nt::impl::SessionImpl2* session);
+	int get_state(game::fox::nt::impl::SessionImpl2* session);
 	void connect_to_lobby(const game::steam_id lobby_id);
 
 	game::tpp::mp::RuleSet* get_active_ruleset();

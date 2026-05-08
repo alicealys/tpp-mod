@@ -158,13 +158,13 @@ namespace vars
 	var_ptr register_string(const std::string& name, const std::string& value,
 		const std::uint32_t flags, const std::string& description);
 
-	var_ptr register_vec2(const std::string& name, const vec2_t& value, 
+	var_ptr register_vec2(const std::string& name, const vec2_t& value, float min, float max,
 		const std::uint32_t flags, const std::string& description);
 
-	var_ptr register_vec3(const std::string& name, const vec3_t& value,
+	var_ptr register_vec3(const std::string& name, const vec3_t& value, float min, float max,
 		const std::uint32_t flags, const std::string& description);
 
-	var_ptr register_vec4(const std::string& name, const vec4_t& value,
+	var_ptr register_vec4(const std::string& name, const vec4_t& value, float min, float max,
 		const std::uint32_t flags, const std::string& description);
 
 	var_ptr register_color(const std::string& name, const color_t& value,

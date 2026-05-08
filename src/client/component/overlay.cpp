@@ -99,12 +99,10 @@ namespace overlay
 			const auto fps = static_cast<int>(cg_perf.average);
 
 			const auto main_session = *game::s_pSession;
-			const auto rtt = session::get_rtt(main_session);
+			auto rtt = session::get_rtt(main_session);
 
 			const auto fps_color = fps >= 60 ? color_good : (fps >= 30 ? color_ok : color_bad);
-			const auto ping_color = rtt < 100 ? color_good : (rtt < 200 ? color_ok : color_bad);
-
-			const auto should_draw_ping = var_ui_draw_ping->current.enabled() && main_session != nullptr;
+			auto ping_color = rtt < 100 ? color_good : (rtt < 200 ? color_ok : color_bad);
 
 			auto margin = 8.f;
 			auto offset_x = 1280.f - margin;
@@ -113,7 +111,30 @@ namespace overlay
 			constexpr const auto font_size = 14.f;
 			const auto line_height = 18.f;
 
-			const auto ping_text = utils::string::va("%ims", rtt);
+			const char* ping_text = nullptr;
+			const auto session_state = session::get_state(main_session);
+
+			if (var_ui_draw_ping->current.enabled() && main_session != nullptr && session_state > 0)
+			{
+				switch (session_state)
+				{
+				case 2:
+				case 3:
+					ping_text = "HOST";
+					ping_color = color_good;
+					break;
+				case 4:
+				case 5:
+				case 6:
+					ping_text = "CONNECTING";
+					ping_color = color_ok;
+					break;
+				case 7:
+					ping_text = utils::string::va("%ims", rtt);
+					break;
+				}
+			}
+
 			const auto fps_text = utils::string::va("%i", fps);
 			
 			const auto fps_value_width = renderer::calc_text_width(instance, fps_text, font_size);
@@ -124,7 +145,7 @@ namespace overlay
 			const auto ping_label_width = renderer::calc_text_width(instance, "ping: ", font_size);
 			const auto ping_width = ping_label_width + ping_value_width;
 
-			if (ping_width == 0.f || fps_width == 0.f)
+			if (ping_width == 0.f && fps_width == 0.f)
 			{
 				return;
 			}
@@ -134,7 +155,7 @@ namespace overlay
 				box_width += fps_width;
 			}
 
-			if (should_draw_ping)
+			if (ping_text != nullptr)
 			{
 				if (var_ui_draw_fps->current.enabled())
 				{
@@ -160,7 +181,7 @@ namespace overlay
 				renderer::draw_text(instance, utils::string::va("%i", fps), font_size, offset_x + fps_label_width, text_y, fps_color, color_outline);
 			}
 
-			if (should_draw_ping)
+			if (ping_text != nullptr)
 			{
 				offset_x -= ping_width;
 				if (var_ui_draw_fps->current.enabled())

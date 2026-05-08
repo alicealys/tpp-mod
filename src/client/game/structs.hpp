@@ -1408,7 +1408,7 @@ namespace game
 				fox::nt::Member_SessionInterface sessionInterface;
 				void* a1;
 				char index;
-				void* sppSocket;
+				fox::nio::impl::SppSocketImpl* sppSocket;
 				void* sPtr2;
 				std::uint8_t a5;
 				int flags;

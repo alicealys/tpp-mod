@@ -160,21 +160,21 @@ namespace game_console
 		}
 
 		void draw_hint_text(game::fox::gr::dg::plugins::Draw2DRenderer* instance, int line, const char* text, 
-			float* color, float x_offset = 0.f, float y_offset = 0.f)
+			float* color, float x_offset = 0.f, float y_offset = 0.f, float max_width = 200.f)
 		{
 			const auto y = line_height + margin + 2.f + y_offset + line * line_height + 1.f;
-			renderer::draw_text(instance, text, font_height, x_offset, y, color, color_black, true, 200.f, font_height);
+			renderer::draw_text(instance, text, font_height, x_offset, y, color, color_black, true, max_width, font_height);
 		}
 
 		void draw_hint_text(game::fox::gr::dg::plugins::Draw2DRenderer* instance, int line, const char* text, 
-			vars::color_t var_color, float x_offset = 0.f, float y_offset = 0.f)
+			vars::color_t var_color, float x_offset = 0.f, float y_offset = 0.f, float max_width = 200.f)
 		{
 			float color[4]{};
 			color[0] = var_color.r;
 			color[1] = var_color.g;
 			color[2] = var_color.b;
 			color[3] = var_color.a;
-			draw_hint_text(instance, line, text, color, x_offset, y_offset);
+			draw_hint_text(instance, line, text, color, x_offset, y_offset, max_width);
 		}
 
 		void draw_hints(game::fox::gr::dg::plugins::Draw2DRenderer* instance, float offset)
@@ -213,7 +213,7 @@ namespace game_console
 					draw_hint_text(instance, 2, description.data(), color_white, offset);
 
 					draw_hint_box(instance, 1, offset, line_count * line_height + 2.f, var_con_input_hint_box_color->current.get_color());
-					draw_hint_text(instance, 0, domain, var_con_input_cmd_match_color->current.get_color(), offset, line_count * line_height + 2.f);
+					draw_hint_text(instance, 0, domain, var_con_input_cmd_match_color->current.get_color(), offset, line_count * line_height + 2.f, 0.f);
 				}
 			}
 			else if (matches.size() > 1)

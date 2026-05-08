@@ -144,7 +144,7 @@ namespace text_chat
 				true, vars::var_flag_saved, "enable chat input box outline pulse");
 
 			var_chat_offset = vars::register_vec2("chat_offset",
-				{100.f, 600.f}, vars::var_flag_saved, "chat offset");
+				{100.f, 600.f}, 0.f, 1500.f, vars::var_flag_saved, "chat offset");
 
 			var_chat_height = vars::register_int("chat_height", 
 				6, 1, 10, vars::var_flag_saved, "chat height");
