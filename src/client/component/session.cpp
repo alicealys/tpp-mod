@@ -363,55 +363,103 @@ namespace session
 
 			command::add("rtt", print_rtt);
 
-			if (!game::environment::is_mgo())
+			if (game::environment::is_tpp())
 			{
-				return;
+				command::add("session_create", []
+				{
+					const auto fob_target = game::tpp::net::ServerManager_::GetFobTarget(*game::tpp::net::ServerManager_::s_instance);
+					game::tpp::net::FobTarget_::CreateHostSession(fob_target);
+				});
+
+				command::add("session_start", []()
+				{
+					const auto session = *game::s_pSession;
+					if (session == nullptr)
+					{
+						return;
+					}
+
+					session->started = 1;
+				});
+
+				command::add("session_accept", []()
+				{
+					const auto session = *game::s_pSession;
+					if (session == nullptr)
+					{
+						return;
+					}
+
+					session->acceptEnabled = 1;
+				});
+
+				command::add("session_close", [](const command::params& params)
+				{
+					utils::hook::invoke<void>(SELECT_VALUE_LANG(0x146457B20, 0x148087770));
+				});
+
+				command::add("session_connect", [](const command::params& params)
+				{
+					if (params.size() < 2)
+					{
+						return;
+					}
+
+					const auto steam_id = params.get_uint64(1);
+
+					const auto fob_target = game::tpp::net::ServerManager_::GetFobTarget(*game::tpp::net::ServerManager_::s_instance);
+					fob_target->sessionConnectInfo->hostParam = steam_id;
+					fob_target->sessionConnectInfo->a1 = 0;
+					game::tpp::net::FobTarget_::CreateClientSession(fob_target, fob_target->sessionConnectInfo);
+				});
 			}
-
-			command::add("kick", [](const command::params& params)
+			else
 			{
-				if (params.size() < 2)
+				command::add("kick", [](const command::params& params)
 				{
-					console::info("Usage: kick <name|index|steam_id>", false);
-					return;
-				}
-
-				const auto identifier = params.join(1);
-				scheduler::once([identifier]
-				{
-					if (!is_host())
+					if (params.size() < 2)
 					{
-						console::info("Cannot kick as non-host", false);
+						console::info("Usage: kick <name|index|steam_id>", false);
 						return;
 					}
 
-					bool is_self{};
-					const auto client = find_client(identifier, &is_self);
-					if (client == nullptr)
+					const auto identifier = params.join(1);
+					scheduler::once([identifier]
 					{
-						console::info("Client not found", false);
-						return;
-					}
+						if (!is_host())
+						{
+							console::info("Cannot kick as non-host", false);
+							return;
+						}
 
-					if (is_self)
-					{
-						console::info("Cannot kick yourself", false);
-						return;
-					}
+						bool is_self{};
+						const auto client = find_client(identifier, &is_self);
+						if (client == nullptr)
+						{
+							console::info("Client not found", false);
+							return;
+						}
 
-					const auto steam_friends = (*game::SteamFriends)();
-					game::steam_id steam_id{};
-					steam_id.bits = client->sessionUserId->userId;
-					const auto name = steam_friends->__vftable->GetFriendPersonaName(steam_friends, steam_id);
+						if (is_self)
+						{
+							console::info("Cannot kick yourself", false);
+							return;
+						}
 
-					console::info(utils::string::va("%s has been kicked", name), false);
+						const auto steam_friends = (*game::SteamFriends)();
+						game::steam_id steam_id{};
+						steam_id.bits = client->sessionUserId->userId;
+						const auto name = steam_friends->__vftable->GetFriendPersonaName(steam_friends, steam_id);
 
-					matchmaking::kick_player_from_lobby(client->sessionUserId->userId);
-					matchmaking::ban_player_from_lobby(client->sessionUserId->userId);
-					dedicated_server::ban_player_from_session(steam_id);
-					game::fox::nt::Member_::Reset(client);
-				}, scheduler::session);
-			});
+						console::info(utils::string::va("%s has been kicked", name), false);
+
+						matchmaking::kick_player_from_lobby(client->sessionUserId->userId);
+						matchmaking::ban_player_from_lobby(client->sessionUserId->userId);
+						dedicated_server::ban_player_from_session(steam_id);
+						game::fox::nt::Member_::Reset(client);
+					}, scheduler::session);
+				});
+			}
 		}
 	};
 }
