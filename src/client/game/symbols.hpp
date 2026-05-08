@@ -270,11 +270,22 @@ namespace game
 			{
 				WEAK symbol<char(FobTarget*)> CreateHostSession{0x1459F3E20, 0x0, 0x147441470, 0x0};
 				WEAK symbol<char(FobTarget*, SessionConnectInfo*)> CreateClientSession{0x1459F3910, 0x0, 0x147440F30, 0x0};
+				WEAK symbol<char(FobTarget*, tpp::mbm::PlayerBasicInfo*, int, unsigned int, char, char)> RequestDetail{0x1407F0420, 0x0, 0x1407F0050, 0x0};
 			}
 
 			namespace Daemon_
 			{
 				WEAK symbol<Daemon*()> GetInstance{0x1407DD550, 0x14057B6E0, 0x1407DD190, 0x14057B0B0};
+			}
+
+			namespace NetworkInfo_
+			{
+				WEAK symbol<NetworkInfo*> m_instance{0x142BEF830, 0x0, 0x142BEF830, 0x0};
+			}
+
+			namespace FobP2pNameResolver_
+			{
+				WEAK symbol<const char*(FobP2pNameResolver*)> GetPeerName{0x145AF8580, 0x0, 0x1474CE7E0, 0x0};
 			}
 		}
 

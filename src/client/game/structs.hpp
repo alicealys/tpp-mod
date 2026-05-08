@@ -293,6 +293,11 @@ namespace game
 			SharedStringData* data;
 		};
 
+		struct String : SharedString
+		{
+
+		};
+
 		struct Quark
 		{
 			struct vtable
@@ -387,6 +392,14 @@ namespace game
 		{
 			char __pad0[48];
 		};
+
+		namespace gk
+		{
+			struct FirstPartyAccount
+			{
+				char __pad0[64];
+			};
+		}
 
 		namespace gr
 		{
@@ -653,109 +666,109 @@ namespace game
 			struct Packet2DLine : Packet2D
 			{
 				Packet2DLine() : Packet2D(1, 24) {}
-				char __pad0[20];
+				char __pad0[20]{};
 			};
 
 			struct Packet2DTriangle : Packet2D
 			{
 				Packet2DTriangle() : Packet2D(2, 36) {}
-				char __pad0[32];
+				char __pad0[32]{};
 			};
 
 			struct Packet2DQuad : Packet2D
 			{
 				Packet2DQuad() : Packet2D(3, 44) {}
-				char __pad0[40];
+				char __pad0[40]{};
 			};
 
 			struct Packet2DBox : Packet2D
 			{
 				Packet2DBox() : Packet2D(4, 20) {}
-				unsigned int color;
-				unsigned __int16 f1;
-				unsigned __int16 f2;
-				unsigned __int16 f3;
-				unsigned __int16 f4;
-				unsigned __int16 f5;
+				unsigned int color{};
+				unsigned __int16 f1{};
+				unsigned __int16 f2{};
+				unsigned __int16 f3{};
+				unsigned __int16 f4{};
+				unsigned __int16 f5{};
 			};
 
 			struct Packet2DSprite : Packet2D
 			{
 				Packet2DSprite() : Packet2D(5, 28) {}
-				char __pad0[24];
+				char __pad0[24]{};
 			};
 
 			struct Packet2DSprite2D : Packet2D
 			{
 				Packet2DSprite2D() : Packet2D(6, 32) {}
-				char __pad0[28];
+				char __pad0[28]{};
 			};
 
 			struct Packet2DRSprite : Packet2D
 			{
 				Packet2DRSprite() : Packet2D(7, 28) {}
-				char __pad0[24];
+				char __pad0[24]{};
 			};
 
 			struct Packet2DString : Packet2D
 			{
 				Packet2DString() : Packet2D(8, 32) {}
-				fox::gr::dg::StringFontMetricsCache* fontMetricsCache;
-				unsigned short glyphUnk;
-				unsigned short glyphHeight;
-				unsigned short glyphWidth;
-				unsigned short flags;
-				unsigned int fontType;
-				unsigned short glyphSpacing;
-				unsigned short a9;
+				fox::gr::dg::StringFontMetricsCache* fontMetricsCache{};
+				unsigned short glyphUnk{};
+				unsigned short glyphHeight{};
+				unsigned short glyphWidth{};
+				unsigned short flags{};
+				unsigned int fontType{};
+				unsigned short glyphSpacing{};
+				unsigned short a9{};
 			};
 
 			struct Packet2DString2D : Packet2D
 			{
 				Packet2DString2D() : Packet2D(9, 48) {}
-				char __pad0[44];
+				char __pad0[44]{};
 			};
 
 			struct Packet2DCube : Packet2D
 			{
 				Packet2DCube() : Packet2D(10, 28) {}
-				char __pad0[24];
+				char __pad0[24]{};
 			};
 
 			struct Packet2DLineStrip : Packet2D
 			{
 				Packet2DLineStrip() : Packet2D(11, 8) {}
-				char __pad0[4];
+				char __pad0[4]{};
 			};
 
 			struct Packet2DVertex : Packet2D
 			{
 				Packet2DVertex() : Packet2D(0, 16) {}
-				unsigned int color;
-				unsigned short v[5];
+				unsigned int color{};
+				unsigned short v[5]{};
 			};
 
 			template <size_t Count>
 			struct Packet2DTriangleStrip : Packet2D
 			{
-				Packet2DTriangleStrip() : Packet2D(12, 8) 
+				Packet2DTriangleStrip() : Packet2D(12, 8)
 				{
 					this->size += Count * sizeof(Packet2DVertex);
 				}
 				int count = Count;
-				Packet2DVertex vertices[Count];
+				Packet2DVertex vertices[Count]{};
 			};
 
 			struct Packet2DViewport : Packet2D
 			{
 				Packet2DViewport() : Packet2D(13, 12) {}
-				_fp16 v;
+				_fp16 v{};
 			};
 
 			struct Packet2DViewmap : Packet2D
 			{
 				Packet2DViewmap() : Packet2D(14, 28) {}
-				float v[3][3];
+				float v[3][3]{};
 			};
 
 			struct Packet2DWorldCoords : Packet2D
@@ -779,40 +792,43 @@ namespace game
 			struct Packet2DRotation : Packet2D
 			{
 				Packet2DRotation() : Packet2D(18, 20) {}
-				char __pad0[16];
+				float x{};
+				float y{};
+				float z{};
+				float w{};
 			};
 
 			struct Packet2DTranslation : Packet2D
 			{
 				Packet2DTranslation() : Packet2D(19, 16) {}
-				float x;
-				float y;
-				float z;
+				float x{};
+				float y{};
+				float z{};
 			};
 
 			struct Packet2DScale : Packet2D
 			{
 				Packet2DScale() : Packet2D(20, 16) {}
-				float x;
-				float y;
-				float z;
+				float x{};
+				float y{};
+				float z{};
 			};
 
 			struct Packet2DBillboard : Packet2D
 			{
 				Packet2DBillboard() : Packet2D(21, 8) {}
-				float f1;
-				float f2;
+				float f1{};
+				float f2{};
 			};
 
 			struct Packet2DPerspective : Packet2D
 			{
 				Packet2DPerspective() : Packet2D(22, 24) {}
-				float f1;
-				float f2;
-				float f3;
-				float f4;
-				float f5;
+				float f1{};
+				float f2{};
+				float f3{};
+				float f4{};
+				float f5{};
 			};
 
 			struct Packet2DFlat : Packet2D
@@ -833,7 +849,7 @@ namespace game
 			struct Packet2DTexture : Packet2D
 			{
 				Packet2DTexture() : Packet2D(26, 8) {}
-				int id;
+				int id{};
 			};
 
 			struct Packet2DAlpha : Packet2D
@@ -844,45 +860,45 @@ namespace game
 			struct Packet2DColor : Packet2D
 			{
 				Packet2DColor() : Packet2D(28, 12) {}
-				_fp16 rgba;
+				_fp16 rgba{};
 			};
 
 			struct Packet2DStencil : Packet2D
 			{
 				Packet2DStencil() : Packet2D(29, 16) {}
-				unsigned char a1;
-				unsigned char a2;
-				unsigned char a3;
-				unsigned char a4;
-				unsigned char a5;
-				unsigned char a6;
-				unsigned char a7;
-				unsigned char a8;
-				int a9;
+				unsigned char a1{};
+				unsigned char a2{};
+				unsigned char a3{};
+				unsigned char a4{};
+				unsigned char a5{};
+				unsigned char a6{};
+				unsigned char a7{};
+				unsigned char a8{};
+				int a9{};
 			};
 
 			struct Packet2DClearStencil : Packet2D
 			{
 				Packet2DClearStencil() : Packet2D(30, 8) {}
-				int a1;
+				int a1{};
 			};
 
 			struct Packet2DMaterial : Packet2D
 			{
 				Packet2DMaterial() : Packet2D(32, 16) {}
-				Material* material;
+				Material* material{};
 			};
 
 			struct Packet2DMaterialWork : Packet2D
 			{
 				Packet2DMaterialWork() : Packet2D(33, 24) {}
-				char __pad0[20];
+				char __pad0[20]{};
 			};
 
 			struct Packet2DUserMatrix : Packet2D
 			{
 				Packet2DUserMatrix() : Packet2D(34, 68) {}
-				char __pad0[64];
+				char __pad0[64]{};
 			};
 
 			struct Packet2DPush : Packet2D
@@ -898,31 +914,31 @@ namespace game
 			struct Packet2DResolve : Packet2D
 			{
 				Packet2DResolve() : Packet2D(40, 8) {}
-				char __pad0[4];
+				char __pad0[4]{};
 			};
 
 			struct Packet2DCopyRenderTarget : Packet2D
 			{
 				Packet2DCopyRenderTarget() : Packet2D(41, 12) {}
-				char __pad0[8];
+				char __pad0[8]{};
 			};
 
 			struct Packet2DDrawIndices : Packet2D
 			{
 				Packet2DDrawIndices() : Packet2D(45, 24) {}
-				char __pad0[20];
+				char __pad0[20]{};
 			};
 
 			struct Packet2DUserVertexBuffer : Packet2D
 			{
 				Packet2DUserVertexBuffer() : Packet2D(46, 24) {}
-				char __pad0[20];
+				char __pad0[20]{};
 			};
 
 			struct Packet2DBeginRenderToTemporary : Packet2D
 			{
 				Packet2DBeginRenderToTemporary() : Packet2D(47, 16) {}
-				char __pad0[12];
+				char __pad0[12]{};
 			};
 
 			struct Packet2DEndRenderToTemporary : Packet2D
@@ -933,7 +949,7 @@ namespace game
 			struct Packet2DSetTemporaryTexture : Packet2D
 			{
 				Packet2DSetTemporaryTexture() : Packet2D(49, 8) {}
-				char __pad0[4];
+				char __pad0[4]{};
 			};
 
 		}
@@ -1329,15 +1345,10 @@ namespace game
 			}
 		};
 
-		struct Entity
-		{
-			char __pad0[56];
-			char team;
-		};
-
+		template <typename T>
 		struct EntityPtrBase
 		{
-			Entity* entity;
+			T* ptr;
 		};
 
 		struct EntityHandle
@@ -1529,7 +1540,7 @@ namespace game
 
 				struct SessionImpl2_vtbl_tpp
 				{
-					void*(__fastcall* __destructor)(SessionImpl2* this_);
+					void* (__fastcall* __destructor)(SessionImpl2* this_);
 					void(__fastcall* Release)(SessionImpl2* this_);
 					unsigned int(__fastcall* GetState)(SessionImpl2* this_);
 					Group* (__fastcall* GetPeerMembers)(SessionImpl2* this_);
@@ -1550,7 +1561,7 @@ namespace game
 					void* (__fastcall* GetP2pConnectionManager)(SessionImpl2* this_);
 					unsigned __int64(__fastcall* GetResult)(SessionImpl2* this_);
 					void(__fastcall* InitAcceptedMember)(SessionImpl2* this_, void*, void*);
-					Group*(__fastcall* GetAllMembers)(SessionImpl2* this_);
+					Group* (__fastcall* GetAllMembers)(SessionImpl2* this_);
 				};
 
 				union SessionImpl2_vtbl
@@ -1563,9 +1574,9 @@ namespace game
 
 				struct SessionImpl2_SessionInterface_vtbl
 				{
-					void*(__fastcall* GetLocalMemberInterface)(SessionImpl2_SessionInterface* this_);
-					void*(__fastcall* GetHostMemberInterface)(SessionImpl2_SessionInterface* this_);
-					void*(__fastcall* GetMemberInterfaceAtIndex)(SessionImpl2_SessionInterface* this_, void*);
+					void* (__fastcall* GetLocalMemberInterface)(SessionImpl2_SessionInterface* this_);
+					void* (__fastcall* GetHostMemberInterface)(SessionImpl2_SessionInterface* this_);
+					void* (__fastcall* GetMemberInterfaceAtIndex)(SessionImpl2_SessionInterface* this_, void*);
 					int(__fastcall* GetMemberCount)(SessionImpl2_SessionInterface* this_);
 					unsigned int(__fastcall* GetOriginalValueCount)(SessionImpl2_SessionInterface* this_);
 					bool(__fastcall* IsHost)(SessionImpl2_SessionInterface* this_);
@@ -1648,6 +1659,25 @@ namespace game
 		};
 	}
 
+	namespace tpp::mbm
+	{
+		struct PlayerBasicInfo
+		{
+			char __pad0[137];
+			char playerName1[0x64];
+			char __pad1[3];
+			int playerId1;
+			fox::gk::FirstPartyAccount account;
+			char __pad2[73];
+			char playerName2[0x64];
+			char __pad3[3];
+			int playerId2;
+			char __pad4[30];
+			char fobField3;
+			char __pad5[460];
+		};
+	}
+
 	namespace tpp::net
 	{
 		struct ServerManager_vtbl
@@ -1667,10 +1697,284 @@ namespace game
 			std::uint64_t hostParam;
 		};
 
+		struct RequestDisplayImpl
+		{
+			struct vtable
+			{
+
+			};
+
+			vtable* __vftable;
+			fox::gk::FirstPartyAccount* unkArray[12];
+			char __pad1[704];
+			int a1;
+			int a2;
+		};
+
+		struct DisplayName
+		{
+			struct vtable
+			{
+
+			};
+
+			vtable* __vftable;
+			RequestDisplayImpl* requestDisplay;
+		};
+
 		struct FobTarget
 		{
-			char __pad0[64];
+			char __pad0[16];
+			int a1;
+			fox::StringId unkString;
+			char __pad1[8];
+			mbm::PlayerBasicInfo* playerInfos;
+			char __pad2[8];
+			short maxPlayers;
+			char __pad3[10];
 			SessionConnectInfo* sessionConnectInfo;
+			DisplayName* displayName1;
+			DisplayName* displayName2;
+		};
+
+		struct PlayerPlatformInfo
+		{
+			struct Npid
+			{
+				struct
+				{
+					fox::String data;
+					int term;
+					struct
+					{
+						int value[3];
+						int count;
+					} dummy;
+				} handler;
+				struct
+				{
+					int value[8];
+					int count;
+				} opt;
+				struct
+				{
+					int value[8];
+					int count;
+				} reserved;
+			};
+
+			int playerId;
+			int playerPlatformInfoField0;
+			fox::String name;
+			Npid npid;
+			unsigned __int64 xuid;
+			int ugc;
+			int playerPlatformInfo31;
+		};
+
+
+		struct FobTargetInfo
+		{
+			struct Emblem
+			{
+				struct EmblemPart
+				{
+					int texture_tag;
+					int base_color;
+					int frame_color;
+					int position_x;
+					int position_y;
+					int scale;
+					int rotate;
+				};
+
+				EmblemPart parts[4];
+				int part_count;
+			};
+
+			struct Espionage
+			{
+				int section;
+				int win;
+				int lose;
+				int score;
+			};
+
+			struct Rank
+			{
+				int grade;
+				int rank;
+				int score;
+			};
+
+			struct DetailRecord
+			{
+				int follow;
+				int follower;
+				int hero;
+				int enemy;
+				int help;
+				int online;
+				int insurance;
+				Emblem emblem;
+				int staff_count;
+				int nuclear;
+				Rank league_rank;
+				Rank sneak_rank;
+				Espionage espionage;
+				int name_plate_id;
+				int is_security_challenge;
+			};
+
+			struct Resource
+			{
+				int common_metal;
+				int minor_metal;
+				int precious_metal;
+				int fuel_resource;
+				int biotic_resource;
+			};
+
+			struct StaffCount
+			{
+				int count[10];
+				int num_count;
+			};
+
+			struct FobRecord
+			{
+				int attack_count;
+				int support_count;
+				int supported_count;
+				Resource usable_resource;
+				Resource processing_resource;
+				StaffCount staff_count;
+				StaffCount capture_staff_count;
+				StaffCount injury_staff_count;
+				int nuclear;
+				int capture_staff;
+				Resource capture_resource;
+				int capture_resource_count;
+				int attack_gmp;
+				int capture_nuclear;
+				int left_hour;
+				int date_time;
+				int name_plate_id;
+			};
+
+			struct ClusterSecurity
+			{
+				struct CoordParam
+				{
+					int placed_index;
+					int position_x;
+					int position_y;
+					int position_z;
+					int rotation_w;
+					int rotation_x;
+					int rotation_y;
+					int rotation_z;
+				};
+
+				int soldier;
+				int ir_sensor;
+				int antitheft;
+				int camera;
+				int decoy;
+				int mine;
+				int uav;
+				int caution_area;
+				int voluntary_coord_camera_count;
+				int voluntary_coord_mine_count;
+				CoordParam voluntary_coord_camera_params[1];
+				int camera_count;
+				CoordParam voluntary_coord_mine_params[4];
+				int mine_count;
+			};
+
+			struct ClusterParam
+			{
+				int build;
+				int soldier_rank;
+				int cluster_security;
+				ClusterSecurity unique_security;
+				ClusterSecurity common1_security;
+				ClusterSecurity common2_security;
+				ClusterSecurity common3_security;
+			};
+
+			struct MotherBaseParam
+			{
+				int mother_base_id;
+				int fob_index;
+				int construct_param;
+				int security_rank;
+				int platform_count;
+				int price;
+				ClusterParam cluster_param[7];
+				int cluster_param_count;
+				int area_id;
+			};
+
+			PlayerPlatformInfo owner_info;
+			DetailRecord owner_detail_record;
+			FobRecord owner_fob_record;
+			int sneak_mode;
+			int is_win;
+			int cluster;
+			int is_sneak_restriction;
+			MotherBaseParam mother_base_param[4];
+			int num_param;
+			PlayerPlatformInfo attacker_info;
+			Emblem attacker_emblem;
+			Espionage attacker_espionage;
+			int attacker_sneak_rank_grade;
+		};
+
+		struct FobDeployDamageParam
+		{
+			int expiration_date;
+			int damage_values[16];
+			int damage_value_count;
+			int mother_base_id;
+			int cluster_index;
+		};
+
+		struct CmdGetFobTargetListResult
+		{
+			int fogTargetListField0;
+			int fogTargetListField1;
+			int fogTargetListField2;
+			int fogTargetListField3;
+			int fogTargetListField4;
+			int fogTargetListField5;
+			int fogTargetListField6;
+			int fogTargetListField7;
+			int fogTargetListField8;
+			int fogTargetListField9;
+			fox::String msgid;
+			int rqid;
+			int fogTargetListField13;
+			int fogTargetListField14;
+			int fogTargetListField15;
+			int fogTargetListField16;
+			int fogTargetListField17;
+			int fogTargetListField18;
+			int fogTargetListField19;
+			fox::String result;
+			fox::String type;
+			int target_num;
+			int fogTargetListField24;
+			FobTargetInfo targets[32];
+			int target_count;
+			int unk;
+			int win;
+			int lose;
+			int esp_point;
+			int event_point;
+			int shield_date;
+			int enable_security_challenge;
+			FobDeployDamageParam fob_deploy_damage_param;
 		};
 
 		struct CmdGetFobTargetDetailResult
@@ -1728,12 +2032,24 @@ namespace game
 		};
 #pragma pack(pop)
 
+		struct FobP2pNameResolver
+		{
+
+		};
+
 		struct Daemon
 		{
 			char __pad0[16];
 			Daemon_sub_1* ptr1;
 			char __pad1[56];
 			int flags;
+			FobP2pNameResolver* nameResolver;
+		};
+
+		struct NetworkInfo
+		{
+			char __pad0[161];
+			char opponentName[32];
 		};
 	}
 
