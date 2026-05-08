@@ -34,6 +34,7 @@ namespace scepad
             machine_gun = 93478,
             granade_launcher = 27879,
             pistol = 159074,
+            pistol2 = 165186,
             revolver = 165314,
             sniper_rifle = 93476,
             shotgun = 27877,
@@ -75,6 +76,7 @@ namespace scepad
             {weapon::sniper_rifle, {TriggerMode::Normal, {0}, TriggerMode::SemiAutomaticGun, {2,3,7}}},
             {weapon::granade_launcher, {TriggerMode::Normal, {0}, TriggerMode::SemiAutomaticGun, {2,3,8}}},
             {weapon::pistol, {TriggerMode::Normal, {0}, TriggerMode::SemiAutomaticGun, {2,3,6}}},
+            {weapon::pistol2, {TriggerMode::Normal, {0}, TriggerMode::SemiAutomaticGun, {2,3,6}}},
             {weapon::shotgun, {TriggerMode::Normal, {0}, TriggerMode::SemiAutomaticGun, {2,3,8}}},
             {weapon::revolver, {TriggerMode::Normal, {0}, TriggerMode::SemiAutomaticGun, {2,3,7}}},
         };
