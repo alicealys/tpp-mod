@@ -1,0 +1,6 @@
+﻿################################################################################
+# Ten plik .gitignore został utworzony automatycznie przez Microsoft(R) Visual Studio.
+################################################################################
+
+/.vs
+/out/build/x64-Debug
