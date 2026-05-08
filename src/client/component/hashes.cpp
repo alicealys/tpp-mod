@@ -10,6 +10,7 @@
 #include <utils/hook.hpp>
 #include <utils/string.hpp>
 #include <utils/io.hpp>
+#include <utils/flags.hpp>
 
 namespace hashes
 {
@@ -27,8 +28,13 @@ namespace hashes
 		{
 			std::lock_guard _0(map_mutex);
 			const auto result = fox_str_hash_hook.invoke<game::fox::StringId>(str, size);
-			const auto copy = allocator.duplicate_string(std::string{str, str + size});
-			string_map.insert(std::make_pair(result.id, copy));
+
+			if (!string_map.contains(result.id))
+			{
+				const auto copy = allocator.duplicate_string(std::string{str, str + size});
+				string_map.insert(std::make_pair(result.id, copy));
+			}
+
 			return result;
 		}
 
@@ -36,8 +42,13 @@ namespace hashes
 		{
 			std::lock_guard _0(map_mutex);
 			const auto result = shared_string_to_string_id_hook.invoke<game::fox::StringId*>(str, id);
-			const auto copy = allocator.duplicate_string(str->data->buffer);
-			string_map.insert(std::make_pair(result->id, copy));
+
+			if (!string_map.contains(result->id))
+			{
+				const auto copy = allocator.duplicate_string(str->data->buffer);
+				string_map.insert(std::make_pair(result->id, copy));
+			}
+
 			return result;
 		}
 	}
@@ -78,6 +89,11 @@ namespace hashes
 
 		void start() override
 		{
+			if (!utils::flags::has_flag("dump-hashes"))
+			{
+				return;
+			}
+
 			fox_str_hash_hook.create(SELECT_VALUE(0x140023260, 0x140022F30, 0x140023220, 0x140022FD0), fox_str_hash_stub);
 			shared_string_to_string_id_hook.create(SELECT_VALUE(0x14001D660, 0x14001D4C0, 0x14001D620, 0x14001D490), shared_string_to_string_id_stub);
 
