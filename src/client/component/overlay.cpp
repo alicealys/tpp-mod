@@ -95,7 +95,7 @@ namespace overlay
 			return game::tpp::ui::menu::impl::MotherBaseDeviceSystemImpl_::IsDeviceOpend();
 		}
 
-		std::string get_opponent_fob_name_and_rtt() 
+		const char* get_opponent_fob_name_and_rtt() 
 		{	
 			const auto main_session = *game::s_pSession;
 			if (!main_session || !game::environment::is_tpp())
@@ -125,8 +125,9 @@ namespace overlay
 				steam_id.bits = member->sessionUserId->userId;
 				const auto name = steam_friends->__vftable->GetFriendPersonaName(steam_friends, steam_id);
 
-				std::string result = std::format("{} - {}ms", name, ping);
-				return result;
+				static char buf[256];
+				snprintf(buf, sizeof(buf), "%s - %dms", name, ping); 
+				return buf;
 			}
 
 			return "";
@@ -205,10 +206,10 @@ namespace overlay
 					{
 						ping_text = "0ms";
 
-						std::string fob_ui_ping = get_opponent_fob_name_and_rtt();
-						if (fob_ui_ping != "") 
+						const char* fob_ui_ping = get_opponent_fob_name_and_rtt();
+						if (fob_ui_ping != nullptr && fob_ui_ping[0] != '\0')
 						{
-							ping_text = fob_ui_ping.c_str();
+							ping_text = fob_ui_ping;
 						}
 					}
 
@@ -224,10 +225,10 @@ namespace overlay
 
 					if (game::environment::is_tpp())
 					{
-						std::string fob_ui_ping = get_opponent_fob_name_and_rtt();
-						if (fob_ui_ping != "")
+						const char* fob_ui_ping = get_opponent_fob_name_and_rtt();
+						if (fob_ui_ping != nullptr && fob_ui_ping[0] != '\0')
 						{
-							ping_text = fob_ui_ping.c_str();
+							ping_text = fob_ui_ping;
 						}
 					}
 					break;
