@@ -197,6 +197,15 @@ namespace game
 					{
 						WEAK symbol<bool()> IsLoading{0x1462AF2F0, 0x1407B8290, 0x147F69AF0, 0x1407B7C20};
 					}
+
+					namespace attack
+					{
+						namespace AttackActionImpl_
+						{
+							WEAK symbol<bool()> TryFire{ 0x14108C250, 0x0, 0x14108C2A0, 0x0 };
+							WEAK symbol<bool()> StateGunFire{ 0x14106FD20, 0x0, 0x14106FD70, 0x0 };
+						}
+					}
 				}
 			}
 		}
