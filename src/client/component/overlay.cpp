@@ -83,26 +83,76 @@ namespace overlay
 			perf_calc_fps(&cg_perf, static_cast<int>(1.f / time_system.frameTime));
 		}
 
-		bool is_device_open()
+		game::fox::nt::Member* get_peer_member(game::fox::nt::impl::SessionImpl2* session)
 		{
-			const auto inst = game::tpp::ui::menu::UiCommonDataManager_::GetInstance();
-			if (inst == nullptr)
+			for (auto i = 1u; i < session->allMembers.size; i++)
 			{
-				return false;
+				if (session->allMembers.members[i] != nullptr && session->allMembers.members[i]->flags != 0)
+				{
+					return session->allMembers.members[i];
+				}
+			}
+			
+			return nullptr;
+		}
+
+		const char* get_ping_text(float** color)
+		{
+			static char buffer[0x40]{};
+			const auto main_session = *game::s_pSession;
+			if (main_session == nullptr)
+			{
+				return nullptr;
 			}
 
-			return game::tpp::ui::menu::impl::MotherBaseDeviceSystemImpl_::IsDeviceOpend();
+			const auto session_state = session::get_state(main_session);
+			const auto rtt = session::get_rtt(main_session);
+
+			const auto calc_color = [&](const int rtt)
+			{
+				*color = rtt < 100 ? color_good : (rtt < 200 ? color_ok : color_bad);
+			};
+
+			switch (session_state)
+			{
+			case 2:
+			case 3:
+			{
+				*color = color_good;
+				const auto peer = get_peer_member(main_session);
+				if (game::environment::is_tpp() && peer != nullptr && peer->sppSocket != nullptr && peer->sppSocket->tpp.rtt_time != -1)
+				{
+					game::steam_id user_id{};
+					user_id.bits = peer->sessionUserId->userId;
+					const auto steam_friends = (*game::SteamFriends)();
+					const auto name = steam_friends->__vftable->GetFriendPersonaName(steam_friends, user_id);
+					calc_color(peer->sppSocket->tpp.rtt_time);
+					snprintf(buffer, sizeof(buffer), "%s - %ims", name, peer->sppSocket->tpp.rtt_time);
+					return buffer;
+				}
+				return "HOST";
+			}
+			case 4:
+			case 5:
+			case 6:
+				*color = color_ok;
+				return "CONNECTING";
+			case 7:
+			{
+				calc_color(rtt);
+				snprintf(buffer, sizeof(buffer), "%ims", rtt);
+				return buffer;
+			}
+			}
+
+			return nullptr;
 		}
 
 		void draw_overlay(game::fox::gr::dg::plugins::Draw2DRenderer* instance)
 		{
 			const auto fps = static_cast<int>(cg_perf.average);
 
-			const auto main_session = *game::s_pSession;
-			auto rtt = session::get_rtt(main_session);
-
 			const auto fps_color = fps >= 60 ? color_good : (fps >= 30 ? color_ok : color_bad);
-			auto ping_color = rtt < 100 ? color_good : (rtt < 200 ? color_ok : color_bad);
 
 			auto margin = 8.f;
 			auto offset_x = 1280.f - margin;
@@ -111,32 +161,21 @@ namespace overlay
 			constexpr const auto font_size = 14.f;
 			const auto line_height = 18.f;
 
-			const char* ping_text = nullptr;
-			const auto session_state = session::get_state(main_session);
+			const auto draw_fps = var_ui_draw_fps->current.enabled();
+			const auto draw_ping = var_ui_draw_ping->current.enabled();
 
-			if (var_ui_draw_ping->current.enabled() && main_session != nullptr && session_state > 0)
+			if (!draw_ping && !draw_fps)
 			{
-				switch (session_state)
-				{
-				case 2:
-				case 3:
-					ping_text = "HOST";
-					ping_color = color_good;
-					break;
-				case 4:
-				case 5:
-				case 6:
-					ping_text = "CONNECTING";
-					ping_color = color_ok;
-					break;
-				case 7:
-					ping_text = utils::string::va("%ims", rtt);
-					break;
-				}
+				return;
 			}
 
+			float* ping_color{};
+			const auto ping_text = draw_ping
+				? get_ping_text(&ping_color)
+				: nullptr;
+
 			const auto fps_text = utils::string::va("%i", fps);
-			
+
 			const auto fps_value_width = renderer::calc_text_width(instance, fps_text, font_size);
 			const auto fps_label_width = renderer::calc_text_width(instance, "fps: ", font_size);
 			const auto fps_width = fps_label_width + fps_value_width;
@@ -150,14 +189,14 @@ namespace overlay
 				return;
 			}
 
-			if (var_ui_draw_fps->current.enabled())
+			if (draw_fps)
 			{
 				box_width += fps_width;
 			}
 
 			if (ping_text != nullptr)
 			{
-				if (var_ui_draw_fps->current.enabled())
+				if (draw_fps)
 				{
 					box_width += margin;
 				}
@@ -174,7 +213,7 @@ namespace overlay
 			offset_x -= margin;
 			const auto text_y = margin + 1.5f;
 
-			if (var_ui_draw_fps->current.enabled())
+			if (draw_fps)
 			{
 				offset_x -= fps_width;
 				renderer::draw_text(instance, "fps:", font_size, offset_x, text_y, color_text, color_outline);
@@ -184,7 +223,7 @@ namespace overlay
 			if (ping_text != nullptr)
 			{
 				offset_x -= ping_width;
-				if (var_ui_draw_fps->current.enabled())
+				if (draw_fps)
 				{
 					offset_x -= margin;
 				}
