@@ -23,6 +23,7 @@ namespace patches
 		vars::var_ptr var_max_fps;
 		vars::var_ptr var_sensitivity;
 		vars::var_ptr var_camera_fov_scale;
+		vars::var_ptr var_camera_fist_person_fov_scale;
 
 		void set_timer_resolution()
 		{
@@ -179,9 +180,9 @@ namespace patches
 			var_sensitivity->set_callback->operator()();
 		}
 
-		void scale_fov(game::tpp::gm::player::impl::PlayerCameraImpl* camera)
+		void scale_fov(game::tpp::gm::player::impl::PlayerCameraImpl* camera, vars::var_ptr var)
 		{
-			const auto scale = (1.f / var_camera_fov_scale->current.get_float());
+			const auto scale = (1.f / var->current.get_float());
 			if (game::environment::is_tpp())
 			{
 				camera->tpp.fov *= scale;
@@ -196,21 +197,21 @@ namespace patches
 		void subjective_camera_set_parameter_stub(void* a1, void* a2, void* a3, __int64 a4)
 		{
 			subjective_camera_set_parameter_hook.invoke<void>(a1, a2, a3, a4);
-			scale_fov(*reinterpret_cast<game::tpp::gm::player::impl::PlayerCameraImpl**>(a4 + 8));
+			scale_fov(*reinterpret_cast<game::tpp::gm::player::impl::PlayerCameraImpl**>(a4 + 8), var_camera_fist_person_fov_scale);
 		}
 
 		utils::hook::detour player_camera_set_tps_params_hook;
 		void player_camera_set_tps_params_stub(game::tpp::gm::player::impl::PlayerCameraImpl* camera, void* params)
 		{
 			player_camera_set_tps_params_hook.invoke<void>(camera, params);
-			scale_fov(camera);
+			scale_fov(camera, var_camera_fov_scale);
 		}
 
 		utils::hook::detour player_camera_set_around_params_hook;
 		void player_camera_set_around_params_stub(game::tpp::gm::player::impl::PlayerCameraImpl* camera, void* params)
 		{
 			player_camera_set_around_params_hook.invoke<void>(camera, params);
-			scale_fov(camera);
+			scale_fov(camera, var_camera_fov_scale);
 		}
 
 		bool check_update_fov()
@@ -283,6 +284,9 @@ namespace patches
 
 			var_camera_fov_scale = vars::register_float("camera_fov_scale", 1.f, 0.1f, 5.f, 
 				vars::var_flag_saved, "camera fov scale");
+
+			var_camera_fist_person_fov_scale = vars::register_float("camera_first_person_fov_scale", 1.f, 0.1f, 5.f, 
+				vars::var_flag_saved, "first person camera fov scale");
 
 			if (game::environment::is_tpp())
 			{
