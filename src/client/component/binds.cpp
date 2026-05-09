@@ -198,42 +198,6 @@ namespace binds
 			}
 		}
 
-		bool is_player_action_blocked()
-		{
-			const auto inst = game::tpp::ui::hud::CommonDataManager_::GetInstance();
-			const auto ui_inst = game::tpp::ui::menu::UiCommonDataManager_::GetInstance();
-
-			if (inst == nullptr || ui_inst == nullptr)
-			{
-				return true;
-			}
-
-			if (game::tpp::ui::menu::UiCommonDataManager_::GetPauseMenuType(ui_inst) != 0 ||
-				!game::tpp::ui::hud::CommonDataManager_::IsEndLoadingTips(inst) || 
-				game::tpp::ui::menu::impl::MotherBaseDeviceSystemImpl_::IsDeviceOpend())
-			{
-				return true;
-			}
-
-			if (game::tpp::gm::player::player2System->player2System == nullptr ||
-				game::tpp::gm::player::player2System->player2System->tpp.pad == nullptr)
-			{
-				return true;
-			}
-
-			if (game::tpp::gm::player::player2System->player2System->tpp.pad->mask != 0)
-			{
-				return true;
-			}
-
-			if (game::tpp::gm::player::impl::Player2UtilityImpl_::IsLoading())
-			{
-				return true;
-			}
-
-			return false;
-		}
-
 		bool is_action_command(const std::string& cmd)
 		{
 			return action_commands.contains(cmd) || cmd.starts_with("+");
@@ -569,6 +533,43 @@ namespace binds
 
 		utils::io::write_file(path, buffer);
 	}
+
+	bool is_player_action_blocked()
+	{
+		const auto inst = game::tpp::ui::hud::CommonDataManager_::GetInstance();
+		const auto ui_inst = game::tpp::ui::menu::UiCommonDataManager_::GetInstance();
+
+		if (inst == nullptr || ui_inst == nullptr)
+		{
+			return true;
+		}
+
+		if (game::tpp::ui::menu::UiCommonDataManager_::GetPauseMenuType(ui_inst) != 0 ||
+			!game::tpp::ui::hud::CommonDataManager_::IsEndLoadingTips(inst) ||
+			game::tpp::ui::menu::impl::MotherBaseDeviceSystemImpl_::IsDeviceOpend())
+		{
+			return true;
+		}
+
+		if (game::tpp::gm::player::player2System->player2System == nullptr ||
+			game::tpp::gm::player::player2System->player2System->tpp.pad == nullptr)
+		{
+			return true;
+		}
+
+		if (game::tpp::gm::player::player2System->player2System->tpp.pad->mask != 0)
+		{
+			return true;
+		}
+
+		if (game::tpp::gm::player::impl::Player2UtilityImpl_::IsLoading())
+		{
+			return true;
+		}
+
+		return false;
+	}
+
 
 	class component final : public component_interface
 	{

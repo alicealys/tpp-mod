@@ -8,7 +8,6 @@
 #pragma warning(disable: 4127)
 #pragma warning(disable: 4244)
 #pragma warning(disable: 4458)
-#pragma warning(disable: 4459)
 #pragma warning(disable: 4702)
 #pragma warning(disable: 4996)
 #pragma warning(disable: 5054)
@@ -82,7 +81,6 @@
 #include <udis86.h>
 #include <MinHook.h>
 #include <tomcrypt.h>
-#include <DSX++.h>
 
 #define RAPIDJSON_NOEXCEPT
 #define RAPIDJSON_ASSERT(cond) if(cond); else throw std::runtime_error("rapidjson assert fail");
