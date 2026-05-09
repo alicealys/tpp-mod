@@ -2320,6 +2320,24 @@ namespace game
 				Player2SystemImpl_mgo mgo;
 			};
 
+			struct PlayerCameraImpl_mgo
+			{
+				char __pad0[716];
+				float fov;
+			};
+
+			struct PlayerCameraImpl_tpp
+			{
+				char __pad0[732];
+				float fov;
+			};
+
+			union PlayerCameraImpl
+			{
+				PlayerCameraImpl_tpp tpp;
+				PlayerCameraImpl_mgo mgo;
+			};
+
 		}
 
 		struct Pad

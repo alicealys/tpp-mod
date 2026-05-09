@@ -22,6 +22,7 @@ namespace patches
 		vars::var_ptr var_name;
 		vars::var_ptr var_max_fps;
 		vars::var_ptr var_sensitivity;
+		vars::var_ptr var_camera_fov_scale;
 
 		void set_timer_resolution()
 		{
@@ -177,6 +178,90 @@ namespace patches
 
 			var_sensitivity->set_callback->operator()();
 		}
+
+		void scale_fov(game::tpp::gm::player::impl::PlayerCameraImpl* camera)
+		{
+			const auto scale = (1.f / var_camera_fov_scale->current.get_float());
+			if (game::environment::is_tpp())
+			{
+				camera->tpp.fov *= scale;
+			}
+			else
+			{
+				camera->mgo.fov *= scale;
+			}
+		}
+
+		utils::hook::detour subjective_camera_set_parameter_hook;
+		void subjective_camera_set_parameter_stub(void* a1, void* a2, void* a3, __int64 a4)
+		{
+			subjective_camera_set_parameter_hook.invoke<void>(a1, a2, a3, a4);
+			scale_fov(*reinterpret_cast<game::tpp::gm::player::impl::PlayerCameraImpl**>(a4 + 8));
+		}
+
+		utils::hook::detour player_camera_set_tps_params_hook;
+		void player_camera_set_tps_params_stub(game::tpp::gm::player::impl::PlayerCameraImpl* camera, void* params)
+		{
+			player_camera_set_tps_params_hook.invoke<void>(camera, params);
+			scale_fov(camera);
+		}
+
+		utils::hook::detour player_camera_set_around_params_hook;
+		void player_camera_set_around_params_stub(game::tpp::gm::player::impl::PlayerCameraImpl* camera, void* params)
+		{
+			player_camera_set_around_params_hook.invoke<void>(camera, params);
+			scale_fov(camera);
+		}
+
+		bool check_update_fov()
+		{
+			const auto changed = var_camera_fov_scale->changed;
+			var_camera_fov_scale->changed = false;
+			return changed;
+		}
+
+		void around_camera_update_parameter_stub(utils::hook::assembler& a)
+		{
+			const auto do_update = a.new_label();
+			const auto no_update = a.new_label();
+
+			if (game::environment::is_tpp())
+			{
+				a.and_(edi, 0xF0);
+			}
+			else
+			{
+				a.mov(r15, qword_ptr(rsp, 0xB8));
+			}
+
+			a.push(rax);
+			a.pushad64();
+			a.call_aligned(check_update_fov);
+			a.mov(qword_ptr(rsp, 0x80), rax);
+			a.popad64();
+			a.pop(rax);
+
+			a.test(al, al);
+			a.jnz(do_update);
+
+			a.cmp(rdi, qword_ptr(rbx, 0x18));
+			a.jz(no_update);
+
+			a.bind(do_update);
+			a.jmp(SELECT_VALUE(0x14101E5A5, 0x141016463, 0x14101E5F5, 0x141015B43));
+
+			a.bind(no_update);
+			a.jmp(SELECT_VALUE(0x14101E5CC, 0x14101648A, 0x14101E61C, 0x141015B6A));
+		}
+
+		void patch_fov()
+		{
+			subjective_camera_set_parameter_hook.create(SELECT_VALUE(0x14105B660, 0x14104C650, 0x14105B6B0, 0x14104BD20), subjective_camera_set_parameter_stub);
+			player_camera_set_tps_params_hook.create(SELECT_VALUE(0x1498447A0, 0x14BE550C0, 0x14A25F300, 0x14BD71D40), player_camera_set_tps_params_stub);
+			player_camera_set_around_params_hook.create(SELECT_VALUE(0x14983F7D0, 0x14BE4EB00, 0x14A25BB10, 0x14BD6C270), player_camera_set_around_params_stub);
+
+			utils::hook::jump(SELECT_VALUE(0x14101E599, 0x141016455, 0x14101E5E9, 0x141015B35), utils::hook::assemble(around_camera_update_parameter_stub), true);
+		}
 	}
 
 	class component final : public component_interface
@@ -195,6 +280,9 @@ namespace patches
 
 			var_sensitivity = vars::register_float("sensitivity", 1.f, 0.f, 10.f, 
 				vars::var_flag_saved, "mouse sensitivity scale");
+
+			var_camera_fov_scale = vars::register_float("camera_fov_scale", 1.f, 0.1f, 5.f, 
+				vars::var_flag_saved, "camera fov scale");
 
 			if (game::environment::is_tpp())
 			{
@@ -258,6 +346,7 @@ namespace patches
 			}
 
 			patch_sensitivity();
+			patch_fov();
 		}
 	};
 }
