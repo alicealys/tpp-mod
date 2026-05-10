@@ -508,6 +508,8 @@ namespace fobs
 
 				const auto emblem = game::fox::GetQuarkSystemTable()->applicationSystem->scriptVars->emblem;
 				std::memcpy(&s.own_lobby_info.emblem, &emblem, sizeof(game::tpp::mbm::PlayerBasicInfo::Emblem));
+
+				update_lobby(s);
 			});
 
 			return cmd_sync_mother_base_option_pack_hook.invoke<char>(option);
@@ -529,6 +531,8 @@ namespace fobs
 						s.own_lobby_info.staff_count[staff.fields.header.fields.peak_rank]++;
 					}
 				}
+
+				update_lobby(s);
 			});
 
 			return cmd_sync_soldier_bin_pack_hook.invoke<char>(option);
@@ -580,6 +584,8 @@ namespace fobs
 				s.own_lobby_info.total_resource.common_metal += result->fix_resource2[2];
 				s.own_lobby_info.total_resource.minor_metal += result->fix_resource2[3];
 				s.own_lobby_info.total_resource.precious_metal += result->fix_resource2[4];
+
+				update_lobby(s);
 			});
 
 			return res;
