@@ -243,10 +243,7 @@ namespace fobs
 				lobby.total_resource.precious_metal = get_lobby_data("precious_metal");
 
 				lobby.name_plate_id = get_lobby_data("name_plate_id");
-
 				lobby.mother_base_num = get_lobby_data("mother_base_num");
-
-				const auto match_type = std::atoi(steam_matchmaking->__vftable->GetLobbyData(steam_matchmaking, lobby_id, "match_type"));
 
 				for (auto o = 0u; o < lobby.mother_base_num; o++)
 				{
@@ -303,7 +300,7 @@ namespace fobs
 			}
 
 			const auto matchmaking = (*steam_api.steam_matchmaking)();
-			const auto handle = matchmaking->__vftable->CreateLobby(matchmaking, 2, 2);
+			matchmaking->__vftable->CreateLobby(matchmaking, 2, 2);
 
 			s.own_lobby_id.bits = 0;
 			s.requested_lobby_create = true;
