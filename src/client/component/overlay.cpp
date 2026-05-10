@@ -40,6 +40,13 @@ namespace overlay
 
 		cg_perf_data cg_perf{};
 
+		struct ping_text_cont_t
+		{
+			char buffer[0x40];
+			float* color;
+			std::mutex mutex;
+		} ping_text_cont{};
+
 		void perf_calc_fps(cg_perf_data* data, const std::int32_t value)
 		{
 			data->history[data->index % 32] = value;
@@ -96,13 +103,12 @@ namespace overlay
 			return nullptr;
 		}
 
-		const char* get_ping_text(float** color)
+		void generate_ping_text(ping_text_cont_t& ping_text_cont_)
 		{
-			static char buffer[0x40]{};
 			const auto main_session = *game::s_pSession;
 			if (main_session == nullptr)
 			{
-				return nullptr;
+				return;
 			}
 
 			const auto session_state = session::get_state(main_session);
@@ -110,7 +116,7 @@ namespace overlay
 
 			const auto calc_color = [&](const int rtt)
 			{
-				*color = rtt < 100 ? color_good : (rtt < 200 ? color_ok : color_bad);
+				ping_text_cont_.color = rtt < 100 ? color_good : (rtt < 200 ? color_ok : color_bad);
 			};
 
 			switch (session_state)
@@ -118,7 +124,7 @@ namespace overlay
 			case 2:
 			case 3:
 			{
-				*color = color_good;
+				ping_text_cont_.color = color_good;
 				const auto peer = get_peer_member(main_session);
 				if (game::environment::is_tpp() && peer != nullptr && peer->sppSocket != nullptr && peer->sppSocket->tpp.rtt_time != -1)
 				{
@@ -127,25 +133,52 @@ namespace overlay
 					const auto steam_friends = (*game::SteamFriends)();
 					const auto name = steam_friends->__vftable->GetFriendPersonaName(steam_friends, user_id);
 					calc_color(peer->sppSocket->tpp.rtt_time);
-					snprintf(buffer, sizeof(buffer), "%s - %ims", name, peer->sppSocket->tpp.rtt_time);
-					return buffer;
+					snprintf(ping_text_cont_.buffer, sizeof(ping_text_cont_.buffer), "%s - %ims", name, peer->sppSocket->tpp.rtt_time);
 				}
-				return "HOST";
+				else
+				{
+					strcpy_s(ping_text_cont_.buffer, sizeof(ping_text_cont_.buffer), "HOST");
+				}
+				break;
 			}
 			case 4:
 			case 5:
 			case 6:
-				*color = color_ok;
-				return "CONNECTING";
+			{
+				ping_text_cont_.color = color_ok;
+				strcpy_s(ping_text_cont_.buffer, sizeof(ping_text_cont_.buffer), "CONNECTING");
+				break;
+			}
 			case 7:
 			{
 				calc_color(rtt);
-				snprintf(buffer, sizeof(buffer), "%ims", rtt);
-				return buffer;
+				snprintf(ping_text_cont_.buffer, sizeof(ping_text_cont_.buffer), "%ims", rtt);
 			}
+			}
+		}
+
+		void update_ping_text()
+		{
+			ping_text_cont_t new_ping_text{};
+			generate_ping_text(new_ping_text);
+			std::lock_guard _0(ping_text_cont.mutex);
+			std::memcpy(ping_text_cont.buffer, new_ping_text.buffer, sizeof(ping_text_cont.buffer));
+			ping_text_cont.color = new_ping_text.color;
+		}
+
+		const char* get_ping_text(float** color)
+		{
+			static char buffer[0x40]{};
+			std::lock_guard _0(ping_text_cont.mutex);
+
+			if (ping_text_cont.buffer[0] == 0)
+			{
+				return nullptr;
 			}
 
-			return nullptr;
+			std::memcpy(buffer, ping_text_cont.buffer, sizeof(ping_text_cont.buffer));
+			*color = ping_text_cont.color;
+			return buffer;
 		}
 
 		void draw_overlay(game::fox::gr::dg::plugins::Draw2DRenderer* instance)
@@ -246,7 +279,8 @@ namespace overlay
 
 		void start() override
 		{
-			scheduler::loop(perf_update, scheduler::pipeline::main);
+			scheduler::loop(perf_update, scheduler::main);
+			scheduler::loop(update_ping_text, scheduler::session);
 		}
 	};
 }
