@@ -26,6 +26,97 @@ namespace game
 
 	struct ISteamUser;
 
+	enum { k_iSteamUserCallbacks = 100 };
+	enum { k_iSteamGameServerCallbacks = 200 };
+	enum { k_iSteamFriendsCallbacks = 300 };
+	enum { k_iSteamBillingCallbacks = 400 };
+	enum { k_iSteamMatchmakingCallbacks = 500 };
+	enum { k_iSteamContentServerCallbacks = 600 };
+	enum { k_iSteamUtilsCallbacks = 700 };
+	enum { k_iSteamAppsCallbacks = 1000 };
+	enum { k_iSteamUserStatsCallbacks = 1100 };
+	enum { k_iSteamNetworkingCallbacks = 1200 };
+	enum { k_iSteamNetworkingSocketsCallbacks = 1220 };
+	enum { k_iSteamNetworkingMessagesCallbacks = 1250 };
+	enum { k_iSteamNetworkingUtilsCallbacks = 1280 };
+	enum { k_iSteamRemoteStorageCallbacks = 1300 };
+	enum { k_iSteamGameServerItemsCallbacks = 1500 };
+	enum { k_iSteamGameCoordinatorCallbacks = 1700 };
+	enum { k_iSteamGameServerStatsCallbacks = 1800 };
+	enum { k_iSteam2AsyncCallbacks = 1900 };
+	enum { k_iSteamGameStatsCallbacks = 2000 };
+	enum { k_iSteamHTTPCallbacks = 2100 };
+	enum { k_iSteamScreenshotsCallbacks = 2300 };
+	enum { k_iSteamStreamLauncherCallbacks = 2600 };
+	enum { k_iSteamControllerCallbacks = 2800 };
+	enum { k_iSteamUGCCallbacks = 3400 };
+	enum { k_iSteamStreamClientCallbacks = 3500 };
+	enum { k_iSteamMusicCallbacks = 4000 };
+	enum { k_iSteamGameNotificationCallbacks = 4400 };
+	enum { k_iSteamHTMLSurfaceCallbacks = 4500 };
+	enum { k_iSteamVideoCallbacks = 4600 };
+	enum { k_iSteamInventoryCallbacks = 4700 };
+	enum { k_ISteamParentalSettingsCallbacks = 5000 };
+	enum { k_iSteamGameSearchCallbacks = 5200 };
+	enum { k_iSteamPartiesCallbacks = 5300 };
+	enum { k_iSteamSTARCallbacks = 5500 };
+	enum { k_iSteamRemotePlayCallbacks = 5700 };
+	enum { k_iSteamChatCallbacks = 5900 };
+	enum { k_iSteamTimelineCallbacks = 6000 };
+
+	typedef unsigned __int64 SteamAPICall_t;
+	typedef unsigned __int8 uint8;
+	typedef unsigned __int16 uint16;
+	typedef unsigned __int32 uint32;
+	typedef unsigned __int64 uint64;
+
+	struct LobbyDataUpdate_t
+	{
+		enum { k_iCallback = k_iSteamMatchmakingCallbacks + 5 };
+
+		uint64 m_ulSteamIDLobby;		// steamID of the Lobby
+		uint64 m_ulSteamIDMember;		// steamID of the member whose data changed, or the room itself
+		uint8 m_bSuccess;				// true if we lobby data was successfully changed; 
+		// will only be false if RequestLobbyData() was called on a lobby that no longer exists
+	};
+
+	struct LobbyMatchList_t
+	{
+		enum { k_iCallback = k_iSteamMatchmakingCallbacks + 10 };
+		unsigned int num_lobbies;		// Number of lobbies that matched search criteria and we have SteamIDs for
+	};
+
+	class CCallbackBase
+	{
+	public:
+		CCallbackBase() { m_nCallbackFlags = 0; m_iCallback = 0; }
+		// don't add a virtual destructor because we export this binary interface across dll's
+		virtual void Run(void* pvParam) = 0;
+		virtual void Run(void* pvParam, bool bIOFailure, SteamAPICall_t hSteamAPICall) = 0;
+		int GetICallback() { return m_iCallback; }
+		virtual int GetCallbackSizeBytes() = 0;
+
+	protected:
+		enum { k_ECallbackFlagsRegistered = 0x01, k_ECallbackFlagsGameServer = 0x02 };
+		uint8 m_nCallbackFlags;
+		int m_iCallback;
+		friend class CCallbackMgr;
+
+	private:
+		CCallbackBase(const CCallbackBase&);
+		CCallbackBase& operator=(const CCallbackBase&);
+	};
+
+	struct LobbyEnter_t
+	{
+		enum { k_iCallback = k_iSteamMatchmakingCallbacks + 4 };
+
+		steam_id lobby_id;
+		int permissions;
+		bool locked;
+		int chatroom;
+	};
+
 	struct /*VFT*/ ISteamUser_vtbl
 	{
 		int(__fastcall* GetHSteamUser)(ISteamUser* this_);
@@ -167,6 +258,7 @@ namespace game
 
 	struct LobbyCreated_t
 	{
+		enum { k_iCallback = k_iSteamMatchmakingCallbacks + 13 };
 		int result;
 		steam_id lobby_id;
 	};
@@ -197,7 +289,7 @@ namespace game
 		void(__fastcall* AddRequestLobbyListDistanceFilter)(ISteamMatchmaking* this_, int eLobbyDistanceFilter);
 		void(__fastcall* AddRequestLobbyListResultCountFilter)(ISteamMatchmaking* this_, int cMaxResults);
 		void(__fastcall* AddRequestLobbyListCompatibleMembersFilter)(ISteamMatchmaking* this_, steam_id steamID);
-		steam_id(__fastcall* GetLobbyByIndex)(ISteamMatchmaking* this_, int iLobby);
+		steam_id*(__fastcall* GetLobbyByIndex)(ISteamMatchmaking* this_, steam_id* lobby_id, int iLobby);
 		unsigned __int64(__fastcall* CreateLobby)(ISteamMatchmaking* this_, int eLobbyType, int cMaxMembers);
 		unsigned __int64(__fastcall* JoinLobby)(ISteamMatchmaking* this_, steam_id steamIDLobby);
 		void(__fastcall* LeaveLobby)(ISteamMatchmaking* this_, steam_id steamIDLobby);
@@ -220,7 +312,7 @@ namespace game
 		int(__fastcall* GetLobbyMemberLimit)(ISteamMatchmaking* this_, steam_id steamIDLobby);
 		bool(__fastcall* SetLobbyType)(ISteamMatchmaking* this_, steam_id steamIDLobby, int eLobbyType);
 		bool(__fastcall* SetLobbyJoinable)(ISteamMatchmaking* this_, steam_id steamIDLobby, bool bLobbyJoinable);
-		steam_id(__fastcall* GetLobbyOwner)(ISteamMatchmaking* this_, steam_id steamIDLobby);
+		steam_id*(__fastcall* GetLobbyOwner)(ISteamMatchmaking* this_, steam_id* owner, steam_id steamIDLobby);
 		bool(__fastcall* SetLobbyOwner)(ISteamMatchmaking* this_, steam_id steamIDLobby, steam_id steamIDNewOwner);
 		bool(__fastcall* SetLinkedLobby)(ISteamMatchmaking* this_, steam_id steamIDLobby, steam_id steamIDLobby2);
 	};
@@ -229,6 +321,14 @@ namespace game
 	{
 		ISteamMatchmaking_vtbl* __vftable /*VFT*/;
 	};
+
+	namespace Json
+	{
+		struct Value
+		{
+			char __pad0[24];
+		};
+	}
 
 	namespace tpp::ui::menu
 	{
@@ -285,7 +385,7 @@ namespace game
 
 		struct SharedStringData
 		{
-			char* buffer;
+			const char* buffer;
 		};
 
 		struct SharedString
@@ -395,10 +495,13 @@ namespace game
 
 		namespace gk
 		{
+#pragma pack(push, 1)
 			struct FirstPartyAccount
 			{
-				char __pad0[64];
+				__int64 id;
+				char name[129];
 			};
+#pragma pack(pop)
 		}
 
 		namespace gr
@@ -1643,6 +1746,73 @@ namespace game
 				static_assert(sizeof(SessionImpl2) == 232);
 			}
 		}
+	
+		namespace ncl
+		{
+#pragma pack(push, 8)
+			struct NclMessageBase
+			{
+				struct vtable
+				{
+
+				};
+
+				vtable* __vftable;
+				fox::String msgid;
+				int a1;
+				int a2;
+				fox::String crypto_type;
+				fox::String str4;
+			};
+
+			struct NclJsonMessage
+			{
+				struct vtable
+				{
+
+				};
+
+				vtable* __vftable;
+				Json::Value json;
+				fox::ncl::NclMessageBase base;
+			};
+
+			struct NclJsonMessageBase
+			{
+				struct vtable
+				{
+
+				};
+
+				vtable* __vftable;
+				int rqid;
+				NclJsonMessage jsonMessage;
+			};
+
+			struct NclJsonMessageResult : NclJsonMessageBase
+			{
+				struct vtable
+				{
+
+				};
+
+				vtable* __vftable;
+				fox::String result;
+			};
+
+			struct NclJsonMessageResult__shifted0x10
+			{
+				struct vtable
+				{
+
+				};
+
+				NclJsonMessage jsonMessage;
+				vtable* __vftable;
+				fox::String result;
+			};
+#pragma pack(pop)
+		}
 	}
 
 	union Session
@@ -1663,19 +1833,228 @@ namespace game
 	{
 		struct PlayerBasicInfo
 		{
-			char __pad0[137];
-			char playerName1[0x64];
+			struct Emblem
+			{
+				unsigned int texture_tag[4];
+				unsigned int base_color[4];
+				unsigned int frame_color[4];
+				char position_x[4];
+				char position_y[4];
+				char scale[4];
+				char rotate[4];
+			};
+
+			struct Resource
+			{
+				int fuel_resource;
+				int biotic_resource;
+				int common_metal;
+				int minor_metal;
+				int precious_metal;
+			};
+
+			fox::gk::FirstPartyAccount owner_account;
+			char owner_name[0x64];
 			char __pad1[3];
-			int playerId1;
-			fox::gk::FirstPartyAccount account;
-			char __pad2[73];
-			char playerName2[0x64];
+			unsigned int owner_player_id;
+			fox::gk::FirstPartyAccount attacker_account;
+			char attacker_name[0x64];
 			char __pad3[3];
-			int playerId2;
-			char __pad4[30];
-			char fobField3;
-			char __pad5[460];
+			unsigned int attacker_player_id;
+			unsigned int mother_base_id[4];
+			int field4;
+			int attack_count;
+			int support_count2;
+			short staff_num;
+			char mother_base_num;
+			char platform_count[4];
+			char security_rank[4];
+			char area_id[4];
+			char construct_param2[4];
+			int supported_count;
+			int support_count1;
+			int field7;
+			int field8;
+			int field9;
+			int field10;
+			int capture_staff;
+			int capture_resource_count;
+			int attack_gmp;
+			int field14;
+			int left_hour2;
+			struct
+			{
+				char follow : 1;
+				char follower : 1;
+				char enemy : 1;
+				char help : 1;
+				char online : 1;
+				char insurance : 1;
+				char hero : 1;
+				char unused : 1;
+			} fields1;
+			char sneak_rank_grade;
+			char field18_1;
+			char field19_1;
+			int sneak_rank_rank;
+			char attacker_sneak_rank_grade;
+			char league_rank_grade;
+			char field26_1;
+			char field16_2;
+			int league_rank_rank;
+			char field21_2;
+			char field22_2;
+			char field23_2;
+			char field24_2;
+			char field25_2;
+			char field26_2;
+			short espionage_section;
+			short espionage_win;
+			short espionage_total;
+			int espionage_score;
+			short attacker_espionage_section;
+			short attacker_espionage_win;
+			short attacker_espionage_total;
+			char field21_4;
+			char field22_4;
+			int attacker_espionage_score;
+			char nuclear;
+			char owner_ugc;
+			char field27_3;
+			char field27_4;
+			Emblem owner_emblem;
+			char attacker_ugc;
+			char field43_2;
+			char field43_3;
+			char field43_4;
+			Emblem attacker_emblem;
+			__int64 field45;
+			__int64 field47;
+			int field49;
+			char field50_1;
+			char field50_2;
+			char field50_3;
+			char field50_4;
+			Resource processing_resource;
+			Resource usable_resource;
+			Resource capture_resource;
+			int field58;
+			int field59;
+			int field60;
+			int field61;
+			int field62;
+			int field63;
+			int field64;
+			int field65;
+			int field66;
+			int field67;
+			int field68;
+			int field69;
+			int field70;
+			int field71;
+			int field72;
+			short staff_count[10];
+			int date_time;
+			char cluster;
+			char field79_2;
+			short capture_staff_count[10];
+			short injury_staff_count[10];
+			short field80;
+			Resource capture_resource2;
+			int capture_nuclear;
+			char is_win;
+			char field91_2;
+			char nameplate_id;
+			char field91_4;
 		};
+		
+		static_assert(sizeof(PlayerBasicInfo) == 1000);
+		static_assert(offsetof(PlayerBasicInfo, owner_name) == 0x89);
+		static_assert(offsetof(PlayerBasicInfo, nameplate_id) == 0x3E6);
+
+		namespace impl
+		{
+			struct FobMission2CallbackImpl
+			{
+				char __pad0[176];
+				char state;
+				char __pad1[0x1000];
+			};
+		}
+
+		namespace StaffController_
+		{
+			union StaffHeader
+			{
+				struct
+				{
+					std::uint32_t suppress_stats : 1;
+					std::uint32_t stat_bonus : 2;
+					std::uint32_t peak_rank : 4;
+					std::uint32_t stat_distribution : 6;
+					std::uint32_t skill : 7;
+					std::uint32_t face_gender : 10;
+				} fields;
+				std::uint32_t data;
+			};
+
+			union StaffStatusSync
+			{
+				struct
+				{
+					std::uint32_t combat_deployment_team : 4;
+					std::uint32_t player_selected : 3;
+					std::uint32_t direct_contract : 1;
+					std::uint32_t proficiency : 4;
+					std::uint32_t ds_medal : 1;
+					std::uint32_t ds_cross : 1;
+					std::uint32_t honor_medal : 1;
+					std::uint32_t unk : 1;
+					std::uint32_t symptomatic : 1;
+					std::uint32_t health_level : 3;
+					std::uint32_t health_state : 2;
+					std::uint32_t morale : 4;
+					std::uint32_t enemy : 1;
+					std::uint32_t designation : 4;
+					std::uint32_t unselectable : 1;
+				} fields;
+				std::uint32_t data;
+			};
+
+			struct StaffSeed
+			{
+				std::uint32_t data;
+			};
+
+			struct StaffStatusNoSync
+			{
+				std::uint32_t data;
+			};
+
+			struct StaffUnk1
+			{
+				std::uint32_t data;
+			};
+
+			struct StaffUnk2
+			{
+				std::uint32_t data;
+			};
+
+			union Staff
+			{
+				struct
+				{
+					StaffUnk1 unk1;
+					StaffUnk2 unk2;
+					StaffHeader header;
+					StaffSeed seed;
+					StaffStatusSync status_sync;
+					StaffStatusNoSync status_no_sync;
+				} fields;
+				std::uint32_t packed[6];
+			};
+		}
 	}
 
 	namespace tpp::net
@@ -1772,6 +2151,59 @@ namespace game
 			int playerPlatformInfo31;
 		};
 
+		struct ClusterSecurity
+		{
+			struct CoordParam
+			{
+				int placed_index;
+				int position_x;
+				int position_y;
+				int position_z;
+				int rotation_w;
+				int rotation_x;
+				int rotation_y;
+				int rotation_z;
+			};
+
+			int soldier;
+			int ir_sensor;
+			int antitheft;
+			int camera;
+			int decoy;
+			int mine;
+			int uav;
+			int caution_area;
+			int voluntary_coord_camera_count;
+			int voluntary_coord_mine_count;
+			CoordParam voluntary_coord_camera_params[1];
+			int camera_count;
+			CoordParam voluntary_coord_mine_params[4];
+			int mine_count;
+		};
+
+		struct ClusterParam
+		{
+			int build;
+			int soldier_rank;
+			int cluster_security;
+			ClusterSecurity unique_security;
+			ClusterSecurity common1_security;
+			ClusterSecurity common2_security;
+			ClusterSecurity common3_security;
+		};
+
+		struct MotherBaseParam
+		{
+			int mother_base_id;
+			int fob_index;
+			int construct_param;
+			int security_rank;
+			int platform_count;
+			int price;
+			ClusterParam cluster_param[7];
+			int cluster_param_count;
+			int area_id;
+		};
 
 		struct FobTargetInfo
 		{
@@ -1862,60 +2294,6 @@ namespace game
 				int name_plate_id;
 			};
 
-			struct ClusterSecurity
-			{
-				struct CoordParam
-				{
-					int placed_index;
-					int position_x;
-					int position_y;
-					int position_z;
-					int rotation_w;
-					int rotation_x;
-					int rotation_y;
-					int rotation_z;
-				};
-
-				int soldier;
-				int ir_sensor;
-				int antitheft;
-				int camera;
-				int decoy;
-				int mine;
-				int uav;
-				int caution_area;
-				int voluntary_coord_camera_count;
-				int voluntary_coord_mine_count;
-				CoordParam voluntary_coord_camera_params[1];
-				int camera_count;
-				CoordParam voluntary_coord_mine_params[4];
-				int mine_count;
-			};
-
-			struct ClusterParam
-			{
-				int build;
-				int soldier_rank;
-				int cluster_security;
-				ClusterSecurity unique_security;
-				ClusterSecurity common1_security;
-				ClusterSecurity common2_security;
-				ClusterSecurity common3_security;
-			};
-
-			struct MotherBaseParam
-			{
-				int mother_base_id;
-				int fob_index;
-				int construct_param;
-				int security_rank;
-				int platform_count;
-				int price;
-				ClusterParam cluster_param[7];
-				int cluster_param_count;
-				int area_id;
-			};
-
 			PlayerPlatformInfo owner_info;
 			DetailRecord owner_detail_record;
 			FobRecord owner_fob_record;
@@ -1940,28 +2318,39 @@ namespace game
 			int cluster_index;
 		};
 
-		struct CmdGetFobTargetListResult
+		struct CmdGetFobTargetListOption
 		{
-			int fogTargetListField0;
-			int fogTargetListField1;
-			int fogTargetListField2;
-			int fogTargetListField3;
-			int fogTargetListField4;
-			int fogTargetListField5;
-			int fogTargetListField6;
-			int fogTargetListField7;
-			int fogTargetListField8;
-			int fogTargetListField9;
+			char __pad0[40];
 			fox::String msgid;
-			int rqid;
-			int fogTargetListField13;
-			int fogTargetListField14;
-			int fogTargetListField15;
-			int fogTargetListField16;
-			int fogTargetListField17;
-			int fogTargetListField18;
-			int fogTargetListField19;
-			fox::String result;
+			char __pad1[32];
+			fox::String type;
+			int index;
+			int num;
+		};
+
+		struct CmdSetSecurityChallengeOption
+		{
+			char __pad0[40];
+			fox::String msgid;
+			fox::String rqid;
+			char __pad1[24];
+			fox::String status;
+		};
+
+#define SHIFT_CONDITIONAL std::conditional<Shift == 16, fox::ncl::NclJsonMessageResult__shifted0x10, fox::ncl::NclJsonMessageResult>::type
+#define SHIFT_CONDITIONAL_ASSERT static_assert(Shift == 16 || Shift == 0);
+
+		template <size_t Shift>
+		struct CmdSetSecurityChallengeResult : SHIFT_CONDITIONAL
+		{
+			SHIFT_CONDITIONAL_ASSERT
+		};
+
+		template <size_t Shift>
+		struct CmdGetFobTargetListResult : SHIFT_CONDITIONAL
+		{
+			SHIFT_CONDITIONAL_ASSERT
+
 			fox::String type;
 			int target_num;
 			int fogTargetListField24;
@@ -1977,6 +2366,33 @@ namespace game
 			FobDeployDamageParam fob_deploy_damage_param;
 		};
 
+		template <size_t Shift>
+		struct CmdGetOwnFobListResult : SHIFT_CONDITIONAL
+		{
+			SHIFT_CONDITIONAL_ASSERT
+
+			MotherBaseParam fob[4];
+			int fob_count;
+		};
+
+		template <size_t Shift>
+		struct CmdSyncResourceResult : SHIFT_CONDITIONAL
+		{
+			SHIFT_CONDITIONAL_ASSERT
+
+			int diff_resource1[58];
+			int diff_resource1_count;
+			int diff_resource2[58];
+			int diff_resource2_count;
+			int fix_resource1[58];
+			int fix_resource1_count;
+			int fix_resource2[58];
+			int fix_resource2_count;
+		};
+
+		static_assert(offsetof(CmdGetFobTargetListResult<16>, target_count) == 0xC0668);
+		static_assert(offsetof(CmdGetFobTargetListResult<16>, enable_security_challenge) == 0xC0684);
+
 		struct CmdGetFobTargetDetailResult
 		{
 			char __pad0[7144];
@@ -1984,6 +2400,58 @@ namespace game
 			char __pad1[8];
 			fox::SharedString* ip;
 			std::uint32_t port;
+		};
+
+		struct PlayerData
+		{
+			fox::String name;
+			int play_time;
+			int point;
+			int league_grade;
+			int league_rank;
+			int fob_grade;
+			int fob_rank;
+			int fob_point;
+			int espionage_win;
+			int espionage_lose;
+			int is_insurance;
+			int index;
+		};
+
+		template <size_t Shift>
+		struct CmdGetPlayerlistResult : SHIFT_CONDITIONAL
+		{
+			SHIFT_CONDITIONAL_ASSERT
+
+			int player_num;
+			int pad;
+			PlayerData player_data[1];
+			int count;
+		};
+
+		template <size_t Shift>
+		struct CmdSetCurrentplayerResult : SHIFT_CONDITIONAL
+		{
+			SHIFT_CONDITIONAL_ASSERT
+
+			int player_id;
+		};
+
+		struct CmdSyncMotherBaseOption
+		{
+			char __pad0[148];
+			int mother_base_num;
+			MotherBaseParam mother_base_param[4];
+			int mother_base_count;
+			char __pad1[380];
+			int name_plate_id;
+		};
+
+		struct CmdSyncSoldierBinOption
+		{
+			char __pad0[136];
+			mbm::StaffController_::Staff soldier_param[3500];
+			int soldier_num;
 		};
 
 		struct Daemon_sub_1_sub_1_sub2

@@ -318,7 +318,7 @@ namespace renderer
 		int get_language_code()
 		{
 			const auto lang = game::fox::AssetConfiguration_::GetLanguage();
-			return *reinterpret_cast<int*>(lang->data->buffer);
+			return *reinterpret_cast<const int*>(lang->data->buffer);
 		}
 
 		float get_font_scaling()

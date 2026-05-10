@@ -353,6 +353,11 @@ namespace text_chat::input
 
 		void start() override
 		{
+			if (!game::environment::is_mgo())
+			{
+				return;
+			}
+
 			chat_state.access([](chat_state_t& state)
 			{
 				state = {};
@@ -362,11 +367,6 @@ namespace text_chat::input
 			{
 				clear();
 			});
-
-			if (!game::environment::is_mgo())
-			{
-				return;
-			}
 
 			command::add("chatall", []
 			{
