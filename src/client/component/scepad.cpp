@@ -141,11 +141,6 @@ namespace scepad
 
         void update_scepad()
         {
-            if (!var_dsx_enable->current.enabled())
-            {
-                return;
-            }
-
             const auto state_copy = state.access<state_t>([&](state_t& s)
             {
                 return s;
@@ -192,11 +187,17 @@ namespace scepad
         public:
             void pre_load() override
             {
-                var_dsx_enable = vars::register_bool("dsx_enable", false, vars::var_flag_saved, "enable DSX integration");
+                var_dsx_enable = vars::register_bool("dsx_enable", true, 
+                    vars::var_flag_latched | vars::var_flag_saved, "enable DSX integration");
             }
 
             void start() override
             {
+                if (!var_dsx_enable->current.enabled())
+                {
+                    return;
+                }
+
                 if (DSX::init() != DSX::Success) 
                 {
                     console::error("[scepad] DSX++ client failed to initialize");
