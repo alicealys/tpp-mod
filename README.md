@@ -30,54 +30,137 @@ Configuration files are stored in `%localappdata%\tpp-mod`
 |:-:|
 | in game console |
 
-- Allows overriding of existing lua scripts (working directory is `[mgsv game folder]/tpp-mod`)
-- **variables**:  
-  similar to cod dvars (can be set through the console or through the config file `localappdata/tpp-mod/config.json`):  
-  - `com_unlock_fps`: unlocks fps past 60  
-  - `com_worker_count`: changes maximum number of worker threads for rendering  
-  - `net_udp`: makes sessions use udp sockets instead of steam networking (only works on tpp with a custom server backend)  
-  - `net_port`: udp socket port  
-  - `ui_skip_intro`: disables the splashscreens on tpp  
-  - `net_server_logging`: logs and dumps server requests/responses to the disk  
-  - `net_custom_server_tpp`: custom backend server url for tpp  
-  - `net_custom_server_mgo`: custom backend server url for mgo  
-    - When using the custom server flag the game save is written/read from this folder `tpp-mod/steam_storage/server-{server hash}` instead of `steamuserdata`
-  - `lua_logging`: enables lua logging (1: files, 2: debug prints)
-  - `lua_dump`: enables lua script dumping
-  - `net_channel`: sets the steam networking channel to use (mgo only)
-  - `player_ramble_speed_scale`: scales the player ramble speed
-  - `player_ramble_speed_patch`: enables the player ramble speed patch for unlocked fps
-  - `chat_time`: chat message duration
-  - `chat_key`: key to open the chat
-  - `chat_enable`: enable chat
-  - `discord_enable`: enable discord rpc
-  
-- **commands**:
-  - mgo only:
-    - `status`: prints list of players present in the current session (mgo)  
-    - `kick <name|steam_id|index>`: kicks a player from your session (mgo)  
-    - `clearkicks`: clears the kicked player list (mgo)
-    - `connect_lobby <lobby_id>`: connects to a lobby
-    - `chatall`: opens text chat
-    - `mute <name|steam_id|index>`: locally mutes a player from text chat
-    - `unmute <name|steam_id|index>`: umutes a player from text chat
-    - `clearmutes`: unmutes all players
-    - `clearchat`: clears the text chat
-    - `matchrotate`: rotates the match to the next slot
-    - `matchstart`: starts a match
-    - `matchprint`: prints match settings in the console
-    - `matchset <name> <value>`: sets a match setting
-    - `matchsetrule <name> <value>`: sets a match rule
-    - `matchsetslot <slot index> <name> <value>`: sets a match slot rule
-    - `disconnect`: disconnects from a match
-  - `var_list`: returns list of registered variables
-  - `startsound <id>`: starts playing the specified sound
-  - `stopsound <id>`: stops playing the specified sound
-  - `set <var name> <var value>`: creates or sets a var
+- discord rich presence
+- unlock fps and custom fps capping
+- fps and ping counter
+- mgo text chat
+- in game console
+- high fps wake up time patch
+- custom security challenge list
+- kick players from your mgo lobby
+- DSX integration
+- lua script overriding and custom script loading
+- custom backend server support (see: tpp-server-emulator)
+- mgo dedicated server support (experimental)
+- custom key bindings
+- key remapping
+- fov scaling
+- start mgo directly
+- allow multiple instance of the game
+- scale mouse sensitivity
+- disable intro splashscreens
 
-- Metal Gear Online:
-  - Text chat ([video](https://www.youtube.com/watch?v=wlzHqPy7XYA))
-  - Lobby host commands/tools
-  - Dedicated server support (experimental)
+### Command list
+Can be executed from the console or in game console 
 
-- Discord rich presence (displays current mission/location or match)  
+- `bind <key> <command>`: bind a key to a command
+- `remap <key from> <key to>`: remap a key to another
+- `unbind <key>`: remove custom bind from key
+- `unbindall`: remove all custom binds
+- `exec <cfg name>`: execute a config file 
+- `alias <name> <command>`: create a command alias 
+- `clear`: clear the ingame console
+- `toggleconsole`: toggle the ingame console
+- `equip <slot type> <index>`: equip a slot (slot types: 'primary1', 'primary2', 'secondary', 'support', 'item', 'stole', hand')
+- `equiptoggle <slot type> <index 1> <index 2>`: toggle between 2 equip slots
+- `equipnext <slot type>`: equip the next slot
+- `equipprev <slot type>`: equip the previous slot
+- `set <var name> <value>`: set a var
+- `reset <var name>`: reset a var
+- `var_list`: show the list of vars
+- `quit`: quit the game
+- `startsound <id>`: start playing a sound
+- `stopsound <id>`: stop playing the sound
+- `wait <frame count>`: wait before executing the next command
+- `startmgo`: start mgo
+- `starttpp`: start tpp
+- `script_var <varname>`: view lua script var
+- `script_exec <code>`: execute lua code
+- `script_load <path>`: load a lua script
+- `disconnect`: return to acc/leave the mgo lobby
+- `status`: return list of players in session
+- `rtt`: connection rtt in milliseconds
+- `session_create`: create a session
+- `session_start`: start the session
+- `session_accept`: accepts new session connections
+- `session_close`: close the session
+- `session_connect <steamid>`: connect to a session
+- `clearkicks`: clear the kicked players list
+- `connect_lobby <lobbyid>`: connect to a lobby
+- `reconnect`: disconnect and reconnects to the current lobby
+- `matchstart`: start a match
+- `matchrotate`: rotate the match to the next slot
+- `matchset <name> <value>`: set a match setting
+- `matchsetrule <name> <value>`: set a match rule
+- `matchsetslot <slot> <name> <value>`: set a match' slot rule
+- `kick <name|steamid|index>`: kick a player from the lobby
+- `clearchat`: clear the chat
+- `chatall`: open the all chat
+- `chatteam`: open the team chat
+- `say <message>`: send a message to all chat
+- `say_team <message>`: send a message to team chat
+- `mute <name|steamid|index>`: mute a player
+- `unmute <name|steamid|index>`: unmute a player
+- `mutelist`: show mutes players
+- `clearmutes`: unmute all players
+
+### Variable list
+similar to cod dvars, can be set through the console or through the config files `%localappdata%/tpp-mod/config/`
+(type their name in the console for a description)
+
+- `net_custom_server`
+- `net_channel`
+- `discord_enable`
+- `con_input_box_color`
+- `con_input_hint_box_color`
+- `con_output_bar_color`
+- `con_output_slider_color`
+- `con_output_window_color`
+- `con_input_dvar_match_color`
+- `con_input_dvar_value_color`
+- `con_input_dvar_inactive_value_color`
+- `con_input_cmd_match_color`
+- `match_enable_tweaks`
+- `match_min_players`
+- `match_max_players`
+- `match_briefing_time`
+- `ui_draw_fps`
+- `ui_draw_ping`
+- `com_worker_count`
+- `com_unlock_fps`
+- `com_max_fps`
+- `sensitivity`
+- `camera_fov_scale`
+- `camera_first_person_fov_scale`
+- `name`
+- `dsx_enable`
+- `lua_logging`
+- `lua_dump`
+- `net_server_logging`
+- `net_server_heartbeat`
+- `chat_enable`
+- `chat_time`
+- `chat_input_bg`
+- `chat_output_bg`
+- `chat_slider_color`
+- `chat_input_pulse`
+- `chat_offset`
+- `chat_height`
+- `chat_width`
+- `chat_scale`
+- `chat_direction`
+- `chat_muted_players`
+- `fob_security_challenge_mode`
+- `net_udp`
+- `net_port`
+- `player_ramble_speed_scale`
+- `player_ramble_speed_patch`
+- `ui_skip_intro`
+- `staff_cheat`
+
+## Launch parameters
+
+- `-mode <mode>`: overriding version detection (modes: 'tppeng', 'mgoeng', 'tppjpn', 'mgojpn')
+- `-dedicated`: start mgo headless as dedicated server
+- `-var-cheat`: allow to modify cheat only vars
+- `-dump-hashes`: stores computed hashes, can be dumped with `dumpstrings` command
