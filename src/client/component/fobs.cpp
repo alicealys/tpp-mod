@@ -598,7 +598,9 @@ namespace fobs
 
 			state.access([&](state_t& s)
 			{
-				for (auto i = 0u; i < s.lobby_list.size(); i++)
+				const auto count = std::min(fob_target->maxPlayers, static_cast<short>(s.lobby_list.size()));
+
+				for (auto i = 0; i < count; i++)
 				{
 					fob_target->playerInfos[i].owner_account.id = s.lobby_list[i].owner_id.bits;
 					fob_target->playerInfos[i].mother_base_num = static_cast<char>(s.lobby_list[i].mother_base_num) + 1;

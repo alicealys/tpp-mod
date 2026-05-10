@@ -14,7 +14,7 @@ namespace game
 
 		WEAK symbol<void(void*, unsigned int)> FreeAnnotated{0x140015EF0, 0x140016020, 0x140015EE0, 0x140016020};
 
-		WEAK symbol<QuarkSystemTable*()> GetQuarkSystemTable{0x0146CDE8D0, 0x0, 0x0, 0x0};
+		WEAK symbol<QuarkSystemTable*()> GetQuarkSystemTable{0x146CDE8D0, 0x148F1D020, 0x148B24E40, 0x148051AD0};
 
 		namespace AssetConfiguration_
 		{
