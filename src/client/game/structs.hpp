@@ -2380,13 +2380,13 @@ namespace game
 		{
 			SHIFT_CONDITIONAL_ASSERT
 
-			int diff_resource1[58];
+			int diff_resource1[59];
 			int diff_resource1_count;
-			int diff_resource2[58];
+			int diff_resource2[59];
 			int diff_resource2_count;
-			int fix_resource1[58];
+			int fix_resource1[59];
 			int fix_resource1_count;
-			int fix_resource2[58];
+			int fix_resource2[59];
 			int fix_resource2_count;
 		};
 
@@ -2544,6 +2544,15 @@ namespace game
 
 			void* a1;
 			LogModel logModels[5];
+		};
+	}
+
+	namespace tpp::gm
+	{
+		struct ScriptVars
+		{
+			char __pad0[560];
+			tpp::mbm::PlayerBasicInfo::Emblem emblem;
 		};
 	}
 
@@ -3407,6 +3416,178 @@ namespace game
 			IDXGISwapChain* swapChain;
 		};
 
+	}
+
+	namespace fox
+	{
+
+		struct ApplicationSystem
+		{
+			struct vtable
+			{
+
+			};
+
+			vtable* __vftable;
+			void* blockController;
+			tpp::gm::ScriptVars* scriptVars;
+			void* scriptVarsSystem;
+			void* gameUtility;
+			void* attachUtility;
+			void* timeSystem;
+			void* gameConfig;
+			void* uiSystem;
+			void* demoService;
+			void* applicationSystemSub_9;
+			void* playerRecordInstance;
+			void* networkSystem;
+			void* coder;
+			void* applicationSystemSub_13;
+			void* weatherSystem;
+			void* applicationSystemSub_15;
+			void* applicationSystemSub_16;
+			void* applicationSystemSub_17;
+			void* applicationSystemSub_18;
+			void* damageParameterTable;
+			void* applicationSystemSub_20;
+			void* applicationSystemSub_21;
+			void* ladderManager;
+			void* applicationSystemSub_23;
+			void* landingZoneSystem;
+			void* snipePoint2System;
+			void* searchMissilePointSystem;
+			void* hidePointSystem;
+			void* buddyService;
+			void* applicationSystemSub_29;
+			void* gameStatusInterface;
+			void* missionSystem;
+			void* corpseManager;
+			void* applicationSystemSub_33;
+			void* motherBaseManagementService;
+			void* applicationSystemSub_35;
+			void* applicationSystemSub_36;
+			void* applicationSystemSub_37;
+			void* applicationSystemSub_38;
+			void* speechSystem;
+			void* gimmickManager;
+			void* permanentGimmickSystem;
+			void* searchableLightSystem;
+			void* coloringSystem;
+			void* applicationSystemSub_44;
+			void* applicationSystemSub_45;
+			void* neutralizeMessageSender;
+			void* supportRequestSystem;
+			void* applicationSystemSub_48;
+			void* applicationSystemSub_49;
+			void* playerInfoInterface;
+			void* player2Utility;
+			void* applicationSystemSub_52;
+			void* applicationSystemSub_53;
+			void* coverPointSystem;
+			void* applicationSystemSub_55;
+			void* combatLocatorSystem;
+			void* noticeObjectSystem;
+			void* noiseAreaSystem;
+			void* applicationSystemSub_59;
+			void* applicationSystemSub_60;
+			void* applicationSystemSub_61;
+			void* applicationSystemSub_62;
+			void* applicationSystemSub_63;
+			void* applicationSystemSub_64;
+			void* applicationSystemSub_65;
+			void* blastSystem;
+			void* applicationSystemSub_67;
+			void* applicationSystemSub_68;
+			void* applicationSystemSub_69;
+			void* applicationSystemSub_70;
+			void* applicationSystemSub_71;
+			void* applicationSystemSub_72;
+			void* applicationSystemSub_73;
+			void* applicationSystemSub_74;
+			void* applicationSystemSub_75;
+			void* applicationSystemSub_76;
+			void* applicationSystemSub_77;
+			void* chimeraPartsSetWork;
+			void* applicationSystemSub_79;
+			void* applicationSystemSub_80;
+			void* applicationSystemSub_81;
+			void* applicationSystemSub_82;
+			void* vechicleSystem;
+			void* horseSystem;
+			void* applicationSystemSub_85;
+			void* walkerGearSystem;
+			void* walkerGear2Utility;
+			void* applicationSystemSub_88;
+			void* soldier2FaceSystem;
+			void* applicationSystemSub_90;
+			void* applicationSystemSub_91;
+			void* applicationSystemSub_92;
+			void* customizeSystem;
+			void* applicationSystemSub_94;
+			void* applicationSystemSub_95;
+			void* applicationSystemSub_96;
+			void* equipBlockController2;
+			void* efInterface;
+			void* animalInfoService;
+			void* animalSystem;
+			void* avatarEditResourceSystem;
+			void* eventLogSystem;
+			void* applicationSystemSub_103;
+			void* applicationSystemSub_104;
+			void* applicationSystemSub_105;
+			void* applicationSystemSub_106;
+			void* applicationSystemSub_107;
+			void* applicationSystemSub_108;
+			void* applicationSystemSub_109;
+			void* applicationSystemSub_110;
+			void* applicationSystemSub_111;
+			void* applicationSystemSub_112;
+			void* applicationSystemSub_113;
+			void* applicationSystemSub_114;
+			void* applicationSystemSub_115;
+			void* applicationSystemSub_116;
+			void* applicationSystemSub_117;
+			void* applicationSystemSub_118;
+			void* applicationSystemSub_119;
+			void* applicationSystemSub_120;
+		};
+
+		struct QuarkSystemTable
+		{
+			void* coreSystem;
+			void* memorySystem;
+			void* logSystem;
+			void* __system_0;
+			void* __system_1;
+			void* luaSystem;
+			void* luaExtSystem;
+			void* __system_4;
+			void* timeSystem;
+			void* __system_6;
+			void* __system_7;
+			void* fileSystem;
+			void* __system_9;
+			void* __system_10;
+			void* graphicsSystem;
+			void* networkSystem;
+			void* __system_13;
+			void* synchronizationSystem;
+			void* __system_15;
+			ApplicationSystem* applicationSystem;
+			void* __system_17;
+			void* __system_18;
+			void* soundSystem;
+			void* padSystem;
+			void* __system_21;
+			void* __system_22;
+			void* __system_23;
+			void* __system_24;
+			void* __system_25;
+			void* uixSystem;
+			void* eventTimerSystem;
+			void* __system_28;
+			void* __system_29;
+		};
 	}
 
 	namespace tpp::mp

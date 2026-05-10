@@ -78,8 +78,9 @@ namespace fobs
 		{
 			bool initialized;
 			game::ISteamMatchmaking* (*steam_matchmaking)();
-			game::ISteamMatchmaking* (*register_callback)(game::CCallbackBase*, unsigned __int64);
-			game::ISteamMatchmaking* (*register_call_result)(game::CCallbackBase*, unsigned __int64);
+			void (*register_callback)(game::CCallbackBase*, unsigned __int64);
+			void (*register_call_result)(game::CCallbackBase*, unsigned __int64);
+			void (*run_calbacks)();
 			lobby_list_handler lobby_handler{};
 			lobby_create_handler lobby_create_handler{};
 		} steam_api{};
@@ -109,6 +110,7 @@ namespace fobs
 			std::int32_t espionage_lose;
 			std::int32_t staff_count[10];
 			game::tpp::mbm::PlayerBasicInfo::Resource total_resource;
+			game::tpp::mbm::PlayerBasicInfo::Emblem emblem;
 		};
 
 		struct state_t
@@ -190,6 +192,17 @@ namespace fobs
 
 			set_lobby_data("name_plate_id", -1, s.own_lobby_info.name_plate_id);
 
+			for (auto i = 0u; i < 4; i++)
+			{
+				set_lobby_data("emblem_texture_tag", i, s.own_lobby_info.emblem.texture_tag[i]);
+				set_lobby_data("emblem_base_color", i, s.own_lobby_info.emblem.base_color[i]);
+				set_lobby_data("emblem_frame_color", i, s.own_lobby_info.emblem.frame_color[i]);
+				set_lobby_data("emblem_position_x", i, s.own_lobby_info.emblem.position_x[i]);
+				set_lobby_data("emblem_position_y", i, s.own_lobby_info.emblem.position_y[i]);
+				set_lobby_data("emblem_scale", i, s.own_lobby_info.emblem.scale[i]);
+				set_lobby_data("emblem_rotate", i, s.own_lobby_info.emblem.rotate[i]);
+			}
+
 			for (auto i = 0u; i < s.own_lobby_info.mother_base_num; i++)
 			{
 				set_lobby_data("construct_param", i, s.own_lobby_info.mother_base_param[i].construct_param);
@@ -243,14 +256,26 @@ namespace fobs
 				lobby.total_resource.precious_metal = get_lobby_data("precious_metal");
 
 				lobby.name_plate_id = get_lobby_data("name_plate_id");
+
+				for (auto i = 0; i < 4; i++)
+				{
+					lobby.emblem.texture_tag[i] = get_lobby_data("emblem_texture_tag", i);
+					lobby.emblem.base_color[i] = get_lobby_data("emblem_base_color", i);
+					lobby.emblem.frame_color[i] = get_lobby_data("emblem_frame_color", i);
+					lobby.emblem.position_x[i] = static_cast<char>(get_lobby_data("emblem_position_x", i));
+					lobby.emblem.position_y[i] = static_cast<char>(get_lobby_data("emblem_position_y", i));
+					lobby.emblem.rotate[i] = static_cast<char>(get_lobby_data("emblem_rotate", i));
+					lobby.emblem.scale[i] = static_cast<char>(get_lobby_data("emblem_scale", i));
+				}
+
 				lobby.mother_base_num = get_lobby_data("mother_base_num");
 
-				for (auto o = 0u; o < lobby.mother_base_num; o++)
+				for (auto i = 0u; i < lobby.mother_base_num; i++)
 				{
-					lobby.mother_base_param[o].construct_param = get_lobby_data("construct_param", o);
-					lobby.mother_base_param[o].security_rank = get_lobby_data("security_rank", o);
-					lobby.mother_base_param[o].mother_base_id = get_lobby_data("mother_base_id", o);
-					lobby.mother_base_param[o].platform_count = get_lobby_data("platform_count", o);
+					lobby.mother_base_param[i].construct_param = get_lobby_data("construct_param", i);
+					lobby.mother_base_param[i].security_rank = get_lobby_data("security_rank", i);
+					lobby.mother_base_param[i].mother_base_id = get_lobby_data("mother_base_id", i);
+					lobby.mother_base_param[i].platform_count = get_lobby_data("platform_count", i);
 				}
 
 				s.lobby_list.emplace_back(lobby);
@@ -350,7 +375,7 @@ namespace fobs
 			const auto start = std::chrono::steady_clock::now();
 			while (should_wait() && std::chrono::steady_clock::now() - start < 5s)
 			{
-				std::this_thread::sleep_for(100ms);
+				std::this_thread::sleep_for(10ms);
 			}
 		}
 
@@ -428,7 +453,7 @@ namespace fobs
 
 				while (should_wait() && (std::chrono::steady_clock::now() - start) < 5s)
 				{
-					std::this_thread::sleep_for(100ms);
+					std::this_thread::sleep_for(10ms);
 				}
 			}
 
@@ -480,6 +505,9 @@ namespace fobs
 				}
 
 				s.own_lobby_info.name_plate_id = option->name_plate_id;
+
+				const auto emblem = game::fox::GetQuarkSystemTable()->applicationSystem->scriptVars->emblem;
+				std::memcpy(&s.own_lobby_info.emblem, &emblem, sizeof(game::tpp::mbm::PlayerBasicInfo::Emblem));
 			});
 
 			return cmd_sync_mother_base_option_pack_hook.invoke<char>(option);
@@ -489,11 +517,17 @@ namespace fobs
 		{
 			state.access([&](state_t& s)
 			{
+				std::memset(s.own_lobby_info.staff_count, 0, sizeof(s.own_lobby_info.staff_count));
+
 				for (auto i = 0; i < option->soldier_num; i++)
 				{
 					auto staff = option->soldier_param[i];
 					staff.fields.header.data = _byteswap_ulong(staff.fields.header.data);
-					s.own_lobby_info.staff_count[staff.fields.header.fields.peak_rank]++;
+					staff.fields.status_sync.data = _byteswap_ulong(staff.fields.status_sync.data);
+					if (staff.fields.status_sync.fields.designation >= 1 && staff.fields.status_sync.fields.designation <= 7)
+					{
+						s.own_lobby_info.staff_count[staff.fields.header.fields.peak_rank]++;
+					}
 				}
 			});
 
@@ -521,6 +555,8 @@ namespace fobs
 
 			state.access([&](state_t& s)
 			{
+				std::memset(&s.own_lobby_info.total_resource, 0, sizeof(s.own_lobby_info.total_resource));
+
 				s.own_lobby_info.total_resource.fuel_resource += result->diff_resource1[0];
 				s.own_lobby_info.total_resource.biotic_resource += result->diff_resource1[1];
 				s.own_lobby_info.total_resource.common_metal += result->diff_resource1[2];
@@ -600,6 +636,8 @@ namespace fobs
 
 					fob_target->playerInfos[i].nameplate_id = static_cast<char>(s.lobby_list[i].name_plate_id);
 
+					std::memcpy(&fob_target->playerInfos[i].owner_emblem, &s.lobby_list[i].emblem, sizeof(game::tpp::mbm::PlayerBasicInfo::Emblem));
+
 					game::tpp::net::DisplayName_::AddList(fob_target->displayName1, &fob_target->playerInfos[i].owner_account);
 				}
 			});
@@ -620,6 +658,7 @@ namespace fobs
 			steam_api.steam_matchmaking = steam.get_proc<decltype(steam_api.steam_matchmaking)>("SteamMatchmaking");
 			steam_api.register_callback = steam.get_proc<decltype(steam_api.register_callback)>("SteamAPI_RegisterCallback");
 			steam_api.register_call_result = steam.get_proc<decltype(steam_api.register_call_result)>("SteamAPI_RegisterCallResult");
+			steam_api.run_calbacks = steam.get_proc<decltype(steam_api.run_calbacks)>("SteamAPI_RunCallbacks");
 			steam_api.register_callback(&steam_api.lobby_create_handler, game::LobbyCreated_t::k_iCallback);
 
 			steam_api.initialized = true;
@@ -680,17 +719,6 @@ namespace fobs
 			fob_target_receive_enemy_basic_info_hook.create(SELECT_VALUE_LANG(0x1459F5940, 0x147443580), fob_target_receive_enemy_basic_info_stub);
 
 			scheduler::loop(run_frame, scheduler::net);
-		}
-
-		void end() override
-		{
-			state.access([&](state_t& s)
-			{
-				if (s.own_lobby_id.bits != 0)
-				{
-					request_close_lobby(s);
-				}
-			});
 		}
 	};
 }
