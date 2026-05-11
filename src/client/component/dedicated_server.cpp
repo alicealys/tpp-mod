@@ -301,10 +301,6 @@ namespace dedicated_server
 			utils::hook::set<std::uint8_t>(0x140CF39F0, 0xC3);
 			utils::hook::set<std::uint8_t>(0x14A9D20F0, 0xC3);
 
-			utils::hook::set<std::uint8_t>(0x140B3FF20, 0xC3);
-			//utils::hook::set<std::uint8_t>(0x149D45440, 0xC3);
-			//utils::hook::set<std::uint8_t>(0x14A152B00, 0xC3);
-
 			utils::hook::jump(0x141451F40, gn_execute_stub);
 			utils::hook::nop(0x14258DC10, 5);
 			utils::hook::set<std::uint8_t>(0x14258B600, 0xC3);
