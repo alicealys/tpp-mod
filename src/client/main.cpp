@@ -30,6 +30,14 @@ namespace
 
 	void start()
 	{
+		static auto started = false;
+		if (started)
+		{
+			return;
+		}
+
+		started = true;
+
 		enable_dpi_awareness();
 		game::environment::detect_version();
 

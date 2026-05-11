@@ -123,6 +123,11 @@ namespace gameplay
 	public:
 		void pre_load() override
 		{
+			if (game::environment::is_dedi())
+			{
+				return;
+			}
+
 			binds::add_action_command("equiptoggle", [](const command::params& params)
 			{
 				if (!is_player_initialized())

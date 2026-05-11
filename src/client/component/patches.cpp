@@ -276,8 +276,15 @@ namespace patches
 			var_unlock_fps = vars::register_bool("com_unlock_fps", false, 
 				vars::var_flag_saved | vars::var_flag_latched, "unlock fps");
 
-			var_max_fps = vars::register_int("com_max_fps", 0, 0, 1000, 
-				vars::var_flag_saved, "max fps (only works when com_unlock_fps is enabled)");
+			if (game::environment::is_dedi())
+			{
+				var_max_fps = vars::register_int("com_max_fps", 30, 30, 60, 0, "server max fps");
+			}
+			else
+			{
+				var_max_fps = vars::register_int("com_max_fps", 0, 0, 1000,
+					vars::var_flag_saved, "max fps (only works when com_unlock_fps is enabled)");
+			}
 
 			var_sensitivity = vars::register_float("sensitivity", 1.f, 0.f, 10.f, 
 				vars::var_flag_saved, "mouse sensitivity scale");
@@ -344,7 +351,7 @@ namespace patches
 			// disable _purecall error
 			utils::hook::set<std::uint8_t>(SELECT_VALUE(0x141A05B96, 0x141461F6A, 0x141A05CB6, 0x141461E0A), 0xC3);
 
-			if (!game::environment::is_dedi() && var_unlock_fps->latched.enabled())
+			if (var_unlock_fps->latched.enabled())
 			{
 				unlock_fps();
 			}

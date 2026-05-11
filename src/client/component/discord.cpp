@@ -297,6 +297,11 @@ namespace discord
 	public:
 		void pre_load() override
 		{
+			if (game::environment::is_dedi())
+			{
+				return;
+			}
+
 			var_discord_enable = vars::register_bool("discord_enable", true, vars::var_flag_saved | vars::var_flag_latched, "enable discord rpc");
 		}
 

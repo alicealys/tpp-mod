@@ -688,6 +688,11 @@ namespace game_console
 	public:
 		void pre_load() override
 		{
+			if (game::environment::is_dedi())
+			{
+				return;
+			}
+
 			command::add("clear", clear_console);
 
 			command::add("toggleconsole", []()
@@ -763,6 +768,11 @@ namespace game_console
 
 		void start() override
 		{
+			if (game::environment::is_dedi())
+			{
+				return;
+			}
+
 			renderer::on_frame(draw_console);
 		}
 	};

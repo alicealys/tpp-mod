@@ -502,6 +502,11 @@ namespace binds
 
 	void write_binds()
 	{
+		if (game::environment::is_dedi())
+		{
+			return;
+		}
+
 		const auto path = get_config_file_path();
 		std::string buffer;
 
@@ -576,6 +581,11 @@ namespace binds
 	public:
 		void pre_load() override
 		{
+			if (game::environment::is_dedi())
+			{
+				return;
+			}
+
 			filesystem::register_resource_file("config\\keys_tpp.cfg", RESOURCE_KEYS_TPP);
 			filesystem::register_resource_file("config\\keys_mgo.cfg", RESOURCE_KEYS_MGO);
 
@@ -623,6 +633,11 @@ namespace binds
 
 		void start() override
 		{
+			if (game::environment::is_dedi())
+			{
+				return;
+			}
+
 			wnd_proc_hook.create(SELECT_VALUE(0x14006FF50, 0x140070FC0, 0x140070080, 0x140070DB0), wnd_proc_stub);
 
 			write_binds();

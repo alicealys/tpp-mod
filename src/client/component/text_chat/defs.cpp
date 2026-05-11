@@ -110,7 +110,7 @@ namespace text_chat
 	public:
 		void pre_load() override
 		{
-			if (!game::environment::is_mgo())
+			if (!game::environment::is_mgo() || game::environment::is_dedi())
 			{
 				return;
 			}

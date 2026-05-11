@@ -145,7 +145,7 @@ namespace text_chat::lobby
 
 		void start() override
 		{
-			if (!game::environment::is_mgo())
+			if (!game::environment::is_mgo() || game::environment::is_dedi())
 			{
 				return;
 			}

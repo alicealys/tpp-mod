@@ -187,13 +187,18 @@ namespace scepad
         public:
             void pre_load() override
             {
+                if (game::environment::is_dedi())
+                {
+                    return;
+                }
+
                 var_dsx_enable = vars::register_bool("dsx_enable", true, 
                     vars::var_flag_latched | vars::var_flag_saved, "enable DSX integration");
             }
 
             void start() override
             {
-                if (!var_dsx_enable->current.enabled())
+                if (game::environment::is_dedi() || !var_dsx_enable->current.enabled())
                 {
                     return;
                 }

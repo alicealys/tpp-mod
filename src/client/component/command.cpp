@@ -254,7 +254,7 @@ namespace command
 
 		bool exec_cfg(const std::string& name)
 		{
-			const auto file = utils::string::va("config\\%s.cfg", name.data());
+			const auto file = utils::string::va("config\\%s", name.data());
 			std::string data;
 			if (!filesystem::read_file(file, &data))
 			{
@@ -330,6 +330,8 @@ namespace command
 
 	void run_frame()
 	{
+		parse_command_line();
+
 		command_queue.access([](command_queue_t& queue)
 		{
 			next_command_queue.access([&](command_queue_t& next_queue)
@@ -517,22 +519,20 @@ namespace command
 			{
 				if (game::environment::is_mgo())
 				{
-					exec_cfg("config_mgo");
-					exec_cfg("keys_mgo");
-					exec_cfg("autoexec_mgo");
+					exec_cfg("config_mgo.cfg");
+					exec_cfg("keys_mgo.cfg");
+					exec_cfg("autoexec_mgo.cfg");
 
 				}
 				else
 				{
-					exec_cfg("config_tpp");
-					exec_cfg("keys_tpp");
-					exec_cfg("autoexec_tpp");
+					exec_cfg("config_tpp.cfg");
+					exec_cfg("keys_tpp.cfg");
+					exec_cfg("autoexec_tpp.cfg");
 				}
 
-				exec_cfg("autoexec");
+				exec_cfg("autoexec.cfg");
 			}
-
-			parse_command_line();
 		}
 
 		void start() override

@@ -395,11 +395,21 @@ namespace text_chat::ui
 	public:
 		void pre_load() override
 		{
+			if (!game::environment::is_mgo() || game::environment::is_dedi())
+			{
+				return;
+			}
+
 			renderer::on_frame(draw_chat);
 		}
 
 		void start() override
 		{
+			if (!game::environment::is_mgo() || game::environment::is_dedi())
+			{
+				return;
+			}
+
 			announce_log_view_hook.create(SELECT_VALUE(0x140863050, 0x1405E7610, 0x140862CE0, 0x1405E7020), announce_log_view_stub);
 		}
 	};

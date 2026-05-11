@@ -158,7 +158,7 @@ namespace text_chat::mutes
 	public:
 		void pre_load() override
 		{
-			if (!game::environment::is_mgo())
+			if (!game::environment::is_mgo() || game::environment::is_dedi())
 			{
 				return;
 			}
@@ -168,7 +168,7 @@ namespace text_chat::mutes
 
 		void start() override
 		{
-			if (!game::environment::is_mgo())
+			if (!game::environment::is_mgo() || game::environment::is_dedi())
 			{
 				return;
 			}
