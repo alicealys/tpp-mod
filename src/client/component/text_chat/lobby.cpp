@@ -48,7 +48,7 @@ namespace text_chat::lobby
 
 		void process_chat_msg(game::LobbyChatMsg_t* msg)
 		{
-			if (!text_chat::is_chat_enabled())
+			if (!game::environment::is_dedi() && !text_chat::is_chat_enabled())
 			{
 				return;
 			}
@@ -103,7 +103,10 @@ namespace text_chat::lobby
 
 			if (message != nullptr)
 			{
-				text_chat::ui::print(message, true);
+				if (!game::environment::is_dedi())
+				{
+					text_chat::ui::print(message, true);
+				}
 				console::info("%s\n", message);
 			}
 		}
@@ -145,7 +148,7 @@ namespace text_chat::lobby
 
 		void start() override
 		{
-			if (!game::environment::is_mgo() || game::environment::is_dedi())
+			if (!game::environment::is_mgo())
 			{
 				return;
 			}
