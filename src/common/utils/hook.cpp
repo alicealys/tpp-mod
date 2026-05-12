@@ -312,4 +312,17 @@ namespace utils::hook
 
 		return extract<void*>(data + 1);
 	}
+
+	DWORD unprotect(void* place, const size_t size)
+	{
+		DWORD old_protect{};
+		VirtualProtect(place, size, PAGE_EXECUTE_READWRITE, &old_protect);
+		return old_protect;
+	}
+
+	void protect(void* place, const size_t size, DWORD old_protect)
+	{
+		VirtualProtect(place, size, old_protect, &old_protect);
+		FlushInstructionCache(GetCurrentProcess(), place, size);
+	}
 }

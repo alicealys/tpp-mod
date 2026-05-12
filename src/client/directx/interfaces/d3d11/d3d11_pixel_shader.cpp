@@ -1,0 +1,28 @@
+#include <std_include.hpp>
+
+#include "d3d11_pixel_shader.hpp"
+
+namespace directx
+{
+	namespace
+	{
+	
+	}
+
+	d3d11_pixel_shader* d3d11_pixel_shader::create()
+	{
+		static d3d11_pixel_shader instance{};
+		static d3d11_pixel_shader::vtable vtable{};
+		instance.__vftable = &vtable;
+
+		d3d11_device_child::initialize(&vtable);
+		
+		return &instance;
+	}
+		
+	d3d11_pixel_shader* d3d11_pixel_shader::get_instance()
+	{
+		static const auto instance = create();
+		return instance;
+	}
+}

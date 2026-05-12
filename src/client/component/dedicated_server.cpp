@@ -8,6 +8,8 @@
 #include "console.hpp"
 #include "vars.hpp"
 
+#include "directx/directx.hpp"
+
 #include <utils/hook.hpp>
 #include <utils/string.hpp>
 
@@ -283,6 +285,8 @@ namespace dedicated_server
 				return;
 			}
 
+			directx::disable_d3d11();
+
 			SetConsoleTitle("MGO Dedicated Server");
 			scheduler::loop(update_console_title, scheduler::net, 1s);
 
@@ -291,17 +295,15 @@ namespace dedicated_server
 			utils::hook::set<std::uint8_t>(0x14930E490, 0xC3); // dont render scene
 
 			utils::hook::set<std::uint8_t>(0x14A91F2C0, 0xC3); // kill sound
-			utils::hook::set<std::uint8_t>(0x140CE5630, 0xC3);
-			utils::hook::set<std::uint8_t>(0x146579190, 0xC3);
-			utils::hook::set<std::uint8_t>(0x14A91F2C0, 0xC3);
-			utils::hook::set<std::uint8_t>(0x140E1A4B0, 0xC3);
+			//utils::hook::set<std::uint8_t>(0x140CE5630, 0xC3);
+			//utils::hook::set<std::uint8_t>(0x146579190, 0xC3);
+			//utils::hook::set<std::uint8_t>(0x14A91F2C0, 0xC3);
+			//utils::hook::set<std::uint8_t>(0x140E1A4B0, 0xC3);
 
-			utils::hook::set<std::uint8_t>(0x14A1E39C0, 0xC3);
+			utils::hook::set<std::uint8_t>(0x14A1E39C0, 0xC3); // dont draw 2d
 
-			utils::hook::set<std::uint8_t>(0x140CF39F0, 0xC3);
-			utils::hook::set<std::uint8_t>(0x14A9D20F0, 0xC3);
+			utils::hook::set<std::uint8_t>(0x14A9D20F0, 0xC3); // dont play sounds
 
-			utils::hook::jump(0x141451F40, gn_execute_stub);
 			utils::hook::nop(0x14258DC10, 5);
 			utils::hook::set<std::uint8_t>(0x14258B600, 0xC3);
 			translate_messages_hook.create(0x142590640, translate_messages_stub);

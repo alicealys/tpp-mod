@@ -491,6 +491,12 @@ namespace matchmaking
 				set_slot_field(params.get_int(1), params.get(2), params.get_int(3));
 			});
 
+			command::add("matchsetstate", [](const command::params& params)
+			{
+				const auto state = params.get_int(1);
+				game::s_mgoMatchMakingManager->state = state;
+			});
+
 			command::add("matchprint", []()
 			{
 				if (game::s_mgoMatchMakingManager->match_container == nullptr)
