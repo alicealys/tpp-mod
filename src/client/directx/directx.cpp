@@ -29,8 +29,16 @@ namespace directx
 
 	void disable_d3d11()
 	{
-		utils::hook::nop(SELECT_VALUE(0x1402BA88E, 0x140BBA76E, 0x1402BA32E, 0x140BB9DBE), 3);
-		utils::hook::jump(SELECT_VALUE(0x141A08EA4, 0x141465284, 0x141A08FC4, 0x141465124), create_dxgi_factory);
-		utils::hook::jump(SELECT_VALUE(0x141A08EAA, 0x14146528A, 0x141A08FCA, 0x14146512A), d3d11_create_device);
+		if (!game::environment::is_mgo() || !game::environment::is_eng())
+		{
+			return;
+		}
+
+		utils::hook::nop(0x14A16243C, 5);
+		utils::hook::nop(0x14A16244A, 5);
+
+		utils::hook::nop(0x140BBA76E, 3);
+		utils::hook::jump(0x141465284, create_dxgi_factory);
+		utils::hook::jump(0x14146528A, d3d11_create_device);
 	}
 }

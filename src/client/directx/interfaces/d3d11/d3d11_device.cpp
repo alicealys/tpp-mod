@@ -28,7 +28,6 @@
 #include "d3d11_texture3d.hpp"
 #include "d3d11_unordered_access_view.hpp"
 #include "d3d11_vertex_shader.hpp"
-#include <utils/hook.hpp>
 
 namespace directx
 {

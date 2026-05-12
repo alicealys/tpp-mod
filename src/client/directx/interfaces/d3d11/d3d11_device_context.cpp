@@ -41,8 +41,10 @@ namespace directx
 
 		}
 
-		HRESULT __stdcall map(void*, ID3D11Resource*, UINT, D3D11_MAP, UINT, D3D11_MAPPED_SUBRESOURCE*)
+		HRESULT __stdcall map(void*, ID3D11Resource*, UINT, D3D11_MAP, UINT, D3D11_MAPPED_SUBRESOURCE* data)
 		{
+			static char buffer[0xFFFFF]{};
+			data->pData = &buffer;
 			return S_OK;
 		}
 

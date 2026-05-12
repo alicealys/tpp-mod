@@ -122,6 +122,7 @@ namespace directx
 		static_assert(offsetof(d3d11_device_context::vtable, execute_command_list) == 0x1D0);
 		static_assert(offsetof(d3d11_device_context::vtable, clear_state) == 0x370);
 		static_assert(offsetof(d3d11_device_context::vtable, flush) == 0x378);
+		static_assert(offsetof(d3d11_device_context::vtable, unmap) == 0x78);
 
 		vtable* __vftable;
 

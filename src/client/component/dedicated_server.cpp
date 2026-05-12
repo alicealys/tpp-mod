@@ -245,6 +245,17 @@ namespace dedicated_server
 
 			SetConsoleTitle(title.data());
 		}
+
+		utils::hook::detour on_player_connect_hook;
+		__int64 on_player_connect_stub(void* a1, unsigned char index)
+		{
+			if (index == 0)
+			{
+				return 0;
+			}
+
+			return on_player_connect_hook.invoke<__int64>(a1, index);
+		}
 	}
 
 	void unban_player_from_session(const game::steam_id steam_id)
@@ -308,6 +319,7 @@ namespace dedicated_server
 			utils::hook::set<std::uint8_t>(0x14258B600, 0xC3);
 			translate_messages_hook.create(0x142590640, translate_messages_stub);
 
+			on_player_connect_hook.create(0x140829570, on_player_connect_stub); // dont spawn host
 		}
 	};
 }
