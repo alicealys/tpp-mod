@@ -330,8 +330,6 @@ namespace command
 
 	void run_frame()
 	{
-		parse_command_line();
-
 		command_queue.access([](command_queue_t& queue)
 		{
 			next_command_queue.access([&](command_queue_t& next_queue)
@@ -533,6 +531,8 @@ namespace command
 
 				exec_cfg("autoexec.cfg");
 			}
+
+			parse_command_line();
 		}
 
 		void start() override

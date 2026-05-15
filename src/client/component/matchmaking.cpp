@@ -394,6 +394,44 @@ namespace matchmaking
 			var_match_min_players = vars::register_int("match_min_players", 2, 0, 16, vars::var_flag_saved, "match minimum players override");
 			var_match_max_players = vars::register_int("match_max_players", 16, 0, 16, vars::var_flag_saved, "match maximum players override");
 			var_match_briefing_time = vars::register_int("match_briefing_time", 60, 0, 600, vars::var_flag_saved, "match briefing time override (seconds)");
+		
+			command::add("matchset", [](const command::params& params)
+			{
+				if (params.size() < 3)
+				{
+					printf("usage: matchset <name> <value>\n");
+					return;
+				}
+
+				set_match_setting(params.get(1), params.get_int(2));
+			});
+
+			command::add("matchsetrule", [](const command::params& params)
+			{
+				if (params.size() < 3)
+				{
+					printf("usage: matchsetrule <name> <value>\n");
+					return;
+				}
+
+				set_match_rule(params.get(1), params.get_int(2));
+			});
+
+			command::add("matchsetslot", [](const command::params& params)
+			{
+				if (params.size() < 3)
+				{
+					printf("usage: matchsetslot <index> <name> <value>\n");
+					return;
+				}
+
+				set_slot_field(params.get_int(1), params.get(2), params.get_int(3));
+			});
+
+			command::add("matchstart", [](const command::params& params)
+			{
+				request_match_start = true;
+			});
 		}
 
 		void start() override
@@ -455,11 +493,6 @@ namespace matchmaking
 				}, scheduler::main, 1s);
 			});
 
-			command::add("matchstart", [](const command::params& params)
-			{
-				request_match_start = true;
-			});
-
 			command::add("matchrotate", [](const command::params& params)
 			{
 				auto match = game::s_mgoMatchMakingManager->match_container;
@@ -482,39 +515,6 @@ namespace matchmaking
 
 					request_match_rotate = true;
 				}, scheduler::session, 500ms);
-			});
-
-			command::add("matchset", [](const command::params& params)
-			{
-				if (params.size() < 3)
-				{
-					printf("usage: matchset <name> <value>\n");
-					return;
-				}
-
-				set_match_setting(params.get(1), params.get_int(2));
-			});
-
-			command::add("matchsetrule", [](const command::params& params)
-			{
-				if (params.size() < 3)
-				{
-					printf("usage: matchsetrule <name> <value>\n");
-					return;
-				}
-
-				set_match_rule(params.get(1), params.get_int(2));
-			});
-
-			command::add("matchsetslot", [](const command::params& params)
-			{
-				if (params.size() < 3)
-				{
-					printf("usage: matchsetslot <index> <name> <value>\n");
-					return;
-				}
-
-				set_slot_field(params.get_int(1), params.get(2), params.get_int(3));
 			});
 
 			command::add("matchsetstate", [](const command::params& params)
