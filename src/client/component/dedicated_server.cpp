@@ -308,7 +308,7 @@ namespace dedicated_server
 				ruleset->unk1.__vftable->GetTimeSpentInCurrentState(&ruleset->unk1) > 40.f && !did_rotate)
 			{
 				did_rotate = true;
-				command::execute("matchrotate");
+				game::s_mgoMatchMakingManager->state = 21;
 			}
 		}
 	}
