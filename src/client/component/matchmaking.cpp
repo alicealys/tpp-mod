@@ -60,6 +60,7 @@ namespace matchmaking
 			DEFINE_MATCH_FIELD(game::match_settings_t, walker_gear),
 			DEFINE_MATCH_FIELD(game::match_settings_t, rank),
 			DEFINE_MATCH_FIELD(game::match_settings_t, has_password),
+			DEFINE_MATCH_FIELD(game::match_settings_t, host_comment),
 		};
 
 		std::unordered_map<std::string, match_field_t> match_rules_fields =
