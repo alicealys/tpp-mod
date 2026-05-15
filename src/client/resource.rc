@@ -95,6 +95,7 @@ END
 
 RESOURCE_KEYS_TPP       RCDATA "resources/keys_tpp.cfg"
 RESOURCE_KEYS_MGO       RCDATA "resources/keys_mgo.cfg"
+RESOURCE_SERVER_CFG       RCDATA "resources/server.cfg"
 
 #endif    // English (United States) resources
 /////////////////////////////////////////////////////////////////////////////

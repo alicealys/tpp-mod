@@ -3597,27 +3597,79 @@ namespace game
 
 		};
 
-		struct RuleSet
+		struct Ruleset_unk1
 		{
-			char __pad0[192];
+			struct vtable
+			{
+				void(__fastcall* meth_1)(Ruleset_unk1*);
+				void(__fastcall* meth_2)(Ruleset_unk1*);
+				void(__fastcall* meth_3)(Ruleset_unk1*);
+				void(__fastcall* meth_4)(Ruleset_unk1*);
+				void(__fastcall* meth_5)(Ruleset_unk1*);
+				void(__fastcall* meth_6)(Ruleset_unk1*);
+				void(__fastcall* meth_7)(Ruleset_unk1*);
+				void(__fastcall* meth_8)(Ruleset_unk1*);
+				void(__fastcall* meth_9)(Ruleset_unk1*);
+				void(__fastcall* meth_10)(Ruleset_unk1*);
+				void(__fastcall* meth_11)(Ruleset_unk1*);
+				void(__fastcall* meth_12)(Ruleset_unk1*);
+				void(__fastcall* meth_13)(Ruleset_unk1*);
+				void(__fastcall* meth_14)(Ruleset_unk1*);
+				void(__fastcall* meth_15)(Ruleset_unk1*);
+				void(__fastcall* meth_16)(Ruleset_unk1*);
+				void(__fastcall* meth_17)(Ruleset_unk1*);
+				void(__fastcall* meth_18)(Ruleset_unk1*);
+				void(__fastcall* meth_19)(Ruleset_unk1*);
+				void(__fastcall* meth_20)(Ruleset_unk1*);
+				void(__fastcall* meth_21)(Ruleset_unk1*);
+				void(__fastcall* meth_22)(Ruleset_unk1*);
+				void(__fastcall* meth_23)(Ruleset_unk1*);
+				void(__fastcall* meth_24)(Ruleset_unk1*);
+				void(__fastcall* meth_25)(Ruleset_unk1*);
+				void(__fastcall* meth_26)(Ruleset_unk1*);
+				void(__fastcall* meth_27)(Ruleset_unk1*);
+				double(__fastcall* GetTimeSpentInCurrentRound)(Ruleset_unk1*);
+				double(__fastcall* GetTimeSpentInCurrentState)(Ruleset_unk1*);
+				void(__fastcall* meth_30)(Ruleset_unk1*);
+			};
+
+			vtable* __vftable;
+			char __pad0[32];
+		};
+
+		struct Ruleset
+		{
+			char __pad0[88];
+			Ruleset_unk1 unk1;
+			char __pad1[64];
 			int numTeams;
 			TeamInfo** teams;
-			char __pad1[326];
+			char __pad2[160];
+			int a1;
+			char __pad3[88];
+			int state;
+			char __pad4[60];
+			unsigned char currentRound;
+			char __pad5[9];
 			unsigned char localPlayerSessionIndex;
-			char __pad2[961];
+			char __pad6[961];
 			char playerTeams[16];
 		};
 
-		struct RuleSetManager_unk1
+		static_assert(offsetof(Ruleset, playerTeams) == 1496);
+		static_assert(offsetof(Ruleset, state) == 460);
+		static_assert(offsetof(Ruleset, currentRound) == 524);
+
+		struct RulesetManager_unk1
 		{
 			char __pad0[24];
-			RuleSet* activeRuleset;
+			Ruleset* activeRuleset;
 		};
 
-		struct RuleSetManager
+		struct RulesetManager
 		{
 			char __pad0[16];
-			RuleSetManager_unk1* unk1;
+			RulesetManager_unk1* unk1;
 		};
 
 	}
@@ -3701,12 +3753,17 @@ namespace game
 		steam_id lobby_owner;
 		char __pad4[76];
 		steam_id lobby_id;
-		char __pad5[1008];
+		char __pad5[1004];
+		char st_started;
+		char st_is_transition;
+		char __pad6[2];
 		match_rules_t match_rules;
 		steam_id lobby_id2;
-		char __pad6[1604];
+		char __pad7[1604];
 	};
 #pragma pack(pop)
+
+	static_assert(offsetof(mgo_match_t, st_started) == 1444);
 
 	struct mgo_match_container_t
 	{
@@ -3839,7 +3896,8 @@ namespace game
 		match_settings_t match_settings;
 		char __pad2[788];
 		int state;
-		char __pad3[26];
+		int unk3;
+		char __pad3[22];
 		char unk1;
 		char __pad4[8];
 		char unk2;

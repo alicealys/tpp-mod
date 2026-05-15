@@ -13,7 +13,7 @@ namespace session
 	int get_state(game::fox::nt::impl::SessionImpl2* session);
 	void connect_to_lobby(const game::steam_id lobby_id);
 
-	game::tpp::mp::RuleSet* get_active_ruleset();
+	game::tpp::mp::Ruleset* get_active_ruleset();
 	char get_player_team(const std::uint64_t steam_id);
 	char get_self_team();
 }

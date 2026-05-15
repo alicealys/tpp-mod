@@ -96,6 +96,17 @@ namespace matchmaking
 			create_lobby_hook.invoke<void>(match, &match->match_settings);
 		}
 
+		void update_match_settings()
+		{
+			const auto match_container = game::s_mgoMatchMakingManager->match_container;
+			if (match_container == nullptr || match_container->match == nullptr)
+			{
+				return;
+			}
+
+			std::memcpy(&match_container->match->match_settings, &match_settings, sizeof(game::match_settings_t));
+		}
+
 		void create_lobby_stub(game::mgo_match_t* match, game::match_settings_t* settings)
 		{
 			if (var_match_enable_tweaks->current.enabled())
@@ -151,6 +162,7 @@ namespace matchmaking
 			}
 
 			set_field(&match_settings.rules.slots[slot_number], iter->second, value);
+			update_match_settings();
 		}
 
 		void set_match_setting(const std::string& field, const int value)
@@ -163,6 +175,7 @@ namespace matchmaking
 			}
 
 			set_field(&match_settings, iter->second, value);
+			update_match_settings();
 		}
 
 		void set_match_rule(const std::string& field, const int value)
@@ -175,16 +188,7 @@ namespace matchmaking
 			}
 
 			set_field(&match_settings.rules, iter->second, value);
-		}
-
-		void update_match_settings()
-		{
-			if (game::s_mgoMatchMakingManager->match_container == nullptr)
-			{
-				return;
-			}
-
-			std::memcpy(&game::s_mgoMatchMakingManager->match_container->match->match_settings, &match_settings, sizeof(game::match_settings_t));
+			update_match_settings();
 		}
 
 		std::atomic_bool request_match_start = false;
@@ -225,8 +229,10 @@ namespace matchmaking
 			{
 				console::info("[MgoMatchmakingManager] Rotating match...\n");
 
-				utils::hook::invoke<void>(SELECT_VALUE_LANG(0x148D00CE0, 0x147DF7DE0));
-				game::s_mgoMatchMakingManager->state = 21;
+				game::s_mgoMatchMakingManager->__pad3[20] = 1;
+				game::s_mgoMatchMakingManager->__pad4[4] = 1;
+				game::s_mgoMatchMakingManager->__pad5[2] = 1;
+				game::s_mgoMatchMakingManager->unk3 = 1;
 			}
 
 			if (request_disconnect)
@@ -455,7 +461,26 @@ namespace matchmaking
 
 			command::add("matchrotate", [](const command::params& params)
 			{
-				request_match_rotate = true;
+				auto match = game::s_mgoMatchMakingManager->match_container;
+				if (match == nullptr)
+				{
+					return;
+				}
+
+				const auto steam_matchmaking = (*game::SteamMatchmaking)();
+				steam_matchmaking->__vftable->SetLobbyData(steam_matchmaking, 
+					match->match->lobby_id2, "st_is_transition", "1");
+
+				scheduler::once([&]
+				{
+					match = game::s_mgoMatchMakingManager->match_container;
+					if (match == nullptr)
+					{
+						return;
+					}
+
+					request_match_rotate = true;
+				}, scheduler::session, 500ms);
 			});
 
 			command::add("matchset", [](const command::params& params)
