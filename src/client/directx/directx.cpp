@@ -10,13 +10,13 @@ namespace directx
 {
 	namespace
 	{
-		HRESULT create_dxgi_factory(const IID& riid, void** factory)
+		HRESULT __stdcall create_dxgi_factory(IID* riid, void** factory)
 		{
 			*factory = dxgi_factory::get_instance();
 			return S_OK;
 		}
 
-		HRESULT d3d11_create_device(IDXGIAdapter* adapter, D3D_DRIVER_TYPE driver_type, HMODULE software, UINT flags,
+		HRESULT __stdcall d3d11_create_device(IDXGIAdapter* adapter, D3D_DRIVER_TYPE driver_type, HMODULE software, UINT flags,
 			D3D_FEATURE_LEVEL* p_feature_levels, UINT feature_levels, UINT sdk_version,
 			ID3D11Device** device, D3D_FEATURE_LEVEL* p_feature_level, ID3D11DeviceContext** immediate_context)
 		{

@@ -11,9 +11,9 @@ namespace directx
 			return 0;
 		}
 
-		void __stdcall get_desc(void*, D3D11_COUNTER_DESC*)
+		void __stdcall get_desc(void*, D3D11_COUNTER_DESC* desc)
 		{
-
+			std::memset(desc, 0, sizeof(D3D11_COUNTER_DESC));
 		}
 	}
 

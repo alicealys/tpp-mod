@@ -7,9 +7,9 @@ namespace directx
 {
 	namespace
 	{
-		void __stdcall get_desc(void*, D3D11_RENDER_TARGET_VIEW_DESC*)
+		void __stdcall get_desc(void*, D3D11_RENDER_TARGET_VIEW_DESC* desc)
 		{
-
+			std::memset(desc, 0, sizeof(D3D11_RENDER_TARGET_VIEW_DESC));
 		}
 	}
 

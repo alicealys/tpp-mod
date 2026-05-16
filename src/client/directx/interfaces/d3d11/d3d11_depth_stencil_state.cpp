@@ -6,9 +6,9 @@ namespace directx
 {
 	namespace
 	{
-		void __stdcall get_desc(void*, D3D11_DEPTH_STENCIL_DESC*)
+		void __stdcall get_desc(void*, D3D11_DEPTH_STENCIL_DESC* desc)
 		{
-
+			std::memset(desc, 0, sizeof(D3D11_DEPTH_STENCIL_DESC));
 		}
 	}
 

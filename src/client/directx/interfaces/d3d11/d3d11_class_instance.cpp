@@ -14,7 +14,7 @@ namespace directx
 
 		void __stdcall get_desc(void*, D3D11_CLASS_INSTANCE_DESC* desc)
 		{
-
+			std::memset(desc, 0, sizeof(D3D11_CLASS_INSTANCE_DESC));
 		}
 
 		void __stdcall get_instance_name(void*, LPSTR, SIZE_T* length)
