@@ -259,6 +259,17 @@ namespace dedicated_server
 			return on_player_connect_hook.invoke<__int64>(a1, index);
 		}
 
+		utils::hook::detour on_init_frame_hook;
+		void* on_init_frame_stub(void* a1, void* a2)
+		{
+			const auto weather = *game::tpp::sys::WeatherManager_::m_instance;
+			if (weather != nullptr && weather->clock != nullptr)
+			{
+				weather->clock->pause = true;
+			}
+			return on_init_frame_hook.invoke<void*>(a1, a2);
+		}
+
 		void run_frame()
 		{
 			static const char* ruleset_names[] =
@@ -378,6 +389,7 @@ namespace dedicated_server
 			translate_messages_hook.create(0x142590640, translate_messages_stub);
 
 			on_player_connect_hook.create(0x140829570, on_player_connect_stub); // dont spawn host
+			on_init_frame_hook.create(0x146F43EA0, on_init_frame_stub); // fix weather clock
 			
 			utils::hook::jump(0x14125F627, 0x14125FFF6); // weird crash
 
