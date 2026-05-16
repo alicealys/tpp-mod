@@ -278,7 +278,7 @@ namespace patches
 
 			if (game::environment::is_dedi())
 			{
-				var_max_fps = vars::register_int("com_max_fps", 30, 30, 60, 0, "server max fps");
+				var_max_fps = vars::register_int("com_max_fps", 100, 0, 1000, 0, "server max fps");
 			}
 			else
 			{
