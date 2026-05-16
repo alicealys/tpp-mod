@@ -13,7 +13,7 @@ namespace directx
 			HRESULT (__stdcall* get_window_association)(void*, HWND*);
 			HRESULT (__stdcall* create_swap_chain)(void*, IUnknown*, DXGI_SWAP_CHAIN_DESC*, IDXGISwapChain**);
 			HRESULT (__stdcall* create_software_adapter)(void*, HMODULE, IDXGIAdapter**);
-			HRESULT (__stdcall* enum_adapters1)(void*, UINT, IDXGIAdapter**);
+			HRESULT (__stdcall* enum_adapters1)(void*, UINT, IDXGIAdapter1**);
 			BOOL (__stdcall* is_current)(void*);
 		};
 

@@ -10,7 +10,7 @@ namespace directx
     {
         HRESULT __stdcall enum_adapters(void*, UINT index, IDXGIAdapter** adapter)
         {
-            if (index > 1)
+            if (index > 0)
             {
                 *adapter = NULL;
                 return DXGI_ERROR_NOT_FOUND;
@@ -45,6 +45,18 @@ namespace directx
         {
             return FALSE;
         }
+
+        HRESULT __stdcall enum_adapters1(void*, UINT index, IDXGIAdapter1** adapter)
+        {
+            if (index > 0)
+            {
+                *adapter = NULL;
+                return DXGI_ERROR_NOT_FOUND;
+            }
+
+            *adapter = dxgi_adapter::get<IDXGIAdapter1>();
+            return S_OK;
+        }
     }
 
     dxgi_factory* dxgi_factory::create()
@@ -59,7 +71,7 @@ namespace directx
         vtable.get_window_association = get_window_association;
         vtable.create_swap_chain = create_swap_chain;
         vtable.create_software_adapter = create_software_adapter;
-        vtable.enum_adapters1 = enum_adapters;
+        vtable.enum_adapters1 = enum_adapters1;
         vtable.is_current = is_current;
 
         return &instance;

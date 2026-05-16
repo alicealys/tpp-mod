@@ -8,7 +8,8 @@ namespace directx
     {
         HRESULT __stdcall get_desc(void*, DXGI_OUTPUT_DESC* desc)
         {
-            desc->AttachedToDesktop = false;
+            std::memset(desc, 0, sizeof(DXGI_OUTPUT_DESC));
+            desc->AttachedToDesktop = TRUE;
             desc->DesktopCoordinates.left = 0;
             desc->DesktopCoordinates.top = 0;
             desc->DesktopCoordinates.right = 1;
@@ -20,17 +21,23 @@ namespace directx
 
         HRESULT __stdcall get_display_mode_list(void*, DXGI_FORMAT, UINT, UINT* num, DXGI_MODE_DESC* desc)
         {
-            *num = 1;
-
-            if (desc != nullptr)
+            if (desc == nullptr)
             {
-                desc->Width = 1;
-                desc->Height = 1;
-                desc->RefreshRate.Numerator = 60000;
-                desc->RefreshRate.Denominator = 1000;
-                desc->ScanlineOrdering = DXGI_MODE_SCANLINE_ORDER_PROGRESSIVE;
-                desc->Scaling = DXGI_MODE_SCALING_CENTERED;
-                desc->Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+                *num = 1;
+            }
+            else
+            {
+                for (auto i = 0u; i < *num; i++)
+                {
+                    std::memset(&desc[i], 0, sizeof(DXGI_MODE_DESC));
+                    desc[i].Width = 1;
+                    desc[i].Height = 1;
+                    desc[i].RefreshRate.Numerator = 60;
+                    desc[i].RefreshRate.Denominator = 1;
+                    desc[i].ScanlineOrdering = DXGI_MODE_SCANLINE_ORDER_PROGRESSIVE;
+                    desc[i].Scaling = DXGI_MODE_SCALING_UNSPECIFIED;
+                    desc[i].Format = DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;
+                }
             }
 
             return S_OK;

@@ -11,7 +11,7 @@ namespace directx
 			HRESULT (__stdcall* enum_outputs)(void*, UINT, IDXGIOutput**);
 			HRESULT (__stdcall* get_desc)(void*, DXGI_ADAPTER_DESC*);
 			HRESULT (__stdcall* check_interface_support)(void*, GUID*, LARGE_INTEGER*);
-			HRESULT (__stdcall* get_desc1)(void*, DXGI_ADAPTER_DESC*);
+			HRESULT (__stdcall* get_desc1)(void*, DXGI_ADAPTER_DESC1*);
 		};
 
 		vtable* __vftable;

@@ -8,7 +8,7 @@ namespace directx
 	{
 		void __stdcall get_desc(void*, D3D11_BUFFER_DESC* desc)
 		{
-
+			std::memset(desc, 0, sizeof(D3D11_BUFFER_DESC));
 		}
 	}
 
