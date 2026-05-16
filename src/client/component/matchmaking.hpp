@@ -3,6 +3,8 @@
 namespace matchmaking
 {
 	void ban_player_from_lobby(const std::uint64_t steam_id);
+	void unban_player_from_lobby(const std::uint64_t steam_id);
+
 	void kick_player_from_lobby(const std::uint64_t steam_id);
 	void clear_kicks();
 

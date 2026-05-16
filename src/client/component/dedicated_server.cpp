@@ -314,9 +314,15 @@ namespace dedicated_server
 
 	void ban_player_from_session(const game::steam_id steam_id)
 	{
-		const auto steam_networking = (*game::SteamNetworking)();
-		const auto channel = get_client_net_channel(get_lobby_id(), steam_id);
-		steam_networking->__vftable->CloseP2PChannelWithUser(steam_networking, steam_id, channel);
+		const auto lobby_id = get_lobby_id();
+
+		if (lobby_id.bits != 0)
+		{
+			const auto steam_networking = (*game::SteamNetworking)();
+			const auto channel = get_client_net_channel(lobby_id, steam_id);
+			steam_networking->__vftable->CloseP2PChannelWithUser(steam_networking, steam_id, channel);
+		}
+
 		banned_players.insert(steam_id.bits);
 	}
 
