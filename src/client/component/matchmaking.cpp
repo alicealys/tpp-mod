@@ -248,14 +248,14 @@ namespace matchmaking
 		void set_lobby_data(const std::string& key, const std::string& value)
 		{
 			const auto match_container = game::s_mgoMatchMakingManager->match_container;
-			if (match_container == nullptr)
+			if (match_container == nullptr || match_container->match->lobby_id.bits == 0)
 			{
 				return;
 			}
 
 			const auto steam_matchmaking = (*game::SteamMatchmaking)();
 			const auto res = steam_matchmaking->__vftable->SetLobbyData(steam_matchmaking, match_container->match->lobby_id, key.data(), value.data());
-			printf("[SteamMatchmaking] SetLobbyData(%s, %s) = %i\n", key.data(), value.data(), res);
+			console::debug("[SteamMatchmaking] SetLobbyData(%s, %s) = %i\n", key.data(), value.data(), res);
 		}
 
 		void set_lobby_data(const std::string& key, const std::uint64_t value)
@@ -275,10 +275,23 @@ namespace matchmaking
 			return steam_matchmaking->__vftable->GetLobbyData(steam_matchmaking, match_container->match->lobby_id, key.data());
 		}
 
+		void update_kick_list()
+		{
+			set_lobby_data("kick_num", kicked_steam_ids.size());
+
+			auto index = 0;
+			for (const auto& id : kicked_steam_ids)
+			{
+				set_lobby_data(utils::string::va("kicked_id_%d", index++), id);
+			}
+		}
+
 		void* create_lobby_cb_stub(void* a1, game::steam_id lobby_id)
 		{
 			printf("[SteamMatchmaking] Created lobby %llu\n", lobby_id.bits);
-			return create_lobby_cb_hook.invoke<void*>(a1, lobby_id);
+			const auto res = create_lobby_cb_hook.invoke<void*>(a1, lobby_id);
+			update_kick_list();
+			return res;
 		}
 
 		game::ISteamMatchmaking_vtbl steam_matchmaking_vtbl{};
@@ -337,14 +350,13 @@ namespace matchmaking
 	void ban_player_from_lobby(const std::uint64_t steam_id)
 	{
 		kicked_steam_ids.insert(steam_id);
+		update_kick_list();
+	}
 
-		set_lobby_data("kick_num", kicked_steam_ids.size());
-
-		auto index = 0;
-		for (const auto& id : kicked_steam_ids)
-		{
-			set_lobby_data(utils::string::va("kicked_id_%d", index++), id);
-		}
+	void unban_player_from_lobby(const std::uint64_t steam_id)
+	{
+		kicked_steam_ids.erase(steam_id);
+		update_kick_list();
 	}
 
 	void kick_player_from_lobby(const std::uint64_t steam_id)
@@ -445,7 +457,7 @@ namespace matchmaking
 			create_lobby_hook.create(SELECT_VALUE_LANG(0x1405A1970, 0x1405A1380), create_lobby_stub);
 
 			scheduler::once(hook_steam_matchmaking, scheduler::net);
-			scheduler::loop(run_frame, scheduler::main);
+			scheduler::loop(run_frame, scheduler::session);
 
 			command::add("clearkicks", []()
 			{
