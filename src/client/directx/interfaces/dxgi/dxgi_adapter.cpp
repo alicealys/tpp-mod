@@ -22,9 +22,6 @@ namespace directx
 		HRESULT __stdcall get_desc(void*, DXGI_ADAPTER_DESC* desc)
 		{
 			std::memset(desc, 0, sizeof(DXGI_ADAPTER_DESC));
-			desc->DedicatedVideoMemory = 1;
-			desc->DedicatedSystemMemory = 1;
-			desc->SharedSystemMemory = 1;
 			return S_OK;
 		}
 
@@ -36,15 +33,6 @@ namespace directx
 		HRESULT __stdcall get_desc1(void*, DXGI_ADAPTER_DESC1* desc)
 		{
 			std::memset(desc, 0, sizeof(DXGI_ADAPTER_DESC1));
-			desc->VendorId = 4318;
-			desc->DeviceId = 9568;
-			desc->SubSysId = 175050792;
-			desc->Revision = 161;
-			desc->DedicatedVideoMemory = 6287261696;
-			desc->DedicatedSystemMemory = 0;
-			desc->SharedSystemMemory = 8241936384;
-			desc->AdapterLuid.LowPart = 74175;
-			desc->AdapterLuid.HighPart = 0;
 			return S_OK;
 		}
 	}

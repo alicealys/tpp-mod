@@ -40,6 +40,7 @@ namespace directx
 
         HRESULT __stdcall get_desc(void*, DXGI_SWAP_CHAIN_DESC* desc)
         {
+            std::memset(desc, 0, sizeof(DXGI_SWAP_CHAIN_DESC));
             return S_OK;
         }
 
@@ -59,8 +60,9 @@ namespace directx
             return S_OK;
         }
 
-        HRESULT __stdcall get_frame_statistics(void*, DXGI_FRAME_STATISTICS*)
+        HRESULT __stdcall get_frame_statistics(void*, DXGI_FRAME_STATISTICS* stats)
         {
+            std::memset(stats, 0, sizeof(DXGI_FRAME_STATISTICS));
             return S_OK;
         }
 
