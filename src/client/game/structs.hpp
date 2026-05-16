@@ -3407,6 +3407,24 @@ namespace game
 			CommonDataManager_tpp tpp;
 		};
 	}
+	
+	namespace tpp::sys
+	{
+		struct WeatherManager_unk1
+		{
+			char __pad0[3784];
+			bool pause;
+			char __pad1[7];
+			float current;
+		};
+
+		struct WeatherManager
+		{
+			char __pad0[128];
+			WeatherManager_unk1* clock;
+			char __pad1[418];
+		};
+	}
 
 	namespace gn
 	{
