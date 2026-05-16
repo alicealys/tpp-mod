@@ -259,12 +259,6 @@ namespace dedicated_server
 			return on_player_connect_hook.invoke<__int64>(a1, index);
 		}
 
-		void active_shell_at_empty_work_stub(utils::hook::assembler& a)
-		{
-			a.mov(eax, 64);
-			a.ret();
-		}
-
 		void run_frame()
 		{
 			static const char* ruleset_names[] =
@@ -338,7 +332,7 @@ namespace dedicated_server
 		{
 			filesystem::register_resource_file("config\\server.cfg", RESOURCE_SERVER_CFG);
 
-			if (!game::environment::is_mgo() || !game::environment::is_eng())
+			if (!game::environment::is_mgo())
 			{
 				return;
 			}
@@ -379,8 +373,7 @@ namespace dedicated_server
 
 			on_player_connect_hook.create(0x140829570, on_player_connect_stub); // dont spawn host
 			
-			utils::hook::far_jump<BASE_ADDRESS>(0x14125F627, 
-				utils::hook::assemble(active_shell_at_empty_work_stub)); // weird crash
+			utils::hook::jump(0x14125F627, 0x14125FFF6); // weird crash
 
 			utils::hook::jump(0x14057F360, 0x14057F3D0); // always go to next match
 
