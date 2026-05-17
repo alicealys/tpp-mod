@@ -316,6 +316,21 @@ namespace dedicated_server
 				game::s_mgoMatchMakingManager->state = 21;
 			}
 		}
+
+		int ret_n1()
+		{
+			return -1;
+		}
+
+		int ret_1()
+		{
+			return 1;
+		}
+
+		int ret_0()
+		{
+			return 0;
+		}
 	}
 
 	void unban_player_from_session(const game::steam_id steam_id)
@@ -371,19 +386,27 @@ namespace dedicated_server
 
 			utils::hook::set<std::uint8_t>(0x140A9F880, 0xC3); // dont build scene
 			utils::hook::set<std::uint8_t>(0x149865F0B, 0xEB); // ^
-			utils::hook::set<std::uint8_t>(0x14930E490, 0xC3); // dont render scene
+			utils::hook::set<std::uint8_t>(0x149865F71, 0xEB); // ^
 
-			utils::hook::set<std::uint8_t>(0x14A9D20F0, 0xC3); // dont play sounds
-			utils::hook::set<std::uint8_t>(0x14A91F2C0, 0xC3); // kill sound
-			utils::hook::set<std::uint8_t>(0x140CE5630, 0xC3);
-			utils::hook::set<std::uint8_t>(0x146579190, 0xC3);
-			utils::hook::set<std::uint8_t>(0x14A91F2C0, 0xC3);
-			utils::hook::set<std::uint8_t>(0x14A98EC80, 0xC3);
+			utils::hook::set<std::uint8_t>(0x14A1E39C0, 0xC3); // dont execute draw 2d
 
-			//utils::hook::set<std::uint8_t>(0x140E1A4B0, 0xC3); // ui
+			utils::hook::set<std::uint8_t>(0x140A9D840, 0xC3); // dont add render plugins
+			utils::hook::set<std::uint8_t>(0x140C20CE0, 0xC3); // ^
+			utils::hook::jump(0x1497987C0, ret_0); // ^
 
-			utils::hook::set<std::uint8_t>(0x14A1E39C0, 0xC3); // dont draw 2d
+			utils::hook::jump(0x140B24200, ret_n1);  // textures
+			utils::hook::jump(0x140B63810, ret_n1);  // ^
+			utils::hook::set(0x14989AA50, 0xC301B0); // ^
+			utils::hook::set(0x149C40F20, 0xC301B0); // ^
+			utils::hook::set(0x140B23F30, 0xC300B0); // ^
 
+			utils::hook::set<std::uint8_t>(0x14A9D20F0, 0xC3); // sound
+			utils::hook::set<std::uint8_t>(0x14A91F2C0, 0xC3); // ^
+			utils::hook::set<std::uint8_t>(0x140CE5630, 0xC3); // ^
+			utils::hook::set<std::uint8_t>(0x146579190, 0xC3); // ^
+			utils::hook::set<std::uint8_t>(0x14A98EC80, 0xC3); // ^
+
+			// dont create window
 			utils::hook::nop(0x14258DC10, 5);
 			utils::hook::set<std::uint8_t>(0x14258B600, 0xC3);
 			translate_messages_hook.create(0x142590640, translate_messages_stub);
@@ -391,7 +414,7 @@ namespace dedicated_server
 			on_player_connect_hook.create(0x140829570, on_player_connect_stub); // dont spawn host
 			on_init_frame_hook.create(0x146F43EA0, on_init_frame_stub); // fix weather clock
 			
-			utils::hook::jump(0x14125F627, 0x14125FFF6); // weird crash
+			utils::hook::jump(0x14125F627, 0x14125FFF6); // weird crash (fixme)
 
 			utils::hook::jump(0x14057F360, 0x14057F3D0); // always go to next match
 
