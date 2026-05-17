@@ -8,7 +8,7 @@ namespace directx
 	{
 		struct vtable : d3d11_device_child::vtable
 		{
-			void(__stdcall* get_desc)(void*, D3D11_SAMPLER_DESC*);
+			void (__stdcall* get_desc)(void*, D3D11_SAMPLER_DESC*);
 		};
 
 		vtable* __vftable;

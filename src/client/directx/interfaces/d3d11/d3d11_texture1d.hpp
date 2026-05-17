@@ -9,7 +9,7 @@ namespace directx
 	{
 		struct vtable : d3d11_resource::vtable
 		{
-			void(__stdcall* get_desc)(void*, D3D11_TEXTURE1D_DESC*);
+			void (__stdcall* get_desc)(void*, D3D11_TEXTURE1D_DESC*);
 		};
 
 		vtable* __vftable;

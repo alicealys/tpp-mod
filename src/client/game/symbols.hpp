@@ -39,7 +39,7 @@ namespace game
 		namespace Buffer_
 		{
 			WEAK symbol<size_t(fox::Buffer* buffer)> GetSize{0x140A839C0, 0x1406C4D70, 0x140EFE0E0, 0x140F54B80};
-			WEAK symbol<char* (fox::Buffer* buffer)> GetBuffer{0x14C240CB0, 0x14CB3BB00, 0x14CACA8A0, 0x14CA27EE0};
+			WEAK symbol<char*(fox::Buffer* buffer)> GetBuffer{0x14C240CB0, 0x14CB3BB00, 0x14CACA8A0, 0x14CA27EE0};
 		}
 
 		namespace nt
@@ -59,7 +59,7 @@ namespace game
 		{
 			namespace impl
 			{
-				WEAK symbol<UixUtilityImpl* ()> GetUixUtilityToFeedQuarkEnvironment{0x14050B2A0, 0x1402BADD0, 0x14050AE60, 0x1402BADA0};
+				WEAK symbol<UixUtilityImpl*()> GetUixUtilityToFeedQuarkEnvironment{0x14050B2A0, 0x1402BADD0, 0x14050AE60, 0x1402BADA0};
 			}
 		}
 
@@ -212,7 +212,7 @@ namespace game
 			{
 				namespace CommonDataManager_
 				{
-					WEAK symbol<CommonDataManager* ()> GetInstance{0x145C0A890, 0x1405EA6D0, 0x140865990, 0x1405EA0E0};
+					WEAK symbol<CommonDataManager*()> GetInstance{0x145C0A890, 0x1405EA6D0, 0x140865990, 0x1405EA0E0};
 					WEAK symbol<void(CommonDataManager*, const char*, int, int, int)> AnnounceLogView{0x140863050, 0x1405E7610, 0x140862CE0, 0x1405E7020};
 					WEAK symbol<void(CommonDataManager*, const char*, char, char)> AnnounceLogViewOnly{0x140863220, 0x145085A70, 0x140862EB0, 0x146834CD0};
 					WEAK symbol<bool(CommonDataManager*)> IsEndLoadingTips{0x140866490, 0x1450A34D0, 0x140866110, 0x146850D20};
@@ -229,7 +229,7 @@ namespace game
 			{
 				namespace UiCommonDataManager_
 				{
-					WEAK symbol<UiCommonDataManager* ()> GetInstance{0x14085F0C0, 0x1405E0F30, 0x14085ED60, 0x1405E0950};
+					WEAK symbol<UiCommonDataManager*()> GetInstance{0x14085F0C0, 0x1405E0F30, 0x14085ED60, 0x1405E0950};
 					WEAK symbol<int(UiCommonDataManager*)> GetPauseMenuType{0x14085F1C0, 0x1405E0FD0, 0x14085EE40, 0x1405E0A00};
 					WEAK symbol<fox::ui::SoundControl*(UiCommonDataManager*)> GetSoundControl{0x140314400, 0x1408C2E70, 0x140313E90, 0x1405E0AC0};
 				}
@@ -245,10 +245,10 @@ namespace game
 
 			namespace utility
 			{
-				WEAK symbol<fox::StringId* (fox::StringId*, unsigned __int16, unsigned __int16, char)> GetMissionNameKey{0x140912880, 0x14538F900, 0x1409122B0, 0x146AEEC70};
+				WEAK symbol<fox::StringId*(fox::StringId*, unsigned __int16, unsigned __int16, char)> GetMissionNameKey{0x140912880, 0x14538F900, 0x1409122B0, 0x146AEEC70};
 				WEAK symbol<unsigned __int16()> GetCurrentLocationId{0x140910890, 0x140683360, 0x1409102C0, 0x140683040};
 				WEAK symbol<unsigned __int16()> GetCurrentMissionId{0x1409108D0, 0x1406833A0, 0x140910300, 0x140683080};
-				WEAK symbol<const char* (fox::StringId)> GetLangText{0x1409122D0, 0x140685060, 0x140911D00, 0x140684D40};
+				WEAK symbol<const char*(fox::StringId)> GetLangText{0x1409122D0, 0x140685060, 0x140911D00, 0x140684D40};
 				WEAK symbol<fox::StringId*(fox::StringId*, const char*)> GetStringId{0x1409137A0, 0x140686510, 0x1409131D0, 0x1406861F0};
 
 				WEAK symbol<bool(fox::ui::SoundControl*, unsigned int)> StartSound{0x14091AFA0, 0x14068D180, 0x147A8E180, 0x14068CE60};
@@ -336,7 +336,7 @@ namespace game
 
 		WEAK symbol<bool(lua_State* L, int)> lua_toboolean{0x141A12330, 0x14CA2BC80, 0x141A12450, 0x14C92AEC0};
 		WEAK symbol<int(lua_State* L, int)> lua_tointeger{0x141A12390, 0x14146E670, 0x141A124B0, 0x14146E620};
-		WEAK symbol<const char* (lua_State* L, int idx, size_t* len)> lua_tolstring{0x14C1ECA70, 0x14CA2C890, 0x14C992060, 0x14C92BE20};
+		WEAK symbol<const char*(lua_State* L, int idx, size_t* len)> lua_tolstring{0x14C1ECA70, 0x14CA2C890, 0x14C992060, 0x14C92BE20};
 
 		WEAK symbol<void(lua_State* L)> lua_pushnil{0x141A11BA0, 0x14146DE70, 0x141A11CC0, 0x14146DE20};
 		WEAK symbol<void(lua_State* L, const char*)> lua_pushstring{0x141A11BE0, 0x14146DEB0, 0x14C98DCB0, 0x14146DE60};
