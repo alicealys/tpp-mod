@@ -9,7 +9,7 @@ namespace directx
 	{
 		struct vtable : public d3d11_view::vtable
 		{
-			void(__stdcall* get_desc)(void*, D3D11_BUFFER_DESC*);
+			void (__stdcall* get_desc)(void*, D3D11_BUFFER_DESC*);
 		};
 
 		vtable* __vftable;

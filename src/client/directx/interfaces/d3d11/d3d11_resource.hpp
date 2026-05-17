@@ -8,9 +8,9 @@ namespace directx
 	{
 		struct vtable : d3d11_device_child::vtable
 		{
-			void(__stdcall* get_type)(void*, D3D11_RESOURCE_DIMENSION*);
-			void(__stdcall* set_eviction_priority)(void*, UINT);
-			UINT(__stdcall* get_eviction_priority)(void*);
+			void (__stdcall* get_type)(void*, D3D11_RESOURCE_DIMENSION*);
+			void (__stdcall* set_eviction_priority)(void*, UINT);
+			UINT (__stdcall* get_eviction_priority)(void*);
 		};
 
 		vtable* __vftable;

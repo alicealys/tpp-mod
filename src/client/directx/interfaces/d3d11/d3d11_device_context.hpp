@@ -30,7 +30,7 @@ namespace directx
 			void (__stdcall* vs_set_samplers)(void*, UINT, UINT, ID3D11SamplerState**);
 			void (__stdcall* begin)(void*, ID3D11Asynchronous*);
 			void (__stdcall* end)(void*, ID3D11Asynchronous*);
-			HRESULT(__stdcall* get_data)(void*, ID3D11Asynchronous*, void*, UINT, UINT);
+			HRESULT (__stdcall* get_data)(void*, ID3D11Asynchronous*, void*, UINT, UINT);
 			void (__stdcall* set_predication)(void*, ID3D11Predicate*, BOOL);
 			void (__stdcall* gs_set_shader_resources)(void*, UINT, UINT, ID3D11ShaderResourceView**);
 			void (__stdcall* gs_set_samplers)(void*, UINT, UINT, ID3D11SamplerState**);
@@ -57,7 +57,7 @@ namespace directx
 			void (__stdcall* clear_depth_stencil_view)(void*, ID3D11DepthStencilView*, UINT, FLOAT, UINT8);
 			void (__stdcall* generate_mips)(void*, ID3D11ShaderResourceView*);
 			void (__stdcall* set_resource_min_lod)(void*, ID3D11Resource*, FLOAT);
-			FLOAT(__stdcall* get_resource_min_lod)(void*, ID3D11Resource*);
+			FLOAT (__stdcall* get_resource_min_lod)(void*, ID3D11Resource*);
 			void (__stdcall* resolve_subresource)(void*, ID3D11Resource*, UINT, ID3D11Resource*, UINT, DXGI_FORMAT);
 			void (__stdcall* execute_command_list)(void*, ID3D11CommandList*, BOOL);
 			void (__stdcall* hs_set_shader_resources)(void*, UINT, UINT, ID3D11ShaderResourceView**);

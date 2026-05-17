@@ -9,7 +9,7 @@ namespace directx
 		struct vtable : public d3d11_device_child::vtable
 		{
 			UINT (__stdcall* get_data_size)(void*);
-			void( __stdcall* get_desc)(void*, D3D11_COUNTER_DESC*);
+			void (__stdcall* get_desc)(void*, D3D11_COUNTER_DESC*);
 		};
 
 		vtable* __vftable;
