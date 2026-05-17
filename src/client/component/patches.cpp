@@ -358,6 +358,12 @@ namespace patches
 
 			patch_sensitivity();
 			patch_fov();
+
+			command::add("framestats", []()
+			{
+				const auto time_system = game::fox::GetTimeSystem();
+				printf("frametime: %f, fps: %i\n", time_system.frameTime, static_cast<int>(1.f / time_system.frameTime));
+			});
 		}
 	};
 }
