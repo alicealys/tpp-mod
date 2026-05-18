@@ -346,10 +346,7 @@ namespace binds
 					return;
 				}
 
-				if (handle_bind(key, is_down, is_up, was_down, was_up))
-				{
-					has_bind = true;
-				}
+				handle_bind(key, is_down, is_up, was_down, was_up);
 			};
 
 			do_button(VK_LBUTTON, RI_MOUSE_BUTTON_1_DOWN, RI_MOUSE_BUTTON_1_UP);
