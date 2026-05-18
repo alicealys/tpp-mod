@@ -77,12 +77,10 @@ namespace patches
 
 			constexpr auto nano_secs = std::chrono::duration_cast<std::chrono::nanoseconds>(1s);
 			const auto target_frame_time = nano_secs / max_fps;
-			const auto frame_time = std::chrono::steady_clock::now() - scheduler::main_frame_begin;
-			const auto diff = target_frame_time - frame_time;
 
-			if (diff > 0ms)
+			while ((std::chrono::steady_clock::now() - scheduler::main_frame_begin) < target_frame_time)
 			{	
-				std::this_thread::sleep_for(diff);
+				std::this_thread::sleep_for(1ms);
 			}
 		}
 
