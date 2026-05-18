@@ -91,6 +91,33 @@ namespace vars
 		return var_type_none;
 	}
 
+	var_value_variant_t var_value::get_raw() const
+	{
+		return this->value_;
+	}
+
+	bool var_value::operator==(const var_value& other) const
+	{
+		if (this->get_type() != other.get_type())
+		{
+			return false;
+		}
+
+		switch (this->get_type())
+		{
+		case var_type_boolean:
+			return this->enabled() == other.enabled();
+		case var_type_integer:
+			return this->get_int() == other.get_int();
+		case var_type_float:
+			return this->get_float() == other.get_float();
+		case var_type_string:
+			return this->get_string() == other.get_string();
+		}
+		
+		return false;
+	}
+
 	template <typename T>
 	var_value parse_vector(const std::string& string)
 	{
@@ -705,6 +732,49 @@ namespace vars
 				}
 
 				set_var(var, var->reset, vars::var_source_external);
+			});
+
+			command::add("toggle", [ ](const command::params& params)
+			{
+				if (params.size() < 4)
+				{
+					return;
+				}
+
+				const auto name = params.get(1);
+
+				const auto var = find(name);
+				if (var == nullptr)
+				{
+					return;
+				}
+
+				const auto get_value = [&](const std::string value)
+				{
+					if (value == "default")
+					{
+						return var->reset;
+					}
+
+					const auto parsed_value = var_value::parse(value, var->type);
+					if (!parsed_value.has_value())
+					{
+						return var->reset;
+					}
+
+					return parsed_value.value();
+				};
+
+				const auto value_1 = get_value(params.get(2));
+				const auto value_2 = get_value(params.get(3));
+				if (var->current == value_1)
+				{
+					set_var(var, value_2, vars::var_source_external);
+				}
+				else
+				{
+					set_var(var, value_1, vars::var_source_external);
+				}
 			});
 
 			command::add("var_list", []

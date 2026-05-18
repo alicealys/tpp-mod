@@ -116,6 +116,9 @@ namespace vars
 		const char* type_name() const;
 		var_type_t get_type() const;
 
+		var_value_variant_t get_raw() const;
+		bool operator==(const var_value& other) const;
+
 		static std::optional<var_value> parse(const std::string& value, const var_type_t type);
 
 	private:
