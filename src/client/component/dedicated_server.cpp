@@ -413,8 +413,6 @@ namespace dedicated_server
 
 			on_player_connect_hook.create(0x140829570, on_player_connect_stub); // dont spawn host
 			on_init_frame_hook.create(0x146F43EA0, on_init_frame_stub); // fix weather clock
-			
-			utils::hook::jump(0x14125F627, 0x14125FFF6); // weird crash (fixme)
 
 			utils::hook::jump(0x14057F360, 0x14057F3D0); // always go to next match
 
