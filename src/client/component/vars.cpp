@@ -142,19 +142,6 @@ namespace vars
 		{
 			string_value = str.substr(1, str.size() - 2);
 		}
-		else if (str.starts_with("$"))
-		{
-			const auto var_name = str.substr(1);
-			const auto var = vars::find(var_name);
-			if (var != nullptr)
-			{
-				string_value = var->current.to_string();
-			}
-			else
-			{
-				string_value = str;
-			}
-		}
 		else
 		{
 			string_value = str;

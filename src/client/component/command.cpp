@@ -414,6 +414,15 @@ namespace command
 		{
 			if (!current_token.empty() || force)
 			{
+				if (current_token.starts_with("$"))
+				{
+					const auto var = vars::find(current_token.substr(1));
+					if (var != nullptr)
+					{
+						current_token = var->current.to_string();
+					}
+				}
+
 				res.emplace_back(current_token);
 				current_token.clear();
 			}

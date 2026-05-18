@@ -221,6 +221,13 @@ namespace patches
 			return changed;
 		}
 
+		bool check_update_fov_fps()
+		{
+			const auto changed = var_camera_fist_person_fov_scale->changed;
+			var_camera_fist_person_fov_scale->changed = false;
+			return changed;
+		}
+
 		void around_camera_update_parameter_stub(utils::hook::assembler& a)
 		{
 			const auto do_update = a.new_label();
@@ -255,6 +262,64 @@ namespace patches
 			a.jmp(SELECT_VALUE(0x14101E5CC, 0x14101648A, 0x14101E61C, 0x141015B6A));
 		}
 
+		void tps_camera_update_parameter_stub(utils::hook::assembler& a)
+		{
+			const auto no_update = a.new_label();
+
+			a.sub(rsp, 0x28);
+			a.mov(rax, qword_ptr(rcx, 8));
+			a.mov(edx, qword_ptr(rax, SELECT_VALUE_LANG(0x204, 0x1F4)));
+			a.shr(edx, 2);
+
+			a.push(rax);
+			a.pushad64();
+			a.call_aligned(check_update_fov);
+			a.mov(qword_ptr(rsp, 0x80), rax);
+			a.popad64();
+			a.pop(rax);
+
+			a.and_(dl, 1);
+			a.or_(dl, al);
+			a.test(dl, dl);
+			a.jz(no_update);
+			a.jmp(SELECT_VALUE(0x149CE7BD6, 0x14C13FBD6, 0x14A6AE6F6, 0x14BFD0A46));
+
+			a.bind(no_update);
+			a.xor_(al, al);
+			a.add(rsp, 0x28);
+			a.ret();
+		}
+
+		void subjective_camera_update_parameter_stub(utils::hook::assembler& a)
+		{
+			const auto loop = a.new_label();
+			const auto no_update = a.new_label();
+
+			a.ror(rbx, 1);
+			a.sub(rdi, 1);
+			a.dec(esi);
+			a.jns(loop);
+
+			a.push(rax);
+			a.pushad64();
+			a.call_aligned(check_update_fov_fps);
+			a.mov(qword_ptr(rsp, 0x80), rax);
+			a.popad64();
+			a.pop(rax);
+
+			a.or_(bpl, al);
+			a.test(bpl, bpl);
+			a.jz(no_update);
+
+			a.jmp(SELECT_VALUE(0x149CA83B6, 0x14C116B06, 0x14A602CF6, 0x14BFA5E66));
+
+			a.bind(loop);
+			a.jmp(SELECT_VALUE(0x149CA8377, 0x14C116AC7, 0x14A602CB7, 0x14BFA5E27));
+
+			a.bind(no_update);
+			a.jmp(SELECT_VALUE(0x149CA83BE, 0x14C116B0E, 0x14A602CFE, 0x14BFA5E6E));
+		}
+
 		void patch_fov()
 		{
 			subjective_camera_set_parameter_hook.create(SELECT_VALUE(0x14105B660, 0x14104C650, 0x14105B6B0, 0x14104BD20), subjective_camera_set_parameter_stub);
@@ -262,6 +327,8 @@ namespace patches
 			player_camera_set_around_params_hook.create(SELECT_VALUE(0x14983F7D0, 0x14BE4EB00, 0x14A25BB10, 0x14BD6C270), player_camera_set_around_params_stub);
 
 			utils::hook::jump(SELECT_VALUE(0x14101E599, 0x141016455, 0x14101E5E9, 0x141015B35), utils::hook::assemble(around_camera_update_parameter_stub), true);
+			utils::hook::jump(SELECT_VALUE(0x149CE7BC0, 0x14C13FBC0, 0x14A6AE6E0, 0x14BFD0A30), utils::hook::assemble(tps_camera_update_parameter_stub), true);
+			utils::hook::jump(SELECT_VALUE(0x149CA83A7, 0x14C116AF7, 0x14A602CE7, 0x14BFA5E57), utils::hook::assemble(subjective_camera_update_parameter_stub), true);
 		}
 	}
 
