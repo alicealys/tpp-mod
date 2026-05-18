@@ -328,6 +328,66 @@ namespace patches
 			utils::hook::jump(SELECT_VALUE(0x149CE7BC0, 0x14C13FBC0, 0x14A6AE6E0, 0x14BFD0A30), utils::hook::assemble(tps_camera_update_parameter_stub), true);
 			utils::hook::jump(SELECT_VALUE(0x149CA83A7, 0x14C116AF7, 0x14A602CE7, 0x14BFA5E57), utils::hook::assemble(subjective_camera_update_parameter_stub), true);
 		}
+
+		void shell_impl_active_shell_at_empty_work_stub(utils::hook::assembler& a)
+		{
+			const auto is_nullptr = a.new_label();
+			const auto continue_ = a.new_label();
+
+			a.mov(eax, 0xFE00);
+			a.test(word_ptr(r13, 0x32), ax);
+			a.mov(rax, r11);
+			a.setnz(al);
+
+			a.test(r14, r14);
+			a.jz(is_nullptr);
+
+			a.mov(eax, word_ptr(r14, rax, 1));
+			a.jmp(continue_);
+
+			a.bind(is_nullptr);
+			a.xor_(rax, rax);
+
+			a.bind(continue_);
+			a.movd(xmm13, eax);
+			a.lea(eax, qword_ptr(rdi, -0x146));
+			a.jmp(SELECT_VALUE_LANG(0x14125F671, 0x14125F091));
+		}
+
+		void sub_1407A7F70_stub(utils::hook::assembler& a)
+		{
+			const auto is_nullptr = a.new_label();
+
+			a.mov(rcx, qword_ptr(rcx, 0x3D0));
+			a.mov(rax, qword_ptr(rcx));
+			a.call(qword_ptr(rax, 0x20));
+
+			a.test(rax, rax);
+			a.jz(is_nullptr);
+			a.jmp(SELECT_VALUE_LANG(0x1407A806D, 0x1407A7A8D));
+
+			a.bind(is_nullptr);
+			a.mov(al, 1);
+			a.jmp(SELECT_VALUE_LANG(0x1407A80DA, 0x1407A7AFA));
+		}
+
+		utils::hook::detour fv2_resource_manager_get_model_hook;
+		void* fv2_resource_manager_get_model_stub(void* a1, void* a2)
+		{
+			if (a1 == nullptr)
+			{
+				return nullptr;
+			}
+
+			return fv2_resource_manager_get_model_hook.invoke<void*>(a1, a2);
+		}
+
+		void patch_mgo_crashes()
+		{
+			utils::hook::jump(SELECT_VALUE_LANG(0x14125F651, 0x14125F071), utils::hook::assemble(shell_impl_active_shell_at_empty_work_stub), true);
+			utils::hook::jump(SELECT_VALUE_LANG(0x1407A8060, 0x1407A7A80), utils::hook::assemble(sub_1407A7F70_stub), true);
+			fv2_resource_manager_get_model_hook.create(SELECT_VALUE_LANG(0x1438AE8D0, 0x1436E73F0), fv2_resource_manager_get_model_stub);
+		}
 	}
 
 	class component final : public component_interface
@@ -395,6 +455,8 @@ namespace patches
 			{
 				// /AppData 99c85cdbf2c837d50d37c82af2c837d5c12d5e80fbc837d5f2c837d5f2c837d5f2 (command line arg)
 				utils::hook::jump(SELECT_VALUE_LANG(0x143AA8300, 0x143A76D50), sub_143AA8300_stub);
+
+				patch_mgo_crashes();
 			}
 			else
 			{
