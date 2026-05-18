@@ -142,6 +142,19 @@ namespace vars
 		{
 			string_value = str.substr(1, str.size() - 2);
 		}
+		else if (str.starts_with("$"))
+		{
+			const auto var_name = str.substr(1);
+			const auto var = vars::find(var_name);
+			if (var != nullptr)
+			{
+				string_value = var->current.to_string();
+			}
+			else
+			{
+				string_value = str;
+			}
+		}
 		else
 		{
 			string_value = str;
@@ -326,17 +339,6 @@ namespace vars
 		bool check_cheats(const var_ptr& var, const var_source_t set_source)
 		{
 			return ((var->flags & var_flag_cheat) == 0) || set_source == var_source_internal || cheats_enabled();
-		}
-
-		nlohmann::json parse_value_text(const std::string& text)
-		{
-			const auto value_j = nlohmann::json::parse(text, nullptr, false);
-			if (value_j.is_discarded() || !value_j.is_primitive())
-			{
-				return text;
-			}
-
-			return value_j;
 		}
 
 		std::string var_value_to_string(const var_ptr& var, const nlohmann::json& value)
@@ -734,7 +736,7 @@ namespace vars
 				set_var(var, var->reset, vars::var_source_external);
 			});
 
-			command::add("toggle", [ ](const command::params& params)
+			command::add("toggle", [](const command::params& params)
 			{
 				if (params.size() < 4)
 				{
