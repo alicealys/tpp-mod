@@ -23,8 +23,9 @@ namespace patches
 		vars::var_ptr var_max_fps;
 		vars::var_ptr var_sensitivity;
 		vars::var_ptr var_sensitivity_patch;
-		vars::var_ptr var_camera_fov_scale;
-		vars::var_ptr var_camera_fist_person_fov_scale;
+		vars::var_ptr var_camera_fovscale;
+		vars::var_ptr var_camera_fp_fovscale;
+		vars::var_ptr var_camera_fp_preserve;
 
 		void set_timer_resolution()
 		{
@@ -223,34 +224,34 @@ namespace patches
 		void subjective_camera_set_parameter_stub(void* a1, void* a2, void* a3, __int64 a4)
 		{
 			subjective_camera_set_parameter_hook.invoke<void>(a1, a2, a3, a4);
-			scale_fov(*reinterpret_cast<game::tpp::gm::player::impl::PlayerCameraImpl**>(a4 + 8), var_camera_fist_person_fov_scale);
+			scale_fov(*reinterpret_cast<game::tpp::gm::player::impl::PlayerCameraImpl**>(a4 + 8), var_camera_fp_fovscale);
 		}
 
 		utils::hook::detour player_camera_set_tps_params_hook;
 		void player_camera_set_tps_params_stub(game::tpp::gm::player::impl::PlayerCameraImpl* camera, void* params)
 		{
 			player_camera_set_tps_params_hook.invoke<void>(camera, params);
-			scale_fov(camera, var_camera_fov_scale);
+			scale_fov(camera, var_camera_fovscale);
 		}
 
 		utils::hook::detour player_camera_set_around_params_hook;
 		void player_camera_set_around_params_stub(game::tpp::gm::player::impl::PlayerCameraImpl* camera, void* params)
 		{
 			player_camera_set_around_params_hook.invoke<void>(camera, params);
-			scale_fov(camera, var_camera_fov_scale);
+			scale_fov(camera, var_camera_fovscale);
 		}
 
 		bool check_update_fov()
 		{
-			const auto changed = var_camera_fov_scale->changed;
-			var_camera_fov_scale->changed = false;
+			const auto changed = var_camera_fovscale->changed;
+			var_camera_fovscale->changed = false;
 			return changed;
 		}
 
 		bool check_update_fov_fps()
 		{
-			const auto changed = var_camera_fist_person_fov_scale->changed;
-			var_camera_fist_person_fov_scale->changed = false;
+			const auto changed = var_camera_fp_fovscale->changed;
+			var_camera_fp_fovscale->changed = false;
 			return changed;
 		}
 
@@ -346,11 +347,23 @@ namespace patches
 			a.jmp(SELECT_VALUE(0x149CA83BE, 0x14C116B0E, 0x14A602CFE, 0x14BFA5E6E));
 		}
 
+		utils::hook::detour subjective_camera_set_default_hook;
+		void subjective_camera_set_default_stub(void* a1, char a2)
+		{
+			if (var_camera_fp_preserve->current.enabled())
+			{
+				return;
+			}
+
+			subjective_camera_set_default_hook.invoke<void>(a1, a2);
+		}
+
 		void patch_fov()
 		{
 			subjective_camera_set_parameter_hook.create(SELECT_VALUE(0x14105B660, 0x14104C650, 0x14105B6B0, 0x14104BD20), subjective_camera_set_parameter_stub);
 			player_camera_set_tps_params_hook.create(SELECT_VALUE(0x1498447A0, 0x14BE550C0, 0x14A25F300, 0x14BD71D40), player_camera_set_tps_params_stub);
 			player_camera_set_around_params_hook.create(SELECT_VALUE(0x14983F7D0, 0x14BE4EB00, 0x14A25BB10, 0x14BD6C270), player_camera_set_around_params_stub);
+			subjective_camera_set_default_hook.create(SELECT_VALUE(0x149CA3A80, 0x14C111260, 0x14A5EA060, 0x14BFA05F0), subjective_camera_set_default_stub);
 
 			utils::hook::jump(SELECT_VALUE(0x14101E599, 0x141016455, 0x14101E5E9, 0x141015B35), utils::hook::assemble(around_camera_update_parameter_stub), true);
 			utils::hook::jump(SELECT_VALUE(0x149CE7BC0, 0x14C13FBC0, 0x14A6AE6E0, 0x14BFD0A30), utils::hook::assemble(tps_camera_update_parameter_stub), true);
@@ -442,14 +455,17 @@ namespace patches
 			var_sensitivity = vars::register_float("sensitivity", 1.f, 0.f, 10.f, 
 				vars::var_flag_saved, "mouse sensitivity scale");
 
-			var_sensitivity_patch = vars::register_bool("sensitivity_fps_patch", 
-				false, vars::var_flag_saved, "enable sensitivity scaling patch");
+			var_sensitivity_patch = vars::register_bool("sensitivity_fps_patch", false, 
+				vars::var_flag_saved, "enable sensitivity scaling patch");
 
-			var_camera_fov_scale = vars::register_float("camera_fov_scale", 1.f, 0.1f, 5.f, 
+			var_camera_fovscale = vars::register_float("camera_fovscale", 1.f, 0.1f, 5.f, 
 				vars::var_flag_saved, "camera fov scale");
 
-			var_camera_fist_person_fov_scale = vars::register_float("camera_first_person_fov_scale", 1.f, 0.1f, 5.f, 
+			var_camera_fp_fovscale = vars::register_float("camera_fp_fovscale", 1.f, 0.1f, 5.f, 
 				vars::var_flag_saved, "first person camera fov scale");
+
+			var_camera_fp_preserve = vars::register_bool("camera_fp_preserve", false, 
+				vars::var_flag_saved, "preserve first person camera mode after leaving ADS");
 
 			if (game::environment::is_tpp())
 			{
