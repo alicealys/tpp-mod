@@ -27,6 +27,7 @@ namespace matchmaking
 		vars::var_ptr var_match_min_players;
 		vars::var_ptr var_match_max_players;
 		vars::var_ptr var_match_briefing_time;
+		vars::var_ptr var_match_password;
 
 		struct match_field_t
 		{
@@ -245,10 +246,21 @@ namespace matchmaking
 			request_disconnect = false;
 		}
 
+		game::steam_id get_current_steam_id()
+		{
+			game::steam_id result{};
+			const auto steam_user = (*game::SteamUser)();
+			steam_user->__vftable->GetSteamID(steam_user, &result);
+			return result;
+		}
+
 		void set_lobby_data(const std::string& key, const std::string& value)
 		{
+			static const auto current_steam_id = get_current_steam_id();
 			const auto match_container = game::s_mgoMatchMakingManager->match_container;
-			if (match_container == nullptr || match_container->match->lobby_id.bits == 0)
+			if (match_container == nullptr || 
+				match_container->match->lobby_id.bits == 0 || 
+				match_container->match->lobby_owner.bits != current_steam_id.bits)
 			{
 				return;
 			}
@@ -286,11 +298,27 @@ namespace matchmaking
 			}
 		}
 
+		void update_match_password()
+		{
+			const auto password = var_match_password->current.get_string();
+			if (password.empty())
+			{
+				set_lobby_data("has_password", 0);
+				set_lobby_data("password", "");
+			}
+			else
+			{
+				set_lobby_data("has_password", 1);
+				set_lobby_data("password", password);
+			}
+		}
+
 		void* create_lobby_cb_stub(void* a1, game::steam_id lobby_id)
 		{
 			printf("[SteamMatchmaking] Created lobby %llu\n", lobby_id.bits);
 			const auto res = create_lobby_cb_hook.invoke<void*>(a1, lobby_id);
 			update_kick_list();
+			update_match_password();
 			return res;
 		}
 
@@ -406,6 +434,12 @@ namespace matchmaking
 			var_match_min_players = vars::register_int("match_min_players", 2, 0, 16, vars::var_flag_saved, "match minimum players override");
 			var_match_max_players = vars::register_int("match_max_players", 16, 0, 16, vars::var_flag_saved, "match maximum players override");
 			var_match_briefing_time = vars::register_int("match_briefing_time", 60, 0, 600, vars::var_flag_saved, "match briefing time override (seconds)");
+			var_match_password = vars::register_string("match_password", "", vars::var_flag_saved, "match password");
+
+			var_match_password->set_callback = []()
+			{
+				scheduler::once(update_match_password, scheduler::session);
+			};
 		
 			command::add("matchset", [](const command::params& params)
 			{
