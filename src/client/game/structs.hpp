@@ -3751,7 +3751,8 @@ namespace game
 		int host_comment;
 		char __pad1[28];
 		match_rules_t rules;
-		char __pad4[12];
+		char __pad4[4];
+		const char* password;
 		int has_password;
 		char __pad5[8];
 	};
