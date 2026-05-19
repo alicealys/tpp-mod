@@ -24,12 +24,15 @@ namespace dedicated_server
 		utils::hook::detour translate_messages_hook;
 
 		vars::var_ptr var_net_channel;
+		vars::var_ptr var_whitelist;
 
 		game::ISteamNetworking_vtbl steam_networking_vtbl{};
 
 		int current_host_channel{};
 
 		std::unordered_set<std::uint64_t> banned_players;
+		std::unordered_set<std::uint64_t> whitelist;
+
 
 		__int64 gn_execute_stub()
 		{
@@ -102,6 +105,21 @@ namespace dedicated_server
 			return false;
 		}
 
+		bool is_player_blocked(game::steam_id remote)
+		{
+			if (banned_players.contains(remote.bits))
+			{
+				return true;
+			}
+
+			if (var_whitelist->current.enabled() && !whitelist.contains(remote.bits))
+			{
+				return true;
+			}
+
+			return false;
+		}
+
 		bool read_p2p_packet_stub(game::ISteamNetworking* this_, void* pub_dest, unsigned int cub_dest, 
 			unsigned int* msg_size, game::steam_id* remote, int /*channel*/)
 		{
@@ -111,7 +129,7 @@ namespace dedicated_server
 		bool send_p2p_packet_stub(game::ISteamNetworking* this_, game::steam_id remote, 
 			void* pub_data, unsigned int cub_data, int type, int /*channel*/)
 		{
-			if (is_host() && banned_players.contains(remote.bits))
+			if (is_host() && is_player_blocked(remote))
 			{
 				return true;
 			}
@@ -122,7 +140,7 @@ namespace dedicated_server
 
 		bool accept_p2p_session_with_user_stub(game::ISteamNetworking* this_, game::steam_id remote)
 		{
-			if (is_host() && banned_players.contains(remote.bits))
+			if (is_host() && is_player_blocked(remote))
 			{
 				return true;
 			}
@@ -357,7 +375,35 @@ namespace dedicated_server
 	public:
 		void pre_load() override
 		{
+			if (!game::environment::is_mgo())
+			{
+				return;
+			}
+
 			var_net_channel = vars::register_int("net_channel", 0, 0, 0xFFFF, vars::var_flag_latched, "steam networking channel");
+			var_whitelist = vars::register_bool("whitelist_enable", false, vars::var_flag_saved, "enable whitelist");
+
+			command::add("whitelist_add", [](const command::params& params)
+			{
+				if (params.size() < 2)
+				{
+					return;
+				}
+				
+				const auto steam_id = params.get_uint64(1);
+				whitelist.insert(steam_id);
+			});
+
+			command::add("whitelist_remove", [](const command::params& params)
+			{
+				if (params.size() < 2)
+				{
+					return;
+				}
+
+				const auto steam_id = params.get_uint64(1);
+				whitelist.erase(steam_id);
+			});
 		}
 
 		void start() override
