@@ -1181,6 +1181,8 @@ namespace renderer
 		const auto show_cursor = ((get_milliseconds() % 500) > 500 / 2);
 		const auto len = std::strlen(text);
 
+		cursor = std::min(cursor, static_cast<int>(len));
+
 		std::memcpy(buffer, text, cursor);
 		std::memcpy(&buffer[cursor + 1], &text[cursor], len - cursor);
 
