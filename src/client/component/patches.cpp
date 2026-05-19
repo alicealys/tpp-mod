@@ -22,6 +22,7 @@ namespace patches
 		vars::var_ptr var_name;
 		vars::var_ptr var_max_fps;
 		vars::var_ptr var_sensitivity;
+		vars::var_ptr var_sensitivity_patch;
 		vars::var_ptr var_camera_fov_scale;
 		vars::var_ptr var_camera_fist_person_fov_scale;
 
@@ -163,6 +164,31 @@ namespace patches
 			get_persona_name_hook.create(steam_friends->__vftable->GetPersonaName, get_persona_name_stub);
 		}
 
+		void player_mouse_event_update_stub(__int64 a1)
+		{
+			const auto time_system = game::fox::GetTimeSystem();
+			const auto frame_time_scale = static_cast<float>(time_system.frameTime) * 100.f;
+
+			const auto v_x = *reinterpret_cast<LONG*>(a1 + 40);
+			const auto v_y = *reinterpret_cast<LONG*>(a1 + 44);
+
+			InterlockedExchangeAdd(reinterpret_cast<LONG*>(a1 + 40), -v_x);
+			InterlockedExchangeAdd(reinterpret_cast<LONG*>(a1 + 44), -v_y);
+
+			*reinterpret_cast<void**>(a1 + 48) = *reinterpret_cast<void**>(a1 + 32);
+
+			if (var_sensitivity_patch->current.enabled())
+			{
+				*reinterpret_cast<float*>(a1 + 56) = static_cast<float>(v_x) * 0.001f * frame_time_scale;
+				*reinterpret_cast<float*>(a1 + 60) = static_cast<float>(v_y) * 0.001f * frame_time_scale;
+			}
+			else
+			{
+				*reinterpret_cast<float*>(a1 + 56) = static_cast<float>(v_x) * 0.001f;
+				*reinterpret_cast<float*>(a1 + 60) = static_cast<float>(v_y) * 0.001f;
+			}
+		}
+
 		void patch_sensitivity()
 		{
 			constexpr const auto base_value = 0.016683333f;
@@ -176,6 +202,8 @@ namespace patches
 			};
 
 			var_sensitivity->set_callback->operator()();
+
+			utils::hook::jump(SELECT_VALUE(0x14627C0C0, 0x146C09510, 0x147F4C990, 0x1476CD770), player_mouse_event_update_stub);
 		}
 
 		void scale_fov(game::tpp::gm::player::impl::PlayerCameraImpl* camera, vars::var_ptr var)
@@ -413,6 +441,9 @@ namespace patches
 
 			var_sensitivity = vars::register_float("sensitivity", 1.f, 0.f, 10.f, 
 				vars::var_flag_saved, "mouse sensitivity scale");
+
+			var_sensitivity_patch = vars::register_bool("sensitivity_fps_patch", 
+				false, vars::var_flag_saved, "enable sensitivity scaling patch");
 
 			var_camera_fov_scale = vars::register_float("camera_fov_scale", 1.f, 0.1f, 5.f, 
 				vars::var_flag_saved, "camera fov scale");

@@ -310,7 +310,7 @@ namespace matchmaking
 
 		void leave_lobby_stub(game::ISteamMatchmaking* this_, game::steam_id lobby_id)
 		{
-			console::info("[SteamMatchmaking] LeaveLobby %lli", lobby_id.bits);
+			console::info("[SteamMatchmaking] LeaveLobby %lli (%p)", lobby_id.bits, _ReturnAddress());
 			text_chat::clear();
 			return steam_matchmaking_vtbl.LeaveLobby(this_, lobby_id);
 		}
