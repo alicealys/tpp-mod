@@ -25,7 +25,15 @@ namespace renderer_vars
 
 		bool get_fxaa_enabled()
 		{
-			return var_r_fxaa->current.enabled();
+			switch (var_r_fxaa->current.get_int())
+			{
+			case 0:
+				return false;
+			case 1:
+				return true;
+			}
+
+			return *reinterpret_cast<int*>(SELECT_VALUE(0x142B79984, 0x142074DB4, 0x142B79984, 0x142074E04)) == 1;
 		}
 
 		void volumetric_fog_manager_update_stub(utils::hook::assembler& a)
@@ -96,11 +104,11 @@ namespace renderer_vars
 			}
 
 			var_r_fog = vars::register_bool("r_fog", true, vars::var_flag_saved, "enable fog");
-			var_r_fxaa = vars::register_bool("r_fxaa", false, vars::var_flag_saved, "enable fxaa");
+			var_r_fxaa = vars::register_int("r_fxaa", 2, 0, 2, vars::var_flag_saved, "enable fxaa (0 = disabled, 1 = enabled, 2 = unchanged)");
 			var_r_draw2d = vars::register_bool("r_draw2d", true, vars::var_flag_saved, "draw 2d");
 
 			utils::hook::jump(SELECT_VALUE(0x1406B9F1C, 0x14045B9BC, 0x1406B9C1C, 0x14045B5DC), utils::hook::assemble(volumetric_fog_manager_update_stub), true);
-			utils::hook::jump(SELECT_VALUE(0x0143AD7595, 0x149C16F65, 0x143A52E75, 0x148D8B305), utils::hook::assemble(gr_plugin_fxaa_main_exec_stub), true);
+			utils::hook::jump(SELECT_VALUE(0x143AD7595, 0x149C16F65, 0x143A52E75, 0x148D8B305), utils::hook::assemble(gr_plugin_fxaa_main_exec_stub), true);
 
 			gr_plugin_2d_main_exec_hook.create(SELECT_VALUE(0x1437C9A00, 0x149908FD0, 0x143792570, 0x148B41FB0), gr_plugin_2d_main_exec_stub);
 		}
