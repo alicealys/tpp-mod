@@ -295,7 +295,7 @@ namespace patches
 
 			a.sub(rsp, 0x28);
 			a.mov(rax, qword_ptr(rcx, 8));
-			a.mov(edx, qword_ptr(rax, SELECT_VALUE_LANG(0x204, 0x1F4)));
+			a.mov(edx, qword_ptr(rax, SELECT_VALUE_NOLANG(0x204, 0x1F4)));
 			a.shr(edx, 2);
 
 			a.push(rax);
@@ -323,7 +323,7 @@ namespace patches
 			const auto no_update = a.new_label();
 
 			a.ror(rbx, 1);
-			a.sub(rdi, 1);
+			a.sub(rdi, 8);
 			a.dec(esi);
 			a.jns(loop);
 
