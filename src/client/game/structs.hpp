@@ -2262,14 +2262,77 @@ namespace game
 
 			static_assert(offsetof(StaffController, staffHeader) == 0x9C78);
 			static_assert(offsetof(StaffController, staffStatusSync) == 0x9C88);
-		}
 
-		struct MotherBaseManagementSystem
-		{
-			char __pad0[2752];
-			impl::StaffController* staffController;
-			char __pad1[100];
-		};
+			struct MotherBaseManagementSystemImpl
+			{
+				struct vtable
+				{
+					void(__fastcall* meth_01)(tpp::mbm::impl::MotherBaseManagementSystemImpl*);
+					void(__fastcall* meth_02)(tpp::mbm::impl::MotherBaseManagementSystemImpl*);
+					void(__fastcall* meth_03)(tpp::mbm::impl::MotherBaseManagementSystemImpl*);
+					void(__fastcall* meth_05)(tpp::mbm::impl::MotherBaseManagementSystemImpl*);
+					void(__fastcall* meth_06)(tpp::mbm::impl::MotherBaseManagementSystemImpl*);
+					void(__fastcall* meth_07)(tpp::mbm::impl::MotherBaseManagementSystemImpl*);
+					void(__fastcall* AddTppGmp)(tpp::mbm::impl::MotherBaseManagementSystemImpl*, unsigned int);
+					void(__fastcall* SubTppGmp)(tpp::mbm::impl::MotherBaseManagementSystemImpl*, unsigned int);
+					void(__fastcall* meth_10)(tpp::mbm::impl::MotherBaseManagementSystemImpl*);
+					void(__fastcall* meth_11)(tpp::mbm::impl::MotherBaseManagementSystemImpl*);
+					void(__fastcall* meth_12)(tpp::mbm::impl::MotherBaseManagementSystemImpl*);
+					void(__fastcall* meth_13)(tpp::mbm::impl::MotherBaseManagementSystemImpl*);
+					void(__fastcall* meth_15)(tpp::mbm::impl::MotherBaseManagementSystemImpl*);
+					void(__fastcall* meth_16)(tpp::mbm::impl::MotherBaseManagementSystemImpl*);
+					void(__fastcall* meth_17)(tpp::mbm::impl::MotherBaseManagementSystemImpl*);
+					void(__fastcall* meth_18)(tpp::mbm::impl::MotherBaseManagementSystemImpl*);
+					void(__fastcall* meth_19)(tpp::mbm::impl::MotherBaseManagementSystemImpl*);
+					void(__fastcall* meth_20)(tpp::mbm::impl::MotherBaseManagementSystemImpl*);
+					void(__fastcall* meth_21)(tpp::mbm::impl::MotherBaseManagementSystemImpl*);
+					void(__fastcall* meth_22)(tpp::mbm::impl::MotherBaseManagementSystemImpl*);
+					void(__fastcall* meth_23)(tpp::mbm::impl::MotherBaseManagementSystemImpl*);
+					void(__fastcall* meth_25)(tpp::mbm::impl::MotherBaseManagementSystemImpl*);
+					void(__fastcall* meth_26)(tpp::mbm::impl::MotherBaseManagementSystemImpl*);
+					void(__fastcall* meth_27)(tpp::mbm::impl::MotherBaseManagementSystemImpl*);
+					void(__fastcall* meth_28)(tpp::mbm::impl::MotherBaseManagementSystemImpl*);
+					void(__fastcall* meth_29)(tpp::mbm::impl::MotherBaseManagementSystemImpl*);
+					void(__fastcall* meth_30)(tpp::mbm::impl::MotherBaseManagementSystemImpl*);
+					void(__fastcall* meth_31)(tpp::mbm::impl::MotherBaseManagementSystemImpl*);
+					void(__fastcall* meth_32)(tpp::mbm::impl::MotherBaseManagementSystemImpl*);
+					void(__fastcall* meth_33)(tpp::mbm::impl::MotherBaseManagementSystemImpl*);
+					void(__fastcall* meth_35)(tpp::mbm::impl::MotherBaseManagementSystemImpl*);
+					void(__fastcall* meth_36)(tpp::mbm::impl::MotherBaseManagementSystemImpl*);
+					void(__fastcall* meth_37)(tpp::mbm::impl::MotherBaseManagementSystemImpl*);
+					void(__fastcall* meth_38)(tpp::mbm::impl::MotherBaseManagementSystemImpl*);
+					void(__fastcall* meth_39)(tpp::mbm::impl::MotherBaseManagementSystemImpl*);
+					void(__fastcall* meth_40)(tpp::mbm::impl::MotherBaseManagementSystemImpl*);
+					void(__fastcall* meth_41)(tpp::mbm::impl::MotherBaseManagementSystemImpl*);
+					void(__fastcall* meth_42)(tpp::mbm::impl::MotherBaseManagementSystemImpl*);
+					void(__fastcall* meth_43)(tpp::mbm::impl::MotherBaseManagementSystemImpl*);
+					void(__fastcall* meth_45)(tpp::mbm::impl::MotherBaseManagementSystemImpl*);
+					void(__fastcall* meth_46)(tpp::mbm::impl::MotherBaseManagementSystemImpl*);
+					void(__fastcall* meth_47)(tpp::mbm::impl::MotherBaseManagementSystemImpl*);
+					void(__fastcall* meth_48)(tpp::mbm::impl::MotherBaseManagementSystemImpl*);
+					void(__fastcall* meth_49)(tpp::mbm::impl::MotherBaseManagementSystemImpl*);
+					void(__fastcall* meth_50)(tpp::mbm::impl::MotherBaseManagementSystemImpl*);
+					void(__fastcall* ReflectHeroicPointDiffToSvars)(tpp::mbm::impl::MotherBaseManagementSystemImpl*, int);
+					void(__fastcall* meth_52)(tpp::mbm::impl::MotherBaseManagementSystemImpl*);
+					void(__fastcall* meth_53)(tpp::mbm::impl::MotherBaseManagementSystemImpl*);
+					void(__fastcall* meth_54)(tpp::mbm::impl::MotherBaseManagementSystemImpl*);
+					void(__fastcall* meth_55)(tpp::mbm::impl::MotherBaseManagementSystemImpl*);
+				};
+
+				vtable* __vftable;
+				char __pad0[2592];
+				int* heroicPoint;
+				int* ogrePoint1;
+				int* ogrePoint2;
+				char __pad2[128];
+				StaffController* staffController;
+				char __pad3[100];
+			};
+
+			static_assert(offsetof(MotherBaseManagementSystemImpl, staffController) == 2752);
+			static_assert(offsetof(MotherBaseManagementSystemImpl, heroicPoint) == 2600);
+			static_assert(offsetof(MotherBaseManagementSystemImpl, ogrePoint2) == 2616);
+		}
 	}
 
 	namespace tpp::net
@@ -3694,7 +3757,7 @@ namespace game
 			void* gameStatusInterface;
 			void* missionSystem;
 			void* corpseManager;
-			tpp::mbm::MotherBaseManagementSystem* motherBaseManagementSystem;
+			tpp::mbm::impl::MotherBaseManagementSystemImpl* motherBaseManagementSystem;
 			void* motherBaseManagementService;
 			void* applicationSystemSub_35;
 			void* applicationSystemSub_36;

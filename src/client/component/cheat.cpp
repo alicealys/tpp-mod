@@ -132,6 +132,19 @@ namespace staff
 			}
 		}
 
+		game::tpp::mbm::impl::MotherBaseManagementSystemImpl* get_motherbase_sys()
+		{
+			const auto system_table = game::fox::GetQuarkSystemTable();
+			if (system_table == nullptr ||
+				system_table->applicationSystem == nullptr ||
+				system_table->applicationSystem->motherBaseManagementSystem == nullptr)
+			{
+				return nullptr;
+			}
+
+			return system_table->applicationSystem->motherBaseManagementSystem;
+		}
+
 		void do_staff_cheat()
 		{
 			if (!vars::cheats_enabled())
@@ -140,17 +153,15 @@ namespace staff
 				return;
 			}
 
-			const auto system_table = game::fox::GetQuarkSystemTable();
-			if (system_table == nullptr || 
-				system_table->applicationSystem == nullptr || 
-				system_table->applicationSystem->motherBaseManagementSystem == nullptr)
+			const auto mb_sys = get_motherbase_sys();
+			if (mb_sys == nullptr)
 			{
 				return;
 			}
 
 			modify_stats(
-				system_table->applicationSystem->motherBaseManagementSystem->staffController->staffHeader,
-				system_table->applicationSystem->motherBaseManagementSystem->staffController->staffStatusSync);
+				mb_sys->staffController->staffHeader,
+				mb_sys->staffController->staffStatusSync);
 		}
 
 		bool unlockall_items_enabled()
@@ -201,7 +212,7 @@ namespace staff
 			a.mov(dword_ptr(rcx, rsi, 0, 0x5C), ebp);
 			a.mov(dword_ptr(rcx, rsi, 0, 0x68), r12d);
 
-			a.test(rax, rax);
+			a.test(al, al);
 			a.jz(not_enabled);
 
 			a.mov(dword_ptr(rcx, rsi, 0, 0x60), 1); // open
@@ -240,6 +251,83 @@ namespace staff
 			if (game::environment::is_tpp())
 			{
 				command::add("cheat_spp_staff", do_staff_cheat);
+
+				command::add("cheat_add_gmp", [](const command::params& params)
+				{
+					if (!vars::cheats_enabled())
+					{
+						console::error("cheats are not enabled\n");
+						return;
+					}
+
+					if (params.size() < 2)
+					{
+						return;
+					}
+
+					const auto gmp = params.get_int(1);
+					const auto mb_sys = get_motherbase_sys();
+					if (mb_sys == nullptr)
+					{
+						return;
+					}
+
+					if (gmp < 0)
+					{
+						mb_sys->__vftable->SubTppGmp(mb_sys, gmp * -1);
+					}
+					else
+					{
+						mb_sys->__vftable->AddTppGmp(mb_sys, gmp);
+					}
+				});
+
+				command::add("cheat_add_heroic_point", [](const command::params& params)
+				{
+					if (!vars::cheats_enabled())
+					{
+						console::error("cheats are not enabled\n");
+						return;
+					}
+
+					if (params.size() < 2)
+					{
+						return;
+					}
+
+					const auto point = params.get_int(1);
+					const auto mb_sys = get_motherbase_sys();
+					if (mb_sys == nullptr)
+					{
+						return;
+					}
+
+					*mb_sys->heroicPoint = std::clamp(*mb_sys->heroicPoint + point, -99999999, 99999999);
+					mb_sys->__vftable->ReflectHeroicPointDiffToSvars(mb_sys, *mb_sys->heroicPoint);
+				});
+
+				command::add("cheat_set_ogre_point", [](const command::params& params)
+				{
+					if (!vars::cheats_enabled())
+					{
+						console::error("cheats are not enabled\n");
+						return;
+					}
+
+					if (params.size() < 2)
+					{
+						return;
+					}
+
+					const auto point = params.get_int(1);
+					const auto mb_sys = get_motherbase_sys();
+					if (mb_sys == nullptr)
+					{
+						return;
+					}
+
+					*mb_sys->ogrePoint1 = std::clamp(point, -99999999, 99999999);
+				});
 
 				var_cheat_unlockall_items = vars::register_bool("cheat_unlockall_server_items", false,
 					vars::var_flag_cheat | vars::var_flag_saved, "unlock all online items");
