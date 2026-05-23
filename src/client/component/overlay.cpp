@@ -143,16 +143,17 @@ namespace overlay
 			}
 			case 4:
 			case 5:
-			case 6:
 			{
 				ping_text_cont_.color = color_ok;
 				strcpy_s(ping_text_cont_.buffer, sizeof(ping_text_cont_.buffer), "CONNECTING");
 				break;
 			}
+			case 6:
 			case 7:
 			{
 				calc_color(rtt);
 				snprintf(ping_text_cont_.buffer, sizeof(ping_text_cont_.buffer), "%ims", rtt);
+				break;
 			}
 			}
 		}
