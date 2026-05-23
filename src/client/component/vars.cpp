@@ -26,6 +26,40 @@ namespace vars
 		return vars;
 	}
 
+	namespace
+	{
+		var_ptr var_cheat_enabled;
+
+		void reset_cheats()
+		{
+			if (var_cheat_enabled->current.enabled())
+			{
+				return;
+			}
+
+			for (auto& var : get_var_list())
+			{
+				if ((var->flags & var_flag_cheat) != 0)
+				{
+					set_var(var, var->reset, var_source_internal);
+				}
+			}
+		}
+
+		void initialize_vars()
+		{
+			static auto done = false;
+			if (done)
+			{
+				return;
+			}
+
+			done = true;
+			var_cheat_enabled = register_bool("cheat_enabled", false, vars::var_flag_saved, "enable cheats");
+			var_cheat_enabled->set_callback = reset_cheats;
+		}
+	}
+
 	bool var_value::enabled() const
 	{
 		return std::get<bool>(this->value_);
@@ -318,11 +352,6 @@ namespace vars
 			return true;
 		}
 
-		bool cheats_enabled()
-		{
-			return utils::flags::has_flag("var-cheat");
-		}
-
 		bool check_cheats(const var_ptr& var, const var_source_t set_source)
 		{
 			return ((var->flags & var_flag_cheat) == 0) || set_source == var_source_internal || cheats_enabled();
@@ -334,17 +363,22 @@ namespace vars
 		}
 	}
 
+	bool cheats_enabled()
+	{
+		return var_cheat_enabled->current.enabled();
+	}
+
 	void set_var(const var_ptr& var, const var_value& value, const var_source_t set_source)
 	{
 		if (!check_cheats(var, set_source))
 		{
-			console::warn("\"%s\" is cheat protected", var->name.data());
+			console::error("\"%s\" is cheat protected", var->name.data());
 			return;
 		}
 
 		if ((var->flags & var_flag_readonly) != 0 && set_source != var_source_internal)
 		{
-			console::warn("\"%s\" is read only", var->name.data());
+			console::error("\"%s\" is read only", var->name.data());
 			return;
 		}
 
@@ -480,6 +514,8 @@ namespace vars
 	var_ptr register_var(
 		const std::string& name, const var_type_t& type, const var_value& value, const var_limits_t limits, const std::uint32_t flags, const std::string& description)
 	{
+		initialize_vars();
+
 		const auto lower = utils::string::to_lower(name);
 		const auto existing = find(lower);
 
