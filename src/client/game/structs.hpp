@@ -1967,7 +1967,7 @@ namespace game
 			char nameplate_id;
 			char field91_4;
 		};
-		
+
 		static_assert(sizeof(PlayerBasicInfo) == 1000);
 		static_assert(offsetof(PlayerBasicInfo, owner_name) == 0x89);
 		static_assert(offsetof(PlayerBasicInfo, nameplate_id) == 0x3E6);
@@ -1980,81 +1980,296 @@ namespace game
 				char state;
 				char __pad1[0x1000];
 			};
+
+			struct StaffController
+			{
+
+				enum Rank
+				{
+					RANK_E = 0,
+					RANK_D = 1,
+					RANK_C = 2,
+					RANK_B = 3,
+					RANK_A = 4,
+					RANK_AP = 5,
+					RANK_APP = 6,
+					RANK_S = 7,
+					RANK_SP = 8,
+					RANK_SPP = 9,
+				};
+
+				enum Designation
+				{
+					DESIGNATION_NONE = 0,
+					DESIGNATION_UNITS_START = 1,
+					DESIGNATION_COMBAT = 1,
+					DESIGNATION_RND = 2,
+					DESIGNATION_BASE_DEV = 3,
+					DESIGNATION_SUPPORT = 4,
+					DESIGNATION_INTEL = 5,
+					DESIGNATION_MEDICAL = 6,
+					DESIGNATION_SECURITY = 7,
+					DESIGNATION_SICKBAY = 8,
+					DESIGNATION_UNITS_END = 8,
+					DESIGNATION_BRIG = 9,
+					DESIGNATION_QUARANTINE = 10,
+					DESIGNATION_WAITING_ROOM_1 = 11,
+					DESIGNATION_WAITING_ROOM_2 = 12,
+					DESIGNATION_WAITING_ROOM_3 = 13,
+					DESIGNATION_WAITING_ROOM_4 = 14,
+					DESIGNATION_WAITING_ROOM_5 = 15,
+					DESIGNATION_COUNT,
+				};
+
+				enum Skill
+				{
+					SKILL_GUNMAN = 1,
+					SKILL_CLIMBER = 2,
+					SKILL_ATHLETE = 3,
+					SKILL_RESCUER = 5,
+					SKILL_QUICK_RELOAD = 6,
+					SKILL_TOUGH_GUY = 7,
+					SKILL_FORTUNATE = 8,
+					SKILL_SAVAGE = 9,
+					SKILL_BOASTER = 10,
+					SKILL_BOTANIST = 11,
+					SKILL_QUICK_DRAW = 12,
+					SKILL_VANGUARD_SHARPSHOOTER = 13,
+					SKILL_PROSTHETIC_MOBILITY_1 = 14,
+					SKILL_PROSTHETIC_MOBILITY_2 = 15,
+					SKILL_PROSTHETIC_MOBILITY_3 = 16,
+					SKILL_PROSTHETIC_PRECISION_MOVEMENT_1 = 17,
+					SKILL_PROSTHETIC_PRECISION_MOVEMENT_2 = 18,
+					SKILL_PROSTHETIC_PRECISION_MOVEMENT_3 = 19,
+					SKILL_PROSTHETIC_FIRST_AID_FUNCTION_1 = 20,
+					SKILL_PROSTHETIC_FIRST_AID_FUNCTION_2 = 21,
+					SKILL_PROSTHETIC_FIRST_AID_FUNCTION_3 = 22,
+					SKILL_GUNSMITH_HANDGUNS = 23,
+					SKILL_GUNSMITH_SUBMACHINE_GUNS = 24,
+					SKILL_GUNSMITH_ASSAULT_RIFLES = 25,
+					SKILL_GUNSMITH_SHOTGUNS = 26,
+					SKILL_GUNSMITH_GRENADE_LAUNCHERS = 27,
+					SKILL_GUNSMITH_SNIPER_RIFLES = 28,
+					SKILL_GUNSMITH_MACHINE_GUNS = 29,
+					SKILL_GUNSMITH_MISSILE_LAUNCHERS = 30,
+					SKILL_MASTER_GUNSMITH = 31,
+					SKILL_ANESTHESIA_SPECIALIST = 32,
+					SKILL_NOISE_SUPPRESSION_SPECIALIST = 33,
+					SKILL_MISSILE_GUIDANCE_SPECIALIST = 34,
+					SKILL_ZOOLOGIST = 35,
+					SKILL_SLEEPING_GAS_SPECIALIST = 36,
+					SKILL_TRAP_SPECIALIST = 37,
+					SKILL_ELECTROMAGNETC_NET_SPECIALIST = 38,
+					SKILL_RADAR_SPECIALIST = 40,
+					SKILL_METAMATERIALS_SPECIALIST = 41,
+					SKILL_DRUG_DEVELOPER = 42,
+					SKILL_BIONICS_SPECIALIST = 43,
+					SKILL_MECHATRONICS_SPECIALIST = 44,
+					SKILL_CYBERNETICS_SPECIALIST = 45,
+					SKILL_ROCKET_CONTROL_SPECIALIST = 46,
+					SKILL_ELECTROSPINNING_SPECIALIST = 47,
+					SKILL_MATERIALS_ENGINEER = 48,
+					SKILL_TRANSPORTATION_SPECIALIST = 49,
+					SKILL_VIDEO_SURVEILLANCE_SPECIALIST = 51,
+					SKILL_BIPEDAL_WEAPONS_DEVELOPER = 54,
+					SKILL_INTERPRETER_RUSSIAN = 55,
+					SKILL_INTERPRETER_AFRIKAANS = 56,
+					SKILL_INTERPRETER_KIKONGO = 57,
+					SKILL_INTERPRETER_PASHTO = 58,
+					SKILL_SURGEON = 59,
+					SKILL_PHYSICIAN = 60,
+					SKILL_COUNSELOR = 61,
+					SKILL_PARASITOLOGIST = 62,
+					SKILL_TROUBLEMAKER_VIOLENCE = 63,
+					SKILL_TROUBLEMAKER_UNSANITARY = 64,
+					SKILL_TROUBLEMAKER_HARASSMENT = 65,
+					SKILL_DIPLOMAT = 66,
+					SKILL_TACTICAL_INSTRUCTOR = 67,
+					SKILL_MOTHER_BASE_XO = 68,
+					SKILL_REQUIRED_END = 69,
+					SKILL_DEFENDER_1 = 69,
+					SKILL_DEFENDER_2 = 70,
+					SKILL_DEFENDER_3 = 71,
+					SKILL_SENTRY_1 = 72,
+					SKILL_SENTRY_2 = 73,
+					SKILL_SENTRY_3 = 74,
+					SKILL_RANGER_1 = 75,
+					SKILL_RANGER_2 = 76,
+					SKILL_RANGER_3 = 77,
+					SKILL_MEDIC_1 = 78,
+					SKILL_MEDIC_2 = 79,
+					SKILL_MEDIC_3 = 80,
+					SKILL_LIQUID_CARBON_MISSILE_ENGINEER_1 = 81,
+					SKILL_LIQUID_CARBON_MISSILE_ENGINEER_2 = 82,
+					SKILL_LIQUID_CARBON_MISSILE_ENGINEER_3 = 83,
+					SKILL_ANTI_BALLISTIC_MISSILE_ENGINEER_1 = 84,
+					SKILL_ANTI_BALLISTIC_MISSILE_ENGINEER_2 = 85,
+					SKILL_ANTI_BALLISTIC_MISSILE_ENGINEER_3 = 86,
+				};
+
+				enum StatDistribution
+				{
+					STAT_DIST_NONE_1 = 0b11010,
+					STAT_DIST_NONE_2 = 0b11011,
+					STAT_DIST_NONE_3 = 0b11100,
+					STAT_DIST_NONE_4 = 0b11101,
+					STAT_DIST_NONE_5 = 0b100100,
+					STAT_DIST_NONE_6 = 0b100101,
+					STAT_DIST_NONE_7 = 0b100110,
+					STAT_DIST_NONE_8 = 0b100111,
+					STAT_DIST_NONE_9 = 0b111011,
+					STAT_DIST_SECURITY = 0b1,
+					STAT_DIST_BASE_DEV_FOCUS = 0b100,
+					STAT_DIST_BASE_DEV_AND_COMBAT = 0b110011,
+					STAT_DIST_BASE_DEV_AND_INTEL = 0b10010,
+					STAT_DIST_BASE_DEV_PLUS_AND_INTEL_PLUS = 0b110001,
+					STAT_DIST_BASE_DEV_AND_MEDICAL = 0b10011,
+					STAT_DIST_BASE_DEV_PLUS_AND_MEDICAL_PLUS = 0b110010,
+					STAT_DIST_BASE_DEV_AND_RND = 0b101110,
+					STAT_DIST_BASE_DEV_AND_SUPPORT_AND_INTEL_AND_MEDICAL = 0b100000,
+					STAT_DIST_BASE_DEV_AND_SUPPORT = 0b10001,
+					STAT_DIST_BASE_DEV_PLUS_AND_SUPPORT_PLUS = 0b110000,
+					STAT_DIST_COMBAT_FOCUS = 0b10,
+					STAT_DIST_COMBAT_AND_BASE_DEV = 0b101111,
+					STAT_DIST_COMBAT_AND_INTEL = 0b1001,
+					STAT_DIST_COMBAT_PLUS_AND_INTEL_PLUS = 0b101001,
+					STAT_DIST_COMBAT_AND_MEDICAL = 0b1010,
+					STAT_DIST_COMBAT_AND_RND = 0b1000,
+					STAT_DIST_COMBAT_AND_SUPPORT_AND_INTEL_AND_MEDICAL = 0b11111,
+					STAT_DIST_COMBAT_AND_SUPPORT = 0b101000,
+					STAT_DIST_INTEL_FOCUS = 0b110,
+					STAT_DIST_INTEL_AND_BASE_DEV = 0b10000,
+					STAT_DIST_INTEL_PLUS_AND_BASE_DEV_PLUS = 0b110110,
+					STAT_DIST_INTEL_AND_COMBAT_AND_SUPPORT_AND_MEDICAL = 0b100010,
+					STAT_DIST_INTEL_AND_COMBAT = 0b1110,
+					STAT_DIST_INTEL_PLUS_AND_COMBAT_PLUS = 0b111001,
+					STAT_DIST_INTEL_AND_MEDICAL = 0b111000,
+					STAT_DIST_INTEL_AND_RND = 0b1111,
+					STAT_DIST_INTEL_AND_SUPPORT = 0b111010,
+					STAT_DIST_MEDICAL_FOCUS = 0b111,
+					STAT_DIST_MEDICAL_AND_BASE_DEV_AND_SUPPORT_AND_INTEL = 0b100011,
+					STAT_DIST_MEDICAL_AND_BASE_DEV = 0b11000,
+					STAT_DIST_MEDICAL_PLUS_AND_BASE_DEV_PLUS = 0b111110,
+					STAT_DIST_MEDICAL_AND_COMBAT = 0b10111,
+					STAT_DIST_MEDICAL_PLUS_AND_COMBAT_PLUS = 0b111100,
+					STAT_DIST_MEDICAL_AND_INTEL = 0b110111,
+					STAT_DIST_MEDICAL_AND_RND = 0b111101,
+					STAT_DIST_MEDICAL_AND_SUPPORT = 0b11001,
+					STAT_DIST_RND_FOCUS = 0b11,
+					STAT_DIST_RND_AND_BASE_DEV = 0b1011,
+					STAT_DIST_RND_PLUS_AND_BASE_DEV_PLUS = 0b101011,
+					STAT_DIST_RND_AND_COMBAT = 0b101010,
+					STAT_DIST_RND_AND_MEDICAL = 0b1101,
+					STAT_DIST_RND_PLUS_AND_MEDICAL_PLUS = 0b101101,
+					STAT_DIST_RND_AND_SUPPORT_AND_INTEL_AND_MEDICAL = 0b11110,
+					STAT_DIST_RND_AND_SUPPORT = 0b1100,
+					STAT_DIST_RND_PLUS_AND_SUPPORT_PLUS = 0b101100,
+					STAT_DIST_SUPPORT_FOCUS = 0b101,
+					STAT_DIST_SUPPORT_AND_COMBAT = 0b10100,
+					STAT_DIST_SUPPORT_PLUS_AND_COMBAT_PLUS = 0b110100,
+					STAT_DIST_SUPPORT_AND_INTEL = 0b10110,
+					STAT_DIST_SUPPORT_PLUS_AND_INTEL_PLUS = 0b110101,
+					STAT_DIST_SUPPORT_AND_RND_AND_INTEL_AND_MEDICAL = 0b100001,
+					STAT_DIST_SPECIAL_CHARACTER = 0b111111,
+				};
+
+				union StaffHeader
+				{
+					struct
+					{
+						std::uint32_t suppress_stats : 1;
+						std::uint32_t stat_bonus : 2;
+						std::uint32_t peak_rank : 4;
+						std::uint32_t stat_distribution : 6;
+						std::uint32_t skill : 7;
+						std::uint32_t face_gender : 10;
+					} fields;
+					std::uint32_t data;
+				};
+
+				union StaffStatusSync
+				{
+					struct
+					{
+						std::uint32_t combat_deployment_team : 4;
+						std::uint32_t player_selected : 3;
+						std::uint32_t direct_contract : 1;
+						std::uint32_t proficiency : 4;
+						std::uint32_t ds_medal : 1;
+						std::uint32_t ds_cross : 1;
+						std::uint32_t honor_medal : 1;
+						std::uint32_t unk : 1;
+						std::uint32_t symptomatic : 1;
+						std::uint32_t health_level : 3;
+						std::uint32_t health_state : 2;
+						std::uint32_t morale : 4;
+						std::uint32_t enemy : 1;
+						std::uint32_t designation : 4;
+						std::uint32_t unselectable : 1;
+					} fields;
+					std::uint32_t data;
+				};
+
+				struct StaffSeed
+				{
+					std::uint32_t data;
+				};
+
+				struct StaffStatusNoSync
+				{
+					std::uint32_t data;
+				};
+
+				struct StaffUnk1
+				{
+					std::uint32_t data;
+				};
+
+				struct StaffUnk2
+				{
+					std::uint32_t data;
+				};
+
+				union Staff
+				{
+					struct
+					{
+						StaffUnk1 unk1;
+						StaffUnk2 unk2;
+						StaffHeader header;
+						StaffSeed seed;
+						StaffStatusSync status_sync;
+						StaffStatusNoSync status_no_sync;
+					} fields;
+					std::uint32_t packed[6];
+				};
+
+				struct vtable
+				{
+
+				};
+
+				vtable* __vftable;
+				char __pad0[40048];
+				StaffHeader* staffHeader;
+				unsigned int* s2;
+				StaffStatusSync* staffStatusSync;
+				char __pad1[400];
+				unsigned int* s4;
+				unsigned int* s5;
+				unsigned int* s6;
+			};
+
+			static_assert(offsetof(StaffController, staffHeader) == 0x9C78);
+			static_assert(offsetof(StaffController, staffStatusSync) == 0x9C88);
 		}
 
-		namespace StaffController_
+		struct MotherBaseManagementSystem
 		{
-			union StaffHeader
-			{
-				struct
-				{
-					std::uint32_t suppress_stats : 1;
-					std::uint32_t stat_bonus : 2;
-					std::uint32_t peak_rank : 4;
-					std::uint32_t stat_distribution : 6;
-					std::uint32_t skill : 7;
-					std::uint32_t face_gender : 10;
-				} fields;
-				std::uint32_t data;
-			};
-
-			union StaffStatusSync
-			{
-				struct
-				{
-					std::uint32_t combat_deployment_team : 4;
-					std::uint32_t player_selected : 3;
-					std::uint32_t direct_contract : 1;
-					std::uint32_t proficiency : 4;
-					std::uint32_t ds_medal : 1;
-					std::uint32_t ds_cross : 1;
-					std::uint32_t honor_medal : 1;
-					std::uint32_t unk : 1;
-					std::uint32_t symptomatic : 1;
-					std::uint32_t health_level : 3;
-					std::uint32_t health_state : 2;
-					std::uint32_t morale : 4;
-					std::uint32_t enemy : 1;
-					std::uint32_t designation : 4;
-					std::uint32_t unselectable : 1;
-				} fields;
-				std::uint32_t data;
-			};
-
-			struct StaffSeed
-			{
-				std::uint32_t data;
-			};
-
-			struct StaffStatusNoSync
-			{
-				std::uint32_t data;
-			};
-
-			struct StaffUnk1
-			{
-				std::uint32_t data;
-			};
-
-			struct StaffUnk2
-			{
-				std::uint32_t data;
-			};
-
-			union Staff
-			{
-				struct
-				{
-					StaffUnk1 unk1;
-					StaffUnk2 unk2;
-					StaffHeader header;
-					StaffSeed seed;
-					StaffStatusSync status_sync;
-					StaffStatusNoSync status_no_sync;
-				} fields;
-				std::uint32_t packed[6];
-			};
-		}
+			char __pad0[2752];
+			impl::StaffController* staffController;
+			char __pad1[100];
+		};
 	}
 
 	namespace tpp::net
@@ -2450,7 +2665,7 @@ namespace game
 		struct CmdSyncSoldierBinOption
 		{
 			char __pad0[136];
-			mbm::StaffController_::Staff soldier_param[3500];
+			mbm::impl::StaffController::Staff soldier_param[3500];
 			int soldier_num;
 		};
 
@@ -3438,7 +3653,6 @@ namespace game
 
 	namespace fox
 	{
-
 		struct ApplicationSystem
 		{
 			struct vtable
@@ -3480,7 +3694,7 @@ namespace game
 			void* gameStatusInterface;
 			void* missionSystem;
 			void* corpseManager;
-			void* applicationSystemSub_33;
+			tpp::mbm::MotherBaseManagementSystem* motherBaseManagementSystem;
 			void* motherBaseManagementService;
 			void* applicationSystemSub_35;
 			void* applicationSystemSub_36;

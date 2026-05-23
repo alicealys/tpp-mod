@@ -143,6 +143,8 @@ namespace vars
 
 	using var_ptr = std::shared_ptr<var_t>;
 
+	bool cheats_enabled();
+
 	void set_var(const var_ptr& var, const var_value& value, const var_source_t set_source);
 
 	const char* get_var_domain(const var_ptr& var);

@@ -230,10 +230,19 @@ namespace utils::hook
 		return call(pointer, reinterpret_cast<void*>(data));
 	}
 
-	void jump(void* pointer, void* data, const bool use_far)
+	void jump(void* pointer, void* data, const bool use_far, const bool save_rax)
 	{
-		static const unsigned char jump_data[] = {
-			0x48, 0xb8, 0x88, 0x77, 0x66, 0x55, 0x44, 0x33, 0x22, 0x11, 0xff, 0xe0
+		static const unsigned char jump_data_no_push[] = 
+		{
+			0x48, 0xB8, 0x88, 0x77, 0x66, 0x55, 0x44, 0x33, 0x22, 0x11, // mov rax, data
+			0xFF, 0xE0 // jmp rax
+		};
+
+		static const unsigned char jump_data_push[] =
+		{
+			0x50, // push rax
+			0x48, 0xB8, 0x88, 0x77, 0x66, 0x55, 0x44, 0x33, 0x22, 0x11, // mov rax, data
+			0xFF, 0xE0 // jmp rax
 		};
 
 		if (!use_far && is_relatively_far(pointer, data))
@@ -241,12 +250,24 @@ namespace utils::hook
 			throw std::runtime_error("Too far away to create 32bit relative branch");
 		}
 
+		const auto jump_data = save_rax
+			? jump_data_push
+			: jump_data_no_push;
+
+		const auto jump_data_size = save_rax
+			? sizeof(jump_data_push)
+			: sizeof(jump_data_no_push);
+
+		const auto jump_data_offset = save_rax
+			? 3
+			: 2;
+
 		auto* patch_pointer = PBYTE(pointer);
 
 		if (use_far)
 		{
-			copy(patch_pointer, jump_data, sizeof(jump_data));
-			copy(patch_pointer + 2, &data, sizeof(data));
+			copy(patch_pointer, jump_data, jump_data_size);
+			copy(patch_pointer + jump_data_offset, &data, sizeof(data));
 		}
 		else
 		{
@@ -255,19 +276,19 @@ namespace utils::hook
 		}
 	}
 
-	void jump(const size_t pointer, void* data, const bool use_far)
+	void jump(const size_t pointer, void* data, const bool use_far, const bool save_rax)
 	{
-		return jump(reinterpret_cast<void*>(pointer), data, use_far);
+		return jump(reinterpret_cast<void*>(pointer), data, use_far, save_rax);
 	}
 
-	void jump(void* pointer, const size_t data, const bool use_far)
+	void jump(void* pointer, const size_t data, const bool use_far, const bool save_rax)
 	{
-		return jump(reinterpret_cast<size_t>(pointer), reinterpret_cast<void*>(data), use_far);
+		return jump(reinterpret_cast<size_t>(pointer), reinterpret_cast<void*>(data), use_far, save_rax);
 	}
 
-	void jump(const size_t pointer, const size_t data, const bool use_far)
+	void jump(const size_t pointer, const size_t data, const bool use_far, const bool save_rax)
 	{
-		return jump(pointer, reinterpret_cast<void*>(data), use_far);
+		return jump(pointer, reinterpret_cast<void*>(data), use_far, save_rax);
 	}
 
 	void* assemble(const std::function<void(assembler&)>& asm_function)
