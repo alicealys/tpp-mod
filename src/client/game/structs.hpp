@@ -2320,8 +2320,9 @@ namespace game
 				};
 
 				vtable* __vftable;
-				char __pad0[2592];
-				int* heroicPoint;
+				char __pad0[2584];
+				int* heroicPoint1;
+				int* heroicPoint2;
 				int* ogrePoint1;
 				int* ogrePoint2;
 				char __pad2[128];
@@ -2330,7 +2331,7 @@ namespace game
 			};
 
 			static_assert(offsetof(MotherBaseManagementSystemImpl, staffController) == 2752);
-			static_assert(offsetof(MotherBaseManagementSystemImpl, heroicPoint) == 2600);
+			static_assert(offsetof(MotherBaseManagementSystemImpl, heroicPoint2) == 2600);
 			static_assert(offsetof(MotherBaseManagementSystemImpl, ogrePoint2) == 2616);
 		}
 	}

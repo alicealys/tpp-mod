@@ -17,6 +17,7 @@ namespace staff
 	{
 		vars::var_ptr var_cheat_unlockall_gear;
 		vars::var_ptr var_cheat_unlockall_items;
+		vars::var_ptr var_cheat_disable_reporting;
 
 		void modify_stats_internal(game::tpp::mbm::impl::StaffController::StaffHeader* header,
 			game::tpp::mbm::impl::StaffController::StaffStatusSync* status, const std::uint32_t index)
@@ -241,6 +242,17 @@ namespace staff
 
 			return cmd_check_server_item_correct_hook.invoke<char>(a1);
 		}
+
+		utils::hook::detour send_suspicion_play_data_hook;
+		char send_suspicion_play_data_stub(void* a1, void* a2)
+		{
+			if (var_cheat_disable_reporting->current.enabled())
+			{
+				return 1;
+			}
+
+			return send_suspicion_play_data_hook.invoke<char>(a1, a2);
+		}
 	}
 
 	class component final : public component_interface
@@ -302,8 +314,8 @@ namespace staff
 						return;
 					}
 
-					*mb_sys->heroicPoint = std::clamp(*mb_sys->heroicPoint + point, -99999999, 99999999);
-					mb_sys->__vftable->ReflectHeroicPointDiffToSvars(mb_sys, *mb_sys->heroicPoint);
+					*mb_sys->heroicPoint1 = std::clamp(*mb_sys->heroicPoint1 + point, -99999999, 99999999);
+					mb_sys->__vftable->ReflectHeroicPointDiffToSvars(mb_sys, *mb_sys->heroicPoint1);
 				});
 
 				command::add("cheat_set_ogre_point", [](const command::params& params)
@@ -332,8 +344,13 @@ namespace staff
 				var_cheat_unlockall_items = vars::register_bool("cheat_unlockall_server_items", false,
 					vars::var_flag_cheat | vars::var_flag_saved, "unlock all online items");
 
+				var_cheat_disable_reporting = vars::register_bool("cheat_disable_reporting", false,
+					vars::var_flag_cheat | vars::var_flag_saved, "disable reporting suspicious gameplay to konami");
+
 				utils::hook::jump(SELECT_VALUE_LANG(0x14083359C, 0x1408331CC), utils::hook::assemble(cmd_get_server_item_list_result_unpack_stub), true);
 				cmd_check_server_item_correct_hook.create(SELECT_VALUE_LANG(0x145B4DE40, 0x14752AD10), cmd_check_server_item_correct_stub);
+			
+				send_suspicion_play_data_hook.create(SELECT_VALUE_LANG(0x140809DD0, 0x140809A30), send_suspicion_play_data_stub);
 			}
 			else
 			{
