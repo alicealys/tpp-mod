@@ -314,8 +314,7 @@ namespace staff
 						return;
 					}
 
-					*mb_sys->heroicPoint1 = std::clamp(*mb_sys->heroicPoint1 + point, -99999999, 99999999);
-					mb_sys->__vftable->ReflectHeroicPointDiffToSvars(mb_sys, *mb_sys->heroicPoint1);
+					*mb_sys->heroicPoint = std::clamp(*mb_sys->heroicPoint + point, -99999999, 99999999);
 				});
 
 				command::add("cheat_set_ogre_point", [](const command::params& params)
@@ -338,7 +337,7 @@ namespace staff
 						return;
 					}
 
-					*mb_sys->ogrePoint1 = std::clamp(point, -99999999, 99999999);
+					*mb_sys->ogrePoint = std::clamp(point, -99999999, 99999999);
 				});
 
 				var_cheat_unlockall_items = vars::register_bool("cheat_unlockall_server_items", false,

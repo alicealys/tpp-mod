@@ -324,7 +324,10 @@ namespace vars
 			case var_type_color:
 			{
 				const auto color = value.get_color();
-				return check_color_component(color.r) && check_color_component(color.g) && check_color_component(color.b) && check_color_component(color.a);
+				return check_color_component(color.r) && 
+					check_color_component(color.g) && 
+					check_color_component(color.b) && 
+					check_color_component(color.a);
 			}
 			case var_type_vec2:
 			{
@@ -356,11 +359,6 @@ namespace vars
 		{
 			return ((var->flags & var_flag_cheat) == 0) || set_source == var_source_internal || cheats_enabled();
 		}
-
-		std::string var_value_to_string(const var_ptr& var, const nlohmann::json& value)
-		{
-			return var->type == var_type_string ? value.get<std::string>() : value.dump();
-		}
 	}
 
 	bool cheats_enabled()
@@ -372,7 +370,10 @@ namespace vars
 	{
 		if (!check_cheats(var, set_source))
 		{
-			console::error("\"%s\" is cheat protected", var->name.data());
+			if (post_initialization)
+			{
+				console::error("\"%s\" is cheat protected", var->name.data());
+			}
 			return;
 		}
 
