@@ -19,10 +19,10 @@ namespace staff
 		vars::var_ptr var_cheat_unlockall_items;
 		vars::var_ptr var_cheat_disable_reporting;
 
-		void modify_stats_internal(game::tpp::mbm::impl::StaffController::StaffHeader* header,
-			game::tpp::mbm::impl::StaffController::StaffStatusSync* status, const std::uint32_t index)
+		void modify_stats_internal(game::tpp::mbm::impl::StaffControllerImpl::StaffHeader* header,
+			game::tpp::mbm::impl::StaffControllerImpl::StaffStatusSync* status, const std::uint32_t index)
 		{
-			header->fields.peak_rank = game::tpp::mbm::impl::StaffController::RANK_SPP;
+			header->fields.peak_rank = game::tpp::mbm::impl::StaffControllerImpl::RANK_SPP;
 			header->fields.stat_bonus = 3;
 			header->fields.suppress_stats = 0;
 
@@ -54,39 +54,39 @@ namespace staff
 
 			switch (status->fields.designation)
 			{
-			case game::tpp::mbm::impl::StaffController::DESIGNATION_COMBAT:
-			case game::tpp::mbm::impl::StaffController::DESIGNATION_SECURITY:
-				header->fields.stat_distribution = game::tpp::mbm::impl::StaffController::STAT_DIST_COMBAT_PLUS_AND_INTEL_PLUS;
+			case game::tpp::mbm::impl::StaffControllerImpl::DESIGNATION_COMBAT:
+			case game::tpp::mbm::impl::StaffControllerImpl::DESIGNATION_SECURITY:
+				header->fields.stat_distribution = game::tpp::mbm::impl::StaffControllerImpl::STAT_DIST_COMBAT_PLUS_AND_INTEL_PLUS;
 				break;
-			case game::tpp::mbm::impl::StaffController::DESIGNATION_RND:
-				header->fields.stat_distribution = game::tpp::mbm::impl::StaffController::STAT_DIST_RND_PLUS_AND_BASE_DEV_PLUS;
+			case game::tpp::mbm::impl::StaffControllerImpl::DESIGNATION_RND:
+				header->fields.stat_distribution = game::tpp::mbm::impl::StaffControllerImpl::STAT_DIST_RND_PLUS_AND_BASE_DEV_PLUS;
 				break;
-			case game::tpp::mbm::impl::StaffController::DESIGNATION_BASE_DEV:
-				header->fields.stat_distribution = game::tpp::mbm::impl::StaffController::STAT_DIST_BASE_DEV_PLUS_AND_INTEL_PLUS;
+			case game::tpp::mbm::impl::StaffControllerImpl::DESIGNATION_BASE_DEV:
+				header->fields.stat_distribution = game::tpp::mbm::impl::StaffControllerImpl::STAT_DIST_BASE_DEV_PLUS_AND_INTEL_PLUS;
 				break;
-			case game::tpp::mbm::impl::StaffController::DESIGNATION_SUPPORT:
-				header->fields.stat_distribution = game::tpp::mbm::impl::StaffController::STAT_DIST_SUPPORT_PLUS_AND_COMBAT_PLUS;
+			case game::tpp::mbm::impl::StaffControllerImpl::DESIGNATION_SUPPORT:
+				header->fields.stat_distribution = game::tpp::mbm::impl::StaffControllerImpl::STAT_DIST_SUPPORT_PLUS_AND_COMBAT_PLUS;
 				break;
-			case game::tpp::mbm::impl::StaffController::DESIGNATION_INTEL:
-				header->fields.stat_distribution = game::tpp::mbm::impl::StaffController::STAT_DIST_INTEL_PLUS_AND_COMBAT_PLUS;
+			case game::tpp::mbm::impl::StaffControllerImpl::DESIGNATION_INTEL:
+				header->fields.stat_distribution = game::tpp::mbm::impl::StaffControllerImpl::STAT_DIST_INTEL_PLUS_AND_COMBAT_PLUS;
 				break;
-			case game::tpp::mbm::impl::StaffController::DESIGNATION_MEDICAL:
-				header->fields.stat_distribution = game::tpp::mbm::impl::StaffController::STAT_DIST_MEDICAL_PLUS_AND_COMBAT_PLUS;
+			case game::tpp::mbm::impl::StaffControllerImpl::DESIGNATION_MEDICAL:
+				header->fields.stat_distribution = game::tpp::mbm::impl::StaffControllerImpl::STAT_DIST_MEDICAL_PLUS_AND_COMBAT_PLUS;
 				break;
 			default:
-			case game::tpp::mbm::impl::StaffController::DESIGNATION_BRIG:
-				status->fields.designation = game::tpp::mbm::impl::StaffController::DESIGNATION_WAITING_ROOM_1;
+			case game::tpp::mbm::impl::StaffControllerImpl::DESIGNATION_BRIG:
+				status->fields.designation = game::tpp::mbm::impl::StaffControllerImpl::DESIGNATION_WAITING_ROOM_1;
 				break;
 			}
 		}
 
-		void modify_stats(game::tpp::mbm::impl::StaffController::StaffHeader* header, game::tpp::mbm::impl::StaffController::StaffStatusSync* status)
+		void modify_stats(game::tpp::mbm::impl::StaffControllerImpl::StaffHeader* header, game::tpp::mbm::impl::StaffControllerImpl::StaffStatusSync* status)
 		{
 			auto total_staff = 0;
 			for (auto i = 0; i < 3500; i++)
 			{
-				if (status[i].fields.designation >= game::tpp::mbm::impl::StaffController::DESIGNATION_UNITS_START &&
-					status[i].fields.designation < game::tpp::mbm::impl::StaffController::DESIGNATION_COUNT)
+				if (status[i].fields.designation >= game::tpp::mbm::impl::StaffControllerImpl::DESIGNATION_UNITS_START &&
+					status[i].fields.designation < game::tpp::mbm::impl::StaffControllerImpl::DESIGNATION_COUNT)
 				{
 					++total_staff;
 					modify_stats_internal(&header[i], &status[i], i);
@@ -95,10 +95,10 @@ namespace staff
 
 			static std::vector<std::uint32_t> required_skills =
 			{
-				{game::tpp::mbm::impl::StaffController::SKILL_RANGER_3},
-				{game::tpp::mbm::impl::StaffController::SKILL_SENTRY_3},
-				{game::tpp::mbm::impl::StaffController::SKILL_DEFENDER_3},
-				{game::tpp::mbm::impl::StaffController::SKILL_MEDIC_3},
+				{game::tpp::mbm::impl::StaffControllerImpl::SKILL_RANGER_3},
+				{game::tpp::mbm::impl::StaffControllerImpl::SKILL_SENTRY_3},
+				{game::tpp::mbm::impl::StaffControllerImpl::SKILL_DEFENDER_3},
+				{game::tpp::mbm::impl::StaffControllerImpl::SKILL_MEDIC_3},
 			};
 
 			const auto staff_per_skill = total_staff / required_skills.size();
@@ -108,8 +108,8 @@ namespace staff
 
 			for (auto i = 0; i < 3500; i++)
 			{
-				if (status[i].fields.designation >= game::tpp::mbm::impl::StaffController::DESIGNATION_UNITS_START && 
-					status[i].fields.designation <= game::tpp::mbm::impl::StaffController::DESIGNATION_UNITS_END)
+				if (status[i].fields.designation >= game::tpp::mbm::impl::StaffControllerImpl::DESIGNATION_UNITS_START && 
+					status[i].fields.designation <= game::tpp::mbm::impl::StaffControllerImpl::DESIGNATION_UNITS_END)
 				{
 					header[i].fields.skill = required_skills[current_skill];
 
@@ -161,8 +161,8 @@ namespace staff
 			}
 
 			modify_stats(
-				mb_sys->staffController->staffHeader,
-				mb_sys->staffController->staffStatusSync);
+				mb_sys->staffController->mbmStaffSvarsHeaders,
+				mb_sys->staffController->mbmStaffSvarsStatusesSync);
 		}
 
 		bool unlockall_items_enabled()

@@ -1981,9 +1981,8 @@ namespace game
 				char __pad1[0x1000];
 			};
 
-			struct StaffController
+			struct StaffControllerImpl
 			{
-
 				enum Rank
 				{
 					RANK_E = 0,
@@ -2215,9 +2214,14 @@ namespace game
 					std::uint32_t data;
 				};
 
-				struct StaffStatusNoSync
+				union StaffStatusNoSync
 				{
-					std::uint32_t data;
+					struct
+					{
+						std::uint16_t locked : 1;
+						std::uint16_t unk : 15;
+					} fields;
+					std::uint16_t data;
 				};
 
 				struct StaffUnk1
@@ -2246,22 +2250,285 @@ namespace game
 
 				struct vtable
 				{
-
+					void(__fastcall* meth_000)(StaffControllerImpl*);
+					void(__fastcall* meth_001)(StaffControllerImpl*);
+					void(__fastcall* meth_002)(StaffControllerImpl*);
+					void(__fastcall* meth_003)(StaffControllerImpl*);
+					void(__fastcall* meth_004)(StaffControllerImpl*);
+					void(__fastcall* meth_005)(StaffControllerImpl*);
+					void(__fastcall* meth_006)(StaffControllerImpl*);
+					void(__fastcall* meth_007)(StaffControllerImpl*);
+					void(__fastcall* meth_008)(StaffControllerImpl*);
+					void(__fastcall* meth_009)(StaffControllerImpl*);
+					void(__fastcall* meth_010)(StaffControllerImpl*);
+					void(__fastcall* meth_011)(StaffControllerImpl*);
+					void(__fastcall* meth_012)(StaffControllerImpl*);
+					void(__fastcall* meth_013)(StaffControllerImpl*);
+					void(__fastcall* meth_014)(StaffControllerImpl*);
+					void(__fastcall* meth_015)(StaffControllerImpl*);
+					void(__fastcall* meth_016)(StaffControllerImpl*);
+					void(__fastcall* meth_017)(StaffControllerImpl*);
+					void(__fastcall* meth_018)(StaffControllerImpl*);
+					void(__fastcall* meth_019)(StaffControllerImpl*);
+					void(__fastcall* meth_020)(StaffControllerImpl*);
+					void(__fastcall* meth_021)(StaffControllerImpl*);
+					void(__fastcall* meth_022)(StaffControllerImpl*);
+					void(__fastcall* meth_023)(StaffControllerImpl*);
+					void(__fastcall* meth_024)(StaffControllerImpl*);
+					void(__fastcall* meth_025)(StaffControllerImpl*);
+					void(__fastcall* meth_026)(StaffControllerImpl*);
+					void(__fastcall* meth_027)(StaffControllerImpl*);
+					void(__fastcall* meth_028)(StaffControllerImpl*);
+					void(__fastcall* meth_029)(StaffControllerImpl*);
+					void(__fastcall* meth_030)(StaffControllerImpl*);
+					void(__fastcall* meth_031)(StaffControllerImpl*);
+					void(__fastcall* meth_032)(StaffControllerImpl*);
+					void(__fastcall* meth_033)(StaffControllerImpl*);
+					void(__fastcall* meth_034)(StaffControllerImpl*);
+					void(__fastcall* meth_035)(StaffControllerImpl*);
+					void(__fastcall* meth_036)(StaffControllerImpl*);
+					void(__fastcall* meth_037)(StaffControllerImpl*);
+					void(__fastcall* meth_038)(StaffControllerImpl*);
+					void(__fastcall* meth_039)(StaffControllerImpl*);
+					void(__fastcall* meth_040)(StaffControllerImpl*);
+					void(__fastcall* meth_041)(StaffControllerImpl*);
+					void(__fastcall* meth_042)(StaffControllerImpl*);
+					void(__fastcall* meth_043)(StaffControllerImpl*);
+					void(__fastcall* meth_044)(StaffControllerImpl*);
+					void(__fastcall* meth_045)(StaffControllerImpl*);
+					void(__fastcall* meth_046)(StaffControllerImpl*);
+					void(__fastcall* meth_047)(StaffControllerImpl*);
+					void(__fastcall* meth_048)(StaffControllerImpl*);
+					void(__fastcall* meth_049)(StaffControllerImpl*);
+					void(__fastcall* meth_050)(StaffControllerImpl*);
+					void(__fastcall* meth_051)(StaffControllerImpl*);
+					void(__fastcall* meth_052)(StaffControllerImpl*);
+					void(__fastcall* meth_053)(StaffControllerImpl*);
+					void(__fastcall* meth_054)(StaffControllerImpl*);
+					void(__fastcall* meth_055)(StaffControllerImpl*);
+					void(__fastcall* meth_056)(StaffControllerImpl*);
+					void(__fastcall* meth_057)(StaffControllerImpl*);
+					void(__fastcall* meth_058)(StaffControllerImpl*);
+					void(__fastcall* meth_059)(StaffControllerImpl*);
+					void(__fastcall* meth_060)(StaffControllerImpl*);
+					void(__fastcall* meth_061)(StaffControllerImpl*);
+					void(__fastcall* meth_062)(StaffControllerImpl*);
+					void(__fastcall* meth_063)(StaffControllerImpl*);
+					void(__fastcall* meth_064)(StaffControllerImpl*);
+					void(__fastcall* meth_065)(StaffControllerImpl*);
+					void(__fastcall* meth_066)(StaffControllerImpl*);
+					void(__fastcall* meth_067)(StaffControllerImpl*);
+					void(__fastcall* meth_068)(StaffControllerImpl*);
+					void(__fastcall* meth_069)(StaffControllerImpl*);
+					void(__fastcall* meth_070)(StaffControllerImpl*);
+					void(__fastcall* meth_071)(StaffControllerImpl*);
+					void(__fastcall* meth_072)(StaffControllerImpl*);
+					void(__fastcall* meth_073)(StaffControllerImpl*);
+					void(__fastcall* meth_074)(StaffControllerImpl*);
+					void(__fastcall* meth_075)(StaffControllerImpl*);
+					void(__fastcall* meth_076)(StaffControllerImpl*);
+					void(__fastcall* meth_077)(StaffControllerImpl*);
+					void(__fastcall* meth_078)(StaffControllerImpl*);
+					void(__fastcall* meth_079)(StaffControllerImpl*);
+					void(__fastcall* meth_080)(StaffControllerImpl*);
+					void(__fastcall* meth_081)(StaffControllerImpl*);
+					void(__fastcall* meth_082)(StaffControllerImpl*);
+					void(__fastcall* meth_083)(StaffControllerImpl*);
+					void(__fastcall* meth_084)(StaffControllerImpl*);
+					void(__fastcall* meth_085)(StaffControllerImpl*);
+					void(__fastcall* meth_086)(StaffControllerImpl*);
+					void(__fastcall* meth_087)(StaffControllerImpl*);
+					void(__fastcall* meth_088)(StaffControllerImpl*);
+					void(__fastcall* meth_089)(StaffControllerImpl*);
+					void(__fastcall* meth_090)(StaffControllerImpl*);
+					void(__fastcall* meth_091)(StaffControllerImpl*);
+					void(__fastcall* meth_092)(StaffControllerImpl*);
+					void(__fastcall* meth_093)(StaffControllerImpl*);
+					void(__fastcall* meth_094)(StaffControllerImpl*);
+					void(__fastcall* meth_095)(StaffControllerImpl*);
+					void(__fastcall* meth_096)(StaffControllerImpl*);
+					void(__fastcall* meth_097)(StaffControllerImpl*);
+					void(__fastcall* meth_098)(StaffControllerImpl*);
+					void(__fastcall* meth_099)(StaffControllerImpl*);
+					void(__fastcall* meth_100)(StaffControllerImpl*);
+					void(__fastcall* meth_101)(StaffControllerImpl*);
+					void(__fastcall* meth_102)(StaffControllerImpl*);
+					void(__fastcall* meth_103)(StaffControllerImpl*);
+					void(__fastcall* meth_104)(StaffControllerImpl*);
+					void(__fastcall* meth_105)(StaffControllerImpl*);
+					void(__fastcall* meth_106)(StaffControllerImpl*);
+					void(__fastcall* meth_107)(StaffControllerImpl*);
+					void(__fastcall* meth_108)(StaffControllerImpl*);
+					void(__fastcall* meth_109)(StaffControllerImpl*);
+					void(__fastcall* meth_110)(StaffControllerImpl*);
+					void(__fastcall* meth_111)(StaffControllerImpl*);
+					void(__fastcall* meth_112)(StaffControllerImpl*);
+					void(__fastcall* meth_113)(StaffControllerImpl*);
+					void(__fastcall* meth_114)(StaffControllerImpl*);
+					void(__fastcall* meth_115)(StaffControllerImpl*);
+					void(__fastcall* meth_116)(StaffControllerImpl*);
+					void(__fastcall* meth_117)(StaffControllerImpl*);
+					void(__fastcall* meth_118)(StaffControllerImpl*);
+					void(__fastcall* meth_119)(StaffControllerImpl*);
+					void(__fastcall* meth_120)(StaffControllerImpl*);
+					void(__fastcall* meth_121)(StaffControllerImpl*);
+					void(__fastcall* meth_122)(StaffControllerImpl*);
+					void(__fastcall* meth_123)(StaffControllerImpl*);
+					void(__fastcall* meth_124)(StaffControllerImpl*);
+					void(__fastcall* meth_125)(StaffControllerImpl*);
+					void(__fastcall* meth_126)(StaffControllerImpl*);
+					void(__fastcall* meth_127)(StaffControllerImpl*);
+					void(__fastcall* meth_128)(StaffControllerImpl*);
+					void(__fastcall* meth_129)(StaffControllerImpl*);
+					void(__fastcall* meth_130)(StaffControllerImpl*);
+					void(__fastcall* meth_131)(StaffControllerImpl*);
+					void(__fastcall* meth_132)(StaffControllerImpl*);
+					void(__fastcall* meth_133)(StaffControllerImpl*);
+					void(__fastcall* meth_134)(StaffControllerImpl*);
+					void(__fastcall* meth_135)(StaffControllerImpl*);
+					void(__fastcall* meth_136)(StaffControllerImpl*);
+					void(__fastcall* meth_137)(StaffControllerImpl*);
+					void(__fastcall* meth_138)(StaffControllerImpl*);
+					void(__fastcall* meth_139)(StaffControllerImpl*);
+					void(__fastcall* meth_140)(StaffControllerImpl*);
+					bool(__fastcall* CanFobStaff)(StaffControllerImpl*, StaffHeader, StaffSeed, StaffStatusSync, StaffStatusNoSync);
+					void(__fastcall* meth_142)(StaffControllerImpl*);
+					void(__fastcall* meth_143)(StaffControllerImpl*);
+					void(__fastcall* meth_144)(StaffControllerImpl*);
+					void(__fastcall* meth_145)(StaffControllerImpl*);
+					void(__fastcall* meth_146)(StaffControllerImpl*);
+					void(__fastcall* meth_147)(StaffControllerImpl*);
+					void(__fastcall* meth_148)(StaffControllerImpl*);
+					void(__fastcall* meth_149)(StaffControllerImpl*);
+					void(__fastcall* meth_150)(StaffControllerImpl*);
+					void(__fastcall* meth_151)(StaffControllerImpl*);
+					void(__fastcall* meth_152)(StaffControllerImpl*);
+					void(__fastcall* meth_153)(StaffControllerImpl*);
+					void(__fastcall* meth_154)(StaffControllerImpl*);
+					void(__fastcall* meth_155)(StaffControllerImpl*);
+					void(__fastcall* meth_156)(StaffControllerImpl*);
+					void(__fastcall* meth_157)(StaffControllerImpl*);
+					void(__fastcall* meth_158)(StaffControllerImpl*);
+					void(__fastcall* meth_159)(StaffControllerImpl*);
+					void(__fastcall* meth_160)(StaffControllerImpl*);
+					void(__fastcall* meth_161)(StaffControllerImpl*);
+					void(__fastcall* meth_162)(StaffControllerImpl*);
+					void(__fastcall* meth_163)(StaffControllerImpl*);
+					void(__fastcall* meth_164)(StaffControllerImpl*);
+					void(__fastcall* meth_165)(StaffControllerImpl*);
+					void(__fastcall* meth_166)(StaffControllerImpl*);
+					void(__fastcall* meth_167)(StaffControllerImpl*);
+					void(__fastcall* meth_168)(StaffControllerImpl*);
+					void(__fastcall* meth_169)(StaffControllerImpl*);
+					void(__fastcall* meth_170)(StaffControllerImpl*);
+					void(__fastcall* meth_171)(StaffControllerImpl*);
+					void(__fastcall* meth_172)(StaffControllerImpl*);
+					void(__fastcall* meth_173)(StaffControllerImpl*);
+					void(__fastcall* meth_174)(StaffControllerImpl*);
+					void(__fastcall* meth_175)(StaffControllerImpl*);
+					void(__fastcall* meth_176)(StaffControllerImpl*);
+					void(__fastcall* meth_177)(StaffControllerImpl*);
+					void(__fastcall* meth_178)(StaffControllerImpl*);
+					void(__fastcall* meth_179)(StaffControllerImpl*);
+					void(__fastcall* meth_180)(StaffControllerImpl*);
+					void(__fastcall* meth_181)(StaffControllerImpl*);
+					void(__fastcall* meth_182)(StaffControllerImpl*);
+					void(__fastcall* meth_183)(StaffControllerImpl*);
+					void(__fastcall* meth_184)(StaffControllerImpl*);
+					void(__fastcall* meth_185)(StaffControllerImpl*);
+					void(__fastcall* meth_186)(StaffControllerImpl*);
+					void(__fastcall* meth_187)(StaffControllerImpl*);
+					void(__fastcall* meth_188)(StaffControllerImpl*);
+					void(__fastcall* meth_189)(StaffControllerImpl*);
+					void(__fastcall* meth_190)(StaffControllerImpl*);
+					void(__fastcall* meth_191)(StaffControllerImpl*);
+					void(__fastcall* meth_192)(StaffControllerImpl*);
+					void(__fastcall* meth_193)(StaffControllerImpl*);
+					void(__fastcall* meth_194)(StaffControllerImpl*);
+					void(__fastcall* meth_195)(StaffControllerImpl*);
+					void(__fastcall* meth_196)(StaffControllerImpl*);
+					void(__fastcall* meth_197)(StaffControllerImpl*);
+					void(__fastcall* meth_198)(StaffControllerImpl*);
+					void(__fastcall* meth_199)(StaffControllerImpl*);
+					void(__fastcall* meth_200)(StaffControllerImpl*);
+					void(__fastcall* meth_201)(StaffControllerImpl*);
+					void(__fastcall* meth_202)(StaffControllerImpl*);
+					void(__fastcall* meth_203)(StaffControllerImpl*);
+					void(__fastcall* meth_204)(StaffControllerImpl*);
+					void(__fastcall* meth_205)(StaffControllerImpl*);
+					void(__fastcall* meth_206)(StaffControllerImpl*);
+					void(__fastcall* meth_207)(StaffControllerImpl*);
+					void(__fastcall* meth_208)(StaffControllerImpl*);
+					void(__fastcall* meth_209)(StaffControllerImpl*);
+					void(__fastcall* meth_210)(StaffControllerImpl*);
+					void(__fastcall* meth_211)(StaffControllerImpl*);
+					void(__fastcall* meth_212)(StaffControllerImpl*);
+					void(__fastcall* meth_213)(StaffControllerImpl*);
+					void(__fastcall* meth_214)(StaffControllerImpl*);
+					void(__fastcall* meth_215)(StaffControllerImpl*);
+					void(__fastcall* meth_216)(StaffControllerImpl*);
+					void(__fastcall* meth_217)(StaffControllerImpl*);
+					void(__fastcall* meth_218)(StaffControllerImpl*);
+					void(__fastcall* meth_219)(StaffControllerImpl*);
+					void(__fastcall* meth_220)(StaffControllerImpl*);
+					void(__fastcall* meth_221)(StaffControllerImpl*);
+					void(__fastcall* meth_222)(StaffControllerImpl*);
+					void(__fastcall* meth_223)(StaffControllerImpl*);
+					void(__fastcall* meth_224)(StaffControllerImpl*);
+					void(__fastcall* meth_225)(StaffControllerImpl*);
+					void(__fastcall* meth_226)(StaffControllerImpl*);
+					void(__fastcall* meth_227)(StaffControllerImpl*);
+					void(__fastcall* meth_228)(StaffControllerImpl*);
+					void(__fastcall* meth_229)(StaffControllerImpl*);
+					void(__fastcall* meth_230)(StaffControllerImpl*);
+					void(__fastcall* meth_231)(StaffControllerImpl*);
+					void(__fastcall* meth_232)(StaffControllerImpl*);
+					void(__fastcall* meth_233)(StaffControllerImpl*);
+					void(__fastcall* meth_234)(StaffControllerImpl*);
+					void(__fastcall* meth_235)(StaffControllerImpl*);
+					void(__fastcall* meth_236)(StaffControllerImpl*);
+					void(__fastcall* meth_237)(StaffControllerImpl*);
+					void(__fastcall* meth_238)(StaffControllerImpl*);
+					void(__fastcall* meth_239)(StaffControllerImpl*);
+					void(__fastcall* meth_240)(StaffControllerImpl*);
+					void(__fastcall* meth_241)(StaffControllerImpl*);
+					void(__fastcall* meth_242)(StaffControllerImpl*);
+					void(__fastcall* meth_243)(StaffControllerImpl*);
+					void(__fastcall* meth_244)(StaffControllerImpl*);
+					void(__fastcall* meth_245)(StaffControllerImpl*);
+					void(__fastcall* meth_246)(StaffControllerImpl*);
+					void(__fastcall* meth_247)(StaffControllerImpl*);
+					void(__fastcall* meth_248)(StaffControllerImpl*);
+					void(__fastcall* meth_249)(StaffControllerImpl*);
+					void(__fastcall* meth_250)(StaffControllerImpl*);
+					void(__fastcall* meth_251)(StaffControllerImpl*);
+					void(__fastcall* meth_252)(StaffControllerImpl*);
+					void(__fastcall* meth_253)(StaffControllerImpl*);
+					void(__fastcall* meth_254)(StaffControllerImpl*);
+					void(__fastcall* meth_255)(StaffControllerImpl*);
 				};
 
 				vtable* __vftable;
 				char __pad0[40048];
-				StaffHeader* staffHeader;
-				unsigned int* s2;
-				StaffStatusSync* staffStatusSync;
-				char __pad1[400];
-				unsigned int* s4;
-				unsigned int* s5;
-				unsigned int* s6;
+				StaffHeader* mbmStaffSvarsHeaders;
+				StaffSeed* mbmStaffSvarsSeeds;
+				StaffStatusSync* mbmStaffSvarsStatusesSync;
+				StaffStatusNoSync* mbmStaffSvarsStatusesNoSync;
+				char __pad1[392];
+				StaffHeader* mbmRemoverSvarsHeaders;
+				StaffSeed* mbmRemoverSvarsSeeds;
+				StaffStatusSync* mbmRemoverSvarsStatusesSync;
+				StaffStatusNoSync* mbmRemoverSvarsStatusesNoSync;
+				char __pad2[44];
+				short staffCount;
+				char __pad3[4];
+				__int16 sectionCounts[7];
+				char __pad4[474];
+				unsigned __int8 sectionLevels[7];
 			};
 
-			static_assert(offsetof(StaffController, staffHeader) == 0x9C78);
-			static_assert(offsetof(StaffController, staffStatusSync) == 0x9C88);
+			static_assert(offsetof(StaffControllerImpl, mbmStaffSvarsHeaders) == 0x9C78);
+			static_assert(offsetof(StaffControllerImpl, mbmStaffSvarsStatusesSync) == 0x9C88);
 
 			struct MotherBaseManagementSystemImpl
 			{
@@ -2326,7 +2593,7 @@ namespace game
 				int* ogrePoint;
 				int* ogrePointDiff;
 				char __pad2[128];
-				StaffController* staffController;
+				StaffControllerImpl* staffController;
 				char __pad3[100];
 			};
 
@@ -2729,7 +2996,7 @@ namespace game
 		struct CmdSyncSoldierBinOption
 		{
 			char __pad0[136];
-			mbm::impl::StaffController::Staff soldier_param[3500];
+			mbm::impl::StaffControllerImpl::Staff soldier_param[3500];
 			int soldier_num;
 		};
 
@@ -2830,9 +3097,1483 @@ namespace game
 	{
 		struct ScriptVars
 		{
-			char __pad0[560];
-			tpp::mbm::PlayerBasicInfo::Emblem emblem;
+			char utcTime[8]; // 0
+			char totalPlayTime[8]; // 8
+			short locationCode; // 16
+			short missionCode; // 18
+			short prevLocationCode; // 20
+			short prevMissionCode; // 22
+			char __pad0[4];
+			int rulesetDynamicPackIndices; // 28
+			short mbLayoutCode; // 32
+			char mbClusterId; // 34
+			char fobSneakMode; // 35
+			char fobIsSneak; // 36
+			char fobIsEvent; // 37
+			char fobIsSecurity; // 38
+			char fobIsPlaceMode; // 39
+			char fobIsInitializedFreePositionItem; // 40
+			char __pad1[3];
+			int returnStaffHeader; // 44
+			int returnStaffSeeds; // 48
+			int eulaVersion; // 52
+			int eulaVersion2; // 56
+			int eulaVersion3; // 60
+			int countryIndex; // 64
+			int countryStateIndex; // 68
+			int infoId; // 72
+			int infoIdForMGO; // 76
+			int inquiryId; // 80
+			int fobPickup; // 84
+			int padType; // 88
+			int clock; // 92
+			char __pad2[4];
+			int passageSecondsSinceOutMB; // 100
+			int weather; // 104
+			int weatherNextTime; // 108
+			int extraWeatherInterval; // 112
+			int weatherAddDensity; // 116
+			char requestWeatherType[5]; // 120
+			char __pad3[3];
+			int requestWeatherUserId[5]; // 128
+			int requestWeatherInterp[5]; // 148
+			int requestWeatherParam[5]; // 168
+			char dominatedCpFlagsAfgh[16]; // 188
+			char dominatedCpFlagsMafr[16]; // 204
+			int totalAlertCount; // 220
+			int initialPlayerPosX; // 224
+			int initialPlayerPosY; // 228
+			int initialPlayerPosZ; // 232
+			int playerPosX; // 236
+			int playerPosY; // 240
+			int playerPosZ; // 244
+			char playerPartsType; // 248
+			char playerCamoType; // 249
+			char playerHandType; // 250
+			char playerType; // 251
+			short playerFaceId; // 252
+			short playerFaceEquipId; // 254
+			char playerSkillId; // 256
+			char playerInjuryCount; // 257
+			char playerBodyInjuryCount; // 258
+			char __pad4[1];
+			short playerLifeMax; // 260
+			short initialPlayerRotY; // 262
+			short playerRotY; // 264
+			short initialPlayerFlag; // 266
+			char initialPlayerAction; // 268
+			char playerRetryFlag; // 269
+			short initialPlayerPairGameObjectId; // 270
+			short playerVehicleGameObjectId; // 272
+			short initialPlayerVehicleGameObjectId; // 274
+			short vehicleGameObjectIdOnPlayerOnCargo; // 276
+			char __pad5[2];
+			int playerDisableActionFlag; // 280
+			short playerLife; // 284
+			short playerStamina; // 286
+			int playerCameraPosition[3]; // 288
+			int playerCameraRotation[2]; // 300
+			int playerStaffHeader; // 308
+			int playerStaffSeed; // 312
+			int playerPlayFlag; // 316
+			int playerMarkingCountInMission; // 320
+			int playerShootCountInMission; // 324
+			int shootHitCountInMission; // 328
+			int shootHitCountEliminatedInMission; // 332
+			int playerOgrePointOnStartMission; // 336
+			int playerRecoveryCountFromOgre; // 340
+			int totalChickenCapTime; // 344
+			int totalChickCapTime; // 348
+			int totalDiscoveredCount; // 352
+			int totalTakeHitCount; // 356
+			int totalMovingDistanceAtStand; // 360
+			int totalMovingDistanceAtSquat; // 364
+			int totalMovingDistanceAtCrawl; // 368
+			int totalMovingDistanceOnHorse; // 372
+			int totalMovingDistanceOnVehicle; // 376
+			int totalMovingDistanceOnWalkerGear; // 380
+			int totalMovingDistanceOnBattleGear; // 384
+			int totalMarkingCount; // 388
+			int totalReflexCount; // 392
+			char useBlackDiamondEmblem; // 396
+			char isAvatarPlayerEnable; // 397
+			char avatarFaceRaceIndex; // 398
+			char avatarFaceTypeIndex; // 399
+			char avatarFaceVariationIndex; // 400
+			char avatarFaceColorIndex; // 401
+			char avatarHairStyleIndex; // 402
+			char avatarRightEyeColorIndex; // 403
+			char avatarRightEyeBrightnessIndex; // 404
+			char avatarLeftEyeColorIndex; // 405
+			char avatarLeftEyeBrightnessIndex; // 406
+			char avatarHairColor; // 407
+			char avatarBerdStyle; // 408
+			char avatarBerdLength; // 409
+			char avatarEbrwStyle; // 410
+			char avatarEbrwWide; // 411
+			char avatarGashOrTatoVariationIndex; // 412
+			char avatarTatoColorIndex; // 413
+			char avatarAcceFlag; // 414
+			char avatarMotionFrame[60]; // 415
+			char avatarSaveIsValid; // 475
+			char avatarEyePresetID; // 476
+			char avatarNosePresetID; // 477
+			char avatarMouthPresetID; // 478
+			char avatarChinPresetID; // 479
+			char avatarCheekPresetID; // 480
+			char avatarEyebrowPresetID; // 481
+			char avatarHeadPresetID; // 482
+			char avatarHairPresetID; // 483
+			char avatarHairColorPresetID; // 484
+			char avatarSkinColorPresetID; // 485
+			char avatarBeardPresetID; // 486
+			char avatarAccessoryPresetID; // 487
+			char avatarAllPartsPresetID; // 488
+			char avatarReserve0; // 489
+			char avatarReserve1; // 490
+			char avatarReserve2; // 491
+			char personalName[64]; // 492
+			char personalBirthdayMonth; // 556
+			char personalBirthdayDay; // 557
+			char __pad6[2];
+			int emblemTextureTag[4]; // 560
+			int emblemColorL[4]; // 576
+			int emblemColorH[4]; // 592
+			char emblemX[4]; // 608
+			char emblemY[4]; // 612
+			char emblemScale[4]; // 616
+			char emblemRotate[4]; // 620
+			char emblemFlag[680]; // 624
+			char emblemVersion; // 1304
+			char emblemSyncFailed; // 1305
+			char emblemSyncFailed2; // 1306
+			char isServerDataCleared; // 1307
+			char isDefaultDisconnected; // 1308
+			char didCancelPatchDlcDownloadRequest; // 1309
+			char didCancelFobPatchDlcDownloadRequest; // 1310
+			char isPersonalDirty; // 1311
+			short initWeapons[3]; // 1312
+			short initSupportWeapons[8]; // 1318
+			short initItems[8]; // 1334
+			short initHandEquip; // 1350
+			short weapons[6]; // 1352
+			short ammoInWeapons[6]; // 1364
+			short ammoSubInWeapons[6]; // 1376
+			char suppressorLives[6]; // 1388
+			char isUseSuppressor[6]; // 1394
+			char isUseFlashLight[6]; // 1400
+			char isInitialWeapon[6]; // 1406
+			short supportWeapons[16]; // 1412
+			short items[16]; // 1444
+			char cboxPosterIndices[16]; // 1476
+			short handEquip; // 1492
+			char upgrades[16]; // 1494
+			char ammoStockIds[46]; // 1510
+			short ammoStockCounts[46]; // 1556
+			int totalBatteryPowerAsGmp; // 1648
+			int currentInventorySlot; // 1652
+			int currentSupportWeaponIndex; // 1656
+			int currentItemIndex; // 1660
+			int fpsAttackMode; // 1664
+			char currentZoomStep[5]; // 1668
+			char requestFlagsAboutEquip; // 1673
+			short weaponOriginalOwners[3]; // 1674
+			char partsType2; // 1680
+			char camoType2; // 1681
+			char faceEquipId2; // 1682
+			char __pad7[1];
+			short weapons2[3]; // 1684
+			short supportWeapons2[8]; // 1690
+			short items2[8]; // 1706
+			short handEquip2; // 1722
+			char dirtyEffectCount[2]; // 1724
+			char dirtyEffectBoneIndex[64]; // 1726
+			char __pad8[2];
+			int dirtyEffectPosition[192]; // 1792
+			int dirtyEffectRadius[64]; // 2560
+			short initCustomizedWeapon[3]; // 2816
+			short customizedWeapon[3]; // 2822
+			char initChimeraParts[36]; // 2828
+			char chimeraParts[36]; // 2864
+			char initChimeraPaintType[3]; // 2900
+			char chimeraPaintType[3]; // 2903
+			char initChimeraColorIndex[3]; // 2906
+			char chimeraColorIndex[3]; // 2909
+			char isUseCustomizedWeapon[3]; // 2912
+			char customizedWeaponSlotIndex[3]; // 2915
+			char itemLevels[72]; // 2918
+			char itemLevelsDeveloped[72]; // 2990
+			char developedItemLevels[72]; // 3062
+			short suitDevelopLevel[117]; // 3134
+			char initLoadoutInfo; // 3368
+			char loadoutInfoSaveFormVersion; // 3369
+			char loadoutInfoU8buf[460]; // 3370
+			short loadoutInfoU16buf[144]; // 3830
+			char __pad9[2];
+			int loadoutInfoU32buf[68]; // 4120
+			char currentLoadoutSlot; // 4392
+			char sortieLoadoutInfoSaveFormVersion; // 4393
+			char sortieLoadoutInfoU8buf[460]; // 4394
+			short sortieLoadoutInfoU16buf[144]; // 4854
+			char __pad10[2];
+			int sortieLoadoutInfoU32buf[68]; // 5144
+			char currentSortieLoadoutSlot; // 5416
+			char currentSortieLoadoutSlotNonRental; // 5417
+			char returnHeliLoadoutInfoSaveFormVersion; // 5418
+			char returnHeliLoadoutInfoU8buf[460]; // 5419
+			char __pad11[1];
+			short returnHeliLoadoutInfoU16buf[144]; // 5880
+			int returnHeliLoadoutInfoU32buf[68]; // 6168
+			char currentReturnHeliLoadoutSlot; // 6440
+			char currentForRentLoadoutSlotIndex; // 6441
+			char __pad12[2];
+			int rentalLoadoutPlayerId; // 6444
+			char rentalLoadoutPlayerName[100]; // 6448
+			char sortiePrepPlayerSnakePartsType; // 6548
+			char sortiePrepPlayerSnakeCamoType; // 6549
+			short sortiePrepPlayerSnakeFaceEquipId; // 6550
+			char sortiePrepPlayerSnakeSuitLevel; // 6552
+			char sortiePrepPlayerDDPartsType; // 6553
+			char sortiePrepPlayerDDCamoType; // 6554
+			char __pad13[1];
+			short sortiePrepPlayerDDFaceEquipId; // 6556
+			char sortiePrepPlayerDDSuitLevel; // 6558
+			char sortiePrepPlayerType; // 6559
+			int sortiePrepPlayerStaffHeader; // 6560
+			int sortiePrepPlayerStaffSeed; // 6564
+			int sortiePrepPlayerFaceId; // 6568
+			short userPresetCustomizedWeapon[24]; // 6572
+			char userPresetChimeraParts[288]; // 6620
+			char userPresetChimeraColorIndex[24]; // 6908
+			char userPresetChimeraPaintType[24]; // 6932
+			char userPresetDWalkerParts[24]; // 6956
+			char userPresetDWalkerPartsLevel[24]; // 6980
+			char userPresetDWalkerAdditionalParts[12]; // 7004
+			char userPresetDWalkerAdditionalPartsLevel[12]; // 7016
+			char userPresetDWalkerCurrentSlot; // 7028
+			char userPresetBattleGearParts[27]; // 7029
+			char userPresetBattleGearPartsLevel[27]; // 7056
+			char userPresetBattleGearCurrentSlot; // 7083
+			char userPresetHeliParts[5]; // 7084
+			char userPresetVehiclePaintType[10]; // 7089
+			char userPresetBuddyDogParts[2]; // 7099
+			char userPresetBuddyHorseParts[3]; // 7101
+			char mbmUserPresetBaseColor; // 7104
+			char __pad14[1];
+			short droppedWeapons[3]; // 7106
+			int droppedWeaponPos[9]; // 7112
+			int droppedWeaponRot[12]; // 7148
+			short droppedCount[6]; // 7196
+			short droppedAmmo[6]; // 7208
+			char droppedSuppressorLife[3]; // 7220
+			char __pad15[1];
+			short droppedCarrier[3]; // 7224
+			char droppedCarrierPlaceNo[3]; // 7230
+			char droppedWeaponStatus[3]; // 7233
+			short importantItems[32]; // 7236
+			short importantItemNumber[32]; // 7300
+			int importantItemPos[96]; // 7364
+			int importantItemRot[128]; // 7748
+			char importantItemStatus[32]; // 8260
+			int markingsOfPickable[33]; // 8292
+			short missionCodeMarkingsOfPickable; // 8424
+			char __pad16[2];
+			int markingsOfPlaced[33]; // 8428
+			short missionCodeMarkingsOfPlaced; // 8560
+			short placedWeapons[32]; // 8562
+			short placedOwnerIds[32]; // 8626
+			char __pad17[2];
+			int placedPos[96]; // 8692
+			int placedRot[128]; // 9076
+			int placedAttachTargetNames[64]; // 9588
+			short placedAttachTargetIndex[32]; // 9844
+			char placedAttachTargetGameObjectType[32]; // 9908
+			int placedAttachPoints[64]; // 9940
+			short placedCorrelationId[32]; // 10196
+			short placedTargetGroupBlast[32]; // 10260
+			char placedStatus[32]; // 10324
+			short playerDecoyInstanceIndicies[12]; // 10356
+			int playerDecoyAngleBallon[12]; // 10380
+			short caputreAnimalId[16]; // 10428
+			int captureAreaName[16]; // 10460
+			char captureAnimalIndex; // 10524
+			char __pad18[3];
+			int collectionPositionsMoved[96]; // 10528
+			int collectionRotationsMoved[32]; // 10912
+			short collectionLocatorIndicesMoved[32]; // 11040
+			int collectionMovedIndexEnd; // 11104
+			short locationCodeOfCollectionMoved; // 11108
+			char cboxIsValid[16]; // 11110
+			char __pad19[2];
+			int cboxLife[16]; // 11128
+			short cboxFlag[16]; // 11192
+			char cboxPosterType[16]; // 11224
+			short cboxEquipId[16]; // 11240
+			int cboxLocation[64]; // 11272
+			char buddyTypeMissionStart; // 11528
+			char obtainedBuddyTypeMissionStart; // 11529
+			char sortieBuddyTypeMissionStart; // 11530
+			char deadBuddyTypeMissionStart; // 11531
+			char initialBuddyStatusMissionStart; // 11532
+			char __pad20[3];
+			int initialBuddyPosMissionStart[3]; // 11536
+			int initialBuddyRotYMissionStart; // 11548
+			int buddyCommonFlagMissionStart; // 11552
+			short buddyFriendlyPointMissionStart[8]; // 11556
+			int reliefVehicleCarryType; // 11572
+			int reliefVehicleCarryAttitude[4]; // 11576
+			short reliefVehicleCarryLife[12]; // 11592
+			short reliefVehicleCarryAmmo[3]; // 11616
+			short reliefVehicleCarryState; // 11622
+			char buddyType; // 11624
+			char obtainedBuddyType; // 11625
+			char sortieBuddyType; // 11626
+			char disableCallBuddyType; // 11627
+			char deadBuddyType; // 11628
+			char initialBuddyStatus; // 11629
+			char __pad21[2];
+			int initialBuddyPos[3]; // 11632
+			int initialBuddyRotY; // 11644
+			int buddyCommonFlag; // 11648
+			int buddyMissionFlag; // 11652
+			int buddyCallCount[7]; // 11656
+			int buddyEspionageCpNames[8]; // 11684
+			int buddyFriendlyTimer[8]; // 11716
+			short buddyFriendlyPoint[8]; // 11748
+			short buddyFriendlyMaxPoint[8]; // 11764
+			char buddyFriendlyCount[64]; // 11780
+			short buddyQuietEquipType; // 11844
+			char buddyQuietCostumeType; // 11846
+			char buddyDogFlag; // 11847
+			char buddyDogMode; // 11848
+			char buddyDogEquipType; // 11849
+			char buddyDogEyeType; // 11850
+			char buddyDogColorType; // 11851
+			short buddyGearAmmoCount[2]; // 11852
+			short buddyGearStockAmmoCount[2]; // 11856
+			char buddyGearBodyGrade; // 11860
+			char buddyGearEquipGrade; // 11861
+			char buddyGearReloadGrade; // 11862
+			char buddyGearHeadType; // 11863
+			char buddyGearHeadGrade; // 11864
+			char buddyGearArmType; // 11865
+			char buddyGearArmGrade; // 11866
+			char buddyGearMainWPType; // 11867
+			char buddyGearMainWPGrade; // 11868
+			char buddyGearSubWPType; // 11869
+			char buddyGearSubWPGrade; // 11870
+			char buddyGearColoring0; // 11871
+			char buddyGearColoring1; // 11872
+			char buddyHorseType; // 11873
+			char buddyHorseColorType; // 11874
+			char buddyHorseHeadDesignType; // 11875
+			char buddyHorseFootDesignType; // 11876
+			char __pad22[1];
+			short battleGearAmmoCountMain[2]; // 11878
+			short battleGearAmmoCountSub; // 11882
+			short battleGearStockAmmoCountMain[2]; // 11884
+			short battleGearStockAmmoCountSub; // 11888
+			char battleGearMainWPType[2]; // 11890
+			char battleGearMainWPGrade[2]; // 11892
+			char battleGearSubWPType; // 11894
+			char battleGearSubWPGrade; // 11895
+			char battleGearColoring0; // 11896
+			char battleGearColoring1; // 11897
+			char maxPhase; // 11898
+			char playerPhase; // 11899
+			short sahelanBrokenMesh; // 11900
+			char __pad23[2];
+			int supportHeliCustomize; // 11904
+			int pfRatingPoint; // 11908
+			int mbmTppGmp; // 11912
+			int mbmServerWalletGmp; // 11916
+			int mbmTppHeroicPoint; // 11920
+			int missionHeroicPoint; // 11924
+			int mbmTppOgrePoint; // 11928
+			int missionOgrePoint; // 11932
+			char mbmRequestMisogi; // 11936
+			char __pad24[3];
+			int mbmTppTotalIncomeGmp; // 11940
+			char mbmIsOpenedCombatSection; // 11944
+			char mbmIsOpenedBaseDevSection; // 11945
+			char mbmIsOpenedSpySection; // 11946
+			char mbmIsOpenedMedicalSection; // 11947
+			char mbmIsOpenedSecuritySection; // 11948
+			char mbmIsOpenedHospitalSection; // 11949
+			char mbmIsOpenedPrisonSection; // 11950
+			char mbmIsOpenedSeparationSection; // 11951
+			char mbmSectionFuncSvars[42]; // 11952
+			char mbmAutoGmpElapsedTimeMinuteSvars; // 11994
+			char mbmAutoResourceElapsedTimeMinuteSvars; // 11995
+			char mbmCommonMetalProcessingElapsedTimeMinute; // 11996
+			char mbmMinorMetalProcessingElapsedTimeMinute; // 11997
+			char mbmPreciousMetalProcessingElapsedTimeMinute; // 11998
+			char mbmFuelResourceProcessingElapsedTimeMinute; // 11999
+			char mbmBioticResourceProcessingElapsedTimeMinute; // 12000
+			char isRussianTranslatable; // 12001
+			char isPashtoTranslatable; // 12002
+			char isAfrikaansTranslatable; // 12003
+			char isKikongoTranslatable; // 12004
+			char mbmTreatmentElapsedTimeMinute; // 12005
+			char mbmBecomeCombatSectionLvMax; // 12006
+			char mbmBecomeDevelopSectionLvMax; // 12007
+			char mbmBecomeBaseDevSectionLvMax; // 12008
+			char mbmBecomeSupportSectionLvMax; // 12009
+			char mbmBecomeSpySectionLvMax; // 12010
+			char mbmBecomeMedicalSectionLvMax; // 12011
+			char mbmBecomeSecuritySectionLvMax; // 12012
+			char mbmBecomeAllSectionLvMax; // 12013
+			short mbmHighestTotalSectionLv; // 12014
+			int mbmStaffSyncVersion; // 12016
+			int mbmStaffSvarsHeaders[3500]; // 12020
+			int mbmStaffSvarsSeeds[3500]; // 26020
+			int mbmStaffSvarsStatusesSync[3500]; // 40020
+			short mbmStaffSvarsStatusesNoSync[3500]; // 54020
+			char mbmStaffSkillGots[87]; // 61020
+			char mbmStaffSortKeysSvars[13]; // 61107
+			char mbmStaffSortDirsSvars[13]; // 61120
+			char mbmStaffListMainListModeSvars; // 61133
+			char mbmStaffListAssignListModeSvars; // 61134
+			char mbmEnmityElapsedTimeMinuteSvars; // 61135
+			char mbmMoraleElapsedTimeMinuteSvars; // 61136
+			char mbmLanguageElapsedTimeMinuteSvars; // 61137
+			char mbmEnableStaffInitLangKikongo; // 61138
+			char mbmPandemicEventMode; // 61139
+			char mbmPandemicElapsedTimeMinuteSvars; // 61140
+			char __pad25[1];
+			short mbmPandemicSpreadAttackLimitCount; // 61142
+			short mbmPandemicSpreadAttackCount; // 61144
+			char mbmDisableKikongoFirst; // 61146
+			char mbmMasterGunsmithSkill; // 61147
+			char mbmBipedalismWeaponDevelopmentSkill; // 61148
+			char mbmBanHeuy; // 61149
+			char mbmAssignableMiller; // 61150
+			char mbmLockedTanFlag; // 61151
+			short mbmStaffInitEnmityLv; // 61152
+			char mbmEquipParamStatus[1024]; // 61154
+			char mbmOnlineOffsetEquipParamStatus[1024]; // 62178
+			short mbmEquipDevelopIndices[10]; // 63202
+			char __pad26[2];
+			int mbmEquipDevelopTimes[10]; // 63224
+			char mbmWeaponPartsReceiverStatus[234]; // 63264
+			char mbmWeaponPartsBarrelStatus[115]; // 63498
+			char mbmWeaponPartsMagazineStatus[192]; // 63613
+			char mbmWeaponPartsStockStatus[43]; // 63805
+			char mbmWeaponPartsMuzzleStatus[29]; // 63848
+			char mbmWeaponPartsMuzzleOptionStatus[40]; // 63877
+			char mbmWeaponPartsSightStatus[25]; // 63917
+			char mbmWeaponPartsUnderBarrelStatus[23]; // 63942
+			char mbmWeaponPartsLightStatus[10]; // 63965
+			char __pad27[1];
+			short mbmServerDevelopCount; // 63976
+			short mbmServerDevelopIds[320]; // 63978
+			short mbmServerDevelopUsageGmpCosts[320]; // 64618
+			char mbmServerDevelopUsageResourceType1s[320]; // 65258
+			short mbmServerDevelopUsageResourceType1Counts[320]; // 65578
+			char mbmServerDevelopUsageResourceType2s[320]; // 66218
+			short mbmServerDevelopUsageResourceType2Counts[320]; // 66538
+			char __pad28[2];
+			int mbmFobSvars[4]; // 67180
+			short mbmClusterSvars[35]; // 67196
+			char __pad29[2];
+			int mbmClusterTimeMinutes[35]; // 67268
+			char mbmCompMb; // 67408
+			char doesNotRestoreCommandClusterGradeFromLayoutCode; // 67409
+			char __pad30[2];
+			int mbmSecurityClusterSvars[35]; // 67412
+			char mbmSecuritySpecialPlatformSoldierCounts[35]; // 67552
+			char mbmSecuritySpecialPlatformIrSensorCounts[35]; // 67587
+			char mbmSecuritySpecialPlatformAntitheftCounts[35]; // 67622
+			char mbmSecuritySpecialPlatformCameraCounts[35]; // 67657
+			char mbmSecuritySpecialPlatformDecoyCounts[35]; // 67692
+			char mbmSecuritySpecialPlatformMineCounts[35]; // 67727
+			char mbmSecuritySpecialPlatformUavCounts[35]; // 67762
+			char __pad31[3];
+			int mbmSecuritySpecialPlatformCautionAreaSvars[35]; // 67800
+			char mbmSecuritySpecialPlatformPlacedFreeMineCounts[35]; // 67940
+			char mbmSecuritySpecialPlatformPlacedFreeCameraCounts[35]; // 67975
+			char mbmSecurityCommonPlatform1SoldierCounts[35]; // 68010
+			char mbmSecurityCommonPlatform1IrSensorCounts[35]; // 68045
+			char mbmSecurityCommonPlatform1AntitheftCounts[35]; // 68080
+			char mbmSecurityCommonPlatform1CameraCounts[35]; // 68115
+			char mbmSecurityCommonPlatform1DecoyCounts[35]; // 68150
+			char mbmSecurityCommonPlatform1MineCounts[35]; // 68185
+			char mbmSecurityCommonPlatform1UavCounts[35]; // 68220
+			char __pad32[1];
+			int mbmSecurityCommonPlatform1CautionAreaSvars[35]; // 68256
+			char mbmSecurityCommonPlatform1PlacedFreeMineCounts[35]; // 68396
+			char mbmSecurityCommonPlatform1PlacedFreeCameraCounts[35]; // 68431
+			char mbmSecurityCommonPlatform2SoldierCounts[35]; // 68466
+			char mbmSecurityCommonPlatform2IrSensorCounts[35]; // 68501
+			char mbmSecurityCommonPlatform2AntitheftCounts[35]; // 68536
+			char mbmSecurityCommonPlatform2CameraCounts[35]; // 68571
+			char mbmSecurityCommonPlatform2DecoyCounts[35]; // 68606
+			char mbmSecurityCommonPlatform2MineCounts[35]; // 68641
+			char mbmSecurityCommonPlatform2UavCounts[35]; // 68676
+			char __pad33[1];
+			int mbmSecurityCommonPlatform2CautionAreaSvars[35]; // 68712
+			char mbmSecurityCommonPlatform2PlacedFreeMineCounts[35]; // 68852
+			char mbmSecurityCommonPlatform2PlacedFreeCameraCounts[35]; // 68887
+			char mbmSecurityCommonPlatform3SoldierCounts[35]; // 68922
+			char mbmSecurityCommonPlatform3IrSensorCounts[35]; // 68957
+			char mbmSecurityCommonPlatform3AntitheftCounts[35]; // 68992
+			char mbmSecurityCommonPlatform3CameraCounts[35]; // 69027
+			char mbmSecurityCommonPlatform3DecoyCounts[35]; // 69062
+			char mbmSecurityCommonPlatform3MineCounts[35]; // 69097
+			char mbmSecurityCommonPlatform3UavCounts[35]; // 69132
+			char __pad34[1];
+			int mbmSecurityCommonPlatform3CautionAreaSvars[35]; // 69168
+			char mbmSecurityCommonPlatform3PlacedFreeMineCounts[35]; // 69308
+			char mbmSecurityCommonPlatform3PlacedFreeCameraCounts[35]; // 69343
+			char __pad35[2];
+			int mbmSecuritySpecialPlatformSvars[35]; // 69380
+			int mbmSecurityCommonPlatform1Svars[35]; // 69520
+			int mbmSecurityCommonPlatform2Svars[35]; // 69660
+			int mbmSecurityCommonPlatform3Svars[35]; // 69800
+			char mbmInitializedServerWalletFlagDay1; // 69940
+			char mbmIsInitializedDay50; // 69941
+			char __pad36[2];
+			int mbmNuclearWeaponLocalCountPatchingDay50; // 69944
+			char mbmNuclearSynchronizedDay50; // 69948
+			char __pad37[3];
+			int mbmResourceSyncVersion; // 69952
+			int mbmResourceSvars1Fix[59]; // 69956
+			int mbmResourceSvars2Fix[59]; // 70192
+			int mbmResourceSvars1Diff[59]; // 70428
+			int mbmResourceSvars2Diff[59]; // 70664
+			int mbmResourceCompensateCounts[59]; // 70900
+			int mbmWhiteContainerCountsSvarsFix[5]; // 71136
+			int mbmWhiteContainerCountsSvarsDiff[5]; // 71156
+			int mbmRedContainerCountsSvarsFix[5]; // 71176
+			int mbmRedContainerCountsSvarsDiff[5]; // 71196
+			char mbmOpenedWalkerGear; // 71216
+			char mbmDataBaseSvars[459]; // 71217
+			char mbmCompAnimal; // 71676
+			char mbmCompDesign; // 71677
+			char mbmCompPhoto; // 71678
+			char __pad38[1];
+			int mbmDeployMissionsSvars[71]; // 71680
+			char mbmDeployMissionAveRanksSvars[71]; // 71964
+			char __pad39[1];
+			short mbmDeployTeamCombatStaffCounts[11]; // 72036
+			char mbmDeployTeamCombatStaffRankTops[11]; // 72058
+			char mbmDeployTeamCombatStaffRankBottoms[11]; // 72069
+			short mbmDeployTeamSubStaffCounts[11]; // 72080
+			char mbmDeployTeamSubStaffRankTops[11]; // 72102
+			char mbmDeployTeamSubStaffRankBottoms[11]; // 72113
+			int mbmDeployTeamCombatPoints[11]; // 72124
+			int mbmDeployTeamSubPoints[11]; // 72168
+			int mbmDeployTeamSvarsTimeMinute[11]; // 72212
+			char mbmDeployTeamSvars4wdEastCount[22]; // 72256
+			char mbmDeployTeamSvars4wdWestCount[22]; // 72278
+			char mbmDeployTeamSvarsTruckEastCount[22]; // 72300
+			char mbmDeployTeamSvarsTruckWestCount[22]; // 72322
+			char mbmDeployTeamSvarsArmoredVehicleEastCount[22]; // 72344
+			char mbmDeployTeamSvarsArmoredVehicleWestCount[22]; // 72366
+			char mbmDeployTeamSvarsArmoredVehicleEastRocketCount[22]; // 72388
+			char mbmDeployTeamSvarsWheeledArmoredVehicleWestCount[22]; // 72410
+			char mbmDeployTeamSvarsTankEastCount[22]; // 72432
+			char mbmDeployTeamSvarsTankWestCount[22]; // 72454
+			char mbmDeployTeamSvarsWalkerGearProtoHeuyCount[22]; // 72476
+			char mbmDeployTeamSvarsWalkerGearSovietBattleCount[22]; // 72498
+			char mbmDeployTeamSvarsWalkerGearSovietSupportCount[22]; // 72520
+			char mbmDeployTeamSvarsWalkerGearCfaBattleCount[22]; // 72542
+			char mbmDeployTeamSvarsWalkerGearCfaSupportCount[22]; // 72564
+			char __pad40[2];
+			int mbmDeployRandomMissionSeedSvars; // 72588
+			short mbmDeploySequentialMissionIdSvars; // 72592
+			short mbmDeploySequentialMissionIdLimitSvars; // 72594
+			char mbmClearedDeployRevengeMissionFlags[14]; // 72596
+			char mbmDeployableBattleGear; // 72610
+			char mbmBattleGearDeployingTeam; // 72611
+			char mbmAddDeployLogIndex; // 72612
+			char mbmCompSequential; // 72613
+			short mbmNewestNRandomMissionId; // 72614
+			short mbmNewestRRandomMissionId; // 72616
+			char mbmOpenedRRandomMission; // 72618
+			char mbmNRandomMissionClearedCount; // 72619
+			char mbmIsCancelAllDeploy; // 72620
+			char __pad41[3];
+			int mbmClearedCountOfflineDeploy; // 72624
+			int mbmClearedCountOnlineDeploy; // 72628
+			int mbmPoolRewardsSyncVersion; // 72632
+			int mbmPoolRewardsSvars[200]; // 72636
+			int mbmPoolRewardSourceIds[200]; // 73436
+			short mbmPoolRewardSeeds[200]; // 74236
+			int mbmPoolRewardValues[200]; // 74636
+			int mbmS10081CaptiveStaffSvarsSeed; // 75436
+			int mbmS10081CaptiveStaffSvarsHeader; // 75440
+			int mbmS10081CaptiveStaffSvarsStatusSync; // 75444
+			short mbmS10081CaptiveStaffSvarsStatusNoSync; // 75448
+			char __pad42[2];
+			int mbmRemoverSvarsHeaders[64]; // 75452
+			int mbmRemoverSvarsSeeds[64]; // 75708
+			int mbmRemoverSvarsStatusesSync[64]; // 75964
+			short mbmRemoverSvarsStatusesNoSync[64]; // 76220
+			char mbmRemoverReasons[64]; // 76348
+			short mbmAddRemoverIndexSvars; // 76412
+			char __pad43[2];
+			int mbmDeployRewardSyncVersion; // 76416
+			char mbmSecuritySystemLevelsDeveloped[16]; // 76420
+			char mbmAnimalHabitatAfghSvars[64]; // 76436
+			char mbmAnimalHabitatMafrSvars[64]; // 76500
+			char mbmIsOccupation; // 76564
+			char mbmRequestDemoAttackedFromOtherPlayer; // 76565
+			char mbmDemoAttackedFromOtherPlayerKnowWhereFrom; // 76566
+			char __pad44[1];
+			int mbmFobDefenseWinCount; // 76568
+			int mbmFobDefenseLoseCount; // 76572
+			char mbmIsContractOutDisplayed; // 76576
+			char mbmIsEnableNuclearDevelop; // 76577
+			char mbmIsNuclearDeveloped; // 76578
+			char mbmIsNuclearDiscarded; // 76579
+			char mbmIsNuclearDeveloping; // 76580
+			char __pad45[3];
+			int mbmNuclearDevelopTime; // 76584
+			int mbmNuclearDevelopMaxTime; // 76588
+			int mbmNuclearDevelopStartTime; // 76592
+			int mbmPdTotalAddedHostageStaffCount; // 76596
+			int mbmPdTotalAddedSoldierStaffCount; // 76600
+			int mbmPdTotalAddedVolunteerStaffCount; // 76604
+			int mbmPdTotalDeadStaffCount; // 76608
+			int mbmPdTotalDefectionCount; // 76612
+			int mbmPdTotalFireCount; // 76616
+			int mbmPdTotalAddedGmpT; // 76620
+			int mbmPdTotalAddedGmp; // 76624
+			int mbmPdTotalSubtractedGmpT; // 76628
+			int mbmPdTotalSubtractedGmp; // 76632
+			int mbmPdTotalAddedHeroicPoint; // 76636
+			int mbmPdTotalSubtractedHeroicPoint; // 76640
+			int mbmPdTotalAddedResourceCounts[59]; // 76644
+			int mbmPdTotalAddedAnimalCounts[99]; // 76880
+			int mbmCurrentNamePlateId; // 77276
+			int mbmNamePlateGotFlags[2]; // 77280
+			int mbmNamePlateNewFlags[2]; // 77288
+			int mbmHeroThreshold; // 77296
+			int mbmNotHeroThreshold; // 77300
+			short mbmPfRatingSaveSeason; // 77304
+			short mbmPfRatingReadAttackMatchFlag; // 77306
+			short mbmPfRatingReadDefenseMatchFlag; // 77308
+			char mbmPfRatingMatchSections[15]; // 77310
+			char mbmPfRatingRankingSaveSection; // 77325
+			char mbmPfRatingRankingPlayerRanks[16]; // 77326
+			char mbmPfRatingRankingPlayerRankDiffs[16]; // 77342
+			char __pad46[2];
+			int mbmPfRatingRankingPlayerIds[16]; // 77360
+			char mbmPfRatingCommonFlag; // 77424
+			char __pad47[1];
+			short mbmPfRatingShortSaveSeason; // 77426
+			short mbmPfRatingShortReadAttackMatchFlag; // 77428
+			short mbmPfRatingShortReadDefenseMatchFlag; // 77430
+			char mbmPfRatingShortMatchSections[15]; // 77432
+			char mbmPfRatingShortRankingSaveSection; // 77447
+			char mbmPfRatingShortRankingPlayerRanks[16]; // 77448
+			char mbmPfRatingShortRankingPlayerRankDiffs[16]; // 77464
+			int mbmPfRatingShortRankingPlayerIds[16]; // 77480
+			int mbmChallengeTaskCompleteFlags[15]; // 77544
+			int mbmChallengeTaskRewardReceiveFlags[15]; // 77604
+			int mbmChallengeTaskOnlineVersionWindowOpen; // 77664
+			char mbmServerRankingRecordedFlags[106]; // 77668
+			char __pad48[2];
+			int mbmServerRankingScores[106]; // 77776
+			int mbmBaseColorGotFlag; // 78200
+			int mbmBaseColorNewFlag; // 78204
+			int mbmDlcWeaponColorGotFlag; // 78208
+			int mbmDlcWeaponColorGotFlag2; // 78212
+			int mbmDlcWeaponColorNewFlag; // 78216
+			int mbmDlcWeaponColorNewFlag2; // 78220
+			char mbmIsVisitedFobDeployWelcomeMessage1; // 78224
+			char mbmIsVisitedFobDeployWelcomeMessage2; // 78225
+			char mbmFobDeployCheckBoxes[6]; // 78226
+			char mbmFobDeployGradeSelectorIndexes[6]; // 78232
+			char optionSelectedIndices[32]; // 78238
+			char armRocketYIsReverse; // 78270
+			char armRocketXIsReverse; // 78271
+			char bgmVolume; // 78272
+			char __pad49[3];
+			int keyStr[120]; // 78276
+			int buttonNo[120]; // 78756
+			int keybordNo[120]; // 79236
+			char pushToTalk; // 79716
+			char checkPointGimmickIndelibleCount; // 79717
+			char __pad50[2];
+			int checkPointGimmickIndelibleName[64]; // 79720
+			short checkPointGimmickIndelibleState[32]; // 79976
+			char missionStartGimmickIndelibleCount; // 80040
+			char __pad51[3];
+			int missionStartGimmickIndelibleName[64]; // 80044
+			short missionStartGimmickIndelibleState[32]; // 80300
+			char checkPointGimmickPermanentGimmickSaveData[2592]; // 80364
+			char missionStartGimmickPermanentGimmickSaveData[2592]; // 82956
+			char __pad52[1];
+			char cloakEnabled[2]; // 85549
+			char supCboxSaveFormVersion; // 85551
+			char supCboxPhaseForSave; // 85552
+			char supCboxDropType; // 85553
+			char __pad53[2];
+			int supCboxEquipId; // 85556
+			char supCboxPartsType; // 85560
+			char __pad54[3];
+			int supCboxPos[3]; // 85564
+			int supCboxRot[4]; // 85576
+			char supCboxLevelWait; // 85592
+			char __pad55[3];
+			int supCboxAdvancedRate; // 85596
+			int supCboxFallHeight; // 85600
+			char supCboxLevels[13]; // 85604
+			char supCboxFlags; // 85617
+			char supCboxU8buf[115]; // 85618
+			char __pad56[1];
+			short supCboxU16buf[36]; // 85734
+			char __pad57[2];
+			int supCboxU32buf[17]; // 85808
+			short supCboxLocationOnSave; // 85876
+			char supAttackStateForSave; // 85878
+			char supAttackAttackType; // 85879
+			int supAttackPos[3]; // 85880
+			int supAttackRot[4]; // 85892
+			char supAttackLevelWait; // 85908
+			char supAttackLevelAttack; // 85909
+			char supAttackFlags; // 85910
+			char __pad58[1];
+			int supAttackCommonValue; // 85912
+			int supAttackWaitTime; // 85916
+			short supAttackLocationOnSave; // 85920
+			char stealthAssistLeftCount; // 85922
+			char __pad59[1];
+			int tppTransferFlag; // 85924
+			int tppTransferAcquiredFlag; // 85928
+			int dlcPermittedFlag[2]; // 85932
+			int dlcAcquiredFlag[2]; // 85940
+			int mbDvcTutorialFlag; // 85948
+			int mbDvcTopMenuFlag; // 85952
+			char heliMusicType; // 85956
+			char __pad60[3];
+			int heliMusicTrackID; // 85960
+			int radioReadFlagGlobalScoped[200]; // 85964
+			int markerLocatorInfos[100]; // 86764
+			char tipsReadFlag[200]; // 87164
+			int userMarkerPosX[5]; // 87364
+			int userMarkerPosY[5]; // 87384
+			int userMarkerPosZ[5]; // 87404
+			short userMarkerAddFlag[5]; // 87424
+			short userMarkerGameObjId[5]; // 87434
+			short userMarkerLocationId; // 87444
+			char userMarkerSaveCount; // 87446
+			char __pad61[1];
+			int fobResultRankingDateTime; // 87448
+			char fobResultRankingPrevRanks[16]; // 87452
+			int fobEventResultRankingDateTime; // 87468
+			char fobEventResultRankingPrevRanks[16]; // 87472
 		};
+
+		static_assert(sizeof(ScriptVars) == 87488);
+		static_assert(offsetof(ScriptVars, utcTime) == 0);
+		static_assert(offsetof(ScriptVars, totalPlayTime) == 8);
+		static_assert(offsetof(ScriptVars, locationCode) == 16);
+		static_assert(offsetof(ScriptVars, missionCode) == 18);
+		static_assert(offsetof(ScriptVars, prevLocationCode) == 20);
+		static_assert(offsetof(ScriptVars, prevMissionCode) == 22);
+		static_assert(offsetof(ScriptVars, rulesetDynamicPackIndices) == 28);
+		static_assert(offsetof(ScriptVars, mbLayoutCode) == 32);
+		static_assert(offsetof(ScriptVars, mbClusterId) == 34);
+		static_assert(offsetof(ScriptVars, fobSneakMode) == 35);
+		static_assert(offsetof(ScriptVars, fobIsSneak) == 36);
+		static_assert(offsetof(ScriptVars, fobIsEvent) == 37);
+		static_assert(offsetof(ScriptVars, fobIsSecurity) == 38);
+		static_assert(offsetof(ScriptVars, fobIsPlaceMode) == 39);
+		static_assert(offsetof(ScriptVars, fobIsInitializedFreePositionItem) == 40);
+		static_assert(offsetof(ScriptVars, returnStaffHeader) == 44);
+		static_assert(offsetof(ScriptVars, returnStaffSeeds) == 48);
+		static_assert(offsetof(ScriptVars, eulaVersion) == 52);
+		static_assert(offsetof(ScriptVars, eulaVersion2) == 56);
+		static_assert(offsetof(ScriptVars, eulaVersion3) == 60);
+		static_assert(offsetof(ScriptVars, countryIndex) == 64);
+		static_assert(offsetof(ScriptVars, countryStateIndex) == 68);
+		static_assert(offsetof(ScriptVars, infoId) == 72);
+		static_assert(offsetof(ScriptVars, infoIdForMGO) == 76);
+		static_assert(offsetof(ScriptVars, inquiryId) == 80);
+		static_assert(offsetof(ScriptVars, fobPickup) == 84);
+		static_assert(offsetof(ScriptVars, padType) == 88);
+		static_assert(offsetof(ScriptVars, clock) == 92);
+		static_assert(offsetof(ScriptVars, passageSecondsSinceOutMB) == 100);
+		static_assert(offsetof(ScriptVars, weather) == 104);
+		static_assert(offsetof(ScriptVars, weatherNextTime) == 108);
+		static_assert(offsetof(ScriptVars, extraWeatherInterval) == 112);
+		static_assert(offsetof(ScriptVars, weatherAddDensity) == 116);
+		static_assert(offsetof(ScriptVars, requestWeatherType) == 120);
+		static_assert(offsetof(ScriptVars, requestWeatherUserId) == 128);
+		static_assert(offsetof(ScriptVars, requestWeatherInterp) == 148);
+		static_assert(offsetof(ScriptVars, requestWeatherParam) == 168);
+		static_assert(offsetof(ScriptVars, dominatedCpFlagsAfgh) == 188);
+		static_assert(offsetof(ScriptVars, dominatedCpFlagsMafr) == 204);
+		static_assert(offsetof(ScriptVars, totalAlertCount) == 220);
+		static_assert(offsetof(ScriptVars, initialPlayerPosX) == 224);
+		static_assert(offsetof(ScriptVars, initialPlayerPosY) == 228);
+		static_assert(offsetof(ScriptVars, initialPlayerPosZ) == 232);
+		static_assert(offsetof(ScriptVars, playerPosX) == 236);
+		static_assert(offsetof(ScriptVars, playerPosY) == 240);
+		static_assert(offsetof(ScriptVars, playerPosZ) == 244);
+		static_assert(offsetof(ScriptVars, playerPartsType) == 248);
+		static_assert(offsetof(ScriptVars, playerCamoType) == 249);
+		static_assert(offsetof(ScriptVars, playerHandType) == 250);
+		static_assert(offsetof(ScriptVars, playerType) == 251);
+		static_assert(offsetof(ScriptVars, playerFaceId) == 252);
+		static_assert(offsetof(ScriptVars, playerFaceEquipId) == 254);
+		static_assert(offsetof(ScriptVars, playerSkillId) == 256);
+		static_assert(offsetof(ScriptVars, playerInjuryCount) == 257);
+		static_assert(offsetof(ScriptVars, playerBodyInjuryCount) == 258);
+		static_assert(offsetof(ScriptVars, playerLifeMax) == 260);
+		static_assert(offsetof(ScriptVars, initialPlayerRotY) == 262);
+		static_assert(offsetof(ScriptVars, playerRotY) == 264);
+		static_assert(offsetof(ScriptVars, initialPlayerFlag) == 266);
+		static_assert(offsetof(ScriptVars, initialPlayerAction) == 268);
+		static_assert(offsetof(ScriptVars, playerRetryFlag) == 269);
+		static_assert(offsetof(ScriptVars, initialPlayerPairGameObjectId) == 270);
+		static_assert(offsetof(ScriptVars, playerVehicleGameObjectId) == 272);
+		static_assert(offsetof(ScriptVars, initialPlayerVehicleGameObjectId) == 274);
+		static_assert(offsetof(ScriptVars, vehicleGameObjectIdOnPlayerOnCargo) == 276);
+		static_assert(offsetof(ScriptVars, playerDisableActionFlag) == 280);
+		static_assert(offsetof(ScriptVars, playerLife) == 284);
+		static_assert(offsetof(ScriptVars, playerStamina) == 286);
+		static_assert(offsetof(ScriptVars, playerCameraPosition) == 288);
+		static_assert(offsetof(ScriptVars, playerCameraRotation) == 300);
+		static_assert(offsetof(ScriptVars, playerStaffHeader) == 308);
+		static_assert(offsetof(ScriptVars, playerStaffSeed) == 312);
+		static_assert(offsetof(ScriptVars, playerPlayFlag) == 316);
+		static_assert(offsetof(ScriptVars, playerMarkingCountInMission) == 320);
+		static_assert(offsetof(ScriptVars, playerShootCountInMission) == 324);
+		static_assert(offsetof(ScriptVars, shootHitCountInMission) == 328);
+		static_assert(offsetof(ScriptVars, shootHitCountEliminatedInMission) == 332);
+		static_assert(offsetof(ScriptVars, playerOgrePointOnStartMission) == 336);
+		static_assert(offsetof(ScriptVars, playerRecoveryCountFromOgre) == 340);
+		static_assert(offsetof(ScriptVars, totalChickenCapTime) == 344);
+		static_assert(offsetof(ScriptVars, totalChickCapTime) == 348);
+		static_assert(offsetof(ScriptVars, totalDiscoveredCount) == 352);
+		static_assert(offsetof(ScriptVars, totalTakeHitCount) == 356);
+		static_assert(offsetof(ScriptVars, totalMovingDistanceAtStand) == 360);
+		static_assert(offsetof(ScriptVars, totalMovingDistanceAtSquat) == 364);
+		static_assert(offsetof(ScriptVars, totalMovingDistanceAtCrawl) == 368);
+		static_assert(offsetof(ScriptVars, totalMovingDistanceOnHorse) == 372);
+		static_assert(offsetof(ScriptVars, totalMovingDistanceOnVehicle) == 376);
+		static_assert(offsetof(ScriptVars, totalMovingDistanceOnWalkerGear) == 380);
+		static_assert(offsetof(ScriptVars, totalMovingDistanceOnBattleGear) == 384);
+		static_assert(offsetof(ScriptVars, totalMarkingCount) == 388);
+		static_assert(offsetof(ScriptVars, totalReflexCount) == 392);
+		static_assert(offsetof(ScriptVars, useBlackDiamondEmblem) == 396);
+		static_assert(offsetof(ScriptVars, isAvatarPlayerEnable) == 397);
+		static_assert(offsetof(ScriptVars, avatarFaceRaceIndex) == 398);
+		static_assert(offsetof(ScriptVars, avatarFaceTypeIndex) == 399);
+		static_assert(offsetof(ScriptVars, avatarFaceVariationIndex) == 400);
+		static_assert(offsetof(ScriptVars, avatarFaceColorIndex) == 401);
+		static_assert(offsetof(ScriptVars, avatarHairStyleIndex) == 402);
+		static_assert(offsetof(ScriptVars, avatarRightEyeColorIndex) == 403);
+		static_assert(offsetof(ScriptVars, avatarRightEyeBrightnessIndex) == 404);
+		static_assert(offsetof(ScriptVars, avatarLeftEyeColorIndex) == 405);
+		static_assert(offsetof(ScriptVars, avatarLeftEyeBrightnessIndex) == 406);
+		static_assert(offsetof(ScriptVars, avatarHairColor) == 407);
+		static_assert(offsetof(ScriptVars, avatarBerdStyle) == 408);
+		static_assert(offsetof(ScriptVars, avatarBerdLength) == 409);
+		static_assert(offsetof(ScriptVars, avatarEbrwStyle) == 410);
+		static_assert(offsetof(ScriptVars, avatarEbrwWide) == 411);
+		static_assert(offsetof(ScriptVars, avatarGashOrTatoVariationIndex) == 412);
+		static_assert(offsetof(ScriptVars, avatarTatoColorIndex) == 413);
+		static_assert(offsetof(ScriptVars, avatarAcceFlag) == 414);
+		static_assert(offsetof(ScriptVars, avatarMotionFrame) == 415);
+		static_assert(offsetof(ScriptVars, avatarSaveIsValid) == 475);
+		static_assert(offsetof(ScriptVars, avatarEyePresetID) == 476);
+		static_assert(offsetof(ScriptVars, avatarNosePresetID) == 477);
+		static_assert(offsetof(ScriptVars, avatarMouthPresetID) == 478);
+		static_assert(offsetof(ScriptVars, avatarChinPresetID) == 479);
+		static_assert(offsetof(ScriptVars, avatarCheekPresetID) == 480);
+		static_assert(offsetof(ScriptVars, avatarEyebrowPresetID) == 481);
+		static_assert(offsetof(ScriptVars, avatarHeadPresetID) == 482);
+		static_assert(offsetof(ScriptVars, avatarHairPresetID) == 483);
+		static_assert(offsetof(ScriptVars, avatarHairColorPresetID) == 484);
+		static_assert(offsetof(ScriptVars, avatarSkinColorPresetID) == 485);
+		static_assert(offsetof(ScriptVars, avatarBeardPresetID) == 486);
+		static_assert(offsetof(ScriptVars, avatarAccessoryPresetID) == 487);
+		static_assert(offsetof(ScriptVars, avatarAllPartsPresetID) == 488);
+		static_assert(offsetof(ScriptVars, avatarReserve0) == 489);
+		static_assert(offsetof(ScriptVars, avatarReserve1) == 490);
+		static_assert(offsetof(ScriptVars, avatarReserve2) == 491);
+		static_assert(offsetof(ScriptVars, personalName) == 492);
+		static_assert(offsetof(ScriptVars, personalBirthdayMonth) == 556);
+		static_assert(offsetof(ScriptVars, personalBirthdayDay) == 557);
+		static_assert(offsetof(ScriptVars, emblemTextureTag) == 560);
+		static_assert(offsetof(ScriptVars, emblemColorL) == 576);
+		static_assert(offsetof(ScriptVars, emblemColorH) == 592);
+		static_assert(offsetof(ScriptVars, emblemX) == 608);
+		static_assert(offsetof(ScriptVars, emblemY) == 612);
+		static_assert(offsetof(ScriptVars, emblemScale) == 616);
+		static_assert(offsetof(ScriptVars, emblemRotate) == 620);
+		static_assert(offsetof(ScriptVars, emblemFlag) == 624);
+		static_assert(offsetof(ScriptVars, emblemVersion) == 1304);
+		static_assert(offsetof(ScriptVars, emblemSyncFailed) == 1305);
+		static_assert(offsetof(ScriptVars, emblemSyncFailed2) == 1306);
+		static_assert(offsetof(ScriptVars, isServerDataCleared) == 1307);
+		static_assert(offsetof(ScriptVars, isDefaultDisconnected) == 1308);
+		static_assert(offsetof(ScriptVars, didCancelPatchDlcDownloadRequest) == 1309);
+		static_assert(offsetof(ScriptVars, didCancelFobPatchDlcDownloadRequest) == 1310);
+		static_assert(offsetof(ScriptVars, isPersonalDirty) == 1311);
+		static_assert(offsetof(ScriptVars, initWeapons) == 1312);
+		static_assert(offsetof(ScriptVars, initSupportWeapons) == 1318);
+		static_assert(offsetof(ScriptVars, initItems) == 1334);
+		static_assert(offsetof(ScriptVars, initHandEquip) == 1350);
+		static_assert(offsetof(ScriptVars, weapons) == 1352);
+		static_assert(offsetof(ScriptVars, ammoInWeapons) == 1364);
+		static_assert(offsetof(ScriptVars, ammoSubInWeapons) == 1376);
+		static_assert(offsetof(ScriptVars, suppressorLives) == 1388);
+		static_assert(offsetof(ScriptVars, isUseSuppressor) == 1394);
+		static_assert(offsetof(ScriptVars, isUseFlashLight) == 1400);
+		static_assert(offsetof(ScriptVars, isInitialWeapon) == 1406);
+		static_assert(offsetof(ScriptVars, supportWeapons) == 1412);
+		static_assert(offsetof(ScriptVars, items) == 1444);
+		static_assert(offsetof(ScriptVars, cboxPosterIndices) == 1476);
+		static_assert(offsetof(ScriptVars, handEquip) == 1492);
+		static_assert(offsetof(ScriptVars, upgrades) == 1494);
+		static_assert(offsetof(ScriptVars, ammoStockIds) == 1510);
+		static_assert(offsetof(ScriptVars, ammoStockCounts) == 1556);
+		static_assert(offsetof(ScriptVars, totalBatteryPowerAsGmp) == 1648);
+		static_assert(offsetof(ScriptVars, currentInventorySlot) == 1652);
+		static_assert(offsetof(ScriptVars, currentSupportWeaponIndex) == 1656);
+		static_assert(offsetof(ScriptVars, currentItemIndex) == 1660);
+		static_assert(offsetof(ScriptVars, fpsAttackMode) == 1664);
+		static_assert(offsetof(ScriptVars, currentZoomStep) == 1668);
+		static_assert(offsetof(ScriptVars, requestFlagsAboutEquip) == 1673);
+		static_assert(offsetof(ScriptVars, weaponOriginalOwners) == 1674);
+		static_assert(offsetof(ScriptVars, partsType2) == 1680);
+		static_assert(offsetof(ScriptVars, camoType2) == 1681);
+		static_assert(offsetof(ScriptVars, faceEquipId2) == 1682);
+		static_assert(offsetof(ScriptVars, weapons2) == 1684);
+		static_assert(offsetof(ScriptVars, supportWeapons2) == 1690);
+		static_assert(offsetof(ScriptVars, items2) == 1706);
+		static_assert(offsetof(ScriptVars, handEquip2) == 1722);
+		static_assert(offsetof(ScriptVars, dirtyEffectCount) == 1724);
+		static_assert(offsetof(ScriptVars, dirtyEffectBoneIndex) == 1726);
+		static_assert(offsetof(ScriptVars, dirtyEffectPosition) == 1792);
+		static_assert(offsetof(ScriptVars, dirtyEffectRadius) == 2560);
+		static_assert(offsetof(ScriptVars, initCustomizedWeapon) == 2816);
+		static_assert(offsetof(ScriptVars, customizedWeapon) == 2822);
+		static_assert(offsetof(ScriptVars, initChimeraParts) == 2828);
+		static_assert(offsetof(ScriptVars, chimeraParts) == 2864);
+		static_assert(offsetof(ScriptVars, initChimeraPaintType) == 2900);
+		static_assert(offsetof(ScriptVars, chimeraPaintType) == 2903);
+		static_assert(offsetof(ScriptVars, initChimeraColorIndex) == 2906);
+		static_assert(offsetof(ScriptVars, chimeraColorIndex) == 2909);
+		static_assert(offsetof(ScriptVars, isUseCustomizedWeapon) == 2912);
+		static_assert(offsetof(ScriptVars, customizedWeaponSlotIndex) == 2915);
+		static_assert(offsetof(ScriptVars, itemLevels) == 2918);
+		static_assert(offsetof(ScriptVars, itemLevelsDeveloped) == 2990);
+		static_assert(offsetof(ScriptVars, developedItemLevels) == 3062);
+		static_assert(offsetof(ScriptVars, suitDevelopLevel) == 3134);
+		static_assert(offsetof(ScriptVars, initLoadoutInfo) == 3368);
+		static_assert(offsetof(ScriptVars, loadoutInfoSaveFormVersion) == 3369);
+		static_assert(offsetof(ScriptVars, loadoutInfoU8buf) == 3370);
+		static_assert(offsetof(ScriptVars, loadoutInfoU16buf) == 3830);
+		static_assert(offsetof(ScriptVars, loadoutInfoU32buf) == 4120);
+		static_assert(offsetof(ScriptVars, currentLoadoutSlot) == 4392);
+		static_assert(offsetof(ScriptVars, sortieLoadoutInfoSaveFormVersion) == 4393);
+		static_assert(offsetof(ScriptVars, sortieLoadoutInfoU8buf) == 4394);
+		static_assert(offsetof(ScriptVars, sortieLoadoutInfoU16buf) == 4854);
+		static_assert(offsetof(ScriptVars, sortieLoadoutInfoU32buf) == 5144);
+		static_assert(offsetof(ScriptVars, currentSortieLoadoutSlot) == 5416);
+		static_assert(offsetof(ScriptVars, currentSortieLoadoutSlotNonRental) == 5417);
+		static_assert(offsetof(ScriptVars, returnHeliLoadoutInfoSaveFormVersion) == 5418);
+		static_assert(offsetof(ScriptVars, returnHeliLoadoutInfoU8buf) == 5419);
+		static_assert(offsetof(ScriptVars, returnHeliLoadoutInfoU16buf) == 5880);
+		static_assert(offsetof(ScriptVars, returnHeliLoadoutInfoU32buf) == 6168);
+		static_assert(offsetof(ScriptVars, currentReturnHeliLoadoutSlot) == 6440);
+		static_assert(offsetof(ScriptVars, currentForRentLoadoutSlotIndex) == 6441);
+		static_assert(offsetof(ScriptVars, rentalLoadoutPlayerId) == 6444);
+		static_assert(offsetof(ScriptVars, rentalLoadoutPlayerName) == 6448);
+		static_assert(offsetof(ScriptVars, sortiePrepPlayerSnakePartsType) == 6548);
+		static_assert(offsetof(ScriptVars, sortiePrepPlayerSnakeCamoType) == 6549);
+		static_assert(offsetof(ScriptVars, sortiePrepPlayerSnakeFaceEquipId) == 6550);
+		static_assert(offsetof(ScriptVars, sortiePrepPlayerSnakeSuitLevel) == 6552);
+		static_assert(offsetof(ScriptVars, sortiePrepPlayerDDPartsType) == 6553);
+		static_assert(offsetof(ScriptVars, sortiePrepPlayerDDCamoType) == 6554);
+		static_assert(offsetof(ScriptVars, sortiePrepPlayerDDFaceEquipId) == 6556);
+		static_assert(offsetof(ScriptVars, sortiePrepPlayerDDSuitLevel) == 6558);
+		static_assert(offsetof(ScriptVars, sortiePrepPlayerType) == 6559);
+		static_assert(offsetof(ScriptVars, sortiePrepPlayerStaffHeader) == 6560);
+		static_assert(offsetof(ScriptVars, sortiePrepPlayerStaffSeed) == 6564);
+		static_assert(offsetof(ScriptVars, sortiePrepPlayerFaceId) == 6568);
+		static_assert(offsetof(ScriptVars, userPresetCustomizedWeapon) == 6572);
+		static_assert(offsetof(ScriptVars, userPresetChimeraParts) == 6620);
+		static_assert(offsetof(ScriptVars, userPresetChimeraColorIndex) == 6908);
+		static_assert(offsetof(ScriptVars, userPresetChimeraPaintType) == 6932);
+		static_assert(offsetof(ScriptVars, userPresetDWalkerParts) == 6956);
+		static_assert(offsetof(ScriptVars, userPresetDWalkerPartsLevel) == 6980);
+		static_assert(offsetof(ScriptVars, userPresetDWalkerAdditionalParts) == 7004);
+		static_assert(offsetof(ScriptVars, userPresetDWalkerAdditionalPartsLevel) == 7016);
+		static_assert(offsetof(ScriptVars, userPresetDWalkerCurrentSlot) == 7028);
+		static_assert(offsetof(ScriptVars, userPresetBattleGearParts) == 7029);
+		static_assert(offsetof(ScriptVars, userPresetBattleGearPartsLevel) == 7056);
+		static_assert(offsetof(ScriptVars, userPresetBattleGearCurrentSlot) == 7083);
+		static_assert(offsetof(ScriptVars, userPresetHeliParts) == 7084);
+		static_assert(offsetof(ScriptVars, userPresetVehiclePaintType) == 7089);
+		static_assert(offsetof(ScriptVars, userPresetBuddyDogParts) == 7099);
+		static_assert(offsetof(ScriptVars, userPresetBuddyHorseParts) == 7101);
+		static_assert(offsetof(ScriptVars, mbmUserPresetBaseColor) == 7104);
+		static_assert(offsetof(ScriptVars, droppedWeapons) == 7106);
+		static_assert(offsetof(ScriptVars, droppedWeaponPos) == 7112);
+		static_assert(offsetof(ScriptVars, droppedWeaponRot) == 7148);
+		static_assert(offsetof(ScriptVars, droppedCount) == 7196);
+		static_assert(offsetof(ScriptVars, droppedAmmo) == 7208);
+		static_assert(offsetof(ScriptVars, droppedSuppressorLife) == 7220);
+		static_assert(offsetof(ScriptVars, droppedCarrier) == 7224);
+		static_assert(offsetof(ScriptVars, droppedCarrierPlaceNo) == 7230);
+		static_assert(offsetof(ScriptVars, droppedWeaponStatus) == 7233);
+		static_assert(offsetof(ScriptVars, importantItems) == 7236);
+		static_assert(offsetof(ScriptVars, importantItemNumber) == 7300);
+		static_assert(offsetof(ScriptVars, importantItemPos) == 7364);
+		static_assert(offsetof(ScriptVars, importantItemRot) == 7748);
+		static_assert(offsetof(ScriptVars, importantItemStatus) == 8260);
+		static_assert(offsetof(ScriptVars, markingsOfPickable) == 8292);
+		static_assert(offsetof(ScriptVars, missionCodeMarkingsOfPickable) == 8424);
+		static_assert(offsetof(ScriptVars, markingsOfPlaced) == 8428);
+		static_assert(offsetof(ScriptVars, missionCodeMarkingsOfPlaced) == 8560);
+		static_assert(offsetof(ScriptVars, placedWeapons) == 8562);
+		static_assert(offsetof(ScriptVars, placedOwnerIds) == 8626);
+		static_assert(offsetof(ScriptVars, placedPos) == 8692);
+		static_assert(offsetof(ScriptVars, placedRot) == 9076);
+		static_assert(offsetof(ScriptVars, placedAttachTargetNames) == 9588);
+		static_assert(offsetof(ScriptVars, placedAttachTargetIndex) == 9844);
+		static_assert(offsetof(ScriptVars, placedAttachTargetGameObjectType) == 9908);
+		static_assert(offsetof(ScriptVars, placedAttachPoints) == 9940);
+		static_assert(offsetof(ScriptVars, placedCorrelationId) == 10196);
+		static_assert(offsetof(ScriptVars, placedTargetGroupBlast) == 10260);
+		static_assert(offsetof(ScriptVars, placedStatus) == 10324);
+		static_assert(offsetof(ScriptVars, playerDecoyInstanceIndicies) == 10356);
+		static_assert(offsetof(ScriptVars, playerDecoyAngleBallon) == 10380);
+		static_assert(offsetof(ScriptVars, caputreAnimalId) == 10428);
+		static_assert(offsetof(ScriptVars, captureAreaName) == 10460);
+		static_assert(offsetof(ScriptVars, captureAnimalIndex) == 10524);
+		static_assert(offsetof(ScriptVars, collectionPositionsMoved) == 10528);
+		static_assert(offsetof(ScriptVars, collectionRotationsMoved) == 10912);
+		static_assert(offsetof(ScriptVars, collectionLocatorIndicesMoved) == 11040);
+		static_assert(offsetof(ScriptVars, collectionMovedIndexEnd) == 11104);
+		static_assert(offsetof(ScriptVars, locationCodeOfCollectionMoved) == 11108);
+		static_assert(offsetof(ScriptVars, cboxIsValid) == 11110);
+		static_assert(offsetof(ScriptVars, cboxLife) == 11128);
+		static_assert(offsetof(ScriptVars, cboxFlag) == 11192);
+		static_assert(offsetof(ScriptVars, cboxPosterType) == 11224);
+		static_assert(offsetof(ScriptVars, cboxEquipId) == 11240);
+		static_assert(offsetof(ScriptVars, cboxLocation) == 11272);
+		static_assert(offsetof(ScriptVars, buddyTypeMissionStart) == 11528);
+		static_assert(offsetof(ScriptVars, obtainedBuddyTypeMissionStart) == 11529);
+		static_assert(offsetof(ScriptVars, sortieBuddyTypeMissionStart) == 11530);
+		static_assert(offsetof(ScriptVars, deadBuddyTypeMissionStart) == 11531);
+		static_assert(offsetof(ScriptVars, initialBuddyStatusMissionStart) == 11532);
+		static_assert(offsetof(ScriptVars, initialBuddyPosMissionStart) == 11536);
+		static_assert(offsetof(ScriptVars, initialBuddyRotYMissionStart) == 11548);
+		static_assert(offsetof(ScriptVars, buddyCommonFlagMissionStart) == 11552);
+		static_assert(offsetof(ScriptVars, buddyFriendlyPointMissionStart) == 11556);
+		static_assert(offsetof(ScriptVars, reliefVehicleCarryType) == 11572);
+		static_assert(offsetof(ScriptVars, reliefVehicleCarryAttitude) == 11576);
+		static_assert(offsetof(ScriptVars, reliefVehicleCarryLife) == 11592);
+		static_assert(offsetof(ScriptVars, reliefVehicleCarryAmmo) == 11616);
+		static_assert(offsetof(ScriptVars, reliefVehicleCarryState) == 11622);
+		static_assert(offsetof(ScriptVars, buddyType) == 11624);
+		static_assert(offsetof(ScriptVars, obtainedBuddyType) == 11625);
+		static_assert(offsetof(ScriptVars, sortieBuddyType) == 11626);
+		static_assert(offsetof(ScriptVars, disableCallBuddyType) == 11627);
+		static_assert(offsetof(ScriptVars, deadBuddyType) == 11628);
+		static_assert(offsetof(ScriptVars, initialBuddyStatus) == 11629);
+		static_assert(offsetof(ScriptVars, initialBuddyPos) == 11632);
+		static_assert(offsetof(ScriptVars, initialBuddyRotY) == 11644);
+		static_assert(offsetof(ScriptVars, buddyCommonFlag) == 11648);
+		static_assert(offsetof(ScriptVars, buddyMissionFlag) == 11652);
+		static_assert(offsetof(ScriptVars, buddyCallCount) == 11656);
+		static_assert(offsetof(ScriptVars, buddyEspionageCpNames) == 11684);
+		static_assert(offsetof(ScriptVars, buddyFriendlyTimer) == 11716);
+		static_assert(offsetof(ScriptVars, buddyFriendlyPoint) == 11748);
+		static_assert(offsetof(ScriptVars, buddyFriendlyMaxPoint) == 11764);
+		static_assert(offsetof(ScriptVars, buddyFriendlyCount) == 11780);
+		static_assert(offsetof(ScriptVars, buddyQuietEquipType) == 11844);
+		static_assert(offsetof(ScriptVars, buddyQuietCostumeType) == 11846);
+		static_assert(offsetof(ScriptVars, buddyDogFlag) == 11847);
+		static_assert(offsetof(ScriptVars, buddyDogMode) == 11848);
+		static_assert(offsetof(ScriptVars, buddyDogEquipType) == 11849);
+		static_assert(offsetof(ScriptVars, buddyDogEyeType) == 11850);
+		static_assert(offsetof(ScriptVars, buddyDogColorType) == 11851);
+		static_assert(offsetof(ScriptVars, buddyGearAmmoCount) == 11852);
+		static_assert(offsetof(ScriptVars, buddyGearStockAmmoCount) == 11856);
+		static_assert(offsetof(ScriptVars, buddyGearBodyGrade) == 11860);
+		static_assert(offsetof(ScriptVars, buddyGearEquipGrade) == 11861);
+		static_assert(offsetof(ScriptVars, buddyGearReloadGrade) == 11862);
+		static_assert(offsetof(ScriptVars, buddyGearHeadType) == 11863);
+		static_assert(offsetof(ScriptVars, buddyGearHeadGrade) == 11864);
+		static_assert(offsetof(ScriptVars, buddyGearArmType) == 11865);
+		static_assert(offsetof(ScriptVars, buddyGearArmGrade) == 11866);
+		static_assert(offsetof(ScriptVars, buddyGearMainWPType) == 11867);
+		static_assert(offsetof(ScriptVars, buddyGearMainWPGrade) == 11868);
+		static_assert(offsetof(ScriptVars, buddyGearSubWPType) == 11869);
+		static_assert(offsetof(ScriptVars, buddyGearSubWPGrade) == 11870);
+		static_assert(offsetof(ScriptVars, buddyGearColoring0) == 11871);
+		static_assert(offsetof(ScriptVars, buddyGearColoring1) == 11872);
+		static_assert(offsetof(ScriptVars, buddyHorseType) == 11873);
+		static_assert(offsetof(ScriptVars, buddyHorseColorType) == 11874);
+		static_assert(offsetof(ScriptVars, buddyHorseHeadDesignType) == 11875);
+		static_assert(offsetof(ScriptVars, buddyHorseFootDesignType) == 11876);
+		static_assert(offsetof(ScriptVars, battleGearAmmoCountMain) == 11878);
+		static_assert(offsetof(ScriptVars, battleGearAmmoCountSub) == 11882);
+		static_assert(offsetof(ScriptVars, battleGearStockAmmoCountMain) == 11884);
+		static_assert(offsetof(ScriptVars, battleGearStockAmmoCountSub) == 11888);
+		static_assert(offsetof(ScriptVars, battleGearMainWPType) == 11890);
+		static_assert(offsetof(ScriptVars, battleGearMainWPGrade) == 11892);
+		static_assert(offsetof(ScriptVars, battleGearSubWPType) == 11894);
+		static_assert(offsetof(ScriptVars, battleGearSubWPGrade) == 11895);
+		static_assert(offsetof(ScriptVars, battleGearColoring0) == 11896);
+		static_assert(offsetof(ScriptVars, battleGearColoring1) == 11897);
+		static_assert(offsetof(ScriptVars, maxPhase) == 11898);
+		static_assert(offsetof(ScriptVars, playerPhase) == 11899);
+		static_assert(offsetof(ScriptVars, sahelanBrokenMesh) == 11900);
+		static_assert(offsetof(ScriptVars, supportHeliCustomize) == 11904);
+		static_assert(offsetof(ScriptVars, pfRatingPoint) == 11908);
+		static_assert(offsetof(ScriptVars, mbmTppGmp) == 11912);
+		static_assert(offsetof(ScriptVars, mbmServerWalletGmp) == 11916);
+		static_assert(offsetof(ScriptVars, mbmTppHeroicPoint) == 11920);
+		static_assert(offsetof(ScriptVars, missionHeroicPoint) == 11924);
+		static_assert(offsetof(ScriptVars, mbmTppOgrePoint) == 11928);
+		static_assert(offsetof(ScriptVars, missionOgrePoint) == 11932);
+		static_assert(offsetof(ScriptVars, mbmRequestMisogi) == 11936);
+		static_assert(offsetof(ScriptVars, mbmTppTotalIncomeGmp) == 11940);
+		static_assert(offsetof(ScriptVars, mbmIsOpenedCombatSection) == 11944);
+		static_assert(offsetof(ScriptVars, mbmIsOpenedBaseDevSection) == 11945);
+		static_assert(offsetof(ScriptVars, mbmIsOpenedSpySection) == 11946);
+		static_assert(offsetof(ScriptVars, mbmIsOpenedMedicalSection) == 11947);
+		static_assert(offsetof(ScriptVars, mbmIsOpenedSecuritySection) == 11948);
+		static_assert(offsetof(ScriptVars, mbmIsOpenedHospitalSection) == 11949);
+		static_assert(offsetof(ScriptVars, mbmIsOpenedPrisonSection) == 11950);
+		static_assert(offsetof(ScriptVars, mbmIsOpenedSeparationSection) == 11951);
+		static_assert(offsetof(ScriptVars, mbmSectionFuncSvars) == 11952);
+		static_assert(offsetof(ScriptVars, mbmAutoGmpElapsedTimeMinuteSvars) == 11994);
+		static_assert(offsetof(ScriptVars, mbmAutoResourceElapsedTimeMinuteSvars) == 11995);
+		static_assert(offsetof(ScriptVars, mbmCommonMetalProcessingElapsedTimeMinute) == 11996);
+		static_assert(offsetof(ScriptVars, mbmMinorMetalProcessingElapsedTimeMinute) == 11997);
+		static_assert(offsetof(ScriptVars, mbmPreciousMetalProcessingElapsedTimeMinute) == 11998);
+		static_assert(offsetof(ScriptVars, mbmFuelResourceProcessingElapsedTimeMinute) == 11999);
+		static_assert(offsetof(ScriptVars, mbmBioticResourceProcessingElapsedTimeMinute) == 12000);
+		static_assert(offsetof(ScriptVars, isRussianTranslatable) == 12001);
+		static_assert(offsetof(ScriptVars, isPashtoTranslatable) == 12002);
+		static_assert(offsetof(ScriptVars, isAfrikaansTranslatable) == 12003);
+		static_assert(offsetof(ScriptVars, isKikongoTranslatable) == 12004);
+		static_assert(offsetof(ScriptVars, mbmTreatmentElapsedTimeMinute) == 12005);
+		static_assert(offsetof(ScriptVars, mbmBecomeCombatSectionLvMax) == 12006);
+		static_assert(offsetof(ScriptVars, mbmBecomeDevelopSectionLvMax) == 12007);
+		static_assert(offsetof(ScriptVars, mbmBecomeBaseDevSectionLvMax) == 12008);
+		static_assert(offsetof(ScriptVars, mbmBecomeSupportSectionLvMax) == 12009);
+		static_assert(offsetof(ScriptVars, mbmBecomeSpySectionLvMax) == 12010);
+		static_assert(offsetof(ScriptVars, mbmBecomeMedicalSectionLvMax) == 12011);
+		static_assert(offsetof(ScriptVars, mbmBecomeSecuritySectionLvMax) == 12012);
+		static_assert(offsetof(ScriptVars, mbmBecomeAllSectionLvMax) == 12013);
+		static_assert(offsetof(ScriptVars, mbmHighestTotalSectionLv) == 12014);
+		static_assert(offsetof(ScriptVars, mbmStaffSyncVersion) == 12016);
+		static_assert(offsetof(ScriptVars, mbmStaffSvarsHeaders) == 12020);
+		static_assert(offsetof(ScriptVars, mbmStaffSvarsSeeds) == 26020);
+		static_assert(offsetof(ScriptVars, mbmStaffSvarsStatusesSync) == 40020);
+		static_assert(offsetof(ScriptVars, mbmStaffSvarsStatusesNoSync) == 54020);
+		static_assert(offsetof(ScriptVars, mbmStaffSkillGots) == 61020);
+		static_assert(offsetof(ScriptVars, mbmStaffSortKeysSvars) == 61107);
+		static_assert(offsetof(ScriptVars, mbmStaffSortDirsSvars) == 61120);
+		static_assert(offsetof(ScriptVars, mbmStaffListMainListModeSvars) == 61133);
+		static_assert(offsetof(ScriptVars, mbmStaffListAssignListModeSvars) == 61134);
+		static_assert(offsetof(ScriptVars, mbmEnmityElapsedTimeMinuteSvars) == 61135);
+		static_assert(offsetof(ScriptVars, mbmMoraleElapsedTimeMinuteSvars) == 61136);
+		static_assert(offsetof(ScriptVars, mbmLanguageElapsedTimeMinuteSvars) == 61137);
+		static_assert(offsetof(ScriptVars, mbmEnableStaffInitLangKikongo) == 61138);
+		static_assert(offsetof(ScriptVars, mbmPandemicEventMode) == 61139);
+		static_assert(offsetof(ScriptVars, mbmPandemicElapsedTimeMinuteSvars) == 61140);
+		static_assert(offsetof(ScriptVars, mbmPandemicSpreadAttackLimitCount) == 61142);
+		static_assert(offsetof(ScriptVars, mbmPandemicSpreadAttackCount) == 61144);
+		static_assert(offsetof(ScriptVars, mbmDisableKikongoFirst) == 61146);
+		static_assert(offsetof(ScriptVars, mbmMasterGunsmithSkill) == 61147);
+		static_assert(offsetof(ScriptVars, mbmBipedalismWeaponDevelopmentSkill) == 61148);
+		static_assert(offsetof(ScriptVars, mbmBanHeuy) == 61149);
+		static_assert(offsetof(ScriptVars, mbmAssignableMiller) == 61150);
+		static_assert(offsetof(ScriptVars, mbmLockedTanFlag) == 61151);
+		static_assert(offsetof(ScriptVars, mbmStaffInitEnmityLv) == 61152);
+		static_assert(offsetof(ScriptVars, mbmEquipParamStatus) == 61154);
+		static_assert(offsetof(ScriptVars, mbmOnlineOffsetEquipParamStatus) == 62178);
+		static_assert(offsetof(ScriptVars, mbmEquipDevelopIndices) == 63202);
+		static_assert(offsetof(ScriptVars, mbmEquipDevelopTimes) == 63224);
+		static_assert(offsetof(ScriptVars, mbmWeaponPartsReceiverStatus) == 63264);
+		static_assert(offsetof(ScriptVars, mbmWeaponPartsBarrelStatus) == 63498);
+		static_assert(offsetof(ScriptVars, mbmWeaponPartsMagazineStatus) == 63613);
+		static_assert(offsetof(ScriptVars, mbmWeaponPartsStockStatus) == 63805);
+		static_assert(offsetof(ScriptVars, mbmWeaponPartsMuzzleStatus) == 63848);
+		static_assert(offsetof(ScriptVars, mbmWeaponPartsMuzzleOptionStatus) == 63877);
+		static_assert(offsetof(ScriptVars, mbmWeaponPartsSightStatus) == 63917);
+		static_assert(offsetof(ScriptVars, mbmWeaponPartsUnderBarrelStatus) == 63942);
+		static_assert(offsetof(ScriptVars, mbmWeaponPartsLightStatus) == 63965);
+		static_assert(offsetof(ScriptVars, mbmServerDevelopCount) == 63976);
+		static_assert(offsetof(ScriptVars, mbmServerDevelopIds) == 63978);
+		static_assert(offsetof(ScriptVars, mbmServerDevelopUsageGmpCosts) == 64618);
+		static_assert(offsetof(ScriptVars, mbmServerDevelopUsageResourceType1s) == 65258);
+		static_assert(offsetof(ScriptVars, mbmServerDevelopUsageResourceType1Counts) == 65578);
+		static_assert(offsetof(ScriptVars, mbmServerDevelopUsageResourceType2s) == 66218);
+		static_assert(offsetof(ScriptVars, mbmServerDevelopUsageResourceType2Counts) == 66538);
+		static_assert(offsetof(ScriptVars, mbmFobSvars) == 67180);
+		static_assert(offsetof(ScriptVars, mbmClusterSvars) == 67196);
+		static_assert(offsetof(ScriptVars, mbmClusterTimeMinutes) == 67268);
+		static_assert(offsetof(ScriptVars, mbmCompMb) == 67408);
+		static_assert(offsetof(ScriptVars, doesNotRestoreCommandClusterGradeFromLayoutCode) == 67409);
+		static_assert(offsetof(ScriptVars, mbmSecurityClusterSvars) == 67412);
+		static_assert(offsetof(ScriptVars, mbmSecuritySpecialPlatformSoldierCounts) == 67552);
+		static_assert(offsetof(ScriptVars, mbmSecuritySpecialPlatformIrSensorCounts) == 67587);
+		static_assert(offsetof(ScriptVars, mbmSecuritySpecialPlatformAntitheftCounts) == 67622);
+		static_assert(offsetof(ScriptVars, mbmSecuritySpecialPlatformCameraCounts) == 67657);
+		static_assert(offsetof(ScriptVars, mbmSecuritySpecialPlatformDecoyCounts) == 67692);
+		static_assert(offsetof(ScriptVars, mbmSecuritySpecialPlatformMineCounts) == 67727);
+		static_assert(offsetof(ScriptVars, mbmSecuritySpecialPlatformUavCounts) == 67762);
+		static_assert(offsetof(ScriptVars, mbmSecuritySpecialPlatformCautionAreaSvars) == 67800);
+		static_assert(offsetof(ScriptVars, mbmSecuritySpecialPlatformPlacedFreeMineCounts) == 67940);
+		static_assert(offsetof(ScriptVars, mbmSecuritySpecialPlatformPlacedFreeCameraCounts) == 67975);
+		static_assert(offsetof(ScriptVars, mbmSecurityCommonPlatform1SoldierCounts) == 68010);
+		static_assert(offsetof(ScriptVars, mbmSecurityCommonPlatform1IrSensorCounts) == 68045);
+		static_assert(offsetof(ScriptVars, mbmSecurityCommonPlatform1AntitheftCounts) == 68080);
+		static_assert(offsetof(ScriptVars, mbmSecurityCommonPlatform1CameraCounts) == 68115);
+		static_assert(offsetof(ScriptVars, mbmSecurityCommonPlatform1DecoyCounts) == 68150);
+		static_assert(offsetof(ScriptVars, mbmSecurityCommonPlatform1MineCounts) == 68185);
+		static_assert(offsetof(ScriptVars, mbmSecurityCommonPlatform1UavCounts) == 68220);
+		static_assert(offsetof(ScriptVars, mbmSecurityCommonPlatform1CautionAreaSvars) == 68256);
+		static_assert(offsetof(ScriptVars, mbmSecurityCommonPlatform1PlacedFreeMineCounts) == 68396);
+		static_assert(offsetof(ScriptVars, mbmSecurityCommonPlatform1PlacedFreeCameraCounts) == 68431);
+		static_assert(offsetof(ScriptVars, mbmSecurityCommonPlatform2SoldierCounts) == 68466);
+		static_assert(offsetof(ScriptVars, mbmSecurityCommonPlatform2IrSensorCounts) == 68501);
+		static_assert(offsetof(ScriptVars, mbmSecurityCommonPlatform2AntitheftCounts) == 68536);
+		static_assert(offsetof(ScriptVars, mbmSecurityCommonPlatform2CameraCounts) == 68571);
+		static_assert(offsetof(ScriptVars, mbmSecurityCommonPlatform2DecoyCounts) == 68606);
+		static_assert(offsetof(ScriptVars, mbmSecurityCommonPlatform2MineCounts) == 68641);
+		static_assert(offsetof(ScriptVars, mbmSecurityCommonPlatform2UavCounts) == 68676);
+		static_assert(offsetof(ScriptVars, mbmSecurityCommonPlatform2CautionAreaSvars) == 68712);
+		static_assert(offsetof(ScriptVars, mbmSecurityCommonPlatform2PlacedFreeMineCounts) == 68852);
+		static_assert(offsetof(ScriptVars, mbmSecurityCommonPlatform2PlacedFreeCameraCounts) == 68887);
+		static_assert(offsetof(ScriptVars, mbmSecurityCommonPlatform3SoldierCounts) == 68922);
+		static_assert(offsetof(ScriptVars, mbmSecurityCommonPlatform3IrSensorCounts) == 68957);
+		static_assert(offsetof(ScriptVars, mbmSecurityCommonPlatform3AntitheftCounts) == 68992);
+		static_assert(offsetof(ScriptVars, mbmSecurityCommonPlatform3CameraCounts) == 69027);
+		static_assert(offsetof(ScriptVars, mbmSecurityCommonPlatform3DecoyCounts) == 69062);
+		static_assert(offsetof(ScriptVars, mbmSecurityCommonPlatform3MineCounts) == 69097);
+		static_assert(offsetof(ScriptVars, mbmSecurityCommonPlatform3UavCounts) == 69132);
+		static_assert(offsetof(ScriptVars, mbmSecurityCommonPlatform3CautionAreaSvars) == 69168);
+		static_assert(offsetof(ScriptVars, mbmSecurityCommonPlatform3PlacedFreeMineCounts) == 69308);
+		static_assert(offsetof(ScriptVars, mbmSecurityCommonPlatform3PlacedFreeCameraCounts) == 69343);
+		static_assert(offsetof(ScriptVars, mbmSecuritySpecialPlatformSvars) == 69380);
+		static_assert(offsetof(ScriptVars, mbmSecurityCommonPlatform1Svars) == 69520);
+		static_assert(offsetof(ScriptVars, mbmSecurityCommonPlatform2Svars) == 69660);
+		static_assert(offsetof(ScriptVars, mbmSecurityCommonPlatform3Svars) == 69800);
+		static_assert(offsetof(ScriptVars, mbmInitializedServerWalletFlagDay1) == 69940);
+		static_assert(offsetof(ScriptVars, mbmIsInitializedDay50) == 69941);
+		static_assert(offsetof(ScriptVars, mbmNuclearWeaponLocalCountPatchingDay50) == 69944);
+		static_assert(offsetof(ScriptVars, mbmNuclearSynchronizedDay50) == 69948);
+		static_assert(offsetof(ScriptVars, mbmResourceSyncVersion) == 69952);
+		static_assert(offsetof(ScriptVars, mbmResourceSvars1Fix) == 69956);
+		static_assert(offsetof(ScriptVars, mbmResourceSvars2Fix) == 70192);
+		static_assert(offsetof(ScriptVars, mbmResourceSvars1Diff) == 70428);
+		static_assert(offsetof(ScriptVars, mbmResourceSvars2Diff) == 70664);
+		static_assert(offsetof(ScriptVars, mbmResourceCompensateCounts) == 70900);
+		static_assert(offsetof(ScriptVars, mbmWhiteContainerCountsSvarsFix) == 71136);
+		static_assert(offsetof(ScriptVars, mbmWhiteContainerCountsSvarsDiff) == 71156);
+		static_assert(offsetof(ScriptVars, mbmRedContainerCountsSvarsFix) == 71176);
+		static_assert(offsetof(ScriptVars, mbmRedContainerCountsSvarsDiff) == 71196);
+		static_assert(offsetof(ScriptVars, mbmOpenedWalkerGear) == 71216);
+		static_assert(offsetof(ScriptVars, mbmDataBaseSvars) == 71217);
+		static_assert(offsetof(ScriptVars, mbmCompAnimal) == 71676);
+		static_assert(offsetof(ScriptVars, mbmCompDesign) == 71677);
+		static_assert(offsetof(ScriptVars, mbmCompPhoto) == 71678);
+		static_assert(offsetof(ScriptVars, mbmDeployMissionsSvars) == 71680);
+		static_assert(offsetof(ScriptVars, mbmDeployMissionAveRanksSvars) == 71964);
+		static_assert(offsetof(ScriptVars, mbmDeployTeamCombatStaffCounts) == 72036);
+		static_assert(offsetof(ScriptVars, mbmDeployTeamCombatStaffRankTops) == 72058);
+		static_assert(offsetof(ScriptVars, mbmDeployTeamCombatStaffRankBottoms) == 72069);
+		static_assert(offsetof(ScriptVars, mbmDeployTeamSubStaffCounts) == 72080);
+		static_assert(offsetof(ScriptVars, mbmDeployTeamSubStaffRankTops) == 72102);
+		static_assert(offsetof(ScriptVars, mbmDeployTeamSubStaffRankBottoms) == 72113);
+		static_assert(offsetof(ScriptVars, mbmDeployTeamCombatPoints) == 72124);
+		static_assert(offsetof(ScriptVars, mbmDeployTeamSubPoints) == 72168);
+		static_assert(offsetof(ScriptVars, mbmDeployTeamSvarsTimeMinute) == 72212);
+		static_assert(offsetof(ScriptVars, mbmDeployTeamSvars4wdEastCount) == 72256);
+		static_assert(offsetof(ScriptVars, mbmDeployTeamSvars4wdWestCount) == 72278);
+		static_assert(offsetof(ScriptVars, mbmDeployTeamSvarsTruckEastCount) == 72300);
+		static_assert(offsetof(ScriptVars, mbmDeployTeamSvarsTruckWestCount) == 72322);
+		static_assert(offsetof(ScriptVars, mbmDeployTeamSvarsArmoredVehicleEastCount) == 72344);
+		static_assert(offsetof(ScriptVars, mbmDeployTeamSvarsArmoredVehicleWestCount) == 72366);
+		static_assert(offsetof(ScriptVars, mbmDeployTeamSvarsArmoredVehicleEastRocketCount) == 72388);
+		static_assert(offsetof(ScriptVars, mbmDeployTeamSvarsWheeledArmoredVehicleWestCount) == 72410);
+		static_assert(offsetof(ScriptVars, mbmDeployTeamSvarsTankEastCount) == 72432);
+		static_assert(offsetof(ScriptVars, mbmDeployTeamSvarsTankWestCount) == 72454);
+		static_assert(offsetof(ScriptVars, mbmDeployTeamSvarsWalkerGearProtoHeuyCount) == 72476);
+		static_assert(offsetof(ScriptVars, mbmDeployTeamSvarsWalkerGearSovietBattleCount) == 72498);
+		static_assert(offsetof(ScriptVars, mbmDeployTeamSvarsWalkerGearSovietSupportCount) == 72520);
+		static_assert(offsetof(ScriptVars, mbmDeployTeamSvarsWalkerGearCfaBattleCount) == 72542);
+		static_assert(offsetof(ScriptVars, mbmDeployTeamSvarsWalkerGearCfaSupportCount) == 72564);
+		static_assert(offsetof(ScriptVars, mbmDeployRandomMissionSeedSvars) == 72588);
+		static_assert(offsetof(ScriptVars, mbmDeploySequentialMissionIdSvars) == 72592);
+		static_assert(offsetof(ScriptVars, mbmDeploySequentialMissionIdLimitSvars) == 72594);
+		static_assert(offsetof(ScriptVars, mbmClearedDeployRevengeMissionFlags) == 72596);
+		static_assert(offsetof(ScriptVars, mbmDeployableBattleGear) == 72610);
+		static_assert(offsetof(ScriptVars, mbmBattleGearDeployingTeam) == 72611);
+		static_assert(offsetof(ScriptVars, mbmAddDeployLogIndex) == 72612);
+		static_assert(offsetof(ScriptVars, mbmCompSequential) == 72613);
+		static_assert(offsetof(ScriptVars, mbmNewestNRandomMissionId) == 72614);
+		static_assert(offsetof(ScriptVars, mbmNewestRRandomMissionId) == 72616);
+		static_assert(offsetof(ScriptVars, mbmOpenedRRandomMission) == 72618);
+		static_assert(offsetof(ScriptVars, mbmNRandomMissionClearedCount) == 72619);
+		static_assert(offsetof(ScriptVars, mbmIsCancelAllDeploy) == 72620);
+		static_assert(offsetof(ScriptVars, mbmClearedCountOfflineDeploy) == 72624);
+		static_assert(offsetof(ScriptVars, mbmClearedCountOnlineDeploy) == 72628);
+		static_assert(offsetof(ScriptVars, mbmPoolRewardsSyncVersion) == 72632);
+		static_assert(offsetof(ScriptVars, mbmPoolRewardsSvars) == 72636);
+		static_assert(offsetof(ScriptVars, mbmPoolRewardSourceIds) == 73436);
+		static_assert(offsetof(ScriptVars, mbmPoolRewardSeeds) == 74236);
+		static_assert(offsetof(ScriptVars, mbmPoolRewardValues) == 74636);
+		static_assert(offsetof(ScriptVars, mbmS10081CaptiveStaffSvarsSeed) == 75436);
+		static_assert(offsetof(ScriptVars, mbmS10081CaptiveStaffSvarsHeader) == 75440);
+		static_assert(offsetof(ScriptVars, mbmS10081CaptiveStaffSvarsStatusSync) == 75444);
+		static_assert(offsetof(ScriptVars, mbmS10081CaptiveStaffSvarsStatusNoSync) == 75448);
+		static_assert(offsetof(ScriptVars, mbmRemoverSvarsHeaders) == 75452);
+		static_assert(offsetof(ScriptVars, mbmRemoverSvarsSeeds) == 75708);
+		static_assert(offsetof(ScriptVars, mbmRemoverSvarsStatusesSync) == 75964);
+		static_assert(offsetof(ScriptVars, mbmRemoverSvarsStatusesNoSync) == 76220);
+		static_assert(offsetof(ScriptVars, mbmRemoverReasons) == 76348);
+		static_assert(offsetof(ScriptVars, mbmAddRemoverIndexSvars) == 76412);
+		static_assert(offsetof(ScriptVars, mbmDeployRewardSyncVersion) == 76416);
+		static_assert(offsetof(ScriptVars, mbmSecuritySystemLevelsDeveloped) == 76420);
+		static_assert(offsetof(ScriptVars, mbmAnimalHabitatAfghSvars) == 76436);
+		static_assert(offsetof(ScriptVars, mbmAnimalHabitatMafrSvars) == 76500);
+		static_assert(offsetof(ScriptVars, mbmIsOccupation) == 76564);
+		static_assert(offsetof(ScriptVars, mbmRequestDemoAttackedFromOtherPlayer) == 76565);
+		static_assert(offsetof(ScriptVars, mbmDemoAttackedFromOtherPlayerKnowWhereFrom) == 76566);
+		static_assert(offsetof(ScriptVars, mbmFobDefenseWinCount) == 76568);
+		static_assert(offsetof(ScriptVars, mbmFobDefenseLoseCount) == 76572);
+		static_assert(offsetof(ScriptVars, mbmIsContractOutDisplayed) == 76576);
+		static_assert(offsetof(ScriptVars, mbmIsEnableNuclearDevelop) == 76577);
+		static_assert(offsetof(ScriptVars, mbmIsNuclearDeveloped) == 76578);
+		static_assert(offsetof(ScriptVars, mbmIsNuclearDiscarded) == 76579);
+		static_assert(offsetof(ScriptVars, mbmIsNuclearDeveloping) == 76580);
+		static_assert(offsetof(ScriptVars, mbmNuclearDevelopTime) == 76584);
+		static_assert(offsetof(ScriptVars, mbmNuclearDevelopMaxTime) == 76588);
+		static_assert(offsetof(ScriptVars, mbmNuclearDevelopStartTime) == 76592);
+		static_assert(offsetof(ScriptVars, mbmPdTotalAddedHostageStaffCount) == 76596);
+		static_assert(offsetof(ScriptVars, mbmPdTotalAddedSoldierStaffCount) == 76600);
+		static_assert(offsetof(ScriptVars, mbmPdTotalAddedVolunteerStaffCount) == 76604);
+		static_assert(offsetof(ScriptVars, mbmPdTotalDeadStaffCount) == 76608);
+		static_assert(offsetof(ScriptVars, mbmPdTotalDefectionCount) == 76612);
+		static_assert(offsetof(ScriptVars, mbmPdTotalFireCount) == 76616);
+		static_assert(offsetof(ScriptVars, mbmPdTotalAddedGmpT) == 76620);
+		static_assert(offsetof(ScriptVars, mbmPdTotalAddedGmp) == 76624);
+		static_assert(offsetof(ScriptVars, mbmPdTotalSubtractedGmpT) == 76628);
+		static_assert(offsetof(ScriptVars, mbmPdTotalSubtractedGmp) == 76632);
+		static_assert(offsetof(ScriptVars, mbmPdTotalAddedHeroicPoint) == 76636);
+		static_assert(offsetof(ScriptVars, mbmPdTotalSubtractedHeroicPoint) == 76640);
+		static_assert(offsetof(ScriptVars, mbmPdTotalAddedResourceCounts) == 76644);
+		static_assert(offsetof(ScriptVars, mbmPdTotalAddedAnimalCounts) == 76880);
+		static_assert(offsetof(ScriptVars, mbmCurrentNamePlateId) == 77276);
+		static_assert(offsetof(ScriptVars, mbmNamePlateGotFlags) == 77280);
+		static_assert(offsetof(ScriptVars, mbmNamePlateNewFlags) == 77288);
+		static_assert(offsetof(ScriptVars, mbmHeroThreshold) == 77296);
+		static_assert(offsetof(ScriptVars, mbmNotHeroThreshold) == 77300);
+		static_assert(offsetof(ScriptVars, mbmPfRatingSaveSeason) == 77304);
+		static_assert(offsetof(ScriptVars, mbmPfRatingReadAttackMatchFlag) == 77306);
+		static_assert(offsetof(ScriptVars, mbmPfRatingReadDefenseMatchFlag) == 77308);
+		static_assert(offsetof(ScriptVars, mbmPfRatingMatchSections) == 77310);
+		static_assert(offsetof(ScriptVars, mbmPfRatingRankingSaveSection) == 77325);
+		static_assert(offsetof(ScriptVars, mbmPfRatingRankingPlayerRanks) == 77326);
+		static_assert(offsetof(ScriptVars, mbmPfRatingRankingPlayerRankDiffs) == 77342);
+		static_assert(offsetof(ScriptVars, mbmPfRatingRankingPlayerIds) == 77360);
+		static_assert(offsetof(ScriptVars, mbmPfRatingCommonFlag) == 77424);
+		static_assert(offsetof(ScriptVars, mbmPfRatingShortSaveSeason) == 77426);
+		static_assert(offsetof(ScriptVars, mbmPfRatingShortReadAttackMatchFlag) == 77428);
+		static_assert(offsetof(ScriptVars, mbmPfRatingShortReadDefenseMatchFlag) == 77430);
+		static_assert(offsetof(ScriptVars, mbmPfRatingShortMatchSections) == 77432);
+		static_assert(offsetof(ScriptVars, mbmPfRatingShortRankingSaveSection) == 77447);
+		static_assert(offsetof(ScriptVars, mbmPfRatingShortRankingPlayerRanks) == 77448);
+		static_assert(offsetof(ScriptVars, mbmPfRatingShortRankingPlayerRankDiffs) == 77464);
+		static_assert(offsetof(ScriptVars, mbmPfRatingShortRankingPlayerIds) == 77480);
+		static_assert(offsetof(ScriptVars, mbmChallengeTaskCompleteFlags) == 77544);
+		static_assert(offsetof(ScriptVars, mbmChallengeTaskRewardReceiveFlags) == 77604);
+		static_assert(offsetof(ScriptVars, mbmChallengeTaskOnlineVersionWindowOpen) == 77664);
+		static_assert(offsetof(ScriptVars, mbmServerRankingRecordedFlags) == 77668);
+		static_assert(offsetof(ScriptVars, mbmServerRankingScores) == 77776);
+		static_assert(offsetof(ScriptVars, mbmBaseColorGotFlag) == 78200);
+		static_assert(offsetof(ScriptVars, mbmBaseColorNewFlag) == 78204);
+		static_assert(offsetof(ScriptVars, mbmDlcWeaponColorGotFlag) == 78208);
+		static_assert(offsetof(ScriptVars, mbmDlcWeaponColorGotFlag2) == 78212);
+		static_assert(offsetof(ScriptVars, mbmDlcWeaponColorNewFlag) == 78216);
+		static_assert(offsetof(ScriptVars, mbmDlcWeaponColorNewFlag2) == 78220);
+		static_assert(offsetof(ScriptVars, mbmIsVisitedFobDeployWelcomeMessage1) == 78224);
+		static_assert(offsetof(ScriptVars, mbmIsVisitedFobDeployWelcomeMessage2) == 78225);
+		static_assert(offsetof(ScriptVars, mbmFobDeployCheckBoxes) == 78226);
+		static_assert(offsetof(ScriptVars, mbmFobDeployGradeSelectorIndexes) == 78232);
+		static_assert(offsetof(ScriptVars, optionSelectedIndices) == 78238);
+		static_assert(offsetof(ScriptVars, armRocketYIsReverse) == 78270);
+		static_assert(offsetof(ScriptVars, armRocketXIsReverse) == 78271);
+		static_assert(offsetof(ScriptVars, bgmVolume) == 78272);
+		static_assert(offsetof(ScriptVars, keyStr) == 78276);
+		static_assert(offsetof(ScriptVars, buttonNo) == 78756);
+		static_assert(offsetof(ScriptVars, keybordNo) == 79236);
+		static_assert(offsetof(ScriptVars, pushToTalk) == 79716);
+		static_assert(offsetof(ScriptVars, checkPointGimmickIndelibleCount) == 79717);
+		static_assert(offsetof(ScriptVars, checkPointGimmickIndelibleName) == 79720);
+		static_assert(offsetof(ScriptVars, checkPointGimmickIndelibleState) == 79976);
+		static_assert(offsetof(ScriptVars, missionStartGimmickIndelibleCount) == 80040);
+		static_assert(offsetof(ScriptVars, missionStartGimmickIndelibleName) == 80044);
+		static_assert(offsetof(ScriptVars, missionStartGimmickIndelibleState) == 80300);
+		static_assert(offsetof(ScriptVars, checkPointGimmickPermanentGimmickSaveData) == 80364);
+		static_assert(offsetof(ScriptVars, missionStartGimmickPermanentGimmickSaveData) == 82956);
+		static_assert(offsetof(ScriptVars, cloakEnabled) == 85549);
+		static_assert(offsetof(ScriptVars, supCboxSaveFormVersion) == 85551);
+		static_assert(offsetof(ScriptVars, supCboxPhaseForSave) == 85552);
+		static_assert(offsetof(ScriptVars, supCboxDropType) == 85553);
+		static_assert(offsetof(ScriptVars, supCboxEquipId) == 85556);
+		static_assert(offsetof(ScriptVars, supCboxPartsType) == 85560);
+		static_assert(offsetof(ScriptVars, supCboxPos) == 85564);
+		static_assert(offsetof(ScriptVars, supCboxRot) == 85576);
+		static_assert(offsetof(ScriptVars, supCboxLevelWait) == 85592);
+		static_assert(offsetof(ScriptVars, supCboxAdvancedRate) == 85596);
+		static_assert(offsetof(ScriptVars, supCboxFallHeight) == 85600);
+		static_assert(offsetof(ScriptVars, supCboxLevels) == 85604);
+		static_assert(offsetof(ScriptVars, supCboxFlags) == 85617);
+		static_assert(offsetof(ScriptVars, supCboxU8buf) == 85618);
+		static_assert(offsetof(ScriptVars, supCboxU16buf) == 85734);
+		static_assert(offsetof(ScriptVars, supCboxU32buf) == 85808);
+		static_assert(offsetof(ScriptVars, supCboxLocationOnSave) == 85876);
+		static_assert(offsetof(ScriptVars, supAttackStateForSave) == 85878);
+		static_assert(offsetof(ScriptVars, supAttackAttackType) == 85879);
+		static_assert(offsetof(ScriptVars, supAttackPos) == 85880);
+		static_assert(offsetof(ScriptVars, supAttackRot) == 85892);
+		static_assert(offsetof(ScriptVars, supAttackLevelWait) == 85908);
+		static_assert(offsetof(ScriptVars, supAttackLevelAttack) == 85909);
+		static_assert(offsetof(ScriptVars, supAttackFlags) == 85910);
+		static_assert(offsetof(ScriptVars, supAttackCommonValue) == 85912);
+		static_assert(offsetof(ScriptVars, supAttackWaitTime) == 85916);
+		static_assert(offsetof(ScriptVars, supAttackLocationOnSave) == 85920);
+		static_assert(offsetof(ScriptVars, stealthAssistLeftCount) == 85922);
+		static_assert(offsetof(ScriptVars, tppTransferFlag) == 85924);
+		static_assert(offsetof(ScriptVars, tppTransferAcquiredFlag) == 85928);
+		static_assert(offsetof(ScriptVars, dlcPermittedFlag) == 85932);
+		static_assert(offsetof(ScriptVars, dlcAcquiredFlag) == 85940);
+		static_assert(offsetof(ScriptVars, mbDvcTutorialFlag) == 85948);
+		static_assert(offsetof(ScriptVars, mbDvcTopMenuFlag) == 85952);
+		static_assert(offsetof(ScriptVars, heliMusicType) == 85956);
+		static_assert(offsetof(ScriptVars, heliMusicTrackID) == 85960);
+		static_assert(offsetof(ScriptVars, radioReadFlagGlobalScoped) == 85964);
+		static_assert(offsetof(ScriptVars, markerLocatorInfos) == 86764);
+		static_assert(offsetof(ScriptVars, tipsReadFlag) == 87164);
+		static_assert(offsetof(ScriptVars, userMarkerPosX) == 87364);
+		static_assert(offsetof(ScriptVars, userMarkerPosY) == 87384);
+		static_assert(offsetof(ScriptVars, userMarkerPosZ) == 87404);
+		static_assert(offsetof(ScriptVars, userMarkerAddFlag) == 87424);
+		static_assert(offsetof(ScriptVars, userMarkerGameObjId) == 87434);
+		static_assert(offsetof(ScriptVars, userMarkerLocationId) == 87444);
+		static_assert(offsetof(ScriptVars, userMarkerSaveCount) == 87446);
+		static_assert(offsetof(ScriptVars, fobResultRankingDateTime) == 87448);
+		static_assert(offsetof(ScriptVars, fobResultRankingPrevRanks) == 87452);
+		static_assert(offsetof(ScriptVars, fobEventResultRankingDateTime) == 87468);
+		static_assert(offsetof(ScriptVars, fobEventResultRankingPrevRanks) == 87472);
 	}
 
 	namespace tpp::gm::player

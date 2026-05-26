@@ -506,8 +506,8 @@ namespace fobs
 
 				s.own_lobby_info.name_plate_id = option->name_plate_id;
 
-				const auto emblem = game::fox::GetQuarkSystemTable()->applicationSystem->scriptVars->emblem;
-				std::memcpy(&s.own_lobby_info.emblem, &emblem, sizeof(game::tpp::mbm::PlayerBasicInfo::Emblem));
+				const auto script_vars = game::fox::GetQuarkSystemTable()->applicationSystem->scriptVars;
+				std::memcpy(&s.own_lobby_info.emblem.texture_tag, &script_vars->emblemTextureTag, sizeof(game::tpp::mbm::PlayerBasicInfo::Emblem));
 
 				update_lobby(s);
 			});
@@ -521,15 +521,19 @@ namespace fobs
 			{
 				std::memset(s.own_lobby_info.staff_count, 0, sizeof(s.own_lobby_info.staff_count));
 
-				for (auto i = 0; i < option->soldier_num; i++)
+				const auto system_table = game::fox::GetQuarkSystemTable();
+				if (system_table == nullptr ||
+					system_table->applicationSystem == nullptr ||
+					system_table->applicationSystem->motherBaseManagementSystem == nullptr)
 				{
-					auto staff = option->soldier_param[i];
-					staff.fields.header.data = _byteswap_ulong(staff.fields.header.data);
-					staff.fields.status_sync.data = _byteswap_ulong(staff.fields.status_sync.data);
-					if (staff.fields.status_sync.fields.designation >= 1 && staff.fields.status_sync.fields.designation <= 7)
-					{
-						s.own_lobby_info.staff_count[staff.fields.header.fields.peak_rank]++;
-					}
+					return;
+				}
+
+				const auto staff_controller = system_table->applicationSystem->motherBaseManagementSystem->staffController;
+				for (auto i = 0; i < staff_controller->staffCount; i++)
+				{
+					const auto header = staff_controller->mbmStaffSvarsHeaders[i];
+					s.own_lobby_info.staff_count[header.fields.peak_rank]++;
 				}
 
 				update_lobby(s);
