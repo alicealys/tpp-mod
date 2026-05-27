@@ -281,7 +281,10 @@ namespace fobs
 				s.lobby_list.emplace_back(lobby);
 			};
 
-			s.lobby_list.emplace_back(s.own_lobby_info);
+			if (s.own_lobby_id.bits != 0)
+			{
+				s.lobby_list.emplace_back(s.own_lobby_info);
+			}
 
 			for (auto i = 0; i < num_lobbies; i++)
 			{

@@ -18,6 +18,7 @@ namespace staff
 		vars::var_ptr var_cheat_unlockall_gear;
 		vars::var_ptr var_cheat_unlockall_items;
 		vars::var_ptr var_cheat_disable_reporting;
+		vars::var_ptr var_cheat_develop_limit;
 
 		void modify_stats_internal(game::tpp::mbm::impl::StaffControllerImpl::StaffHeader* header,
 			game::tpp::mbm::impl::StaffControllerImpl::StaffStatusSync* status, const std::uint32_t index)
@@ -231,6 +232,33 @@ namespace staff
 			a.jmp(SELECT_VALUE_LANG(0x1408335B4, 0x1408331E4));
 		}
 
+		int get_develop_limit()
+		{
+			return var_cheat_develop_limit->current.get_int();
+		}
+
+		void cmd_get_server_item_list_result_unpack_stub2(utils::hook::assembler& a)
+		{
+			a.call(SELECT_VALUE_LANG(0x141A0B8F0, 0x141A0BA10));
+			a.mov(rcx, rax);
+			a.call(SELECT_VALUE_LANG(0x141A0BEC0, 0x141A0BFE0));
+
+			a.push(eax);
+			a.push(rcx);
+			a.pushad64();
+			a.call_aligned(get_develop_limit);
+			a.mov(qword_ptr(rsp, 0x80), rax);
+			a.popad64();
+			a.pop(rcx);
+			a.pop(eax);
+
+			a.test(ecx, ecx);
+			a.cmovnz(eax, ecx);
+
+			a.mov(dword_ptr(rsi, 0x2860), eax);
+			a.jmp(SELECT_VALUE_LANG(0x14083362F, 0x14083325F));
+		}
+
 		utils::hook::detour cmd_check_server_item_correct_hook;
 		char cmd_check_server_item_correct_stub(__int64 a1)
 		{
@@ -346,7 +374,12 @@ namespace staff
 				var_cheat_disable_reporting = vars::register_bool("cheat_disable_reporting", false,
 					vars::var_flag_cheat | vars::var_flag_saved, "disable reporting suspicious gameplay to konami");
 
+				var_cheat_develop_limit = vars::register_int("cheat_develop_limit", 0, 0, vars::int_max,
+					vars::var_flag_cheat | vars::var_flag_saved, "override online item develop limit (0 = disabled)");
+
 				utils::hook::jump(SELECT_VALUE_LANG(0x14083359C, 0x1408331CC), utils::hook::assemble(cmd_get_server_item_list_result_unpack_stub), true);
+				utils::hook::jump(SELECT_VALUE_LANG(0x14083361C, 0x14083324C), utils::hook::assemble(cmd_get_server_item_list_result_unpack_stub2), true);
+
 				cmd_check_server_item_correct_hook.create(SELECT_VALUE_LANG(0x145B4DE40, 0x14752AD10), cmd_check_server_item_correct_stub);
 			
 				send_suspicion_play_data_hook.create(SELECT_VALUE_LANG(0x140809DD0, 0x140809A30), send_suspicion_play_data_stub);
