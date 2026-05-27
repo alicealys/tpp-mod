@@ -4,6 +4,11 @@
 
 namespace vars
 {
+	constexpr const auto int_min = std::numeric_limits<std::int32_t>::min();
+	constexpr const auto int_max = std::numeric_limits<std::int32_t>::max();
+	constexpr const auto float_min = std::numeric_limits<float>::max();
+	constexpr const auto float_max = std::numeric_limits<float>::max();
+
 	enum var_type_t
 	{
 		var_type_none = 0,
