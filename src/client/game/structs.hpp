@@ -2530,6 +2530,27 @@ namespace game
 			static_assert(offsetof(StaffControllerImpl, mbmStaffSvarsHeaders) == 0x9C78);
 			static_assert(offsetof(StaffControllerImpl, mbmStaffSvarsStatusesSync) == 0x9C88);
 
+			struct ResourceControllerImpl
+			{
+				struct UsableResource
+				{
+					std::uint32_t sign : 1;
+					std::uint32_t count : 20;
+					std::uint32_t unk : 11;
+				};
+
+				struct ProcessingResource
+				{
+					std::uint32_t unk1 : 3;
+					std::uint32_t count : 20;
+					std::uint32_t unk2 : 11;
+				};
+
+				char __pad0[4592];
+				UsableResource* usableResource;
+				ProcessingResource* processingResource;
+			};
+
 			struct MotherBaseManagementSystemImpl
 			{
 				struct vtable
@@ -2594,12 +2615,13 @@ namespace game
 				int* ogrePointDiff;
 				char __pad2[128];
 				StaffControllerImpl* staffController;
-				char __pad3[100];
+				char __pad3[24];
+				ResourceControllerImpl* resourceController;
 			};
 
 			static_assert(offsetof(MotherBaseManagementSystemImpl, staffController) == 2752);
 			static_assert(offsetof(MotherBaseManagementSystemImpl, heroicPointDiff) == 2600);
-			static_assert(offsetof(MotherBaseManagementSystemImpl, ogrePointDiff) == 2616);
+			static_assert(offsetof(MotherBaseManagementSystemImpl, ogrePoint) == 0xA30);
 		}
 	}
 
