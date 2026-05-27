@@ -11,7 +11,7 @@
 #include <utils/hook.hpp>
 #include <utils/cryptography.hpp>
 
-namespace staff
+namespace cheat
 {
 	namespace
 	{
@@ -19,6 +19,7 @@ namespace staff
 		vars::var_ptr var_cheat_unlockall_items;
 		vars::var_ptr var_cheat_disable_reporting;
 		vars::var_ptr var_cheat_develop_limit;
+		vars::var_ptr var_cheat_no_deployment_cost;
 
 		const char* resource_names[] =
 		{
@@ -356,10 +357,11 @@ namespace staff
 			if (params.size() < 2)
 			{
 				const auto cmd = params.get(0);
-				printf("usage: %s <resource index> <amount>\n", cmd.data());
+				console::warn("WARNING: modifying resource counts CAN get you banned! (confirmed by experience) use at your own risk.");
+				console::info("usage: %s <resource index> <amount>\n", cmd.data());
 				for (auto i = 0; i < 59; i++)
 				{
-					printf("%i: %s\n", i, resource_names[i]);
+					console::info("%i: %s\n", i, resource_names[i]);
 				}
 
 				return;
@@ -378,24 +380,54 @@ namespace staff
 				return;
 			}
 
-			const auto resource_controller = mb_sys->resourceController;
-			if (processing)
-			{
-				resource_controller->processingResource[index].count += value;
-			}
-			else
-			{
-				auto resource = &resource_controller->usableResource[index];
-				auto count = static_cast<int>(resource->count);
-				if (resource->sign)
-				{
-					count *= -1;
-				}
+			mb_sys->resourceController->__vftable->AddResource(
+				mb_sys->resourceController, static_cast<unsigned char>(index), value, -1, false, processing, true);
+		}
 
-				count += value;
-				resource->sign = count < 0;
-				resource->count = std::abs(count);
+		utils::hook::detour mission_preparation_get_total_gmp_cost_hook;
+		unsigned int mission_preparation_get_total_gmp_cost_stub(void* a1)
+		{
+			if (var_cheat_no_deployment_cost->current.enabled())
+			{
+				return 0u;
 			}
+
+			return mission_preparation_get_total_gmp_cost_hook.invoke<unsigned int>(a1);
+		}
+
+		utils::hook::detour mission_preparation_get_all_equip_resource_hook;
+		void mission_preparation_get_all_equip_resource_stub(void* a1, void* a2)
+		{
+			if (var_cheat_no_deployment_cost->current.enabled())
+			{
+				std::memset(a2, 0, 236);
+				return;
+			}
+
+			mission_preparation_get_all_equip_resource_hook.invoke<void>(a1, a2);
+		}
+
+		utils::hook::detour mission_preparation_calc_equip_resource_hook;
+		int mission_preparation_calc_equip_resource_stub(void* a1, void* a2, void* a3, float a4)
+		{
+			if (var_cheat_no_deployment_cost->current.enabled())
+			{
+				std::memset(a3, 0, 236);
+				return 0;
+			}
+
+			return mission_preparation_calc_equip_resource_hook.invoke<int>(a1, a2, a3, a4);
+		}
+
+		void mission_preparation_sub_gmp_stub(void* a1, unsigned int gmp)
+		{
+			if (var_cheat_no_deployment_cost->current.enabled())
+			{
+				return;
+			}
+
+			const auto mb_sys = get_motherbase_sys();
+			mb_sys->__vftable->SubTppGmp(mb_sys, gmp);
 		}
 	}
 
@@ -494,6 +526,31 @@ namespace staff
 					cmd_add_resource(params, true);
 				});
 
+				command::add("cheat_restore_quiet", []()
+				{
+					if (!vars::cheats_enabled())
+					{
+						console::error("cheats are not enabled\n");
+						return;
+					}
+
+					command::execute("script_exec TppStory.RequestReunionQuiet()");
+				});
+
+				command::add("cheat_add_buddy_point", [](const command::params& params)
+				{
+					if (!vars::cheats_enabled())
+					{
+						console::error("cheats are not enabled\n");
+						return;
+					}
+
+					const auto buddy = params.get_int(1);
+					const auto point = params.get_int(2);
+
+					command::execute(utils::string::va("script_exec TppBuddyService.AddFriendlyPoint(%i, %i)", buddy, point));
+				});
+
 				var_cheat_unlockall_items = vars::register_bool("cheat_unlockall_server_items", false,
 					vars::var_flag_cheat | vars::var_flag_saved, "unlock all online items");
 
@@ -503,12 +560,21 @@ namespace staff
 				var_cheat_develop_limit = vars::register_int("cheat_develop_limit", 0, 0, vars::int_max,
 					vars::var_flag_cheat | vars::var_flag_saved, "override online item develop limit (0 = disabled)");
 
+				var_cheat_no_deployment_cost = vars::register_bool("cheat_no_deployment_cost", false, 
+					vars::var_flag_cheat | vars::var_flag_saved, "disable mission deployment cost");
+
 				utils::hook::jump(SELECT_VALUE_LANG(0x14083359C, 0x1408331CC), utils::hook::assemble(cmd_get_server_item_list_result_unpack_stub), true);
 				utils::hook::jump(SELECT_VALUE_LANG(0x14083361C, 0x14083324C), utils::hook::assemble(cmd_get_server_item_list_result_unpack_stub2), true);
 
 				cmd_check_server_item_correct_hook.create(SELECT_VALUE_LANG(0x145B4DE40, 0x14752AD10), cmd_check_server_item_correct_stub);
 			
 				send_suspicion_play_data_hook.create(SELECT_VALUE_LANG(0x140809DD0, 0x140809A30), send_suspicion_play_data_stub);
+
+				mission_preparation_get_total_gmp_cost_hook.create(SELECT_VALUE_LANG(0x1416BC400, 0x1416BC550), mission_preparation_get_total_gmp_cost_stub);
+				mission_preparation_get_all_equip_resource_hook.create(SELECT_VALUE_LANG(0x1416BB610, 0x1416BB760), mission_preparation_get_all_equip_resource_stub);
+				mission_preparation_calc_equip_resource_hook.create(SELECT_VALUE_LANG(0x140953030, 0x140952A50), mission_preparation_calc_equip_resource_stub);
+				utils::hook::nop(SELECT_VALUE_LANG(0x14095AA16, 0x14095A456), 6);
+				utils::hook::call(SELECT_VALUE_LANG(0x14095AA16, 0x14095A456), mission_preparation_sub_gmp_stub);
 			}
 			else
 			{
@@ -526,4 +592,4 @@ namespace staff
 	};
 }
 
-REGISTER_COMPONENT(staff::component)
+REGISTER_COMPONENT(cheat::component)
