@@ -20,6 +20,69 @@ namespace staff
 		vars::var_ptr var_cheat_disable_reporting;
 		vars::var_ptr var_cheat_develop_limit;
 
+		const char* resource_names[] =
+		{
+			"FUEL_RESOURCE",
+			"BIOTIC_RESOURCE",
+			"COMMON_METAL",
+			"MINOR_METAL",
+			"PRECIOUS_METAL",
+			"WORM_WOOD",
+			"BLACK_CARROT",
+			"GOLDEN_CRESCENT",
+			"TARRAGON",
+			"AFRICAN_PEACH",
+			"DIGITALIS_P",
+			"DIGITALIS_L",
+			"HAOMA",
+			"4WD_EAST",
+			"4WD_WEST",
+			"TRUCK_EAST",
+			"TRUCK_WEST",
+			"ARMORED_VEHICLE_EAST",
+			"ARMORED_VEHICLE_WEST",
+			"ARMORED_VEHICLE_EAST_ROCKET",
+			"WHEELED_ARMORED_VEHICLE_WEST",
+			"TANK_EAST",
+			"TANK_WEST",
+			"WALKER_GEAR_PROTO_HEUY",
+			"WALKER_GEAR_SOVIET_BATTLE",
+			"WALKER_GEAR_SOVIET_SUPPORT",
+			"WALKER_GEAR_CFA_BATTLE",
+			"WALKER_GEAR_CFA_SUPPORT",
+			"NUCLEAR_WEAPON",
+			"NUCLEAR_WASTE",
+			"PARASITE_FOG",
+			"PARASITE_CAMOFLA",
+			"PARASITE_CURING",
+			"PARASITE_RESERVE",
+			"EMPLACEMENT_GUN_EAST",
+			"EMPLACEMENT_GUN_WEST",
+			"MORTAR_NORMAL",
+			"ANTI_AIR_GATLING_GUN_EAST",
+			"ANTI_AIR_GATLING_GUN_WEST",
+			"CBOX_POSTER_1000",
+			"CBOX_POSTER_1001",
+			"CBOX_POSTER_1002",
+			"CBOX_POSTER_1003",
+			"CBOX_POSTER_1004",
+			"CBOX_POSTER_1005",
+			"CBOX_POSTER_1006",
+			"RESERVE_A",
+			"RESERVE_B",
+			"RESERVE_C",
+			"RESERVE_D",
+			"RESERVE_E",
+			"RESERVE_F",
+			"RESERVE_G",
+			"RESERVE_H",
+			"RESERVE_I",
+			"RESERVE_J",
+			"RESERVE_K",
+			"RESERVE_L",
+			"RESERVE_M",
+		};
+
 		void modify_stats_internal(game::tpp::mbm::impl::StaffControllerImpl::StaffHeader* header,
 			game::tpp::mbm::impl::StaffControllerImpl::StaffStatusSync* status, const std::uint32_t index)
 		{
@@ -281,6 +344,59 @@ namespace staff
 
 			return send_suspicion_play_data_hook.invoke<char>(a1, a2);
 		}
+
+		void cmd_add_resource(const command::params& params, bool processing)
+		{
+			if (!vars::cheats_enabled())
+			{
+				console::error("cheats are not enabled\n");
+				return;
+			}
+
+			if (params.size() < 2)
+			{
+				const auto cmd = params.get(0);
+				printf("usage: %s <resource index> <amount>\n", cmd.data());
+				for (auto i = 0; i < 59; i++)
+				{
+					printf("%i: %s\n", i, resource_names[i]);
+				}
+
+				return;
+			}
+
+			const auto index = params.get_int(1);
+			const auto value = params.get_int(2);
+			if (index >= 59)
+			{
+				return;
+			}
+
+			const auto mb_sys = get_motherbase_sys();
+			if (mb_sys == nullptr || mb_sys->resourceController == nullptr)
+			{
+				return;
+			}
+
+			const auto resource_controller = mb_sys->resourceController;
+			if (processing)
+			{
+				resource_controller->processingResource[index].count += value;
+			}
+			else
+			{
+				auto resource = &resource_controller->usableResource[index];
+				auto count = static_cast<int>(resource->count);
+				if (resource->sign)
+				{
+					count *= -1;
+				}
+
+				count += value;
+				resource->sign = count < 0;
+				resource->count = std::abs(count);
+			}
+		}
 	}
 
 	class component final : public component_interface
@@ -366,6 +482,16 @@ namespace staff
 					}
 
 					*mb_sys->ogrePoint = std::clamp(point, -99999999, 99999999);
+				});
+
+				command::add("cheat_add_usable_resource", [](const command::params& params)
+				{
+					cmd_add_resource(params, false);
+				});
+
+				command::add("cheat_add_processing_resource", [](const command::params& params)
+				{
+					cmd_add_resource(params, true);
 				});
 
 				var_cheat_unlockall_items = vars::register_bool("cheat_unlockall_server_items", false,
