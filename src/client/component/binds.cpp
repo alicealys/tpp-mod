@@ -8,6 +8,7 @@
 #include "filesystem.hpp"
 #include "binds.hpp"
 #include "game_console.hpp"
+#include "lui/input.hpp"
 
 #include "text_chat/input.hpp"
 
@@ -324,56 +325,66 @@ namespace binds
 				return true;
 			}
 
+			if (lui::input::handle_key(key, is_down, is_game_console_bind(key)))
+			{
+				lui::input::handle_char(key_ascii, is_down);
+				return true;
+			}
+
 			return handle_bind(key, is_down, is_up, was_down, was_up);
 		}
 
-		bool handle_input_mouse(RAWINPUT* raw_input)
+		bool handle_input_mouse(HWND hwnd, RAWINPUT* raw_input)
 		{
-			bool has_bind{};
-
 			static auto prev_flags = 0;
+			auto prev_flags_copy = prev_flags;
+			prev_flags = raw_input->data.mouse.usButtonFlags;
 
-			const auto do_button = [&](int key, int flag_down, int flag_up)
+			const auto do_button = [&](bool for_lui, int key, int flag_down, int flag_up)
 			{
 				const auto is_down = (raw_input->data.mouse.usButtonFlags & flag_down) != 0;
 				const auto is_up = (raw_input->data.mouse.usButtonFlags & flag_up) != 0;
 
-				const auto was_down = (prev_flags & flag_down) != 0;
-				const auto was_up = (prev_flags & flag_up) != 0;
+				const auto was_down = (prev_flags_copy & flag_down) != 0;
+				const auto was_up = (prev_flags_copy & flag_up) != 0;
 
 				if (!is_down && !is_up)
 				{
 					return;
 				}
 
-				handle_bind(key, is_down, is_up, was_down, was_up);
+				if (for_lui)
+				{
+					lui::input::handle_mouse_button(key, is_down);
+				}
+				else
+				{
+					handle_bind(key, is_down, is_up, was_down, was_up);
+				}
 			};
 
-			do_button(VK_LBUTTON, RI_MOUSE_BUTTON_1_DOWN, RI_MOUSE_BUTTON_1_UP);
-			do_button(VK_RBUTTON, RI_MOUSE_BUTTON_2_DOWN, RI_MOUSE_BUTTON_2_UP);
-			do_button(VK_MBUTTON, RI_MOUSE_BUTTON_3_DOWN, RI_MOUSE_BUTTON_3_UP);
-			do_button(VK_XBUTTON1, RI_MOUSE_BUTTON_4_DOWN, RI_MOUSE_BUTTON_4_UP);
-			do_button(VK_XBUTTON2, RI_MOUSE_BUTTON_5_DOWN, RI_MOUSE_BUTTON_5_UP);
+			const auto do_buttons = [&](const bool for_lui)
+			{
+				do_button(for_lui, VK_LBUTTON, RI_MOUSE_BUTTON_1_DOWN, RI_MOUSE_BUTTON_1_UP);
+				do_button(for_lui, VK_RBUTTON, RI_MOUSE_BUTTON_2_DOWN, RI_MOUSE_BUTTON_2_UP);
+				do_button(for_lui, VK_MBUTTON, RI_MOUSE_BUTTON_3_DOWN, RI_MOUSE_BUTTON_3_UP);
+				do_button(for_lui, VK_XBUTTON1, RI_MOUSE_BUTTON_4_DOWN, RI_MOUSE_BUTTON_4_UP);
+				do_button(for_lui, VK_XBUTTON2, RI_MOUSE_BUTTON_5_DOWN, RI_MOUSE_BUTTON_5_UP);
+			};
 
 			if ((raw_input->data.mouse.usButtonFlags & RI_MOUSE_WHEEL) != 0)
 			{
 				const auto down = static_cast<short>(raw_input->data.mouse.usButtonData) < 0;
 
-				if (game_console::handle_mousewheel(down))
+				if (!game_console::handle_mousewheel(down) && 
+					!text_chat::input::handle_mousewheel(down) && 
+					!lui::input::handle_mouse_wheel(down))
 				{
-					return true;
-				}
-
-				if (text_chat::input::handle_mousewheel(down))
-				{
-					return true;
-				}
-
-				const auto wheel_key = down ? mouse_wheel_down : mouse_wheel_up;
-				if (handle_bind(wheel_key, true, false, false, false))
-				{
-					handle_bind(wheel_key, false, true, false, false);
-					return true;
+					const auto wheel_key = down ? mouse_wheel_down : mouse_wheel_up;
+					if (handle_bind(wheel_key, true, false, false, false))
+					{
+						handle_bind(wheel_key, false, true, false, false);
+					}
 				}
 			}
 
@@ -387,9 +398,16 @@ namespace binds
 				return true;
 			}
 
-			prev_flags = raw_input->data.mouse.usButtonFlags;
+			if (lui::input::is_key_catcher_enabled())
+			{
+				lui::input::handle_mousemove(hwnd);
+				do_buttons(true);
+				return true;
+			}
 
-			return has_bind;
+			do_buttons(false);
+
+			return false;
 		}
 
 		bool get_raw_input(LPARAM l_param, RAWINPUT* raw_input)
@@ -410,7 +428,7 @@ namespace binds
 			return true;
 		}
 
-		bool handle_input(LPARAM l_param)
+		bool handle_input(HWND hwnd, LPARAM l_param)
 		{
 			RAWINPUT raw_input{};
 			if (!get_raw_input(l_param, &raw_input))
@@ -423,7 +441,7 @@ namespace binds
 			case RIM_TYPEKEYBOARD:
 				return handle_input_keyboard(&raw_input);
 			case RIM_TYPEMOUSE:
-				return handle_input_mouse(&raw_input);
+				return handle_input_mouse(hwnd, &raw_input);
 			}
 
 			return false;
@@ -431,8 +449,13 @@ namespace binds
 
 		LRESULT wnd_proc_stub(HWND hwnd, UINT msg, WPARAM w_param, LPARAM l_param)
 		{
-			if (msg == WM_INPUT && handle_input(l_param))
+			if (msg == WM_INPUT && handle_input(hwnd, l_param))
 			{
+				return DefWindowProc(hwnd, msg, w_param, l_param);
+			}
+			else if (msg == WM_SETCURSOR)
+			{
+				SetCursor(LoadCursorA(NULL, IDC_ARROW));
 				return DefWindowProc(hwnd, msg, w_param, l_param);
 			}
 
