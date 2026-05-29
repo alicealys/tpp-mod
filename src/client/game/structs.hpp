@@ -895,10 +895,7 @@ namespace game
 			struct Packet2DRotation : Packet2D
 			{
 				Packet2DRotation() : Packet2D(18, 20) {}
-				float x{};
-				float y{};
-				float z{};
-				float w{};
+				float quat[4]{};
 			};
 
 			struct Packet2DTranslation : Packet2D

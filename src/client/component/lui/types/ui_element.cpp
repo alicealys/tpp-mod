@@ -40,6 +40,7 @@ namespace lui
 
 		draw_info_t draw_info{};
 		draw_info.alpha = this->animation_state_.current_state.color.a * parent_draw_info.alpha;
+		draw_info.rotation = this->animation_state_.current_state.position.rotation + parent_draw_info.rotation;
 
 		this->calculate_rect(parent_draw_info.rect, draw_info.rect);
 		this->bounding_rect_ = draw_info.rect;
@@ -201,6 +202,7 @@ namespace lui
 		GET_SAMPLE(position.rect.left);
 		GET_SAMPLE(position.rect.right);
 		GET_SAMPLE(position.rect.bottom);
+		GET_SAMPLE(position.rotation);
 		GET_SAMPLE(width);
 		GET_SAMPLE(height);
 

@@ -71,7 +71,8 @@ namespace lui
 			? draw_info.rect.bottom - draw_info.rect.top
 			: 0.f;
 
-		renderer::add_draw_text(text, state.height, x, y, color, outline_color, this->formatted_, display_width, display_height, this->use_word_wrapping_);
+		renderer::add_draw_text(text, state.height, x, y, color, outline_color, this->formatted_, 
+			display_width, display_height, this->use_word_wrapping_, draw_info.rotation);
 	}
 
 	void ui_text::set_text(const std::string& text)
