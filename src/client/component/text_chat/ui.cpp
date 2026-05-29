@@ -133,7 +133,7 @@ namespace text_chat::ui
 
 				const auto display_width = chat_settings.width - chat_settings.margin * 2.f - chat_settings.scrollbar_width - chat_settings.font_height;
 				auto lines = 1;
-				renderer::calc_text_width(r, message.buffer, chat_settings.font_height, true, true, display_width, &lines);
+				renderer::calc_text_width(message.buffer, chat_settings.font_height, true, true, display_width, &lines);
 
 				messages_height += lines * chat_settings.font_height + chat_settings.margin;
 			}
@@ -217,7 +217,7 @@ namespace text_chat::ui
 
 				const auto display_width = chat_settings.width - chat_settings.margin * 2.f - chat_settings.scrollbar_width - chat_settings.font_height;
 				auto lines = 1;
-				renderer::calc_text_width(r, message.buffer, chat_settings.font_height, true, true, display_width, &lines);
+				renderer::calc_text_width(message.buffer, chat_settings.font_height, true, true, display_width, &lines);
 
 				y_offset -= chat_settings.chat_direction * (lines * chat_settings.font_height + chat_settings.margin);
 

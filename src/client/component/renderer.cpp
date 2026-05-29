@@ -994,7 +994,7 @@ namespace renderer
 		}
 	}
 
-	float calc_text_width_artist(game::fox::gr::dg::plugins::Draw2DRenderer* instance, const char* text, float height, bool formatted,
+	float calc_text_width_artist(const char* text, float height, bool formatted,
 		bool word_wrapping, float line_width, int* line_count, int caret_index, int max_len)
 	{
 		if (text == nullptr)
@@ -1047,8 +1047,8 @@ namespace renderer
 		return std::max(prev_offset, offset_x);
 	}
 
-	float calc_text_width(game::fox::gr::dg::plugins::Draw2DRenderer* instance, const char* text, float height, bool formatted,
-		bool word_wrapping, float line_width, int* line_count, int caret_index, int max_len)
+	float calc_text_width(const char* text, float height, bool formatted, bool word_wrapping, 
+		float line_width, int* line_count, int caret_index, int max_len)
 	{
 		if (text == nullptr)
 		{
@@ -1202,8 +1202,8 @@ namespace renderer
 			max_cursor = 0;
 		}
 
-		const auto text_width = calc_text_width(instance, buffer, height, formatted, false, 0.f, nullptr, caret_index, -1);
-		const auto text_width_to_cursor = calc_text_width(instance, buffer, height, formatted, false, 0.f, nullptr, caret_index, max_cursor);
+		const auto text_width = calc_text_width(buffer, height, formatted, false, 0.f, nullptr, caret_index, -1);
+		const auto text_width_to_cursor = calc_text_width(buffer, height, formatted, false, 0.f, nullptr, caret_index, max_cursor);
 
 		if (text_width > display_width)
 		{
