@@ -20,7 +20,12 @@ namespace lui
 		const auto width = (draw_info.rect.right - draw_info.rect.left);
 		const auto height = (draw_info.rect.bottom - draw_info.rect.top);
 
-		renderer::add_draw_box(draw_info.rect.left, draw_info.rect.top, width, height, color, draw_info.rotation);
+		renderer::add_draw_material(this->material_, draw_info.rect.left, draw_info.rect.top, width, height, color, draw_info.rotation);
+	}
+
+	void ui_image::set_material(game::fox::gr::Material* material)
+	{
+		this->material_ = material;
 	}
 
 	ui_image_ptr ui_image::create()

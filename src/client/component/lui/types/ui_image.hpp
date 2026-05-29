@@ -12,8 +12,11 @@ namespace lui
 	public:
 		static ui_image_ptr create();
 
+		void set_material(game::fox::gr::Material* material);
+
 	private:
 		void draw_internal(const draw_info_t& inherit) const override;
+		game::fox::gr::Material* material_ = nullptr;
 
 	};
 }

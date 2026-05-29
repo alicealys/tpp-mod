@@ -26,7 +26,7 @@ namespace lui::renderer
 
 	struct draw_box_command : draw_command
 	{
-
+		game::fox::gr::Material* material;
 	};
 
 	struct draw_text_command : draw_command
@@ -39,7 +39,7 @@ namespace lui::renderer
 		bool use_word_wrapping;
 	};
 
-	void add_draw_box(float x, float y, float width, float height, float* color, float rotation);
+	void add_draw_material(game::fox::gr::Material* material, float x, float y, float width, float height, float* color, float rotation);
 	void add_draw_text(const char* text, float height, float x, float y, float* color, float* outline_color, 
 		bool formatted, float display_width, float display_height, bool use_word_wrapping = false, float rotation = 0.f);
 }

@@ -13,7 +13,7 @@ namespace lui::renderer
 {
 	namespace
 	{
-		constexpr const auto draw_cmd_buffer_size = 0x10000;
+		constexpr const auto draw_cmd_buffer_size = 0x100000;
 
 		struct
 		{
@@ -49,7 +49,7 @@ namespace lui::renderer
 				case CMD_DRAW_BOX:
 				{
 					const auto cmd = reinterpret_cast<draw_box_command*>(base_cmd);
-					::renderer::draw_box(renderer, cmd->x, cmd->y, cmd->width, cmd->height, cmd->color, nullptr, 0.f, cmd->rotation);
+					::renderer::draw_material(renderer, cmd->material, cmd->x, cmd->y, cmd->width, cmd->height, cmd->color, cmd->rotation);
 					break;
 				}
 				case CMD_DRAW_TEXT:
@@ -67,9 +67,31 @@ namespace lui::renderer
 
 			draw_list.cmd_buffer_pos = draw_list.cmd_buffer;
 		}
+
+		bool allocate_command_buffer()
+		{
+			if (!VirtualAlloc(NULL, draw_cmd_buffer_size, MEM_RESERVE, PAGE_READWRITE))
+			{
+				return false;
+			}
+
+			draw_list.cmd_buffer = reinterpret_cast<char*>(VirtualAlloc(NULL, draw_cmd_buffer_size, MEM_COMMIT, PAGE_READWRITE));
+			draw_list.cmd_buffer_pos = draw_list.cmd_buffer;
+			draw_list.cmd_buffer_end = draw_list.cmd_buffer + draw_cmd_buffer_size;
+			return true;
+		}
+
+		void free_command_buffer()
+		{
+			if (draw_list.cmd_buffer != nullptr)
+			{
+				VirtualFree(draw_list.cmd_buffer, 0ull, MEM_RELEASE);
+				draw_list.cmd_buffer = nullptr;
+			}
+		}
 	}
 
-	void add_draw_box(float x, float y, float width, float height, float* color, float rotation)
+	void add_draw_material(game::fox::gr::Material* material, float x, float y, float width, float height, float* color, float rotation)
 	{
 		std::lock_guard _0(draw_list.mutex);
 
@@ -80,6 +102,7 @@ namespace lui::renderer
 		cmd->width = width;
 		cmd->height = height;
 		cmd->rotation = rotation;
+		cmd->material = material;
 		std::memcpy(cmd->color, color, sizeof(float[4]));
 	}
 
@@ -108,11 +131,17 @@ namespace lui::renderer
 	public:
 		void post_load() override
 		{
-			draw_list.cmd_buffer = utils::memory::allocate_array<char>(draw_cmd_buffer_size);
-			draw_list.cmd_buffer_pos = draw_list.cmd_buffer;
-			draw_list.cmd_buffer_end = draw_list.cmd_buffer + draw_cmd_buffer_size;
+			if (!allocate_command_buffer())
+			{
+				return;
+			}
 
 			::renderer::on_frame(render_ui);
+		}
+
+		void end() override
+		{
+			free_command_buffer();
 		}
 	};
 }
