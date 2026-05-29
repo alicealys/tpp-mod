@@ -2,10 +2,10 @@
 
 namespace renderer
 {
-	float calc_text_width_artist(game::fox::gr::dg::plugins::Draw2DRenderer* instance, const char* text, float height, bool formatted = false,
+	float calc_text_width_artist(const char* text, float height, bool formatted = false,
 		bool word_wrapping = false, float line_width = 0.f, int* line_count = nullptr, int caret_index = -1, int max_len = -1);
 
-	float calc_text_width(game::fox::gr::dg::plugins::Draw2DRenderer* instance, const char* text, float height, bool formatted = false,
+	float calc_text_width(const char* text, float height, bool formatted = false,
 		bool word_wrapping = false, float line_width = 0.f, int* line_count = nullptr, int caret_index = -1, int max_len = -1);
 
 	float draw_text_artist(game::fox::gr::dg::plugins::Draw2DRenderer* instance, const char* text, float height,

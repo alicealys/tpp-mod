@@ -210,12 +210,12 @@ namespace overlay
 
 			const auto fps_text = utils::string::va("%i", fps);
 
-			const auto fps_value_width = renderer::calc_text_width(instance, fps_text, font_size);
-			const auto fps_label_width = renderer::calc_text_width(instance, "fps: ", font_size);
+			const auto fps_value_width = renderer::calc_text_width(fps_text, font_size);
+			const auto fps_label_width = renderer::calc_text_width("fps: ", font_size);
 			const auto fps_width = fps_label_width + fps_value_width;
 
-			const auto ping_value_width = renderer::calc_text_width(instance, ping_text, font_size);
-			const auto ping_label_width = renderer::calc_text_width(instance, "ping: ", font_size);
+			const auto ping_value_width = renderer::calc_text_width(ping_text, font_size);
+			const auto ping_label_width = renderer::calc_text_width("ping: ", font_size);
 			const auto ping_width = ping_label_width + ping_value_width;
 
 			if (ping_width == 0.f && fps_width == 0.f)
