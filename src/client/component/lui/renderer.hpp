@@ -20,6 +20,7 @@ namespace lui::renderer
 		float y;
 		float width;
 		float height;
+		float rotation;
 		float color[4];
 	};
 
@@ -38,7 +39,7 @@ namespace lui::renderer
 		bool use_word_wrapping;
 	};
 
-	void add_draw_box(float x, float y, float width, float height, float* color);
+	void add_draw_box(float x, float y, float width, float height, float* color, float rotation);
 	void add_draw_text(const char* text, float height, float x, float y, float* color, float* outline_color, 
-		bool formatted, float display_width, float display_height, bool use_word_wrapping = false);
+		bool formatted, float display_width, float display_height, bool use_word_wrapping = false, float rotation = 0.f);
 }

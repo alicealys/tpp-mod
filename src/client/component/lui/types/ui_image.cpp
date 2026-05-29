@@ -20,7 +20,7 @@ namespace lui
 		const auto width = (draw_info.rect.right - draw_info.rect.left);
 		const auto height = (draw_info.rect.bottom - draw_info.rect.top);
 
-		renderer::add_draw_box(draw_info.rect.left, draw_info.rect.top, width, height, color);
+		renderer::add_draw_box(draw_info.rect.left, draw_info.rect.top, width, height, color, draw_info.rotation);
 	}
 
 	ui_image_ptr ui_image::create()

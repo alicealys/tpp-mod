@@ -51,6 +51,7 @@ namespace lui
 		std::uint32_t alignment;
 		std::uint32_t vertical_alignment;
 		rect_t rect;
+		float rotation;
 	};
 
 	struct color_t
@@ -75,6 +76,7 @@ namespace lui
 	{
 		rect_t rect;
 		float alpha;
+		float rotation;
 	};
 
 	struct animation_state_t
