@@ -344,8 +344,7 @@ namespace game
 		WEAK symbol<void(lua_State* L, int)> lua_pushinteger{0x141A11AF0, 0x14146DDC0, 0x141A11C10, 0x14146DD70};
 		WEAK symbol<void(lua_State* L, int)> lua_pushboolean{0x141A119C0, 0x14146DC90, 0x141A11AE0, 0x14146DC40};
 
-#undef lua_pop
-#define lua_pop(L,n) game::lua::lua_settop(L, -(n)-1)
+#define game_lua_pop(L,n) game::lua::lua_settop(L, -(n)-1)
 	}
 
 	// Variables

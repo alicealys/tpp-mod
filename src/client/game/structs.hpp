@@ -1,11 +1,6 @@
 #pragma once
 #include <d3d11.h>
 
-extern "C"
-{
-#include "lapi.h"
-}
-
 namespace game
 {
 	// https://github.com/rlabrecque/SteamworksSDK/tree/f4d127e335a66a1615c0870830d14dcee76ed8aa/public/steam
@@ -330,6 +325,14 @@ namespace game
 		};
 	}
 
+	namespace lua
+	{
+		struct lua_State
+		{
+
+		};
+	}
+
 	namespace tpp::ui::menu
 	{
 		struct UiCommonDataManager;
@@ -473,7 +476,7 @@ namespace game
 			};
 
 			vftable* __vftable;
-			lua_State* state;
+			lua::lua_State* state;
 			char initialized;
 		};
 
