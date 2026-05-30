@@ -95,7 +95,7 @@ namespace lui
 		utils::play_sound(SOUND_MENU_ENTER);
 		menu->register_event_handler("keydown", [menu](ui_element& element, const event_t& event)
 		{
-			if (event.params[0].integer != VK_ESCAPE)
+			if (event.get<std::int32_t>("key") != VK_ESCAPE)
 			{
 				return;
 			}

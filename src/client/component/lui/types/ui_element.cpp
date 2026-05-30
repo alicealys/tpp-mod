@@ -29,9 +29,13 @@ namespace lui
 		this->color.a = 1.f;
 	}
 
+	ui_element::ui_element()
+	{
+		this->metadata.set("id", "uielement");
+	}
+
 	void ui_element::draw_internal(const draw_info_t& inherit) const
 	{
-
 	}
 
 	void ui_element::draw(const draw_info_t& parent_draw_info)
@@ -43,7 +47,7 @@ namespace lui
 		draw_info.rotation = this->animation_state_.current_state.position.rotation + parent_draw_info.rotation;
 
 		this->calculate_rect(parent_draw_info.rect, draw_info.rect);
-		this->bounding_rect_ = draw_info.rect;
+		this->client_rect_ = draw_info.rect;
 		this->draw_internal(draw_info);
 
 		for (auto& child : this->children_)
@@ -266,8 +270,14 @@ namespace lui
 		rect = this->animation_state_.current_state.position.rect;
 	}
 
+	void ui_element::get_client_rect(rect_t& rect)
+	{
+		rect = this->client_rect_;
+	}
+
 	void ui_element::set_rect(const rect_t& rect)
 	{
+		this->animation_state_.start_state.position.rect = rect;
 		this->animation_state_.end_state.position.rect = rect;
 	}
 
@@ -289,7 +299,7 @@ namespace lui
 		}
 
 		const auto was_in = this->mouse_state_.was_mouse_in;
-		const auto is_in = !has_target && is_in_rect(this->bounding_rect_, params.x, params.y);
+		const auto is_in = !has_target && is_in_rect(this->client_rect_, params.x, params.y);
 		this->mouse_state_.was_mouse_in = is_in;
 
 		if (is_in)
@@ -313,10 +323,10 @@ namespace lui
 		{
 			event_t event{};
 			event.name = "mousemove";
-			event.params[0].value = params.x;
-			event.params[1].value = params.y;
-			event.params[2].value = params.delta_x;
-			event.params[3].value = params.delta_y;
+			event.set("x", params.x);
+			event.set("y", params.y);
+			event.set("deltax", params.delta_x);
+			event.set("deltay", params.delta_y);
 			this->dispatch_event(event);
 		}
 
@@ -336,17 +346,26 @@ namespace lui
 
 	void ui_element::handle_mouse_button_internal(const mouse_button_params_t& params)
 	{
-		if (!this->mouse_state_.handle_mouse || !this->mouse_state_.was_mouse_in)
+		if (!this->mouse_state_.handle_mouse)
 		{
 			return;
 		}
 
 		event_t event{};
-		event.name = params.is_down 
-			? "mousedown"
-			: "mouseup";
-		event.params[0].integer = params.button;
-		this->dispatch_event(event);
+		if (params.is_down && this->mouse_state_.was_mouse_in)
+		{
+			event.name = "mousedown";
+			event.set("button", params.button);
+			this->mouse_state_.did_mouse_down = true;
+			this->dispatch_event(event);
+		}
+		else if (!params.is_down && (this->mouse_state_.was_mouse_in || this->mouse_state_.did_mouse_down))
+		{
+			event.name = "mouseup";
+			event.set("button", params.button);
+			this->mouse_state_.did_mouse_down = false;
+			this->dispatch_event(event);
+		}
 	}
 
 	void ui_element::set_needs_key_catcher(const bool enabled)
@@ -362,6 +381,47 @@ namespace lui
 	bool ui_element::is_mouse_in() const
 	{
 		return this->mouse_state_.was_mouse_in;
+	}
+
+	bool ui_element::is_mouse_down() const
+	{
+		return this->mouse_state_.did_mouse_down;
+	}
+
+	void ui_element::make_draggable()
+	{
+		this->set_handle_mouse(true);
+		this->set_needs_key_catcher(true);
+
+		this->register_event_handler("mousemove", [](ui_element& element, const event_t& event)
+		{
+			if (!element.is_mouse_down())
+			{
+				return;
+			}
+
+			const auto delta_x = event.get<float>("deltax");
+			const auto delta_y = event.get<float>("deltay");
+
+			rect_t rect{};
+			element.get_rect(rect);
+
+			rect.left += delta_x;
+			rect.top += delta_y;
+			rect.right -= delta_x;
+			rect.bottom -= delta_y;
+
+			element.set_rect(rect);
+
+			event_t next_event = event;
+			next_event.name = "drag";
+			next_event.set("left", rect.left);
+			next_event.set("top", rect.top);
+			next_event.set("right", rect.right);
+			next_event.set("bottom", rect.bottom);
+
+			element.dispatch_event(next_event);
+		});
 	}
 
 	void ui_element::dispatch_event(const event_t& event, bool dispatch_children)
@@ -383,6 +443,7 @@ namespace lui
 		event.name = name;
 		this->dispatch_event(event, dispatch_children);
 	}
+
 	void ui_element::dispatch_event_internal(const event_t& event)
 	{
 		const auto handler = this->event_handlers_.find(event.name);
@@ -391,7 +452,14 @@ namespace lui
 			return;
 		}
 
-		handler->second.operator()(*this, event);
+		try
+		{
+			handler->second.operator()(*this, event);
+		}
+		catch (const std::exception& e)
+		{
+			console::error("LUI: error handling event \"%s\": %s\n", event.name.data(), e.what());
+		}
 	}
 
 	void ui_element::register_event_handler(const std::string& name, const event_handler_t& handler)
@@ -406,19 +474,19 @@ namespace lui
 
 	void ui_element::set_id(const std::string& id)
 	{
-		this->id_ = id;
+		this->metadata.set("id", id);
 	}
 
 	std::string ui_element::get_id()
 	{
-		return this->id_;
+		return this->metadata.get<std::string>("id");
 	}
 
 	ui_element_ptr ui_element::get_first_descendant_by_id(const std::string& id)
 	{
 		for (auto& child : this->children_)
 		{
-			if (child->id_ == id)
+			if (child->metadata.get<std::string>("id") == id)
 			{
 				return child;
 			}
@@ -434,6 +502,20 @@ namespace lui
 		}
 
 		return nullptr;
+	}
+
+	void ui_element::get_animation_state(const std::string& name, element_state_t& state) const
+	{
+		const auto iter = this->states_.find(name);
+		if (iter != this->states_.end())
+		{
+			state = iter->second;
+		}
+	}
+
+	void ui_element::get_current_animation_state(element_state_t& state) const
+	{
+		state = this->animation_state_.end_state;
 	}
 
 	ui_element_ptr ui_element::create()
