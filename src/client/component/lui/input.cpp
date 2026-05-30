@@ -86,6 +86,10 @@ namespace lui::input
 			for (const auto& key_event : event_queue)
 			{
 				event_t event{};
+				event.target = get_root_element();
+				event.immediate = true;
+				event.dispatch_children = true;
+
 				if (key_event.is_char)
 				{
 					event.name = "char";
@@ -102,7 +106,7 @@ namespace lui::input
 					event.set("key", key_event.key);
 				}
 
-				get_root_element()->dispatch_event(event, true);
+				get_root_element()->dispatch_event(event);
 			}
 		}
 	}

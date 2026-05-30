@@ -13,6 +13,8 @@ namespace lui
 	class ui_menu : public ui_element
 	{
 	public:
+		ui_menu();
+
 		static ui_menu_ptr create(const std::string& name);
 
 		void add_description();
@@ -20,8 +22,8 @@ namespace lui
 		void add_button(const std::string& text, const button_action_t& action = {}, const std::string& description = {});
 
 	private:
-		ui_list_ptr list_;
-		ui_text_ptr description_;
+		ui_list_ptr list_{};
+		ui_text_ptr description_{};
 
 	};
 }

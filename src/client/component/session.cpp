@@ -200,7 +200,10 @@ namespace session
 			return nullptr;
 		}
 
-		*is_self = (local_member->sessionUserId->userId == target_member->sessionUserId->userId);
+		if (is_self != nullptr)
+		{
+			*is_self = (local_member->sessionUserId->userId == target_member->sessionUserId->userId);
+		}
 
 		return target_member;
 	}

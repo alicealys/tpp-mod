@@ -10,6 +10,8 @@ namespace lui
 	class ui_image : public ui_element
 	{
 	public:
+		ui_image();
+
 		static ui_image_ptr create();
 
 		void set_material(game::fox::gr::Material* material);

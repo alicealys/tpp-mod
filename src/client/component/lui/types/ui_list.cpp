@@ -7,6 +7,11 @@
 
 namespace lui
 {
+	ui_list::ui_list()
+	{
+		this->id_ = "uilist";
+	}
+
 	ui_list_ptr ui_list::create(const float spacing)
 	{
 		auto list = std::make_shared<ui_list>();

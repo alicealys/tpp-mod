@@ -10,6 +10,8 @@ namespace lui
 	class ui_list : public ui_element
 	{
 	public:
+		ui_list();
+
 		static ui_list_ptr create(const float spacing);
 
 		void add_child(const ui_element_ptr& child);

@@ -107,6 +107,5 @@ namespace lui
 		{
 			this->operator[](key) = object_value(value);
 		}
-
 	};
 }

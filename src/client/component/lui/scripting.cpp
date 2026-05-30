@@ -3,6 +3,11 @@
 #include "main.hpp"
 #include "scripting.hpp"
 #include "flow_manager.hpp"
+#include "utils.hpp"
+
+#include "../scripting.hpp"
+#include "../command.hpp"
+#include "../vars.hpp"
 
 #include "types/ui_button.hpp"
 #include "types/ui_element.hpp"
@@ -12,22 +17,17 @@
 #include "types/ui_text.hpp"
 #include "types/ui_timer.hpp"
 
-#pragma warning(push)
-#pragma warning(disable: 4459)
-#pragma warning(disable: 4702)
-#pragma warning(disable: 5321)
-
-#define SOL_ALL_SAFETIES_ON 1
-#define SOL_PRINT_ERRORS 0
-#include <sol/sol.hpp>
-
 #include <utils/io.hpp>
 
 namespace lui::scripting
 {
 	namespace
 	{
-		sol::state scripting_state;
+		sol::state& get_state()
+		{
+			static sol::state state;
+			return state;
+		}
 
 		sol::lua_value convert(lua_State* state, const object_value& value)
 		{
@@ -71,14 +71,14 @@ namespace lui::scripting
 			return {};
 		}
 
-		void load_scripts(const std::string& script_dir)
+		void load_scripts(sol::state& state, const std::string& script_dir)
 		{
-			if (!utils::io::directory_exists(script_dir))
+			if (!::utils::io::directory_exists(script_dir))
 			{
 				return;
 			}
 
-			const auto scripts = utils::io::list_files(script_dir);
+			const auto scripts = ::utils::io::list_files(script_dir);
 
 			for (const auto& script : scripts)
 			{
@@ -89,12 +89,12 @@ namespace lui::scripting
 
 				try
 				{
-					scripting_state.safe_script_file(script);
+					state.safe_script_file(script);
 
 				}
 				catch (const std::exception& e)
 				{
-					printf("LUI: error loading script \"%s\": %s\n", script.data(), e.what());
+					console::error("LUI: error loading script \"%s\": %s\n", script.data(), e.what());
 				}
 			}
 		}
@@ -106,21 +106,15 @@ namespace lui::scripting
 			usertype["setid"] = &ui_element::set_id;
 
 			usertype[sol::meta_function::index] = [](const ui_element& element, const sol::this_state s,
-				const std::string& key)
+				const sol::lua_value& key)
 			{
-				if (!element.metadata.contains(key))
-				{
-					return sol::lua_value{s, sol::lua_nil};
-				}
-
-				return convert(s, element.metadata.at(key));
+				return element.lua_metadata[key];
 			};
 
 			usertype[sol::meta_function::new_index] = [](ui_element& element, const sol::this_state s,
-				const std::string& key, const sol::lua_value& value)
+				const sol::lua_value& key, const sol::lua_value& value)
 			{
-				const auto converted = convert(value);
-				element.metadata.set(key, converted);
+				element.lua_metadata[key] = value;
 			};
 
 			usertype["removeallchildren"] = &ui_element::remove_all_children;
@@ -132,9 +126,12 @@ namespace lui::scripting
 			usertype["getfirstdescendantbyid"] = &ui_element::get_first_descendant_by_id;
 
 			usertype["sethandlemouse"] = &ui_element::set_handle_mouse;
+			usertype["setmouseblocking"] = &ui_element::set_mouse_blocking;
 			usertype["setneedskeycatcher"] = &ui_element::set_needs_key_catcher;
 			usertype["ismousein"] = &ui_element::is_mouse_in;
 			usertype["makedraggable"] = &ui_element::make_draggable;
+
+			usertype["setcolor"] = &ui_element::set_color;
 
 			usertype["addchild"] = [](ui_element& element, ui_element& child)
 			{
@@ -151,7 +148,12 @@ namespace lui::scripting
 				element_state_t element_state{};
 
 				element_state_t current_state{};
-				element.get_animation_state(name, current_state);
+				auto has_this_state = false;
+				element.get_animation_state(name, current_state, has_this_state);
+				if (!has_this_state)
+				{
+					element.get_animation_state("default", current_state, has_this_state);
+				}
 
 				auto anchor = current_state.position.anchor;
 
@@ -259,6 +261,49 @@ namespace lui::scripting
 				});
 			};
 
+			usertype["dispatchevent"] = [](ui_element& element, const sol::table& event_table)
+			{
+				event_t event{};
+				event.target = element.shared_from_this();
+				auto has_name = false;
+
+				for (auto& [k, v] : event_table)
+				{
+					if (!k.is<std::string>())
+					{
+						continue;
+					}
+
+					const auto key_value = k.as<std::string>();
+
+					if (key_value == "name")
+					{
+						event.name = v.as<std::string>();
+						has_name = true;
+					}
+					else if (key_value == "dispatchchildren")
+					{
+						event.dispatch_children = v.as<bool>();
+					}
+					else if (key_value == "immediate")
+					{
+						event.immediate = v.as<bool>();
+					}
+					else
+					{
+						const auto converted = convert(v);
+						event.set(key_value, converted);
+					}
+				}
+
+				if (!has_name)
+				{
+					throw std::runtime_error("event must have a name");
+				}
+
+				element.dispatch_event(event);
+			};
+
 			return usertype;
 		}
 
@@ -269,9 +314,11 @@ namespace lui::scripting
 			register_base_methods(state, usertype);
 
 			state["lui"]["uielement"] = state.create_table();
-			state["lui"]["uielement"]["create"] = []()
+			state["lui"]["uielement"]["new"] = [&state]()
 			{
-				return ui_element::create();
+				auto element = ui_element::create();
+				element->lua_metadata = state.create_table();
+				return element;
 			};
 
 			return usertype;
@@ -284,9 +331,11 @@ namespace lui::scripting
 			register_base_methods(state, usertype);
 
 			state["lui"]["uiimage"] = state.create_table();
-			state["lui"]["uiimage"]["create"] = []()
+			state["lui"]["uiimage"]["new"] = [&state]()
 			{
-				return ui_image::create();
+				auto element = ui_image::create();
+				element->lua_metadata = state.create_table();
+				return element;
 			};
 
 			return usertype;
@@ -299,9 +348,11 @@ namespace lui::scripting
 			register_base_methods(state, usertype);
 
 			state["lui"]["uitext"] = state.create_table();
-			state["lui"]["uitext"]["create"] = []()
+			state["lui"]["uitext"]["new"] = [&state]()
 			{
-				return ui_text::create();
+				auto element = ui_text::create();
+				element->lua_metadata = state.create_table();
+				return element;
 			};
 
 			usertype["settext"] = &ui_text::set_text;
@@ -309,6 +360,7 @@ namespace lui::scripting
 			usertype["setusestencil"] = &ui_text::set_use_stencil;
 			usertype["setusewordwrapping"] = &ui_text::set_use_word_wrapping;
 			usertype["setoutlinecolor"] = &ui_text::set_outline_color;
+			usertype["setfont"] = &ui_text::set_font;
 
 			return usertype;
 		}
@@ -320,14 +372,18 @@ namespace lui::scripting
 			register_base_methods(state, usertype);
 
 			state["lui"]["uitimer"] = state.create_table();
-			state["lui"]["uitimer"]["create"] = sol::overload(
-				[](const std::string& event, const std::uint32_t delay)
+			state["lui"]["uitimer"]["new"] = sol::overload(
+				[&state](const std::string& event, const std::uint32_t delay)
 				{
-					return ui_timer::create(event, delay);
+					auto element = ui_timer::create(event, delay);
+					element->lua_metadata = state.create_table();
+					return element;
 				},
-				[](const std::string& event, const std::uint32_t delay, const bool looping)
+				[&](const std::string& event, const std::uint32_t delay, const bool looping)
 				{
-					return ui_timer::create(event, delay, looping);
+					auto element = ui_timer::create(event, delay, looping);
+					element->lua_metadata = state.create_table();
+					return element;
 				}
 			);
 
@@ -344,7 +400,7 @@ namespace lui::scripting
 			register_base_methods(state, usertype);
 
 			state["lui"]["uibutton"] = state.create_table();
-			state["lui"]["uibutton"]["create"] = [](ui_button&, const sol::table& properties_table)
+			state["lui"]["uibutton"]["new"] = [&state](ui_button&, const sol::table& properties_table)
 			{
 				button_properties_t properties{};
 
@@ -365,7 +421,9 @@ namespace lui::scripting
 					properties.action = action.get<std::string>();
 				}
 
-				return ui_button::create(properties);
+				auto element = ui_button::create(properties);
+				element->lua_metadata = state.create_table();
+				return element;
 			};
 
 			return usertype;
@@ -378,9 +436,11 @@ namespace lui::scripting
 			register_base_methods(state, usertype);
 
 			state["lui"]["uilist"] = state.create_table();
-			state["lui"]["uilist"]["create"] = [](const float spacing)
+			state["lui"]["uilist"]["new"] = [&state](const float spacing)
 			{
-				return ui_list::create(spacing);
+				auto element = ui_list::create(spacing);
+				element->lua_metadata = state.create_table();
+				return element; 
 			};
 
 			usertype["addchild"] = [](ui_list& element, ui_element& child)
@@ -408,9 +468,11 @@ namespace lui::scripting
 			register_base_methods(state, usertype);
 
 			state["lui"]["uimenu"] = state.create_table();
-			state["lui"]["uimenu"]["create"] = [](const std::string& name)
+			state["lui"]["uimenu"]["new"] = [&state](const std::string& name)
 			{
-				return ui_menu::create(name);
+				auto element = ui_menu::create(name);
+				element->lua_metadata = state.create_table();
+				return element;
 			};
 
 			usertype["addbackbutton"] = &ui_menu::add_back_button;
@@ -463,11 +525,81 @@ namespace lui::scripting
 			state["lui"]["ANIMATE_NORMAL"] = ANIMATE_NORMAL;
 			state["lui"]["ANIMATE_REPEAT"] = ANIMATE_REPEAT;
 			state["lui"]["ANIMATE_LOOP"] = ANIMATE_LOOP;
+
+			state["lui"]["BUTTON_STYLE_DEFAULT"] = BUTTON_STYLE_DEFAULT;
+
+			state["lui"]["FONT_SYSTEM"] = FONT_SYSTEM;
+			state["lui"]["FONT_ARTIST"] = FONT_ARTIST;
 		}
 
-		void register_structs(sol::state& state)
+		void register_utility(sol::state& state)
 		{
+			state["game"] = sol::table::create(state.lua_state());
 
+			state["game"]["playsound"] = utils::play_sound;
+			state["game"]["executelua"] = [](const std::string& code)
+			{
+				::scripting::script_exec(code);
+			};
+
+			state["game"]["localize"] = [](const std::string& str)
+			{
+				game::fox::StringId str_id{};
+				game::tpp::ui::utility::GetStringId(&str_id, str.data());
+				return game::tpp::ui::utility::GetLangText(str_id);
+			};
+
+
+			state["game"]["getcurrentlocationid"] = []()
+			{
+				return game::tpp::ui::utility::GetCurrentLocationId();
+			};
+
+			state["game"]["getcurrentmissionid"] = []()
+			{
+				return game::tpp::ui::utility::GetCurrentMissionId();
+			};
+
+			state["utils"] = sol::table::create(state.lua_state());
+			state["utils"]["executecommand"] = [](const std::string& cmd)
+			{
+				command::execute(cmd);
+			};
+
+			state["utils"]["getvarstring"] = [](const std::string& name)
+			{
+				const auto var = vars::find(name);
+				if (var == nullptr)
+				{
+					return std::string{};
+				}
+
+				return var->current.to_string();
+			};
+
+			state["utils"]["getvarint"] = [](const std::string& name)
+			{
+				const auto var = vars::find(name);
+				if (var == nullptr || var->type != vars::var_type_integer)
+				{
+					return 0;
+				}
+
+				return var->current.get_int();
+			};
+
+			state["utils"]["getvarfloat"] = [](const std::string& name)
+			{
+				const auto var = vars::find(name);
+				if (var == nullptr || var->type != vars::var_type_float)
+				{
+					return 0.f;
+				}
+
+				return var->current.get_float();
+			};
+
+			state["utils"]["setvarfromstring"] = vars::set_var_from_string;
 		}
 
 		void initialize_state(sol::state& state)
@@ -482,6 +614,9 @@ namespace lui::scripting
 
 			state["lui"] = sol::table::create(state.lua_state());
 
+			register_enums(state);
+			register_utility(state);
+
 			register_ui_element(state);
 			register_ui_image(state);
 			register_ui_text(state);
@@ -490,8 +625,9 @@ namespace lui::scripting
 			register_ui_list(state);
 			register_ui_menu(state);
 
-			state["lui"]["flowmanager"] = sol::table::create(state.lua_state());
 			state["lui"]["getroot"] = get_root_element;
+
+			state["lui"]["flowmanager"] = sol::table::create(state.lua_state());
 			state["lui"]["flowmanager"]["requestmenu"] = flow_manager::request_menu;
 			state["lui"]["flowmanager"]["requestpopmenu"] = flow_manager::request_pop_menu;
 			state["lui"]["flowmanager"]["requestpopallmenus"] = flow_manager::request_pop_all_menus;
@@ -500,6 +636,12 @@ namespace lui::scripting
 				flow_manager::register_menu(name, [=]()
 				{
 					const auto result = callback();
+					if (!result.valid())
+					{
+						const sol::error err = result;
+						throw std::runtime_error(err.what());
+					}
+
 					auto element = result.get<sol::lua_value>(0);
 
 #define TRY_TYPE(__type__) \
@@ -524,18 +666,19 @@ namespace lui::scripting
 
 	void start()
 	{
-		scripting_state = {};
-		initialize_state(scripting_state);
-		load_scripts("tpp-mod/ui_scripts/");
+		auto& state = get_state();
+		state = {};
+		initialize_state(state);
+		load_scripts(state, "tpp-mod/ui_scripts/");
 	}
 
 	void run_frame()
 	{
-		scripting_state.collect_garbage();
+		get_state().collect_garbage();
 	}
 
 	void stop()
 	{
-		scripting_state = {};
+		get_state() = {};
 	}
 }

@@ -2,6 +2,7 @@
 
 #include "game/game.hpp"
 #include "object.hpp"
+#include "../scripting.hpp"
 
 namespace lui
 {
@@ -85,30 +86,31 @@ namespace lui
 		element_state_t current_state;
 		element_state_t start_state;
 		element_state_t end_state;
-		std::int32_t begin;
-		std::int32_t duration;
-		std::uint32_t mode;
+		std::int32_t begin{};
+		std::int32_t duration{};
+		std::uint32_t mode{};
 	};
 
 	struct mouse_move_params_t
 	{
-		float x;
-		float y;
-		float delta_x;
-		float delta_y;
+		float x{};
+		float y{};
+		float delta_x{};
+		float delta_y{};
 	};
 
 	struct mouse_button_params_t
 	{
-		int button;
-		bool is_down;
+		int button{};
+		bool is_down{};
 	};
 
 	struct mouse_state_t
 	{
-		bool handle_mouse;
-		bool was_mouse_in;
-		bool did_mouse_down;
+		bool handle_mouse{};
+		bool blocking = true;
+		bool was_mouse_in{};
+		bool did_mouse_down{};
 	};
 
 	class ui_element;
@@ -116,7 +118,10 @@ namespace lui
 
 	struct event_t : public object
 	{
-		std::string name;
+		ui_element_ptr target;
+		std::string name{};
+		bool immediate{};
+		bool dispatch_children{};
 	};
 
 	using event_handler_t = std::function<void(ui_element&, const event_t&)>;
@@ -126,10 +131,11 @@ namespace lui
 
 	class ui_element : public std::enable_shared_from_this<ui_element>
 	{
-		friend class ui_text;
-		friend class ui_image;
 		friend class ui_button;
+		friend class ui_image;
 		friend class ui_list;
+		friend class ui_menu;
+		friend class ui_text;
 		friend class ui_timer;
 	public:
 		ui_element();
@@ -151,22 +157,25 @@ namespace lui
 		void get_rect(rect_t& rect);
 		void get_client_rect(rect_t& rect);
 		void set_rect(const rect_t& rect);
+		void set_color(const float r, const float g, const float b, const float a);
 
 		bool handle_mouse_move(const mouse_move_params_t& params, bool has_target = false);
 		void handle_mouse_button(const mouse_button_params_t& params);
 
-		void dispatch_event(const event_t& event, bool dispatch_children = false);
-		void dispatch_event(const std::string& name, bool dispatch_children = false);
+		void dispatch_event(const event_t& event);
+		void dispatch_event(const std::string& name, bool immediate = true, bool dispatch_children = false);
 		void register_event_handler(const std::string& name, const event_handler_t& handler);
+		void run_queued_events();
 
 		void set_needs_key_catcher(const bool enabled);
 		void set_handle_mouse(const bool enabled);
+		void set_mouse_blocking(const bool enabled);
 		bool is_mouse_in() const;
 		bool is_mouse_down() const;
 
-		void make_draggable();
+		void make_draggable(const std::optional<ui_element_ptr>& target_opt = {});
 
-		void get_animation_state(const std::string& name, element_state_t& state) const;
+		void get_animation_state(const std::string& name, element_state_t& state, bool& found) const;
 		void get_current_animation_state(element_state_t& state) const;
 
 		ui_element_ptr get_parent() const;
@@ -177,7 +186,8 @@ namespace lui
 
 		static ui_element_ptr create();
 
-		object metadata;
+		object metadata{};
+		sol::table lua_metadata;
 
 	private:
 		virtual void update();
@@ -192,15 +202,19 @@ namespace lui
 		void dispatch_event_internal(const event_t& event);
 
 		std::list<ui_element_ptr> children_{};
-		std::weak_ptr<ui_element> parent_;
+		std::weak_ptr<ui_element> parent_{};
 
 		std::unordered_map<std::string, element_state_t> states_{};
 		std::unordered_map<std::string, event_handler_t> event_handlers_{};
+
+		std::vector<event_t> event_queue_{};
 
 		animation_state_t animation_state_{};
 		mouse_state_t mouse_state_{};
 		rect_t client_rect_{};
 		bool needs_key_catcher_{};
+
+		std::string id_{};
 
 	};
 }

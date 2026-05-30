@@ -7,6 +7,11 @@
 
 namespace lui
 {
+	ui_timer::ui_timer()
+	{
+		this->id_ = "uitimer";
+	}
+
 	void ui_timer::update()
 	{
 		auto parent = this->get_parent();

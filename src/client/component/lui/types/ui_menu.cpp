@@ -14,6 +14,11 @@
 
 namespace lui
 {
+	ui_menu::ui_menu()
+	{
+		this->id_ = "uimenu";
+	}
+
 	ui_menu_ptr ui_menu::create(const std::string& title_text)
 	{
 		auto menu = std::make_shared<ui_menu>();
@@ -121,7 +126,12 @@ namespace lui
 
 	void ui_menu::add_back_button()
 	{
-		this->add_button("BACK", flow_manager::request_pop_menu, "Go back");
+		this->add_button("BACK", [this]()
+		{
+			utils::play_sound(SOUND_MENU_LEAVE);
+			this->animate_to_state("hide", 200);
+			this->add_child(ui_timer::create("leave_menu", 200));
+		}, "Go back");
 	}
 
 	void ui_menu::add_description()

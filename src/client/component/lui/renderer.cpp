@@ -55,8 +55,17 @@ namespace lui::renderer
 				case CMD_DRAW_TEXT:
 				{
 					const auto cmd = reinterpret_cast<draw_text_command*>(base_cmd);
-					::renderer::draw_text(renderer, cmd->text, cmd->height, cmd->x, cmd->y, cmd->color,
-						cmd->outline_color, cmd->formatted, cmd->display_width, cmd->display_width, 0.f, 0.f, cmd->use_word_wrapping, -1, cmd->rotation);
+					if (cmd->artist_font)
+					{
+						::renderer::draw_text_artist(renderer, cmd->text, cmd->height, cmd->x, cmd->y, cmd->color,
+							cmd->formatted, cmd->display_width, cmd->display_height, 0.f, 0.f, cmd->use_word_wrapping);
+					}
+					else
+					{
+						::renderer::draw_text(renderer, cmd->text, cmd->height, cmd->x, cmd->y, cmd->color,
+							cmd->outline_color, cmd->formatted, cmd->display_width, cmd->display_height, 0.f, 0.f, cmd->use_word_wrapping, -1, cmd->rotation);
+					}
+
 					break;
 				}
 				}
@@ -107,7 +116,7 @@ namespace lui::renderer
 	}
 
 	void add_draw_text(const char* text, float height, float x, float y, float* color, float* outline_color, bool formatted, 
-		float display_width, float display_height, bool use_word_wrapping, float rotation)
+		float display_width, float display_height, bool use_word_wrapping, float rotation, bool artist_font)
 	{
 		std::lock_guard _0(draw_list.mutex);
 
@@ -122,8 +131,17 @@ namespace lui::renderer
 		cmd->display_height = display_height;
 		cmd->use_word_wrapping = use_word_wrapping;
 		cmd->rotation = rotation;
-		std::memcpy(cmd->color, color, sizeof(float[4]));
-		std::memcpy(cmd->outline_color, outline_color, sizeof(float[4]));
+		cmd->artist_font = artist_font;
+
+		if (color != nullptr)
+		{
+			std::memcpy(cmd->color, color, sizeof(float[4]));
+		}
+
+		if (outline_color != nullptr)
+		{
+			std::memcpy(cmd->outline_color, outline_color, sizeof(float[4]));
+		}
 	}
 
 	class component final : public component_interface
