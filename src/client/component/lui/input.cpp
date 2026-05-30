@@ -89,17 +89,17 @@ namespace lui::input
 				if (key_event.is_char)
 				{
 					event.name = "char";
-					event.params[0].integer = key_event.key;
+					event.set("key", key_event.key);
 				}
 				else if (key_event.is_mousewheel)
 				{
 					event.name = "mousewheel";
-					event.params[0].boolean = key_event.is_down;
+					event.set("down", key_event.is_down);
 				}
 				else
 				{
 					event.name = key_event.is_down ? "keydown" : "keyup";
-					event.params[0].integer = key_event.key;
+					event.set("key", key_event.key);
 				}
 
 				get_root_element()->dispatch_event(event, true);

@@ -4,6 +4,7 @@
 #include "main.hpp"
 #include "input.hpp"
 #include "flow_manager.hpp"
+#include "scripting.hpp"
 
 #include "../command.hpp"
 #include "../scheduler.hpp"
@@ -35,6 +36,8 @@ namespace lui
 			{
 				module();
 			}
+
+			scripting::start();
 		}
 
 		void draw_root()
@@ -61,6 +64,7 @@ namespace lui
 			input::update();
 			draw_root();
 			input::post_update();
+			scripting::run_frame();
 		}
 	}
 

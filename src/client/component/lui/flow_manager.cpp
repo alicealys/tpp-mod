@@ -37,17 +37,24 @@ namespace lui::flow_manager
 				return;
 			}
 
-			const auto menu = iter->second.operator()();
-			menu_entry.root = menu;
-
-			state.menu_stack.push_back(menu_entry);
-
-			if (!menu_entry.popup)
+			try
 			{
-				get_root_element()->remove_all_children();
-			}
+				const auto menu = iter->second.operator()();
+				menu_entry.root = menu;
 
-			get_root_element()->add_child(menu);
+				state.menu_stack.push_back(menu_entry);
+
+				if (!menu_entry.popup)
+				{
+					get_root_element()->remove_all_children();
+				}
+
+				get_root_element()->add_child(menu);
+			}
+			catch (const std::exception& e)
+			{
+				console::error("error opening menu \"%s\": %s\n", menu_entry.name.data(), e.what());
+			}
 		}
 
 		void pop_menu()

@@ -32,7 +32,16 @@ namespace lui
 			case 2:
 			{
 				const auto& callback = std::get<std::function<void()>>(properties.action);
-				callback();
+				try
+				{
+					callback();
+
+				}
+				catch (const std::exception& e)
+				{
+					console::error("LUI: error executing button callback: %s\n", e.what());
+				}
+
 				break;
 			}
 			}
