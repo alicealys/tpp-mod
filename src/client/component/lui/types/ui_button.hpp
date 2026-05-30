@@ -24,6 +24,8 @@ namespace lui
 	class ui_button : public ui_element
 	{
 	public:
+		ui_button();
+
 		static ui_button_ptr create(const button_properties_t& properties);
 
 	private:

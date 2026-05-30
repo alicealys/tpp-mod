@@ -709,6 +709,25 @@ namespace vars
 		return true;
 	}
 
+	void set_var_from_string(const std::string& name, const std::string& value)
+	{
+		const auto var = find(name);
+		if (var == nullptr)
+		{
+			register_string(name, value, var_flag_external, "");
+		}
+		else
+		{
+			const auto parsed_value = var_value::parse(value, var->type);
+			if (!parsed_value.has_value())
+			{
+				return;
+			}
+
+			set_var(var, parsed_value.value(), var_source_external);
+		}
+	}
+
 	class component final : public component_interface
 	{
 	public:
@@ -723,22 +742,7 @@ namespace vars
 
 				const auto name = params.get(1);
 				const auto value = params.join(2);
-
-				const auto var = find(name);
-				if (var == nullptr)
-				{
-					register_string(name, value, var_flag_external, "");
-				}
-				else
-				{
-					const auto parsed_value = var_value::parse(value, var->type);
-					if (!parsed_value.has_value())
-					{
-						return;
-					}
-
-					set_var(var, parsed_value.value(), var_source_external);
-				}
+				set_var_from_string(name, value);
 			});
 
 			command::add("reset", [](const command::params& params)

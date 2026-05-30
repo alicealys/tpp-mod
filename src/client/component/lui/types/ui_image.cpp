@@ -7,6 +7,11 @@
 
 namespace lui
 {
+	ui_image::ui_image()
+	{
+		this->id_ = "uiimage";
+	}
+
 	void ui_image::draw_internal(const draw_info_t& draw_info) const
 	{
 		const auto& state = this->animation_state_.current_state;

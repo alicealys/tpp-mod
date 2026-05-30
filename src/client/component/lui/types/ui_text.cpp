@@ -5,10 +5,90 @@
 #include "../main.hpp"
 #include "../renderer.hpp"
 #include "../../renderer.hpp"
+#include "../../session.hpp"
 
 namespace lui
 {
+	ui_text::ui_text()
+	{
+		this->id_ = "uitext";
+	}
+
 	void ui_text::draw_internal(const draw_info_t& draw_info) const
+	{
+		switch (this->font_)
+		{
+		default:
+		case FONT_SYSTEM:
+			return this->draw_internal_system(draw_info);
+		case FONT_ARTIST:
+			return this->draw_internal_artist(draw_info);
+		}
+	}
+
+	void ui_text::draw_internal_artist(const draw_info_t& draw_info) const
+	{
+		const auto& state = this->animation_state_.current_state;
+
+		float color[4]{};
+		color[0] = state.color.r;
+		color[1] = state.color.g;
+		color[2] = state.color.b;
+		color[3] = draw_info.alpha;
+
+		const auto width = (draw_info.rect.right - draw_info.rect.left);
+		const auto height = (draw_info.rect.bottom - draw_info.rect.top);
+
+		const auto text = get_display_text_callback_.has_value()
+			? get_display_text_callback_->operator()()
+			: this->text_.data();
+
+		const auto text_width = ::renderer::calc_text_width_artist(text, state.height, this->formatted_);
+
+		auto x = 0.f;
+
+		switch (state.position.alignment)
+		{
+		case ALIGN_LEFT:
+			x = draw_info.rect.left;
+			break;
+		case ALIGN_CENTER:
+			x = draw_info.rect.left + width / 2.f - text_width / 2.f;
+			break;
+		case ALIGN_RIGHT:
+			x = draw_info.rect.right - text_width;
+			break;
+		}
+
+		auto y = 0.f;
+
+		switch (state.position.vertical_alignment)
+		{
+		case ALIGN_TOP:
+			y = draw_info.rect.top;
+			break;
+		case ALIGN_MIDDLE:
+			y = draw_info.rect.top + height / 2.f - state.height / 2.f;
+			break;
+		case ALIGN_BOTTOM:
+			y = draw_info.rect.bottom - state.height;
+			break;
+		}
+
+		auto display_width = this->use_stencil_ || this->use_word_wrapping_
+			? draw_info.rect.right - draw_info.rect.left
+			: 0.f;
+
+		auto display_height = this->use_stencil_ || this->use_word_wrapping_
+			? draw_info.rect.bottom - draw_info.rect.top
+			: 0.f;
+
+		renderer::add_draw_text(text, state.height, x, y, color, nullptr, this->formatted_,
+			display_width, display_height, this->use_word_wrapping_, draw_info.rotation, true);
+	}
+
+
+	void ui_text::draw_internal_system(const draw_info_t& draw_info) const
 	{
 		const auto& state = this->animation_state_.current_state;
 
@@ -25,10 +105,10 @@ namespace lui
 		outline_color[3] = this->outline_color_.a;
 
 		const auto width = (draw_info.rect.right - draw_info.rect.left);
-		[[ maybe_unused ]] const auto height = (draw_info.rect.bottom - draw_info.rect.top);
+		const auto height = (draw_info.rect.bottom - draw_info.rect.top);
 
-		const auto text = get_display_text_callback.has_value()
-			? get_display_text_callback->operator()()
+		const auto text = get_display_text_callback_.has_value()
+			? get_display_text_callback_->operator()()
 			: this->text_.data();
 
 		const auto text_width = ::renderer::calc_text_width(text, state.height, this->formatted_);
@@ -72,11 +152,12 @@ namespace lui
 			: 0.f;
 
 		renderer::add_draw_text(text, state.height, x, y, color, outline_color, this->formatted_, 
-			display_width, display_height, this->use_word_wrapping_, draw_info.rotation);
+			display_width, display_height, this->use_word_wrapping_, draw_info.rotation, false);
 	}
 
 	void ui_text::set_text(const std::string& text)
 	{
+		this->get_display_text_callback_.reset();
 		this->text_ = text;
 	}
 
@@ -101,6 +182,11 @@ namespace lui
 	void ui_text::set_use_word_wrapping(const bool enabled)
 	{
 		this->use_word_wrapping_ = enabled;
+	}
+
+	void ui_text::set_font(const std::uint8_t font)
+	{
+		this->font_ = font;
 	}
 
 	ui_text_ptr ui_text::create()

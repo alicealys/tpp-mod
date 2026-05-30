@@ -7,6 +7,7 @@
 #include "filesystem.hpp"
 #include "vars.hpp"
 #include "command.hpp"
+#include "scripting.hpp"
 
 #include <utils/io.hpp>
 #include <utils/hook.hpp>
@@ -342,28 +343,28 @@ namespace scripting
 				script_set_command(state, params.get(1), params.get(2));
 			}
 		}
+	}
 
-		void script_exec(const std::string& code)
+	void script_exec(const std::string& code)
+	{
+		const auto state = (*game::s_instances)->state;
+		if (state == nullptr)
 		{
-			const auto state = (*game::s_instances)->state;
-			if (state == nullptr)
-			{
-				return;
-			}
+			return;
+		}
 
-			loading_custom_script = true;
-			const auto _0 = gsl::finally([&]
-			{
-				loading_custom_script = false;
-			});
+		loading_custom_script = true;
+		const auto _0 = gsl::finally([&]
+		{
+			loading_custom_script = false;
+		});
 
-			if (game::lua::luaL_loadstring(state, code.data()) != 0 || game::lua::lua_pcall(state, 0, 0, 0) != 0)
-			{
-				size_t size{};
-				const auto error = game::lua::lua_tolstring(state, -1, &size);
-				console::error("Execution error: %s\n", error);
-				game_lua_pop(state, 1);
-			}
+		if (game::lua::luaL_loadstring(state, code.data()) != 0 || game::lua::lua_pcall(state, 0, 0, 0) != 0)
+		{
+			size_t size{};
+			const auto error = game::lua::lua_tolstring(state, -1, &size);
+			console::error("Execution error: %s\n", error);
+			game_lua_pop(state, 1);
 		}
 	}
 

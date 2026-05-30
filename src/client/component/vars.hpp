@@ -150,6 +150,7 @@ namespace vars
 
 	bool cheats_enabled();
 
+	void set_var_from_string(const std::string& name, const std::string& value);
 	void set_var(const var_ptr& var, const var_value& value, const var_source_t set_source);
 
 	const char* get_var_domain(const var_ptr& var);

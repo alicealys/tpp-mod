@@ -10,6 +10,11 @@
 
 namespace lui
 {
+	ui_button::ui_button()
+	{
+		this->id_ = "uibutton";
+	}
+
 	ui_button_ptr ui_button::create(const button_properties_t& properties)
 	{
 		auto button = std::make_shared<ui_button>();
