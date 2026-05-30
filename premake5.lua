@@ -266,6 +266,7 @@ workspace "tpp-mod"
 
 	filter "configurations:Debug"
 		optimize "Debug"
+		buildoptions {"/bigobj"}
 		defines {"DEBUG", "_DEBUG"}
 	filter {}
 
