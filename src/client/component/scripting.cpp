@@ -13,6 +13,20 @@
 #include <utils/flags.hpp>
 #include <utils/string.hpp>
 
+#define LUA_TNIL		0
+#define LUA_TBOOLEAN		1
+#define LUA_TLIGHTUSERDATA	2
+#define LUA_TNUMBER		3
+#define LUA_TSTRING		4
+#define LUA_TTABLE		5
+#define LUA_TFUNCTION		6
+#define LUA_TUSERDATA		7
+#define LUA_TTHREAD		8
+
+#define LUA_REGISTRYINDEX	(-10000)
+#define LUA_ENVIRONINDEX	(-10001)
+#define LUA_GLOBALSINDEX	(-10002)
+
 namespace scripting
 {
 	namespace
@@ -53,7 +67,7 @@ namespace scripting
 				size_t size{};
 				const auto error = game::lua::lua_tolstring(state, -1, &size);
 				console::error("Error loading script \"%s\": %s\n", path.data(), error);
-				lua_pop(state, 1);
+				game_lua_pop(state, 1);
 			}
 		}
 
@@ -96,7 +110,7 @@ namespace scripting
 		}
 
 		utils::hook::detour lual_load_buffer_hook;
-		int lual_load_buffer_stub(lua_State* state, const char* buffer, size_t size, const char* name)
+		int lual_load_buffer_stub(game::lua::lua_State* state, const char* buffer, size_t size, const char* name)
 		{
 			if (loading_custom_script)
 			{
@@ -137,7 +151,7 @@ namespace scripting
 		}
 
 		template <console::console_type Type>
-		void lua_print(lua_State* s)
+		void lua_print(game::lua::lua_State* s)
 		{
 			if (var_lua_logging->current.get_int() < 2)
 			{
@@ -162,7 +176,7 @@ namespace scripting
 			console::print(Type, "[Fox.%s] %s\n", type_name, str.data());
 		}
 
-		std::string get_table_value(lua_State* state)
+		std::string get_table_value(game::lua::lua_State* state)
 		{
 			const auto type = game::lua::lua_type(state, -1);
 
@@ -182,7 +196,7 @@ namespace scripting
 			}
 		}
 
-		void script_table_command_list_internal(lua_State* state, const std::string& name)
+		void script_table_command_list_internal(game::lua::lua_State* state, const std::string& name)
 		{
 			if (game::lua::lua_type(state, -1) == LUA_TTABLE)
 			{
@@ -193,12 +207,12 @@ namespace scripting
 					const char* key = game::lua::lua_tolstring(state, -2, &len);
 					const auto value_str = get_table_value(state);
 					console::info("%s.%s\n", name.data(), key, value_str.data());
-					lua_pop(state, 1);
+					game_lua_pop(state, 1);
 				}
 			}
 		}
 
-		void script_get_recurse(lua_State* state, const std::string& str, bool stop_at_table = false, std::string* end_key = nullptr)
+		void script_get_recurse(game::lua::lua_State* state, const std::string& str, bool stop_at_table = false, std::string* end_key = nullptr)
 		{
 			const auto keys = utils::string::split(str, '.');
 			auto is_first = true;
@@ -227,7 +241,7 @@ namespace scripting
 			}
 		}
 
-		void script_set_recurse(lua_State* state, const std::string& str, std::string* end_key)
+		void script_set_recurse(game::lua::lua_State* state, const std::string& str, std::string* end_key)
 		{
 			const auto keys = utils::string::split(str, '.');
 			auto is_first = true;
@@ -259,13 +273,13 @@ namespace scripting
 				}
 				else
 				{
-					lua_pop(state, 1);
+					game_lua_pop(state, 1);
 					break;
 				}
 			}
 		}
 
-		void script_get_command(lua_State* state, const std::string& str)
+		void script_get_command(game::lua::lua_State* state, const std::string& str)
 		{
 			script_get_recurse(state, str);
 
@@ -280,10 +294,10 @@ namespace scripting
 				console::info("\"%s\" is \"%s\" type: %s\n", str.data(), value_str.data(), type_name);
 			}
 
-			lua_pop(state, 1);
+			game_lua_pop(state, 1);
 		}
 
-		void script_set_command(lua_State* state, const std::string& str, const std::string& value)
+		void script_set_command(game::lua::lua_State* state, const std::string& str, const std::string& value)
 		{
 			std::string key;
 			script_set_recurse(state, str, &key);
@@ -308,7 +322,7 @@ namespace scripting
 				}
 			}
 
-			lua_pop(state, 1);
+			game_lua_pop(state, 1);
 		}
 
 		void script_var_command(const command::params& params)
@@ -348,7 +362,7 @@ namespace scripting
 				size_t size{};
 				const auto error = game::lua::lua_tolstring(state, -1, &size);
 				console::error("Execution error: %s\n", error);
-				lua_pop(state, 1);
+				game_lua_pop(state, 1);
 			}
 		}
 	}
