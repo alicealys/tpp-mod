@@ -1105,6 +1105,11 @@ namespace game
 			};
 		};
 
+		struct Path
+		{
+			__int64 id;
+		};
+
 		struct KernelString
 		{
 			const char* buffer;

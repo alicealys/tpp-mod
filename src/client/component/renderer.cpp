@@ -272,6 +272,13 @@ namespace renderer
 			game::fox::gr::dg::plugins::Draw2DRenderer_::Execute_Packet2DTexture(instance, &packet);
 		}
 
+		void set_texture(game::fox::gr::dg::plugins::Draw2DRenderer* instance, unsigned int resource_id)
+		{
+			game::fox::gr::Packet2DTexture packet{};
+			packet.id = resource_id;
+			game::fox::gr::dg::plugins::Draw2DRenderer_::Execute_Packet2DTexture(instance, &packet);
+		}
+
 		void set_stencil(game::fox::gr::dg::plugins::Draw2DRenderer* instance, 
 			unsigned char flags, unsigned char a1, unsigned char a2, unsigned char a3, unsigned char a4, unsigned char a5, unsigned char a6, int a9)
 		{
@@ -647,7 +654,7 @@ namespace renderer
 			game::fox::gr::dg::plugins::Draw2DRenderer_::Execute_Packet2DBox(instance, &packet);
 		}
 
-		void add_box2(game::fox::gr::dg::plugins::Draw2DRenderer* instance, float x, float y, float z, float width, float height)
+		void add_box2(game::fox::gr::dg::plugins::Draw2DRenderer* instance, float width, float height, float* uv)
 		{
 			game::fox::Color color{};
 			color.values[0] = 1.f;
@@ -656,34 +663,64 @@ namespace renderer
 			color.values[3] = 1.f;
 			const auto color_int = game::fox::Color_::EncodeUInt32RGBA(&color);
 
+			float result_uv[4][2]{};
+			if (uv == nullptr)
+			{
+				result_uv[0][0] = 0.f;
+				result_uv[0][1] = 1.f;
+
+				result_uv[1][0] = 0.f;
+				result_uv[1][1] = 0.f;
+
+				result_uv[2][0] = 1.f;
+				result_uv[2][1] = 1.f;
+
+				result_uv[3][0] = 1.f;
+				result_uv[3][1] = 0.f;
+			}
+			else
+			{
+				result_uv[0][0] = uv[0];
+				result_uv[0][1] = uv[1];
+
+				result_uv[1][0] = uv[0];
+				result_uv[1][1] = uv[3];
+
+				result_uv[2][0] = uv[2];
+				result_uv[2][1] = uv[1];
+
+				result_uv[3][0] = uv[2];
+				result_uv[3][1] = uv[3];
+			}
+
 			game::fox::gr::Packet2DTriangleStrip<4> triangle_strip{};
 			triangle_strip.vertices[0].color = color_int;
 			triangle_strip.vertices[0].v[0] = float_to_half(-0.5f * width);
 			triangle_strip.vertices[0].v[1] = float_to_half(0.5f * height);
 			triangle_strip.vertices[0].v[2] = float_to_half(0.f);
-			triangle_strip.vertices[0].v[3] = float_to_half(0.f);
-			triangle_strip.vertices[0].v[4] = float_to_half(1.f);
+			triangle_strip.vertices[0].v[3] = float_to_half(result_uv[0][0]);
+			triangle_strip.vertices[0].v[4] = float_to_half(result_uv[0][1]);
 
 			triangle_strip.vertices[1].color = color_int;
 			triangle_strip.vertices[1].v[0] = float_to_half(-0.5f * width);
 			triangle_strip.vertices[1].v[1] = float_to_half(-0.5f * height);
 			triangle_strip.vertices[1].v[2] = float_to_half(0.f);
-			triangle_strip.vertices[1].v[3] = float_to_half(0.f);
-			triangle_strip.vertices[1].v[4] = float_to_half(0.f);
+			triangle_strip.vertices[1].v[3] = float_to_half(result_uv[1][0]);
+			triangle_strip.vertices[1].v[4] = float_to_half(result_uv[1][1]);
 
 			triangle_strip.vertices[2].color = color_int;
 			triangle_strip.vertices[2].v[0] = float_to_half(0.5f * width);
 			triangle_strip.vertices[2].v[1] = float_to_half(0.5f * height);
 			triangle_strip.vertices[2].v[2] = float_to_half(0.f);
-			triangle_strip.vertices[2].v[3] = float_to_half(1.f);
-			triangle_strip.vertices[2].v[4] = float_to_half(1.f);
+			triangle_strip.vertices[2].v[3] = float_to_half(result_uv[2][0]);
+			triangle_strip.vertices[2].v[4] = float_to_half(result_uv[2][1]);
 
 			triangle_strip.vertices[3].color = color_int;
 			triangle_strip.vertices[3].v[0] = float_to_half(0.5f * width);
 			triangle_strip.vertices[3].v[1] = float_to_half(-0.5f * height);
 			triangle_strip.vertices[3].v[2] = float_to_half(0.f);
-			triangle_strip.vertices[3].v[3] = float_to_half(1.f);
-			triangle_strip.vertices[3].v[4] = float_to_half(0.f);
+			triangle_strip.vertices[3].v[3] = float_to_half(result_uv[3][0]);
+			triangle_strip.vertices[3].v[4] = float_to_half(result_uv[3][1]);
 
 			game::fox::gr::dg::plugins::Draw2DRenderer_::Execute_Packet2DTriangleStrip<4>(instance, &triangle_strip);
 		}
@@ -780,8 +817,8 @@ namespace renderer
 			set_matrix(instance, v1, v2, quat, 2);
 		}
 
-		void draw_box_internal(game::fox::gr::dg::plugins::Draw2DRenderer* instance, game::fox::gr::Material* material, 
-			float x, float y, float width, float height, float* color, float rotation = 0.f)
+		void draw_box_internal(game::fox::gr::dg::plugins::Draw2DRenderer* instance, game::fox::gr::Material* material, unsigned int texture,
+			float x, float y, float width, float height, float* color, float rotation = 0.f, float* uv = nullptr)
 		{
 			set_position(instance, x + width / 2.f, y + height / 2.f);
 			set_texture(instance, nullptr);
@@ -789,7 +826,13 @@ namespace renderer
 			set_color(instance, color);
 			set_rotation(instance, rotation);
 			set_material(instance, material);
-			add_box2(instance, 0.f, 0.f, 0.f, width, height);
+
+			if (texture != 0)
+			{
+				set_texture(instance, texture);
+			}
+
+			add_box2(instance, width, height, uv);
 		}
 
 		float draw_text_internal_formatted(game::fox::gr::dg::plugins::Draw2DRenderer* instance, const char* text, float height, float x, float y, float* color,
@@ -1285,22 +1328,22 @@ namespace renderer
 	void draw_box(game::fox::gr::dg::plugins::Draw2DRenderer* instance, float x, float y, float width,
 		float height, float* color, float* outline_color, float outline_thickness, float rotation)
 	{
-		draw_box_internal(instance, nullptr, x, y, width, height, color, rotation);
+		draw_box_internal(instance, nullptr, 0, x, y, width, height, color, rotation);
 		
 		if (outline_color != nullptr)
 		{
-			draw_box_internal(instance, nullptr, x - outline_thickness, y, outline_thickness, height, outline_color, rotation);
-			draw_box_internal(instance, nullptr, x + width, y, outline_thickness, height, outline_color, rotation);
+			draw_box_internal(instance, nullptr, 0, x - outline_thickness, y, outline_thickness, height, outline_color, rotation);
+			draw_box_internal(instance, nullptr, 0, x + width, y, outline_thickness, height, outline_color, rotation);
 		
-			draw_box_internal(instance, nullptr, x - outline_thickness, y - outline_thickness, width + 2 * outline_thickness, outline_thickness, outline_color, rotation);
-			draw_box_internal(instance, nullptr, x - outline_thickness, y + height, width + 2 * outline_thickness, outline_thickness, outline_color, rotation);
+			draw_box_internal(instance, nullptr, 0, x - outline_thickness, y - outline_thickness, width + 2 * outline_thickness, outline_thickness, outline_color, rotation);
+			draw_box_internal(instance, nullptr, 0, x - outline_thickness, y + height, width + 2 * outline_thickness, outline_thickness, outline_color, rotation);
 		}
 	}
 
-	void draw_material(game::fox::gr::dg::plugins::Draw2DRenderer* instance, game::fox::gr::Material* material, float x, float y, float width,
-		float height, float* color, float rotation)
+	void draw_material(game::fox::gr::dg::plugins::Draw2DRenderer* instance, game::fox::gr::Material* material, unsigned int texture, float x, float y, float width,
+		float height, float* color, float rotation, float* uv)
 	{
-		draw_box_internal(instance, material, x, y, width, height, color, rotation);
+		draw_box_internal(instance, material, texture, x, y, width, height, color, rotation, uv);
 	}
 
 	void add_stencil(game::fox::gr::dg::plugins::Draw2DRenderer* instance, float x, float y, float width, float height)

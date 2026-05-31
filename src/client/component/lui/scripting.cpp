@@ -338,6 +338,20 @@ namespace lui::scripting
 				return element;
 			};
 
+			usertype["setuv"] = &ui_image::set_uv;
+			usertype["settextureresource"] = &ui_image::set_texture_resource;
+			usertype["setmaterial"] = &ui_image::set_material;
+			usertype["settexture"] = sol::overload(
+				[](ui_image& element, const std::uint64_t hash)
+				{
+					element.set_texture(hash);
+				},
+				[](ui_image& element, const std::string& path)
+				{
+					element.set_texture(path);
+				}
+			);
+
 			return usertype;
 		}
 
@@ -559,6 +573,17 @@ namespace lui::scripting
 			{
 				return game::tpp::ui::utility::GetCurrentMissionId();
 			};
+
+			state["game"]["gettextureresource"] = sol::overload(
+				[](const std::string& path)
+				{
+					return utils::get_texture_resource(path);
+				},
+				[](const std::uint64_t hash)
+				{
+					return utils::get_texture_resource(hash);
+				}
+			);
 
 			state["utils"] = sol::table::create(state.lua_state());
 			state["utils"]["executecommand"] = [](const std::string& cmd)
