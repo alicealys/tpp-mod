@@ -184,6 +184,7 @@ namespace game
 				WEAK symbol<Material**(Material**, StringId*)> Create{0x143C372A0, 0x140AB3D30, 0x140276DB0, 0x140AB3340};
 				WEAK symbol<void(Material*, StringId*)> BindShaderTechnique{0x140277150, 0x140AB3B40, 0x140276BC0, 0x140AB3150};
 				WEAK symbol<void(Material*, int, Texture*)> BindTexture{0x140277230, 0x140AB3C20, 0x140276CA0, 0x140AB3230};
+				WEAK symbol<void(Material*, StringId*)> Material_{0x140276DC0, 0x0, 0x0, 0x0};
 			}
 
 			namespace Texture_

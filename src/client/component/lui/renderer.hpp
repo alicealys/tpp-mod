@@ -13,7 +13,6 @@ namespace lui::renderer
 
 	struct draw_command
 	{
-		draw_command* next;
 		draw_type_t type;
 		size_t size;
 		float x;
@@ -26,7 +25,7 @@ namespace lui::renderer
 
 	struct draw_box_command : draw_command
 	{
-		game::fox::gr::Material* material;
+		std::uint32_t material;
 		std::uint32_t texture;
 		float uv[4];
 	};
@@ -42,7 +41,7 @@ namespace lui::renderer
 		bool artist_font;
 	};
 
-	void add_draw_material(game::fox::gr::Material* material, const std::uint32_t texture, float x, float y, float width, float height, float* color, float rotation, float* uv);
+	void add_draw_material(const std::uint32_t material, const std::uint32_t texture, float x, float y, float width, float height, float* color, float rotation, float* uv);
 	void add_draw_text(const char* text, float height, float x, float y, float* color, float* outline_color, 
 		bool formatted, float display_width, float display_height, bool use_word_wrapping = false, float rotation = 0.f, bool artist_font = false);
 }

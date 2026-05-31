@@ -4,6 +4,7 @@
 #include "ui_image.hpp"
 #include "../main.hpp"
 #include "../renderer.hpp"
+#include "../utils.hpp"
 
 namespace lui
 {
@@ -44,9 +45,19 @@ namespace lui
 		renderer::add_draw_material(this->material_, this->texture_, draw_info.rect.left, draw_info.rect.top, width, height, color, draw_info.rotation, uv);
 	}
 
-	void ui_image::set_material(game::fox::gr::Material* material)
+	void ui_image::set_material(const std::uint64_t hash)
 	{
-		this->material_ = material;
+		this->material_ = utils::get_material_resource(hash);
+	}
+
+	void ui_image::set_material(const std::string& path)
+	{
+		this->material_ = utils::get_material_resource(path);
+	}
+
+	void ui_image::set_material_resource(const std::uint32_t resource)
+	{
+		this->material_ = resource;
 	}
 
 	void ui_image::set_uv(const float width, const float height, 
@@ -61,21 +72,12 @@ namespace lui
 
 	void ui_image::set_texture(const std::uint64_t hash)
 	{
-		if (hash == 0)
-		{
-			this->texture_ = 0;
-			return;
-		}
-
-		game::fox::Path path{};
-		path.id = hash;
-		this->texture_ = game::fox::gr::dg::TextureManager_::CreateResourceFromFile(&path);
+		this->texture_ = utils::get_texture_resource(hash);
 	}
 
 	void ui_image::set_texture(const std::string& path)
 	{
-		const auto hash = game::fox::fs::PathCodeImpl_::FromString(path.data());
-		this->set_texture(hash);
+		this->texture_ = utils::get_texture_resource(path);
 	}
 
 	void ui_image::set_texture_resource(const std::uint32_t resource)

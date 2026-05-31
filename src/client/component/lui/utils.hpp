@@ -14,6 +14,9 @@ namespace lui
 
 namespace lui::utils
 {
+	std::uint32_t get_material_resource(const std::uint64_t hash);
+	std::uint32_t get_material_resource(const std::string& path);
+
 	std::uint32_t get_texture_resource(const std::uint64_t hash);
 	std::uint32_t get_texture_resource(const std::string& path);
 

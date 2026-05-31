@@ -24,7 +24,7 @@ namespace renderer
 	void draw_box(game::fox::gr::dg::plugins::Draw2DRenderer* instance, float x, float y, float width, 
 		float height, float* color, float* outline_color = nullptr, float outline_thickness = 1.f, float rotation = 0.f);
 
-	void draw_material(game::fox::gr::dg::plugins::Draw2DRenderer* instance, game::fox::gr::Material* material, unsigned int texture, 
+	void draw_material(game::fox::gr::dg::plugins::Draw2DRenderer* instance, unsigned int material, unsigned int texture,
 		float x, float y, float width,
 		float height, float* color, float rotation = 0.f, float* uv = nullptr);
 
