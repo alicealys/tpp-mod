@@ -21,6 +21,7 @@ namespace lui::renderer
 			char* cmd_buffer;
 			char* cmd_buffer_pos;
 			char* cmd_buffer_end;
+			std::size_t count;
 		} draw_list{};
 
 		template <typename T>
@@ -34,6 +35,7 @@ namespace lui::renderer
 			const auto cmd = reinterpret_cast<T*>(draw_list.cmd_buffer_pos);
 			std::memset(cmd, 0, sizeof(T));
 			cmd->size = sizeof(T);
+			draw_list.count++;
 			draw_list.cmd_buffer_pos += sizeof(T);
 			return cmd;
 		}
@@ -42,7 +44,8 @@ namespace lui::renderer
 		{
 			std::lock_guard _0(draw_list.mutex);
 			auto base_cmd = reinterpret_cast<draw_command*>(draw_list.cmd_buffer);
-			while (base_cmd->type != CMD_NONE)
+			auto i = 0;
+			while (base_cmd->type != CMD_NONE && i < draw_list.count && reinterpret_cast<char*>(base_cmd) < draw_list.cmd_buffer_end)
 			{
 				switch (base_cmd->type)
 				{
@@ -70,10 +73,12 @@ namespace lui::renderer
 				}
 				}
 
+				++i;
 				base_cmd->type = CMD_NONE;
 				base_cmd = reinterpret_cast<draw_command*>(reinterpret_cast<size_t>(base_cmd) + base_cmd->size);
 			}
 
+			draw_list.count = 0;
 			draw_list.cmd_buffer_pos = draw_list.cmd_buffer;
 		}
 
@@ -100,7 +105,7 @@ namespace lui::renderer
 		}
 	}
 
-	void add_draw_material(game::fox::gr::Material* material, const std::uint32_t texture, float x, float y, float width, float height, float* color, float rotation, float* uv)
+	void add_draw_material(const std::uint32_t material, const std::uint32_t texture, float x, float y, float width, float height, float* color, float rotation, float* uv)
 	{
 		std::lock_guard _0(draw_list.mutex);
 

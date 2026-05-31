@@ -340,7 +340,19 @@ namespace lui::scripting
 
 			usertype["setuv"] = &ui_image::set_uv;
 			usertype["settextureresource"] = &ui_image::set_texture_resource;
-			usertype["setmaterial"] = &ui_image::set_material;
+			usertype["setmaterialresource"] = &ui_image::set_material_resource;
+
+			usertype["setmaterial"] = sol::overload(
+				[](ui_image& element, const std::uint64_t hash)
+				{
+					element.set_material(hash);
+				},
+				[](ui_image& element, const std::string& path)
+				{
+					element.set_material(path);
+				}
+			);
+
 			usertype["settexture"] = sol::overload(
 				[](ui_image& element, const std::uint64_t hash)
 				{
@@ -573,6 +585,17 @@ namespace lui::scripting
 			{
 				return game::tpp::ui::utility::GetCurrentMissionId();
 			};
+
+			state["game"]["getmaterialresource"] = sol::overload(
+				[](const std::string& path)
+				{
+					return utils::get_material_resource(path);
+				},
+				[](const std::uint64_t hash)
+				{
+					return utils::get_material_resource(hash);
+				}
+			);
 
 			state["game"]["gettextureresource"] = sol::overload(
 				[](const std::string& path)

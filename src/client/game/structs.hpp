@@ -766,6 +766,21 @@ namespace game
 
 			struct Material
 			{
+				struct vtable
+				{
+
+				};
+
+				vtable* __vftable;
+				int unk;
+				char __pad0[4];
+				unsigned int resource;
+			};
+
+			static_assert(offsetof(Material, resource) == 0x10);
+
+			struct MaterialParameter
+			{
 
 			};
 
