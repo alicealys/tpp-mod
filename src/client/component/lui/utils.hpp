@@ -14,5 +14,8 @@ namespace lui
 
 namespace lui::utils
 {
+	std::uint32_t get_texture_resource(const std::uint64_t hash);
+	std::uint32_t get_texture_resource(const std::string& path);
+
 	void play_sound(const std::uint32_t id);
 }

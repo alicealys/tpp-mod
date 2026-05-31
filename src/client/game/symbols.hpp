@@ -42,6 +42,14 @@ namespace game
 			WEAK symbol<char*(fox::Buffer* buffer)> GetBuffer{0x14C240CB0, 0x14CB3BB00, 0x14CACA8A0, 0x14CA27EE0};
 		}
 
+		namespace fs
+		{
+			namespace PathCodeImpl_
+			{
+				WEAK symbol<__int64(const char*)> FromString{0x14003DE80, 0x14003DB70, 0x14003DE50, 0x14003DC30};
+			}
+		}
+
 		namespace nt
 		{
 			namespace Session
@@ -164,6 +172,23 @@ namespace game
 						/* 49 */ WEAK symbol<void*(Draw2DRenderer*, Packet2DSetTemporaryTexture*)> Execute_Packet2DSetTemporaryTexture{0x1402E4220, 0x140BD6F40, 0x1402E3CC0, 0x140BD6540};
 					}
 				}
+			
+				namespace TextureManager_
+				{
+					WEAK symbol<unsigned int(Path*)> CreateResourceFromFile{0x143A8E890, 0x149A96890, 0x140203CF0, 0x148C4CF90};
+				}
+			}
+
+			namespace Material_
+			{
+				WEAK symbol<Material**(Material**, StringId*)> Create{0x143C372A0, 0x140AB3D30, 0x140276DB0, 0x140AB3340};
+				WEAK symbol<void(Material*, StringId*)> BindShaderTechnique{0x140277150, 0x140AB3B40, 0x140276BC0, 0x140AB3150};
+				WEAK symbol<void(Material*, int, Texture*)> BindTexture{0x140277230, 0x140AB3C20, 0x140276CA0, 0x140AB3230};
+			}
+
+			namespace Texture_
+			{
+				WEAK symbol<Texture**(Texture**, StringId*)> Create{0x1401B6E90, 0x140AA8670, 0x1401B6ED0, 0x140AA7DE0};
 			}
 
 			namespace Font_
