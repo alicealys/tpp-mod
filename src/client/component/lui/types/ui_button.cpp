@@ -17,10 +17,10 @@ namespace lui
 
 	ui_button_ptr ui_button::create(const button_properties_t& properties)
 	{
-		auto button = std::make_shared<ui_button>();
+		const auto button = std::make_shared<ui_button>();
+		button->track();
 
 		button->set_handle_mouse(true);
-
 		button->register_event_handler("mousedown", [properties](ui_element& element, const event_t& event)
 		{
 			utils::play_sound(SOUND_SELECT);

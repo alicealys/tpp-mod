@@ -691,9 +691,83 @@ namespace game
 					float f9;
 				};
 
+				struct ResourceId
+				{
+					union
+					{
+						struct
+						{
+							unsigned int type : 7;
+							unsigned int unk2 : 10;
+							unsigned int index : 15;
+						} fields;
+						unsigned int data;
+					};
+				};
+
+				struct ShadowConstantRegister
+				{
+
+				};
+
 				struct CommandBuffer
 				{
-					char __pad0[0x100];
+					char __pad0[40];
+					fox::gr::dg::ShadowConstantRegister* shadowConstantRegister;
+					char __pad1[16];
+					fox::gr::dg::ResourceId material;
+					char __pad2[556];
+				};
+
+				struct MaterialResource_unk1
+				{
+					union
+					{
+						struct
+						{
+							unsigned char textureCount1 : 4;
+							unsigned char textureCount2 : 4;
+						} fields;
+						unsigned char data;
+					};
+				};
+
+				struct MaterialResource
+				{
+					char __pad0[32];
+					fox::gr::dg::ResourceId shader;
+					unsigned char numConsts;
+					fox::gr::dg::MaterialResource_unk1 unkFields;
+					char __pad2[10];
+					float consts[8][4];
+					fox::gr::dg::ResourceId textures[8];
+				};
+
+				struct MaterialManager
+				{
+					struct vtable
+					{
+
+					};
+
+					vtable* __vftable;
+					fox::gr::dg::MaterialResource* materials;
+				};
+
+				struct ShaderTechnique
+				{
+					char __pad0[80];
+				};
+
+				struct ShaderTechniqueManager
+				{
+					struct vtable
+					{
+
+					};
+
+					vtable* __vftable;
+					ShaderTechnique* shaderTechniques;
 				};
 
 				namespace plugins
@@ -714,7 +788,8 @@ namespace game
 						BuildDraw2DParameters* parameters;
 						CommandBuffer* commandBuffer;
 						Draw2DRenderer_unk* unk;
-						char __pad1[24];
+						char __pad1[16];
+						fox::gr::dg::ResourceId shader;
 						gn::Buffer* buffer;
 						unsigned int size;
 						char __pad2[14];
@@ -768,7 +843,7 @@ namespace game
 			{
 				struct vtable
 				{
-
+					void(__fastcall* __destructor)(Material*, char);
 				};
 
 				vtable* __vftable;

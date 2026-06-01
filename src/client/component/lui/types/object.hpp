@@ -44,6 +44,8 @@ namespace lui
 		template <typename T>
 		bool is() const;
 
+		bool operator==(const object_value& value);
+
 		template <typename T>
 		T as() const
 		{
@@ -68,7 +70,7 @@ namespace lui
 	};
 
 	using object_base = std::unordered_map<std::string, object_value>;
-	class object : public object_base
+	class object
 	{
 	public:
 		object() = default;
@@ -76,8 +78,8 @@ namespace lui
 		template <typename T>
 		T get_or(const std::string& key, const T& or_value) const
 		{
-			const auto iter = this->find(key);
-			if (iter == this->end())
+			const auto iter = this->values_.find(key);
+			if (iter == this->values_.end())
 			{
 				return or_value;
 			}
@@ -93,8 +95,8 @@ namespace lui
 		template <typename T>
 		T get(const std::string& key) const
 		{
-			const auto iter = this->find(key);
-			if (iter == this->end())
+			const auto iter = this->values_.find(key);
+			if (iter == this->values_.end())
 			{
 				throw std::runtime_error("bad access");
 			}
@@ -105,7 +107,13 @@ namespace lui
 		template <typename T>
 		void set(const std::string& key, const T& value)
 		{
-			this->operator[](key) = object_value(value);
+			this->values_.operator[](key) = object_value(value);
 		}
+
+		const object_base& get_values() const;
+
+	private:
+		object_base values_;
+
 	};
 }

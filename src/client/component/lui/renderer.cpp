@@ -52,7 +52,7 @@ namespace lui::renderer
 				case CMD_DRAW_BOX:
 				{
 					const auto cmd = reinterpret_cast<draw_box_command*>(base_cmd);
-					::renderer::draw_material(renderer, cmd->material, cmd->texture, cmd->x, cmd->y, cmd->width, cmd->height, cmd->color, cmd->rotation, cmd->uv);
+					::renderer::draw_material(renderer, cmd->material, cmd->x, cmd->y, cmd->width, cmd->height, cmd->color, cmd->rotation);
 					break;
 				}
 				case CMD_DRAW_TEXT:
@@ -105,7 +105,7 @@ namespace lui::renderer
 		}
 	}
 
-	void add_draw_material(const std::uint32_t material, const std::uint32_t texture, float x, float y, float width, float height, float* color, float rotation, float* uv)
+	void add_draw_material(const std::uint32_t material, float x, float y, float width, float height, float* color, float rotation)
 	{
 		std::lock_guard _0(draw_list.mutex);
 
@@ -117,8 +117,6 @@ namespace lui::renderer
 		cmd->height = height;
 		cmd->rotation = rotation;
 		cmd->material = material;
-		cmd->texture = texture;
-		std::memcpy(cmd->uv, uv, sizeof(float[4]));
 		std::memcpy(cmd->color, color, sizeof(float[4]));
 	}
 
@@ -151,26 +149,18 @@ namespace lui::renderer
 		}
 	}
 
-	class component final : public component_interface
+	void load()
 	{
-	public:
-		void post_load() override
+		if (!allocate_command_buffer())
 		{
-			if (!allocate_command_buffer())
-			{
-				return;
-			}
-
-			::renderer::on_frame(render_ui);
+			return;
 		}
 
-		void end() override
-		{
-			free_command_buffer();
-		}
-	};
+		::renderer::on_frame(render_ui);
+	}
+	
+	void end()
+	{
+		free_command_buffer();
+	}
 }
-
-#ifdef DEBUG
-REGISTER_COMPONENT(lui::renderer::component)
-#endif

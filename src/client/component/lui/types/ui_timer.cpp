@@ -51,6 +51,7 @@ namespace lui
 	ui_timer_ptr ui_timer::create(const event_t& event, const std::int32_t delay, const bool looping)
 	{
 		auto timer = std::make_shared<ui_timer>();
+		timer->track();
 		timer->event_ = event;
 		timer->delay_ = delay;
 		timer->looping_ = looping;

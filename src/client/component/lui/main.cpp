@@ -5,6 +5,7 @@
 #include "input.hpp"
 #include "flow_manager.hpp"
 #include "scripting.hpp"
+#include "renderer.hpp"
 
 #include "../command.hpp"
 #include "../scheduler.hpp"
@@ -15,10 +16,12 @@ namespace lui
 	{
 		std::atomic_bool restart_requested = true;
 		std::vector<std::function<void()>> modules;
+		std::vector<std::weak_ptr<ui_element>> element_list;
 
 		ui_element_ptr create_root_element()
 		{
 			auto root = ui_element::create();
+			root->set_id("uiroot");
 			element_state_t state{};
 			state.position.anchor = ANCHOR_ALL;
 			root->register_animation_state("default", state);
@@ -26,11 +29,48 @@ namespace lui
 			return root;
 		}
 
+		void cleanup_elements()
+		{
+			for (auto i = element_list.begin(); i != element_list.end(); )
+			{
+				if (i->expired())
+				{
+					i = element_list.erase(i);
+					continue;
+				}
+
+				auto element = i->lock();
+				if (element->get_parent() == nullptr)
+				{
+					element->close(true);
+					i = element_list.erase(i);
+					continue;
+				}
+
+				++i;
+			}
+		}
+
 		void initialize()
 		{
+			auto& root_element = get_root_element();
+			if (root_element != nullptr)
+			{
+				root_element->close();
+			}
+
+			for (auto& element : element_list)
+			{
+				if (!element.expired())
+				{
+					element.lock()->close(false);
+				}
+			}
+
+			element_list.clear();
 			flow_manager::initialize();
 
-			get_root_element() = create_root_element();
+			root_element = create_root_element();
 
 			for (const auto& module : modules)
 			{
@@ -60,6 +100,7 @@ namespace lui
 				restart_requested = false;
 			}
 
+			cleanup_elements();
 			flow_manager::update();
 			input::update();
 			draw_root();
@@ -79,21 +120,36 @@ namespace lui
 		modules.emplace_back(module);
 	}
 
+	void track_element(const std::weak_ptr<ui_element>& element)
+	{
+		element_list.emplace_back(element);
+	}
+
 	class component final : public component_interface
 	{
 	public:
 		void post_load() override
 		{
+			//material_create_hook.create(game::fox::gr::dg::ShaderTechniqueManager_::GetResourceHandle.get(), material_create_stub);
+			//material_create_hook2.create(0x140277230, material_create_stub2);
+			//material_create_hook3.create(0x143C34EE0, material_create_stub3);
 			command::add("lui_restart", []()
 			{
 				restart_requested = true;
 			});
 
 			scheduler::loop(update_ui, scheduler::main);
+			flow_manager::load();
+			renderer::load();
+		}
+
+		void end() override
+		{
+			renderer::end();
 		}
 	};
 }
 
-#ifdef DEBUG
+//#ifdef DEBUG
 REGISTER_COMPONENT(lui::component)
-#endif
+//#endif

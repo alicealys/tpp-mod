@@ -16,6 +16,8 @@ namespace game
 
 		WEAK symbol<QuarkSystemTable*()> GetQuarkSystemTable{0x146CDE8D0, 0x148F1D020, 0x148B24E40, 0x148051AD0};
 
+		WEAK symbol<game::fox::StringId(const char*, size_t)> FoxStrHash32{0x140023260, 0x140022F30, 0x140023220, 0x140022FD0};
+
 		namespace AssetConfiguration_
 		{
 			WEAK symbol<SharedString*()> GetLanguage{0x140171180, 0x1401727C0, 0x1401711F0, 0x140172770};
@@ -173,6 +175,11 @@ namespace game
 					}
 				}
 			
+				namespace ShaderTechniqueManager_
+				{
+					WEAK symbol<ResourceId(StringId*)> GetResourceHandle{0x1402699F0, 0x149D8E7B0, 0x0, 0x0};
+				}
+
 				namespace TextureManager_
 				{
 					WEAK symbol<unsigned int(Path*)> CreateResourceFromFile{0x143A8E890, 0x149A96890, 0x140203CF0, 0x148C4CF90};
@@ -183,8 +190,9 @@ namespace game
 			{
 				WEAK symbol<Material**(Material**, StringId*)> Create{0x143C372A0, 0x140AB3D30, 0x140276DB0, 0x140AB3340};
 				WEAK symbol<void(Material*, StringId*)> BindShaderTechnique{0x140277150, 0x140AB3B40, 0x140276BC0, 0x140AB3150};
-				WEAK symbol<void(Material*, int, Texture*)> BindTexture{0x140277230, 0x140AB3C20, 0x140276CA0, 0x140AB3230};
-				WEAK symbol<void(Material*, StringId*)> Material_{0x140276DC0, 0x0, 0x0, 0x0};
+				WEAK symbol<void(Material*, unsigned int, Texture*)> BindTexture{0x140277230, 0x140AB3C20, 0x140276CA0, 0x140AB3230};
+				WEAK symbol<void(Material*, unsigned int, Vectormath::Aos::Vector4*)> BindParameter{0x143C34EE0, 0x149919F80, 0x0, 0x0};
+				WEAK symbol<void(Material*, StringId*)> Material_{0x140276DC0, 0x140AB3620, 0x0, 0x0};
 			}
 
 			namespace Texture_
