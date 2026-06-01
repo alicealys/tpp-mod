@@ -130,9 +130,6 @@ namespace lui
 	public:
 		void post_load() override
 		{
-			//material_create_hook.create(game::fox::gr::dg::ShaderTechniqueManager_::GetResourceHandle.get(), material_create_stub);
-			//material_create_hook2.create(0x140277230, material_create_stub2);
-			//material_create_hook3.create(0x143C34EE0, material_create_stub3);
 			command::add("lui_restart", []()
 			{
 				restart_requested = true;
@@ -150,6 +147,6 @@ namespace lui
 	};
 }
 
-//#ifdef DEBUG
+#ifdef DEBUG
 REGISTER_COMPONENT(lui::component)
-//#endif
+#endif
