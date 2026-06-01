@@ -108,6 +108,7 @@ namespace lui
 	struct mouse_state_t
 	{
 		bool handle_mouse{};
+		bool handle_mouse_move{};
 		bool blocking = true;
 		bool was_mouse_in{};
 		bool did_mouse_down{};
@@ -176,6 +177,7 @@ namespace lui
 
 		void set_needs_key_catcher(const bool enabled);
 		void set_handle_mouse(const bool enabled);
+		void set_handle_mouse_move(const bool enabled);
 		void set_mouse_blocking(const bool enabled);
 		bool is_mouse_in() const;
 		bool is_mouse_down() const;

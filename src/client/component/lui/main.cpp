@@ -12,11 +12,12 @@
 
 namespace lui
 {
+	std::vector<std::weak_ptr<ui_element>> element_list;
+
 	namespace
 	{
 		std::atomic_bool restart_requested = true;
 		std::vector<std::function<void()>> modules;
-		std::vector<std::weak_ptr<ui_element>> element_list;
 
 		ui_element_ptr create_root_element()
 		{
@@ -58,7 +59,7 @@ namespace lui
 			}
 		}
 
-		void initialize()
+		void stop()
 		{
 			auto& root_element = get_root_element();
 			if (root_element != nullptr)
@@ -75,9 +76,16 @@ namespace lui
 			}
 
 			element_list.clear();
-			flow_manager::initialize();
+			flow_manager::reset();
 
-			root_element = create_root_element();
+			scripting::stop();
+		}
+
+		void initialize()
+		{
+			stop();
+
+			get_root_element() = create_root_element();
 
 			for (const auto& module : modules)
 			{
@@ -149,6 +157,7 @@ namespace lui
 
 		void end() override
 		{
+			stop();
 			renderer::end();
 		}
 	};
