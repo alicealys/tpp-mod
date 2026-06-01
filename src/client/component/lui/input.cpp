@@ -23,14 +23,6 @@ namespace lui::input
 			bool prev_keys[6];
 		};
 
-		struct key_event_t
-		{
-			int key;
-			bool is_down;
-			bool is_char;
-			bool is_mousewheel;
-		};
-
 		using key_event_queue_t = std::vector<key_event_t>;
 
 		utils::concurrency::container<key_event_queue_t> key_event_queue;
@@ -86,28 +78,7 @@ namespace lui::input
 			auto& root = get_root_element();
 			for (const auto& key_event : event_queue)
 			{
-				event_t event{};
-				event.target = root;
-				event.immediate = true;
-				event.dispatch_children = true;
-
-				if (key_event.is_char)
-				{
-					event.name = "char";
-					event.params.set("key", key_event.key);
-				}
-				else if (key_event.is_mousewheel)
-				{
-					event.name = "mousewheel";
-					event.params.set("down", key_event.is_down);
-				}
-				else
-				{
-					event.name = key_event.is_down ? "keydown" : "keyup";
-					event.params.set("key", key_event.key);
-				}
-
-				root->dispatch_event(event);
+				root->handle_key_event(key_event);
 			}
 		}
 	}

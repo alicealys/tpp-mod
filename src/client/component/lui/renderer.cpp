@@ -71,6 +71,12 @@ namespace lui::renderer
 
 					break;
 				}
+				case CMD_DRAW_TEXT_CURSOR:
+				{
+					const auto cmd = reinterpret_cast<draw_text_cursor_command*>(base_cmd);
+					::renderer::draw_text_with_cursor(renderer, cmd->text, cmd->cursor, cmd->height, cmd->x, cmd->y, cmd->color, cmd->outline_color, 
+						cmd->formatted, cmd->display_width, cmd->rotation);
+				}
 				}
 
 				++i;
@@ -127,7 +133,7 @@ namespace lui::renderer
 
 		auto cmd = allocate_draw_command<draw_text_command>();
 		cmd->type = CMD_DRAW_TEXT;
-		strcpy_s(cmd->text, sizeof(cmd->text), text);
+		strncpy_s(cmd->text, sizeof(cmd->text), text, _TRUNCATE);
 		cmd->height = height;
 		cmd->x = x;
 		cmd->y = y;
@@ -137,6 +143,33 @@ namespace lui::renderer
 		cmd->use_word_wrapping = use_word_wrapping;
 		cmd->rotation = rotation;
 		cmd->artist_font = artist_font;
+
+		if (color != nullptr)
+		{
+			std::memcpy(cmd->color, color, sizeof(float[4]));
+		}
+
+		if (outline_color != nullptr)
+		{
+			std::memcpy(cmd->outline_color, outline_color, sizeof(float[4]));
+		}
+	}
+
+	void add_draw_text_with_cursor(const char* text, float height, float x, float y, float* color, float* outline_color, bool formatted,
+		float display_width, float rotation, int cursor)
+	{
+		std::lock_guard _0(draw_list.mutex);
+
+		auto cmd = allocate_draw_command<draw_text_cursor_command>();
+		cmd->type = CMD_DRAW_TEXT_CURSOR;
+		strncpy_s(cmd->text, sizeof(cmd->text), text, _TRUNCATE);
+		cmd->height = height;
+		cmd->x = x;
+		cmd->y = y;
+		cmd->formatted = formatted;
+		cmd->display_width = display_width;
+		cmd->rotation = rotation;
+		cmd->cursor = cursor;
 
 		if (color != nullptr)
 		{

@@ -45,14 +45,19 @@ namespace lui
 
 		void set_blend(float blend, const std::uint32_t type = TEXTURE_BASE);
 
-	private:
-		game::fox::gr::Material* material_;
+		void set_random_uv_shift(bool enabled);
 
+	private:
 		void draw_internal(const draw_info_t& inherit) const override;
 		void update_material();
+		void update() override;
+		void bind_param(const std::uint32_t param, const float x, const float y, const float z, const float w);
 
-		std::uint64_t shader_;
-		texture_t textures_[TEXTURE_COUNT];
+		game::fox::gr::Material* material_{};
+		std::uint64_t shader_{};
+		texture_t textures_[TEXTURE_COUNT]{};
+		bool randomize_shift_{};
+		std::uint32_t last_update_{};
 
 	};
 }

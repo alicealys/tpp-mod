@@ -15,6 +15,7 @@ namespace lui
 
 	class ui_text : public ui_element
 	{
+		friend class ui_text_input;
 	public:
 		ui_text();
 

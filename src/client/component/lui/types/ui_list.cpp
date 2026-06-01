@@ -10,6 +10,7 @@ namespace lui
 	ui_list::ui_list()
 	{
 		this->id_ = "uilist";
+		this->type_ = UI_LIST;
 	}
 
 	ui_list_ptr ui_list::create(const float spacing)

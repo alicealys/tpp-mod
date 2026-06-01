@@ -12,6 +12,7 @@ namespace lui
 	ui_text::ui_text()
 	{
 		this->id_ = "uitext";
+		this->type_ = UI_TEXT;
 	}
 
 	void ui_text::draw_internal(const draw_info_t& draw_info) const
@@ -144,11 +145,11 @@ namespace lui
 		}
 
 		auto display_width = this->use_stencil_ || this->use_word_wrapping_
-			? draw_info.rect.right - draw_info.rect.left
+			? width
 			: 0.f;
 
 		auto display_height = this->use_stencil_ || this->use_word_wrapping_
-			? draw_info.rect.bottom - draw_info.rect.top
+			? height
 			: 0.f;
 
 		renderer::add_draw_text(text, state.height, x, y, color, outline_color, this->formatted_, 
