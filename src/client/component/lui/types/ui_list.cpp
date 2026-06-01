@@ -40,6 +40,13 @@ namespace lui
 			return;
 		}
 
+		if (child->parent_.lock() == this->shared_from_this())
+		{
+			ui_element::remove_child(child);
+			this->update_list();
+			return;
+		}
+
 		for (auto& container : this->children_)
 		{
 			if (container->get_first_child() == child)

@@ -122,7 +122,7 @@ namespace lui
 		event_t(const std::string& name);
 
 		std::string name{};
-		ui_element_ptr target{};
+		std::weak_ptr<ui_element> target{};
 		bool immediate{};
 		bool dispatch_children{};
 		object params{};
@@ -152,7 +152,7 @@ namespace lui
 		void add_child(ui_element_ptr child);
 		void remove_child(ui_element_ptr child);
 		void remove_all_children();
-		void close(bool recurse = true);
+		virtual void close(bool recurse = true);
 
 		ui_element_ptr get_first_child();
 		std::list<ui_element_ptr>& get_all_children();

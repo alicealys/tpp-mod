@@ -695,7 +695,6 @@ namespace lui::scripting
 			};
 
 			auto event_usertype = state.new_usertype<event_t>("uievent", 
-				"target", &event_t::target, 
 				"name", &event_t::name, 
 				"immediate", &event_t::immediate,
 				"dispatchchildren", &event_t::dispatch_children,
