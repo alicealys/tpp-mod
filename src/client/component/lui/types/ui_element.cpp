@@ -34,17 +34,23 @@ namespace lui
 		this->color.a = 1.f;
 	}
 
+#ifdef DEBUG
 	auto total_elems = 0;
+#endif
 
 	ui_element::ui_element()
 	{
 		this->id_ = "uielement";
-		printf("+ create ui element (%i)\n", ++total_elems);
+#ifdef DEBUG
+		console::debug("+ create ui element (%i)\n", ++total_elems);
+#endif
 	}
 
 	ui_element::~ui_element()
 	{
-		printf("- delete ui element (%i, %s)\n", --total_elems, this->id_.data());
+#ifdef DEBUG
+		console::debug("- delete ui element (%i, %s)\n", --total_elems, this->id_.data());
+#endif
 		this->parent_.reset();
 		this->children_.clear();
 	}
