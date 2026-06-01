@@ -5,6 +5,8 @@
 #include "../main.hpp"
 #include "../input.hpp"
 
+#include <utils/string.hpp>
+
 namespace lui
 {
 	std::int32_t get_current_msec()
@@ -41,6 +43,7 @@ namespace lui
 	ui_element::ui_element()
 	{
 		this->id_ = "uielement";
+		this->type_ = UI_ELEMENT;
 #ifdef DEBUG
 		console::debug("+ create ui element (%i)\n", ++total_elems);
 #endif
@@ -351,7 +354,7 @@ namespace lui
 
 	bool ui_element::handle_mouse_move_internal(const mouse_move_params_t& params, bool has_target)
 	{
-		if (this->mouse_state_.handle_mouse_move)
+		if (this->input_state_.handle_mouse_move)
 		{
 			static event_t event("mousemove");
 
@@ -367,14 +370,14 @@ namespace lui
 			this->dispatch_event(event);
 		}
 
-		if (!this->mouse_state_.handle_mouse)
+		if (!this->input_state_.handle_mouse)
 		{
 			return false;
 		}
 
-		const auto was_in = this->mouse_state_.was_mouse_in;
+		const auto was_in = this->input_state_.was_mouse_in;
 		const auto is_in = !has_target && is_in_rect(this->client_rect_, params.x, params.y);
-		this->mouse_state_.was_mouse_in = is_in;
+		this->input_state_.was_mouse_in = is_in;
 
 		if (is_in && !was_in)
 		{
@@ -395,12 +398,12 @@ namespace lui
 			this->dispatch_event(event);
 		}
 
-		return is_in && this->mouse_state_.blocking;
+		return is_in && this->input_state_.blocking;
 	}
 
 	void ui_element::set_mouse_blocking(const bool enabled)
 	{
-		this->mouse_state_.blocking = enabled;
+		this->input_state_.blocking = enabled;
 	}
 
 	void ui_element::handle_mouse_button(const mouse_button_params_t& params)
@@ -416,12 +419,12 @@ namespace lui
 
 	void ui_element::handle_mouse_button_internal(const mouse_button_params_t& params)
 	{
-		if (!this->mouse_state_.handle_mouse)
+		if (!this->input_state_.handle_mouse)
 		{
 			return;
 		}
 
-		if (params.is_down && this->mouse_state_.was_mouse_in)
+		if (params.is_down && this->input_state_.was_mouse_in)
 		{
 			static event_t event("mousedown");
 			event.immediate = true;
@@ -430,9 +433,9 @@ namespace lui
 			event.params.set("button", params.button);
 
 			this->dispatch_event(event);
-			this->mouse_state_.did_mouse_down = true;
+			this->input_state_.did_mouse_down = true;
 		}
-		else if (!params.is_down && (this->mouse_state_.was_mouse_in || this->mouse_state_.did_mouse_down))
+		else if (!params.is_down && (this->input_state_.was_mouse_in || this->input_state_.did_mouse_down))
 		{
 			static event_t event("mouseup");
 			event.immediate = true;
@@ -440,8 +443,53 @@ namespace lui
 			event.params.set("button", params.button);
 
 			this->dispatch_event(event);
-			this->mouse_state_.did_mouse_down = false;
+			this->input_state_.did_mouse_down = false;
 		}
+	}
+
+	void ui_element::handle_key_event(const key_event_t& params)
+	{
+		for (auto i = this->children_.rbegin(); i != this->children_.rend(); ++i)
+		{
+			i->get()->handle_key_event(params);
+		}
+
+		this->handle_key_event_internal(params);
+	}
+
+	void ui_element::handle_key_event_internal(const key_event_t& params)
+	{
+		if (!this->input_state_.handle_keys)
+		{
+			return;
+		}
+
+		event_t event{};
+		event.target = this->shared_from_this();
+		event.immediate = true;
+		event.dispatch_children = false;
+
+		if (params.is_char)
+		{
+			const auto c = utils::string::normalize_ascii_extended(static_cast<char>(params.key));
+			if (utils::string::is_char_text(c))
+			{
+				event.name = "char";
+				event.params.set("char", c);
+			}
+		}
+		else if (params.is_mousewheel)
+		{
+			event.name = "mousewheel";
+			event.params.set("down", params.is_down);
+		}
+		else
+		{
+			event.name = params.is_down ? "keydown" : "keyup";
+			event.params.set("key", params.key);
+		}
+
+		this->dispatch_event(event);
 	}
 
 	void ui_element::set_needs_key_catcher(const bool enabled)
@@ -451,22 +499,27 @@ namespace lui
 
 	void ui_element::set_handle_mouse(const bool enabled)
 	{
-		this->mouse_state_.handle_mouse = enabled;
+		this->input_state_.handle_mouse = enabled;
 	}
 
 	void ui_element::set_handle_mouse_move(const bool enabled)
 	{
-		this->mouse_state_.handle_mouse_move = enabled;
+		this->input_state_.handle_mouse_move = enabled;
+	}
+
+	void ui_element::set_handle_keys(const bool enabled)
+	{
+		this->input_state_.handle_keys = enabled;
 	}
 
 	bool ui_element::is_mouse_in() const
 	{
-		return this->mouse_state_.was_mouse_in;
+		return this->input_state_.was_mouse_in;
 	}
 
 	bool ui_element::is_mouse_down() const
 	{
-		return this->mouse_state_.did_mouse_down;
+		return this->input_state_.did_mouse_down;
 	}
 
 	void ui_element::make_draggable(const std::optional<ui_element_ptr>& target_opt)
@@ -628,6 +681,11 @@ namespace lui
 	void ui_element::get_current_animation_state(element_state_t& state) const
 	{
 		state = this->animation_state_.end_state;
+	}
+
+	ui_element_type_t ui_element::get_type() const
+	{
+		return this->type_;
 	}
 
 	ui_element_ptr ui_element::create()

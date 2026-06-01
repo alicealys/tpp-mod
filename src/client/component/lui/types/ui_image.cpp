@@ -120,29 +120,7 @@ namespace lui
 	ui_image::ui_image()
 	{
 		this->id_ = "uiimage";
-
-		game::fox::StringId material_id{};
-		material_id.id = 0x189F16095D8A;
-		game::fox::gr::Material_::Create(&this->material_, &material_id);
-
-		for (auto i = 0; i < TEXTURE_COUNT; i++)
-		{
-			this->textures_[i].texture = 0;
-
-			this->textures_[i].uv_center[0] = 0.f;
-			this->textures_[i].uv_center[1] = 0.f;
-
-			this->textures_[i].uv_shift[0] = 0.f;
-			this->textures_[i].uv_shift[1] = 0.f;
-
-			this->textures_[i].uv_repeat[0] = 1.f;
-			this->textures_[i].uv_repeat[1] = 1.f;
-
-			this->textures_[i].blend = 1.f;
-		}
-
-		this->set_shader("fox_2d_Basic_LyBL");
-		this->set_texture("/Assets/tpp/common_source/ui/common_texture/cm_wht_64.ftex");
+		this->type_ = UI_IMAGE;
 	}
 
 	ui_image::~ui_image()
@@ -221,21 +199,21 @@ namespace lui
 		this->update_material();
 	}
 
+	void ui_image::bind_param(const std::uint32_t name, const float x, const float y, const float z, const float w)
+	{
+		game::Vectormath::Aos::Vector4 vec{};
+		vec.values[0] = x;
+		vec.values[1] = y;
+		vec.values[2] = z;
+		vec.values[3] = w;
+		game::fox::gr::Material_::BindParameter(this->material_, name, &vec);
+	}
+
 	void ui_image::update_material()
 	{
 		game::fox::StringId technique{};
 		technique.id = this->shader_;
 		game::fox::gr::Material_::BindShaderTechnique(this->material_, &technique);
-
-		const auto bind_param = [&](unsigned int name, const float x, const float y, const float z, const float w)
-		{
-			game::Vectormath::Aos::Vector4 vec{};
-			vec.values[0] = x;
-			vec.values[1] = y;
-			vec.values[2] = z;
-			vec.values[3] = w;
-			game::fox::gr::Material_::BindParameter(this->material_, name, &vec);
-		};
 
 		for (auto i = 0; i < TEXTURE_COUNT; i++)
 		{
@@ -249,13 +227,34 @@ namespace lui
 
 			game::fox::gr::Material_::BindTexture(this->material_, texture_type_names[i], &texture);
 
-			bind_param(material_param_names[i].ucenter, this->textures_[i].uv_center[0], 0.f, 0.f, 0.f);
-			bind_param(material_param_names[i].vcenter, this->textures_[i].uv_center[1], 0.f, 0.f, 0.f);
-			bind_param(material_param_names[i].ushift, this->textures_[i].uv_shift[0], 0.f, 0.f, 0.f);
-			bind_param(material_param_names[i].vshift, this->textures_[i].uv_shift[1], 0.f, 0.f, 0.f);
-			bind_param(material_param_names[i].urepeat, this->textures_[i].uv_repeat[0], 0.f, 0.f, 0.f);
-			bind_param(material_param_names[i].vrepeat, this->textures_[i].uv_repeat[1], 0.f, 0.f, 0.f);
-			bind_param(material_param_names[i].blend, this->textures_[i].blend, 0.f, 0.f, 0.f);
+			this->bind_param(material_param_names[i].ucenter, this->textures_[i].uv_center[0], 0.f, 0.f, 0.f);
+			this->bind_param(material_param_names[i].vcenter, this->textures_[i].uv_center[1], 0.f, 0.f, 0.f);
+			this->bind_param(material_param_names[i].ushift, this->textures_[i].uv_shift[0], 0.f, 0.f, 0.f);
+			this->bind_param(material_param_names[i].vshift, this->textures_[i].uv_shift[1], 0.f, 0.f, 0.f);
+			this->bind_param(material_param_names[i].urepeat, this->textures_[i].uv_repeat[0], 0.f, 0.f, 0.f);
+			this->bind_param(material_param_names[i].vrepeat, this->textures_[i].uv_repeat[1], 0.f, 0.f, 0.f);
+			this->bind_param(material_param_names[i].blend, this->textures_[i].blend, 0.f, 0.f, 0.f);
+		}
+	}
+
+	void ui_image::set_random_uv_shift(bool enabled)
+	{
+		this->randomize_shift_ = enabled;
+	}
+
+	void ui_image::update()
+	{
+		ui_element::update();
+
+		const auto now = get_current_msec();
+		if (this->randomize_shift_ && (now - this->last_update_) > 20)
+		{
+			const auto x = static_cast<float>(rand() % 100) / 100.f;
+			const auto y = static_cast<float>(rand() % 100) / 100.f;
+			this->set_uv_shift(x, y, TEXTURE_BASE);
+			this->bind_param(UShift_BaseTex, x, 0.f, 0.f, 0.f);
+			this->bind_param(VShift_BaseTex, y, 0.f, 0.f, 0.f);
+			this->last_update_ = now;
 		}
 	}
 
@@ -263,6 +262,30 @@ namespace lui
 	{
 		const auto image = std::make_shared<ui_image>();
 		image->track();
+
+		game::fox::StringId material_id{};
+		material_id.id = 0x189F16095D8A;
+		game::fox::gr::Material_::Create(&image->material_, &material_id);
+
+		for (auto i = 0; i < TEXTURE_COUNT; i++)
+		{
+			image->textures_[i].texture = 0;
+
+			image->textures_[i].uv_center[0] = 0.f;
+			image->textures_[i].uv_center[1] = 0.f;
+
+			image->textures_[i].uv_shift[0] = 0.f;
+			image->textures_[i].uv_shift[1] = 0.f;
+
+			image->textures_[i].uv_repeat[0] = 1.f;
+			image->textures_[i].uv_repeat[1] = 1.f;
+
+			image->textures_[i].blend = 1.f;
+		}
+
+		image->set_shader("fox_2d_Basic_LyBL");
+		image->set_texture("/Assets/tpp/common_source/ui/common_texture/cm_wht_64.ftex");
+
 		return image;
 	}
 }

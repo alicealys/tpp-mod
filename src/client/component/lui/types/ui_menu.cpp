@@ -17,6 +17,7 @@ namespace lui
 	ui_menu::ui_menu()
 	{
 		this->id_ = "uimenu";
+		this->type_ = UI_MENU;
 	}
 
 	ui_menu_ptr ui_menu::create(const std::string& title_text)
@@ -99,6 +100,7 @@ namespace lui
 		menu->add_child(title);
 		menu->add_child(list_container);
 
+		menu->set_handle_keys(true);
 		menu->set_needs_key_catcher(true);
 
 		utils::play_sound(SOUND_MENU_ENTER);

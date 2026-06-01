@@ -10,6 +10,7 @@ namespace lui
 	ui_timer::ui_timer()
 	{
 		this->id_ = "uitimer";
+		this->type_ = UI_TIMER;
 	}
 
 	void ui_timer::update()

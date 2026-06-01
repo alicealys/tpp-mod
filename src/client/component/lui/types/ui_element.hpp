@@ -105,13 +105,22 @@ namespace lui
 		bool is_down{};
 	};
 
-	struct mouse_state_t
+	struct key_event_t
+	{
+		int key;
+		bool is_down;
+		bool is_char;
+		bool is_mousewheel;
+	};
+
+	struct input_state_t
 	{
 		bool handle_mouse{};
 		bool handle_mouse_move{};
 		bool blocking = true;
 		bool was_mouse_in{};
 		bool did_mouse_down{};
+		bool handle_keys{};
 	};
 
 	class ui_element;
@@ -134,10 +143,23 @@ namespace lui
 	std::int32_t get_current_msec();
 	bool is_in_rect(const rect_t& rect, const float x, const float y);
 
+	enum ui_element_type_t
+	{
+		UI_ELEMENT,
+		UI_TEXT,
+		UI_TEXT_INPUT,
+		UI_IMAGE,
+		UI_BUTTON,
+		UI_LIST,
+		UI_MENU,
+		UI_TIMER,
+	};
+
 	class ui_element : public std::enable_shared_from_this<ui_element>
 	{
 		friend class ui_button;
 		friend class ui_image;
+		friend class ui_text_input;
 		friend class ui_list;
 		friend class ui_menu;
 		friend class ui_text;
@@ -145,6 +167,12 @@ namespace lui
 	public:
 		ui_element();
 		~ui_element();
+
+		ui_element(const ui_element&) = delete;
+		ui_element(ui_element&&) = delete;
+
+		ui_element& operator=(const ui_element&) = delete;
+		ui_element& operator=(ui_element&&) = delete;
 
 		void track();
 
@@ -169,6 +197,7 @@ namespace lui
 
 		bool handle_mouse_move(const mouse_move_params_t& params, bool has_target = false);
 		void handle_mouse_button(const mouse_button_params_t& params);
+		void handle_key_event(const key_event_t& params);
 
 		void dispatch_event(const event_t& event);
 		void dispatch_event(const std::string& name, bool immediate = true, bool dispatch_children = false);
@@ -178,6 +207,7 @@ namespace lui
 		void set_needs_key_catcher(const bool enabled);
 		void set_handle_mouse(const bool enabled);
 		void set_handle_mouse_move(const bool enabled);
+		void set_handle_keys(const bool enabled);
 		void set_mouse_blocking(const bool enabled);
 		bool is_mouse_in() const;
 		bool is_mouse_down() const;
@@ -193,6 +223,8 @@ namespace lui
 		std::string get_id();
 		ui_element_ptr get_first_descendant_by_id(const std::string& id);
 
+		ui_element_type_t get_type() const;
+
 		static ui_element_ptr create();
 
 		object metadata{};
@@ -205,8 +237,9 @@ namespace lui
 		void calculate_rect(const rect_t& parent_rect, rect_t& rect) const;
 		void delete_removed_children();
 
-		bool handle_mouse_move_internal(const mouse_move_params_t& params, bool has_target = false);
-		void handle_mouse_button_internal(const mouse_button_params_t& params);
+		virtual bool handle_mouse_move_internal(const mouse_move_params_t& params, bool has_target = false);
+		virtual void handle_mouse_button_internal(const mouse_button_params_t& params);
+		virtual void handle_key_event_internal(const key_event_t& params);
 
 		void dispatch_event_internal(const event_t& event);
 
@@ -219,11 +252,13 @@ namespace lui
 		std::vector<event_t> event_queue_{};
 
 		animation_state_t animation_state_{};
-		mouse_state_t mouse_state_{};
+		input_state_t input_state_{};
 		rect_t client_rect_{};
 		bool needs_key_catcher_{};
 
 		std::string id_{};
+
+		ui_element_type_t type_{};
 
 	};
 }
