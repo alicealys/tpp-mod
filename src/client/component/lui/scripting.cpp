@@ -129,6 +129,7 @@ namespace lui::scripting
 			usertype["getfirstdescendantbyid"] = &ui_element::get_first_descendant_by_id;
 
 			usertype["sethandlemouse"] = &ui_element::set_handle_mouse;
+			usertype["sethandlemousemove"] = &ui_element::set_handle_mouse_move;
 			usertype["setmouseblocking"] = &ui_element::set_mouse_blocking;
 			usertype["setneedskeycatcher"] = &ui_element::set_needs_key_catcher;
 			usertype["ismousein"] = &ui_element::is_mouse_in;

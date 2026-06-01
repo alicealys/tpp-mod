@@ -287,6 +287,10 @@ namespace lui
 		{
 			rect.left += parent_rect.left;
 		}
+		else if ((current_pos.anchor & ANCHOR_RIGHT) != 0)
+		{
+			rect.left = parent_rect.right - current_state.width;
+		}
 
 		if ((current_pos.anchor & ANCHOR_RIGHT) != 0)
 		{
@@ -347,6 +351,22 @@ namespace lui
 
 	bool ui_element::handle_mouse_move_internal(const mouse_move_params_t& params, bool has_target)
 	{
+		if (this->mouse_state_.handle_mouse_move)
+		{
+			static event_t event("mousemove");
+
+			event.target = this->shared_from_this();
+			event.immediate = true;
+			event.dispatch_children = false;
+
+			event.params.set("x", params.x);
+			event.params.set("y", params.y);
+			event.params.set("deltax", params.delta_x);
+			event.params.set("deltay", params.delta_y);
+
+			this->dispatch_event(event);
+		}
+
 		if (!this->mouse_state_.handle_mouse)
 		{
 			return false;
@@ -371,21 +391,6 @@ namespace lui
 			event.target = this->shared_from_this();
 			event.immediate = true;
 			event.dispatch_children = false;
-
-			this->dispatch_event(event);
-		}
-
-		{
-			static event_t event("mousemove");
-
-			event.target = this->shared_from_this();
-			event.immediate = true;
-			event.dispatch_children = false;
-
-			event.params.set("x", params.x);
-			event.params.set("y", params.y);
-			event.params.set("deltax", params.delta_x);
-			event.params.set("deltay", params.delta_y);
 
 			this->dispatch_event(event);
 		}
@@ -449,6 +454,11 @@ namespace lui
 		this->mouse_state_.handle_mouse = enabled;
 	}
 
+	void ui_element::set_handle_mouse_move(const bool enabled)
+	{
+		this->mouse_state_.handle_mouse_move = enabled;
+	}
+
 	bool ui_element::is_mouse_in() const
 	{
 		return this->mouse_state_.was_mouse_in;
@@ -462,6 +472,7 @@ namespace lui
 	void ui_element::make_draggable(const std::optional<ui_element_ptr>& target_opt)
 	{
 		this->set_handle_mouse(true);
+		this->set_handle_mouse_move(true);
 		this->set_needs_key_catcher(true);
 
 		this->register_event_handler("mousemove", [=](ui_element& element, const event_t& event)

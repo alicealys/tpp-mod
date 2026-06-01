@@ -49,7 +49,7 @@ namespace lui::flow_manager
 			}
 		}
 
-		bool open_menu(menu_entry_t& menu_entry)
+		bool open_menu(menu_entry_t& menu_entry, bool is_pop)
 		{
 			const auto iter = state.menus.find(menu_entry.name);
 			if (iter == state.menus.end())
@@ -68,9 +68,10 @@ namespace lui::flow_manager
 			menu_entry.root = menu;
 			menu_entry.callback = iter->second;
 
-			if (!menu_entry.popup)
+			if (!is_pop && !menu_entry.popup && !state.menu_stack.empty())
 			{
-				root->remove_all_children();
+				auto& back = state.menu_stack.back();
+				back.root->close();
 			}
 
 			root->add_child(menu);
@@ -100,7 +101,7 @@ namespace lui::flow_manager
 			if (!state.menu_stack.empty())
 			{
 				auto& back = state.menu_stack.back();
-				if (!open_menu(back))
+				if (!open_menu(back, true))
 				{
 					pop_menu();
 				}
@@ -120,7 +121,7 @@ namespace lui::flow_manager
 		}
 	}
 
-	void initialize()
+	void reset()
 	{
 		state.menu_stack.clear();
 		state.menus.clear();
@@ -140,7 +141,7 @@ namespace lui::flow_manager
 
 		for (auto& menu : state.requested_menus)
 		{
-			if (open_menu(menu))
+			if (open_menu(menu, false))
 			{
 				state.menu_stack.push_back(menu);
 			}

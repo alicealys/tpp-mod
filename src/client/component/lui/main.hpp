@@ -5,6 +5,8 @@
 
 namespace lui
 {
+	extern std::vector<std::weak_ptr<ui_element>> element_list;
+
 	ui_element_ptr& get_root_element();
 
 	void track_element(const std::weak_ptr<ui_element>& element);
