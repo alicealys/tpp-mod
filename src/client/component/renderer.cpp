@@ -663,7 +663,7 @@ namespace renderer
 			game::fox::gr::dg::plugins::Draw2DRenderer_::Execute_Packet2DBox(instance, &packet);
 		}
 
-		void add_box2(game::fox::gr::dg::plugins::Draw2DRenderer* instance, float width, float height, float* uv)
+		void add_box2(game::fox::gr::dg::plugins::Draw2DRenderer* instance, float width, float height, float* uv = nullptr)
 		{
 			game::fox::Color color{};
 			color.values[0] = 1.f;
@@ -826,8 +826,8 @@ namespace renderer
 			set_matrix(instance, v1, v2, quat, 2);
 		}
 
-		void draw_box_internal(game::fox::gr::dg::plugins::Draw2DRenderer* instance, unsigned int material, unsigned int texture,
-			float x, float y, float width, float height, float* color, float rotation = 0.f, float* uv = nullptr)
+		void draw_box_internal(game::fox::gr::dg::plugins::Draw2DRenderer* instance, unsigned int material,
+			float x, float y, float width, float height, float* color, float rotation = 0.f)
 		{
 			set_position(instance, x + width / 2.f, y + height / 2.f);
 			set_texture(instance, nullptr);
@@ -841,12 +841,7 @@ namespace renderer
 				set_material(instance, material);
 			}
 
-			if (texture != 0)
-			{
-				set_texture(instance, texture);
-			}
-
-			add_box2(instance, width, height, uv);
+			add_box2(instance, width, height);
 		}
 
 		float draw_text_internal_formatted(game::fox::gr::dg::plugins::Draw2DRenderer* instance, const char* text, float height, float x, float y, float* color,
@@ -1342,22 +1337,22 @@ namespace renderer
 	void draw_box(game::fox::gr::dg::plugins::Draw2DRenderer* instance, float x, float y, float width,
 		float height, float* color, float* outline_color, float outline_thickness, float rotation)
 	{
-		draw_box_internal(instance, 0, 0, x, y, width, height, color, rotation);
+		draw_box_internal(instance, 0, x, y, width, height, color, rotation);
 		
 		if (outline_color != nullptr)
 		{
-			draw_box_internal(instance, 0, 0, x - outline_thickness, y, outline_thickness, height, outline_color, rotation);
-			draw_box_internal(instance, 0, 0, x + width, y, outline_thickness, height, outline_color, rotation);
+			draw_box_internal(instance, 0, x - outline_thickness, y, outline_thickness, height, outline_color, rotation);
+			draw_box_internal(instance, 0, x + width, y, outline_thickness, height, outline_color, rotation);
 		
-			draw_box_internal(instance, 0, 0, x - outline_thickness, y - outline_thickness, width + 2 * outline_thickness, outline_thickness, outline_color, rotation);
-			draw_box_internal(instance, 0, 0, x - outline_thickness, y + height, width + 2 * outline_thickness, outline_thickness, outline_color, rotation);
+			draw_box_internal(instance, 0, x - outline_thickness, y - outline_thickness, width + 2 * outline_thickness, outline_thickness, outline_color, rotation);
+			draw_box_internal(instance, 0, x - outline_thickness, y + height, width + 2 * outline_thickness, outline_thickness, outline_color, rotation);
 		}
 	}
 
-	void draw_material(game::fox::gr::dg::plugins::Draw2DRenderer* instance, unsigned int material, unsigned int texture, float x, float y, float width,
-		float height, float* color, float rotation, float* uv)
+	void draw_material(game::fox::gr::dg::plugins::Draw2DRenderer* instance, unsigned int material, float x, float y, float width,
+		float height, float* color, float rotation)
 	{
-		draw_box_internal(instance, material, texture, x, y, width, height, color, rotation, uv);
+		draw_box_internal(instance, material, x, y, width, height, color, rotation);
 	}
 
 	void add_stencil(game::fox::gr::dg::plugins::Draw2DRenderer* instance, float x, float y, float width, float height)

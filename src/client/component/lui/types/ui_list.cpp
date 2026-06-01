@@ -15,6 +15,7 @@ namespace lui
 	ui_list_ptr ui_list::create(const float spacing)
 	{
 		auto list = std::make_shared<ui_list>();
+		list->track();
 		list->spacing_ = spacing;
 		return list;
 	}

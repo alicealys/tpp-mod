@@ -155,4 +155,14 @@ namespace lui
 	{
 		return this->value_.index() == VALUE_TYPE_NONE;
 	}
+
+	bool object_value::operator==(const object_value& value)
+	{
+		return false;
+	}
+
+	const object_base& object::get_values() const
+	{
+		return this->values_;
+	}
 }

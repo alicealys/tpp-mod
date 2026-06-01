@@ -7,6 +7,8 @@ namespace lui
 {
 	ui_element_ptr& get_root_element();
 
+	void track_element(const std::weak_ptr<ui_element>& element);
+
 	void register_module(const std::function<void()>& module);
 
 	template <typename F>

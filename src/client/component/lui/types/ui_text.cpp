@@ -191,6 +191,8 @@ namespace lui
 
 	ui_text_ptr ui_text::create()
 	{
-		return std::make_shared<ui_text>();
+		const auto text = std::make_shared<ui_text>();
+		text->track();
+		return text;
 	}
 }

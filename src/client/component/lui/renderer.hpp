@@ -26,8 +26,6 @@ namespace lui::renderer
 	struct draw_box_command : draw_command
 	{
 		std::uint32_t material;
-		std::uint32_t texture;
-		float uv[4];
 	};
 
 	struct draw_text_command : draw_command
@@ -35,13 +33,16 @@ namespace lui::renderer
 		char text[256];
 		float outline_color[4];
 		bool formatted;
-		float display_width;
-		float display_height;
 		bool use_word_wrapping;
 		bool artist_font;
+		float display_width;
+		float display_height;
 	};
 
-	void add_draw_material(const std::uint32_t material, const std::uint32_t texture, float x, float y, float width, float height, float* color, float rotation, float* uv);
+	void add_draw_material(const std::uint32_t material, float x, float y, float width, float height, float* color, float rotation);
 	void add_draw_text(const char* text, float height, float x, float y, float* color, float* outline_color, 
 		bool formatted, float display_width, float display_height, bool use_word_wrapping = false, float rotation = 0.f, bool artist_font = false);
+
+	void load();
+	void end();
 }

@@ -14,6 +14,7 @@ namespace lui::flow_manager
 		{
 			std::string name;
 			bool popup;
+			menu_cb_t callback;
 			ui_element_ptr root;
 		};
 
@@ -29,32 +30,51 @@ namespace lui::flow_manager
 			bool needs_key_catcher = false;
 		} state{};
 
-		void open_menu(menu_entry_t& menu_entry)
+		ui_element_ptr try_create_menu(const std::string& name, menu_cb_t& callback)
+		{
+			try
+			{
+				const auto menu = callback();
+				if (menu == nullptr)
+				{
+					return nullptr;
+				}
+
+				return menu;
+			}
+			catch (const std::exception& e)
+			{
+				console::error("LUI: error opening menu \"%s\": %s\n", name.data(), e.what());
+				return nullptr;
+			}
+		}
+
+		bool open_menu(menu_entry_t& menu_entry)
 		{
 			const auto iter = state.menus.find(menu_entry.name);
 			if (iter == state.menus.end())
 			{
-				return;
+				return false;
 			}
 
-			try
+			auto& root = get_root_element();
+
+			const auto menu = try_create_menu(menu_entry.name, iter->second);
+			if (menu == nullptr)
 			{
-				const auto menu = iter->second.operator()();
-				menu_entry.root = menu;
-
-				state.menu_stack.push_back(menu_entry);
-
-				if (!menu_entry.popup)
-				{
-					get_root_element()->remove_all_children();
-				}
-
-				get_root_element()->add_child(menu);
+				return false;
 			}
-			catch (const std::exception& e)
+
+			menu_entry.root = menu;
+			menu_entry.callback = iter->second;
+
+			if (!menu_entry.popup)
 			{
-				console::error("error opening menu \"%s\": %s\n", menu_entry.name.data(), e.what());
+				root->remove_all_children();
 			}
+
+			root->add_child(menu);
+			return true;
 		}
 
 		void pop_menu()
@@ -67,20 +87,25 @@ namespace lui::flow_manager
 			auto& top = state.menu_stack.back();
 			state.menu_stack.pop_back();
 
+			auto& root = get_root_element();
+
+			root->remove_child(top.root);
+			top.root->close();
+
 			if (top.popup)
 			{
-				get_root_element()->remove_child(top.root);
+				return;
 			}
-			else
-			{
-				get_root_element()->remove_all_children();
 
-				if (!state.menu_stack.empty())
+			if (!state.menu_stack.empty())
+			{
+				auto& back = state.menu_stack.back();
+				if (!open_menu(back))
 				{
-					auto& back = state.menu_stack.back();
-					get_root_element()->add_child(back.root);
-					back.root->dispatch_event("restore_menu");
+					pop_menu();
 				}
+
+				back.root->dispatch_event("restore_menu");
 			}
 		}
 
@@ -89,7 +114,7 @@ namespace lui::flow_manager
 			while (!state.menu_stack.empty())
 			{
 				auto& top = state.menu_stack.back();
-				get_root_element()->remove_child(top.root);
+				top.root->close();
 				state.menu_stack.pop_back();
 			}
 		}
@@ -115,7 +140,10 @@ namespace lui::flow_manager
 
 		for (auto& menu : state.requested_menus)
 		{
-			open_menu(menu);
+			if (open_menu(menu))
+			{
+				state.menu_stack.push_back(menu);
+			}
 		}
 
 		state.requested_pop_menu = false;
@@ -146,29 +174,21 @@ namespace lui::flow_manager
 		state.requested_pop_all_menus = true;
 	}
 
-	class component final : public component_interface
+	void load()
 	{
-	public:
-		void post_load() override
+		command::add("lui_open", [](const command::params& params)
 		{
-			command::add("lui_open", [](const command::params& params)
-			{
-				const auto name = params.get(1);
-				request_menu(name, false);
-			});
+			const auto name = params.get(1);
+			request_menu(name, false);
+		});
 
-			command::add("lui_open_popup", [](const command::params& params)
-			{
-				const auto name = params.get(1);
-				request_menu(name, true);
-			});
+		command::add("lui_open_popup", [](const command::params& params)
+		{
+			const auto name = params.get(1);
+			request_menu(name, true);
+		});
 
-			command::add("lui_close", request_pop_menu);
-			command::add("lui_close_all", request_pop_all_menus);
-		}
-	};
+		command::add("lui_close", request_pop_menu);
+		command::add("lui_close_all", request_pop_all_menus);
+	}
 }
-
-#ifdef DEBUG
-REGISTER_COMPONENT(lui::flow_manager::component)
-#endif

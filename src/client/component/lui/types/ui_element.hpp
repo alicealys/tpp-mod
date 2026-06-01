@@ -116,12 +116,16 @@ namespace lui
 	class ui_element;
 	using ui_element_ptr = std::shared_ptr<ui_element>;
 
-	struct event_t : public object
+	struct event_t
 	{
-		ui_element_ptr target;
+		event_t() = default;
+		event_t(const std::string& name);
+
 		std::string name{};
+		ui_element_ptr target{};
 		bool immediate{};
 		bool dispatch_children{};
+		object params{};
 	};
 
 	using event_handler_t = std::function<void(ui_element&, const event_t&)>;
@@ -139,13 +143,16 @@ namespace lui
 		friend class ui_timer;
 	public:
 		ui_element();
+		~ui_element();
+
+		void track();
 
 		void draw(const draw_info_t& inherit);
 
 		void add_child(ui_element_ptr child);
 		void remove_child(ui_element_ptr child);
 		void remove_all_children();
-		void close();
+		void close(bool recurse = true);
 
 		ui_element_ptr get_first_child();
 		std::list<ui_element_ptr>& get_all_children();
