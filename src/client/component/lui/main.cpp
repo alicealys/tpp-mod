@@ -31,6 +31,7 @@ namespace lui
 
 		void cleanup_elements()
 		{
+			auto& root = get_root_element();
 			for (auto i = element_list.begin(); i != element_list.end(); )
 			{
 				if (i->expired())
@@ -39,11 +40,17 @@ namespace lui
 					continue;
 				}
 
+				if (i->lock() == root)
+				{
+					++i;
+					continue;
+				}
+
 				auto element = i->lock();
 				if (element->get_parent() == nullptr)
 				{
-					element->close(true);
-					i = element_list.erase(i);
+					element->close();
+					++i;
 					continue;
 				}
 
@@ -63,7 +70,7 @@ namespace lui
 			{
 				if (!element.expired())
 				{
-					element.lock()->close(false);
+					element.lock()->close(true);
 				}
 			}
 

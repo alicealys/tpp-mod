@@ -129,6 +129,13 @@ namespace lui
 		return menu;
 	}
 
+	void ui_menu::close(bool recurse)
+	{
+		this->list_.reset();
+		this->description_.reset();
+		ui_element::close(recurse);
+	}
+
 	ui_text_ptr ui_menu::add_description()
 	{
 		auto description_container = ui_element::create();

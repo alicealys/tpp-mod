@@ -17,6 +17,8 @@ namespace lui
 
 		static ui_menu_ptr create(const std::string& name);
 
+		void close(bool recurse = true) override;
+
 		ui_text_ptr add_description();
 		ui_button_ptr add_back_button();
 		ui_button_ptr add_button(const std::string& text, const button_action_t& action = {}, const std::string& description = {});

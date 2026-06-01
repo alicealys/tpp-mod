@@ -92,7 +92,7 @@ namespace lui
 
 	void ui_element::remove_child(ui_element_ptr child)
 	{
-		if (child.get() == this)
+		if (child.get() == this || child->parent_.lock() != this->shared_from_this())
 		{
 			return;
 		}
@@ -122,6 +122,8 @@ namespace lui
 		this->event_handlers_.clear();
 		this->event_queue_.clear();
 		this->children_.clear();
+		this->metadata = {};
+		this->lua_metadata = {};
 	}
 
 	ui_element_ptr ui_element::get_first_child()
@@ -530,7 +532,8 @@ namespace lui
 
 		try
 		{
-			handler->second.operator()(*event.target, event);
+			auto target = event.target.lock();
+			handler->second.operator()(*target, event);
 		}
 		catch (const std::exception& e)
 		{
