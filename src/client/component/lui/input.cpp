@@ -13,16 +13,15 @@ namespace lui::input
 {
 	namespace
 	{
-		struct
+		struct mouse_state_t
 		{
-			std::mutex mutex;
 			float last_x;
 			float last_y;
 			float delta_x;
 			float delta_y;
 			bool keys[6];
 			bool prev_keys[6];
-		} mouse_state{};
+		};
 
 		struct key_event_t
 		{
@@ -34,12 +33,10 @@ namespace lui::input
 
 		using key_event_queue_t = std::vector<key_event_t>;
 
-		struct
-		{
-			utils::concurrency::container<key_event_queue_t> key_event_queue;
-			bool needs_key_catcher;
-			std::atomic_bool key_catcher_enabled;
-		} state{};
+		utils::concurrency::container<key_event_queue_t> key_event_queue;
+		utils::concurrency::container<mouse_state_t> mouse_state;
+		bool needs_key_catcher;
+		std::atomic_bool key_catcher_enabled;
 
 		void show_cursor()
 		{
@@ -48,45 +45,49 @@ namespace lui::input
 
 		void update_input_mouse()
 		{
-			std::lock_guard _0(mouse_state.mutex);
+			auto& root = get_root_element();
+			const auto state = mouse_state.access<mouse_state_t>([](mouse_state_t& state)
+			{
+				auto copy = state;
+				state.delta_x = 0.f;
+				state.delta_y = 0.f;
+				std::memcpy(state.prev_keys, state.keys, sizeof(state.keys));
+				return copy;
+			});
 
 			{
 				mouse_move_params_t params{};
 
-				params.x = mouse_state.last_x;
-				params.y = mouse_state.last_y;
-				params.delta_x = mouse_state.delta_x;
-				params.delta_y = mouse_state.delta_y;
-
-				mouse_state.delta_x = 0;
-				mouse_state.delta_y = 0;
+				params.x = state.last_x;
+				params.y = state.last_y;
+				params.delta_x = state.delta_x;
+				params.delta_y = state.delta_y;
 
 				if (params.delta_x != 0 || params.delta_y != 0)
 				{
-					get_root_element()->handle_mouse_move(params);
+					root->handle_mouse_move(params);
 				}
 			}
 
 			for (auto i = 0; i < 6; i++)
 			{
-				if (mouse_state.prev_keys[i] != mouse_state.keys[i])
+				if (state.prev_keys[i] != state.keys[i])
 				{
 					mouse_button_params_t params{};
 					params.button = i;
-					params.is_down = mouse_state.keys[i];
-					get_root_element()->handle_mouse_button(params);
+					params.is_down = state.keys[i];
+					root->handle_mouse_button(params);
 				}
-
-				mouse_state.prev_keys[i] = mouse_state.keys[i];
 			}
 		}
 
 		void update_input_keys(const key_event_queue_t& event_queue)
 		{
+			auto& root = get_root_element();
 			for (const auto& key_event : event_queue)
 			{
 				event_t event{};
-				event.target = get_root_element();
+				event.target = root;
 				event.immediate = true;
 				event.dispatch_children = true;
 
@@ -106,14 +107,14 @@ namespace lui::input
 					event.params.set("key", key_event.key);
 				}
 
-				get_root_element()->dispatch_event(event);
+				root->dispatch_event(event);
 			}
 		}
 	}
 
 	void update()
 	{
-		const auto queue = state.key_event_queue.access<key_event_queue_t>([&](key_event_queue_t& queue)
+		const auto queue = key_event_queue.access<key_event_queue_t>([&](key_event_queue_t& queue)
 		{
 			auto copy = queue;
 			queue.clear();
@@ -123,23 +124,26 @@ namespace lui::input
 		update_input_mouse();
 		update_input_keys(queue);
 
-		state.needs_key_catcher = false;
+		needs_key_catcher = false;
 	}
 
 	void post_update()
 	{
-		state.key_catcher_enabled = state.needs_key_catcher;
-
-		if (!state.key_catcher_enabled)
+		if (!needs_key_catcher)
 		{
-			std::memset(mouse_state.prev_keys, 0, sizeof(mouse_state.prev_keys));
-			std::memset(mouse_state.keys, 0, sizeof(mouse_state.keys));
+			mouse_state.access([](mouse_state_t& state)
+			{
+				std::memset(state.prev_keys, 0, sizeof(state.prev_keys));
+				std::memset(state.keys, 0, sizeof(state.keys));
+			});
 		}
+
+		key_catcher_enabled = needs_key_catcher;
 	}
 
 	void set_key_catcher()
 	{
-		state.needs_key_catcher = true;
+		needs_key_catcher = true;
 	}
 
 	void handle_mousemove(HWND hwnd)
@@ -161,23 +165,27 @@ namespace lui::input
 		const auto x = static_cast<float>(point.x) / static_cast<float>(width) * 1280.f;
 		const auto y = static_cast<float>(point.y) / static_cast<float>(height) * 720.f;
 
-		std::lock_guard _0(mouse_state.mutex);
+		mouse_state.access([&](mouse_state_t& state)
+		{
+			state.delta_x += (x - state.last_x);
+			state.delta_y += (y - state.last_y);
 
-		mouse_state.delta_x += (x - mouse_state.last_x);
-		mouse_state.delta_y += (y - mouse_state.last_y);
-
-		mouse_state.last_x = x;
-		mouse_state.last_y = y;
+			state.last_x = x;
+			state.last_y = y;
+		});
 	}
 
 	void handle_mouse_button(const int button, const bool is_down)
 	{
-		mouse_state.keys[button] = is_down;
+		mouse_state.access([&](mouse_state_t& state)
+		{
+			state.keys[button] = is_down;
+		});
 	}
 
 	bool handle_mouse_wheel(const bool down)
 	{
-		if (!state.key_catcher_enabled)
+		if (!key_catcher_enabled)
 		{
 			return false;
 		}
@@ -187,7 +195,7 @@ namespace lui::input
 		key_event.is_down = down;
 		key_event.is_mousewheel = true;
 
-		state.key_event_queue.access([&](key_event_queue_t& queue)
+		key_event_queue.access([&](key_event_queue_t& queue)
 		{
 			queue.emplace_back(key_event);
 		});
@@ -197,7 +205,7 @@ namespace lui::input
 
 	bool handle_key(const int key, const bool is_down, const bool is_game_console_bind)
 	{
-		if (!state.key_catcher_enabled || is_game_console_bind)
+		if (!key_catcher_enabled || is_game_console_bind)
 		{
 			return false;
 		}
@@ -206,7 +214,7 @@ namespace lui::input
 		key_event.key = key;
 		key_event.is_down = is_down;
 
-		state.key_event_queue.access([&](key_event_queue_t& queue)
+		key_event_queue.access([&](key_event_queue_t& queue)
 		{
 			queue.emplace_back(key_event);
 		});
@@ -226,7 +234,7 @@ namespace lui::input
 		key_event.is_down = is_down;
 		key_event.is_char = true;
 
-		state.key_event_queue.access([&](key_event_queue_t& queue)
+		key_event_queue.access([&](key_event_queue_t& queue)
 		{
 			queue.emplace_back(key_event);
 		});
@@ -236,6 +244,6 @@ namespace lui::input
 
 	bool is_key_catcher_enabled()
 	{
-		return state.key_catcher_enabled;
+		return key_catcher_enabled;
 	}
 }
