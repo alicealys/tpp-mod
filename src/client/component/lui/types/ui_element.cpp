@@ -28,6 +28,11 @@ namespace lui
 	element_state_t::element_state_t()
 	{
 		this->position = {};
+		this->position.perspective.params[0] = 1.f;
+		this->position.perspective.params[1] = 0.f;
+		this->position.perspective.params[2] = 0.f;
+		this->position.perspective.params[3] = 0.f;
+		this->position.perspective.params[4] = 0.f;
 		this->width = 0.f;
 		this->height = 0.f;
 		this->color.r = 1.f;
@@ -75,6 +80,17 @@ namespace lui
 		draw_info_t draw_info{};
 		draw_info.alpha = this->animation_state_.current_state.color.a * parent_draw_info.alpha;
 		draw_info.rotation = this->animation_state_.current_state.position.rotation + parent_draw_info.rotation;
+
+		draw_info.perspective.params[0] = this->animation_state_.current_state.position.perspective.params[0] * parent_draw_info.perspective.params[0];
+		draw_info.perspective.params[1] = this->animation_state_.current_state.position.perspective.params[1] + parent_draw_info.perspective.params[1];
+		draw_info.perspective.params[2] = this->animation_state_.current_state.position.perspective.params[2] + parent_draw_info.perspective.params[2];
+		draw_info.perspective.params[3] = this->animation_state_.current_state.position.perspective.params[3] + parent_draw_info.perspective.params[3];
+		draw_info.perspective.params[4] = this->animation_state_.current_state.position.perspective.params[4] + parent_draw_info.perspective.params[4];
+
+		if (draw_info.perspective.params[0] < 0.f)
+		{
+			draw_info.perspective.params[0] = 1.f;
+		}
 
 		this->calculate_rect(parent_draw_info.rect, draw_info.rect);
 		this->client_rect_ = draw_info.rect;
@@ -252,6 +268,11 @@ namespace lui
 		GET_SAMPLE(position.rect.right);
 		GET_SAMPLE(position.rect.bottom);
 		GET_SAMPLE(position.rotation);
+		GET_SAMPLE(position.perspective.params[0]);
+		GET_SAMPLE(position.perspective.params[1]);
+		GET_SAMPLE(position.perspective.params[2]);
+		GET_SAMPLE(position.perspective.params[3]);
+		GET_SAMPLE(position.perspective.params[4]);
 		GET_SAMPLE(width);
 		GET_SAMPLE(height);
 

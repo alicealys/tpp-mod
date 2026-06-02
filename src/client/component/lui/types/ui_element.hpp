@@ -47,12 +47,18 @@ namespace lui
 		float bottom;
 	};
 
+	struct perspective_t
+	{
+		float params[5];
+	};
+
 	struct position_t
 	{
 		std::uint32_t anchor;
 		std::uint32_t alignment;
 		std::uint32_t vertical_alignment;
 		rect_t rect;
+		perspective_t perspective;
 		float rotation;
 	};
 
@@ -77,6 +83,7 @@ namespace lui
 	struct draw_info_t
 	{
 		rect_t rect;
+		perspective_t perspective;
 		float alpha;
 		float rotation;
 	};
