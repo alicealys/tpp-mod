@@ -271,6 +271,35 @@ namespace lui::scripting
 				}
 			);
 
+			usertype["animateinsequence"] = [](ui_element& element, const sol::table& lua_entries)
+			{
+				std::vector<animation_sequence_t::entry_t> entries;
+
+				for (const auto& [k, v] : lua_entries)
+				{
+					if (!v.is<sol::table>())
+					{
+						continue;
+					}
+
+					auto lua_entry = v.as<sol::table>();
+					animation_sequence_t::entry_t entry{};
+					auto state = lua_entry[1];
+					auto duration = lua_entry[2];
+
+					if (!state.is<std::string>() || !duration.is<std::int32_t>())
+					{
+						continue;
+					}
+
+					entry.state = state.get<std::string>();
+					entry.duration = duration.get<std::int32_t>();
+					entries.emplace_back(entry);
+				}
+
+				element.animate_in_sequence(entries);
+			};
+
 			usertype["getrect"] = [&state](ui_element& element)
 			{
 				auto result = state.create_table();
