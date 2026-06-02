@@ -216,8 +216,8 @@ namespace lui::scripting
 				element_state.width = state.get_or("width", current_state.width);
 				element_state.height = state.get_or("height", current_state.height);
 				element_state.position.rotation = state.get_or("rotation", current_state.position.rotation);
-				element_state.position.alignment = state.get_or("rotation", current_state.position.alignment);
-				element_state.position.vertical_alignment = state.get_or("rotation", current_state.position.vertical_alignment);
+				element_state.position.alignment = state.get_or("alignment", current_state.position.alignment);
+				element_state.position.vertical_alignment = state.get_or("verticalalignment", current_state.position.vertical_alignment);
 
 				auto color = state["color"];
 				if (color.is<sol::table>())
@@ -600,6 +600,7 @@ namespace lui::scripting
 			usertype["sethinttext"] = &ui_text_input::set_hint_text;
 			usertype["setcursor"] = &ui_text_input::set_cursor;
 			usertype["setfocused"] = &ui_text_input::set_focused;
+			usertype["setformatted"] = &ui_text_input::set_formatted;
 			usertype["clear"] = &ui_text_input::clear;
 
 			return usertype;
@@ -775,6 +776,13 @@ namespace lui::scripting
 			state["lui"]["TEXTURE_SCREEN"] = TEXTURE_SCREEN;
 			state["lui"]["TEXTURE_MASK"] = TEXTURE_MASK;
 			state["lui"]["TEXTURE_LAYER"] = TEXTURE_LAYER;
+
+			state["lui"]["ALIGN_LEFT"] = ALIGN_LEFT;
+			state["lui"]["ALIGN_CENTER"] = ALIGN_CENTER;
+			state["lui"]["ALIGN_RIGHT"] = ALIGN_RIGHT;
+			state["lui"]["ALIGN_TOP"] = ALIGN_TOP;
+			state["lui"]["ALIGN_MIDDLE"] = ALIGN_MIDDLE;
+			state["lui"]["ALIGN_BOTTOM"] = ALIGN_BOTTOM;
 		}
 
 		void register_structs(sol::state& state)
