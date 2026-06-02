@@ -177,7 +177,23 @@ namespace game
 
 				namespace TextureManager_
 				{
-					WEAK symbol<unsigned int(Path*)> CreateResourceFromFile{0x143A8E890, 0x149A96890, 0x140203CF0, 0x148C4CF90};
+					WEAK symbol<ResourceId(Path*)> CreateResourceFromFile{0x143A8E890, 0x149A96890, 0x140203CF0, 0x148C4CF90};
+				}
+
+				namespace DgTextureStreamer_
+				{
+					WEAK symbol<DgTextureStreamer*()> Instance{0x14021DD60, 0x140B23E40, 0x14021DCC0, 0x140B233F0};
+					WEAK symbol<bool(DgTextureStreamer*)> IsEnable{0x14021DE50, 0x140B23F30, 0x14021DDB0, 0x140B234E0};
+					WEAK symbol<bool(DgTextureStreamer*, ResourceId, char)> RequestTextureDetailByDgTexture{0x14021EBF0, 0x149C46A00, 0x14021EB50, 0x140B24230};
+					WEAK symbol<bool(DgTextureStreamer*, ResourceId, char)> UnRequestTextureDetailByDgTexture{0x14021FE10, 0x140B25E60, 0x14021FD70, 0x140B25410};
+				}
+
+				namespace ResourceManagerBase_
+				{
+					namespace TextureResource_
+					{
+						WEAK symbol<void(ResourceId)> DeleteResource{0x1401B7330, 0x1402F6360, 0x1401B7370, 0x1402F62E0};
+					}
 				}
 			}
 

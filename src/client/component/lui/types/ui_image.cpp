@@ -130,6 +130,11 @@ namespace lui
 			this->material_->__vftable->__destructor(this->material_, 1);
 			this->material_ = nullptr;
 		}
+
+		this->free_texture_resource(TEXTURE_BASE);
+		this->free_texture_resource(TEXTURE_SCREEN);
+		this->free_texture_resource(TEXTURE_MASK);
+		this->free_texture_resource(TEXTURE_LAYER);
 	}
 
 	void ui_image::draw_internal(const draw_info_t& draw_info) const
@@ -145,7 +150,7 @@ namespace lui
 		const auto width = (draw_info.rect.right - draw_info.rect.left);
 		const auto height = (draw_info.rect.bottom - draw_info.rect.top);
 
-		renderer::add_draw_material(this->material_->resource, draw_info.rect.left, draw_info.rect.top, width, height, color, draw_info.rotation);
+		renderer::add_draw_material(this->material_->resource.data, draw_info.rect.left, draw_info.rect.top, width, height, color, draw_info.rotation);
 	}
 
 	void ui_image::set_uv_center(float u, float v, const std::uint32_t type)
@@ -183,14 +188,31 @@ namespace lui
 
 	void ui_image::set_texture(const std::uint64_t hash, const std::uint32_t type)
 	{
-		this->textures_[type].texture = utils::get_texture_resource(hash);
+		if (hash == 0)
+		{
+			return;
+		}
+
+		game::fox::Path path{};
+		path.id = hash;
+
+		const auto resource = game::fox::gr::dg::TextureManager_::CreateResourceFromFile(&path);
+		const auto streamer = game::fox::gr::dg::DgTextureStreamer_::Instance();
+
+		if (game::fox::gr::dg::DgTextureStreamer_::IsEnable(streamer))
+		{
+			game::fox::gr::dg::DgTextureStreamer_::RequestTextureDetailByDgTexture(streamer, resource, 2);
+		}
+
+		this->free_texture_resource(type);
+		this->textures_[type].texture = resource;
 		this->update_material();
 	}
 
 	void ui_image::set_texture(const std::string& path, const std::uint32_t type)
 	{
-		this->textures_[type].texture = utils::get_texture_resource(path);
-		this->update_material();
+		const auto hash = game::fox::fs::PathCodeImpl_::FromString(path.data());
+		this->set_texture(hash);
 	}
 
 	void ui_image::set_blend(const float blend, const std::uint32_t type)
@@ -217,7 +239,7 @@ namespace lui
 
 		for (auto i = 0; i < TEXTURE_COUNT; i++)
 		{
-			if (this->textures_[i].texture == 0)
+			if (this->textures_[i].texture.data == 0)
 			{
 				continue;
 			}
@@ -234,6 +256,21 @@ namespace lui
 			this->bind_param(material_param_names[i].urepeat, this->textures_[i].uv_repeat[0], 0.f, 0.f, 0.f);
 			this->bind_param(material_param_names[i].vrepeat, this->textures_[i].uv_repeat[1], 0.f, 0.f, 0.f);
 			this->bind_param(material_param_names[i].blend, this->textures_[i].blend, 0.f, 0.f, 0.f);
+		}
+	}
+
+	void ui_image::free_texture_resource(const std::uint32_t type)
+	{
+		if (this->textures_[type].texture.data != 0)
+		{
+			const auto streamer = game::fox::gr::dg::DgTextureStreamer_::Instance();
+			if (game::fox::gr::dg::DgTextureStreamer_::IsEnable(streamer))
+			{
+				game::fox::gr::dg::DgTextureStreamer_::UnRequestTextureDetailByDgTexture(streamer, this->textures_[type].texture, 2);
+			}
+
+			// game::fox::gr::dg::ResourceManagerBase_::TextureResource_::DeleteResource(this->textures_[type].texture);
+			this->textures_[type].texture.data = 0;
 		}
 	}
 
@@ -269,7 +306,7 @@ namespace lui
 
 		for (auto i = 0; i < TEXTURE_COUNT; i++)
 		{
-			image->textures_[i].texture = 0;
+			image->textures_[i].texture.data = 0;
 
 			image->textures_[i].uv_center[0] = 0.f;
 			image->textures_[i].uv_center[1] = 0.f;

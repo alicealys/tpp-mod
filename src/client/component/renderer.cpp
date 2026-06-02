@@ -263,7 +263,7 @@ namespace renderer
 		void set_material(game::fox::gr::dg::plugins::Draw2DRenderer* instance, unsigned int resource_id)
 		{
 			game::fox::gr::Material material{};
-			material.resource = resource_id;
+			material.resource.data = resource_id;
 			game::fox::gr::Packet2DMaterial packet{};
 			packet.material = &material;
 			game::fox::gr::dg::plugins::Draw2DRenderer_::Execute_Packet2DMaterial(instance, &packet);
@@ -275,7 +275,7 @@ namespace renderer
 
 			if (texture != nullptr)
 			{
-				packet.id = texture->id;
+				packet.id = texture->id.data;
 			}
 
 			game::fox::gr::dg::plugins::Draw2DRenderer_::Execute_Packet2DTexture(instance, &packet);

@@ -1,16 +1,14 @@
 #include <std_include.hpp>
 
-#include "game/game.hpp"
-
 #include "utils.hpp"
 
 namespace lui::utils
 {
-	std::uint32_t get_material_resource(const std::uint64_t hash)
+	game::fox::gr::ResourceId get_material_resource(const std::uint64_t hash)
 	{
 		if (hash == 0)
 		{
-			return 0u;
+			return {};
 		}
 
 		game::fox::StringId id{};
@@ -21,17 +19,17 @@ namespace lui::utils
 		return material.resource;
 	}
 
-	std::uint32_t get_material_resource(const std::string& path)
+	game::fox::gr::ResourceId get_material_resource(const std::string& path)
 	{
 		const auto hash = game::fox::fs::PathCodeImpl_::FromString(path.data());
 		return get_material_resource(hash);
 	}
 
-	std::uint32_t get_texture_resource(const std::uint64_t hash)
+	game::fox::gr::ResourceId get_texture_resource(const std::uint64_t hash)
 	{
 		if (hash == 0)
 		{
-			return 0u;
+			return {};
 		}
 
 		game::fox::Path path{};
@@ -39,7 +37,7 @@ namespace lui::utils
 		return game::fox::gr::dg::TextureManager_::CreateResourceFromFile(&path);
 	}
 
-	std::uint32_t get_texture_resource(const std::string& path)
+	game::fox::gr::ResourceId get_texture_resource(const std::string& path)
 	{
 		const auto hash = game::fox::fs::PathCodeImpl_::FromString(path.data());
 		return get_texture_resource(hash);
