@@ -569,10 +569,24 @@ namespace game
 				char __pad3[8];
 			};
 
+			struct ResourceId
+			{
+				union
+				{
+					struct
+					{
+						unsigned int type : 7;
+						unsigned int unk2 : 10;
+						unsigned int index : 15;
+					} fields;
+					unsigned int data;
+				};
+			};
+
 			struct Texture
 			{
 				char __pad0[24];
-				int id;
+				ResourceId id;
 			};
 
 			namespace dg
@@ -691,18 +705,9 @@ namespace game
 					float f9;
 				};
 
-				struct ResourceId
+				struct DgTextureStreamer
 				{
-					union
-					{
-						struct
-						{
-							unsigned int type : 7;
-							unsigned int unk2 : 10;
-							unsigned int index : 15;
-						} fields;
-						unsigned int data;
-					};
+
 				};
 
 				struct ShadowConstantRegister
@@ -715,7 +720,7 @@ namespace game
 					char __pad0[40];
 					fox::gr::dg::ShadowConstantRegister* shadowConstantRegister;
 					char __pad1[16];
-					fox::gr::dg::ResourceId material;
+					fox::gr::ResourceId material;
 					char __pad2[556];
 				};
 
@@ -735,12 +740,12 @@ namespace game
 				struct MaterialResource
 				{
 					char __pad0[32];
-					fox::gr::dg::ResourceId shader;
+					fox::gr::ResourceId shader;
 					unsigned char numConsts;
 					fox::gr::dg::MaterialResource_unk1 unkFields;
 					char __pad2[10];
 					float consts[8][4];
-					fox::gr::dg::ResourceId textures[8];
+					fox::gr::ResourceId textures[8];
 				};
 
 				struct MaterialManager
@@ -789,7 +794,7 @@ namespace game
 						CommandBuffer* commandBuffer;
 						Draw2DRenderer_unk* unk;
 						char __pad1[16];
-						fox::gr::dg::ResourceId shader;
+						fox::gr::ResourceId shader;
 						gn::Buffer* buffer;
 						unsigned int size;
 						char __pad2[14];
@@ -849,7 +854,7 @@ namespace game
 				vtable* __vftable;
 				int unk;
 				char __pad0[4];
-				unsigned int resource;
+				game::fox::gr::ResourceId resource;
 			};
 
 			static_assert(offsetof(Material, resource) == 0x10);

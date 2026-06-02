@@ -18,7 +18,7 @@ namespace lui
 
 	struct texture_t
 	{
-		std::uint32_t texture{};
+		game::fox::gr::ResourceId texture{};
 		float uv_shift[2]{};
 		float uv_repeat[2]{};
 		float uv_center[2]{};
@@ -49,9 +49,11 @@ namespace lui
 
 	private:
 		void draw_internal(const draw_info_t& inherit) const override;
-		void update_material();
 		void update() override;
+
 		void bind_param(const std::uint32_t param, const float x, const float y, const float z, const float w);
+		void update_material();
+		void free_texture_resource(const std::uint32_t type);
 
 		game::fox::gr::Material* material_{};
 		std::uint64_t shader_{};
