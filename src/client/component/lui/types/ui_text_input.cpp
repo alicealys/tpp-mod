@@ -80,21 +80,25 @@ namespace lui
 
 		auto buffer = this->buffer_.data();
 
+		::renderer::params_t renderer_params{};
+		renderer_params.rotation = draw_info.rotation;
+		std::memcpy(&renderer_params.perspective, &draw_info.perspective, sizeof(renderer_params.perspective));
+
 		if (buffer[0] == 0)
 		{
 			renderer::add_draw_text(this->hint_text_.data(), state.height, x, y, hint_color, outline_color, this->formatted_,
-				width, height, false, draw_info.rotation);
+				width, height, false, false, &renderer_params);
 		}
 
 		if (this->has_focus())
 		{
 			renderer::add_draw_text_with_cursor(buffer, state.height, x, y, color, outline_color, this->formatted_,
-				width, draw_info.rotation, this->cursor_);
+				width, this->cursor_, &renderer_params);
 		}
 		else
 		{
 			renderer::add_draw_text(buffer, state.height, x, y, color, outline_color, this->formatted_,
-				width, height, false, draw_info.rotation);
+				width, height, false, false, &renderer_params);
 		}
 	}
 

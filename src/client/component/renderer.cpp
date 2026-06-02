@@ -816,7 +816,7 @@ namespace renderer
 
 			v2[0] = x;
 			v2[1] = y;
-			v2[2] = 0.f;
+			v2[2] = 1.f;
 
 			quat[0] = 1.f;
 			quat[1] = 0.f;
@@ -826,14 +826,48 @@ namespace renderer
 			set_matrix(instance, v1, v2, quat, 2);
 		}
 
+		void set_perspective(game::fox::gr::dg::plugins::Draw2DRenderer* instance, params_t* params)
+		{
+			game::fox::gr::Packet2DPerspective packet{};
+
+			if (params == nullptr)
+			{
+				packet.f1 = 1.f;
+				packet.f2 = 0.f;
+				packet.f3 = 0.f;
+				packet.f4 = 0.f;
+				packet.f5 = 0.f;
+			}
+			else
+			{
+				packet.f1 = params->perspective[0];
+				packet.f2 = params->perspective[1];
+				packet.f3 = params->perspective[2];
+				packet.f4 = params->perspective[3];
+				packet.f5 = params->perspective[4];
+			}
+
+			game::fox::gr::dg::plugins::Draw2DRenderer_::Execute_Packet2DPerspective(instance, &packet);
+		}
+
+		void set_other_params(game::fox::gr::dg::plugins::Draw2DRenderer* instance, params_t* params)
+		{
+			if (params != nullptr)
+			{
+				set_rotation(instance, params->rotation);
+			}
+
+			set_perspective(instance, params);
+		}
+
 		void draw_box_internal(game::fox::gr::dg::plugins::Draw2DRenderer* instance, unsigned int material,
-			float x, float y, float width, float height, float* color, float rotation = 0.f)
+			float x, float y, float width, float height, float* color, params_t* params)
 		{
 			set_position(instance, x + width / 2.f, y + height / 2.f);
 			set_texture(instance, nullptr);
 			set_cull_mode_alpha(instance, 2, 1);
 			set_color(instance, color);
-			set_rotation(instance, rotation);
+			set_other_params(instance, params);
 			set_material(instance, nullptr);
 
 			if (material != 0)
@@ -845,19 +879,19 @@ namespace renderer
 		}
 
 		float draw_text_internal_formatted(game::fox::gr::dg::plugins::Draw2DRenderer* instance, const char* text, float height, float x, float y, float* color,
-			float display_width, float display_height, float scroll_x, float scroll_y, bool word_wrapping, int caret_index, float rotation)
+			float display_width, float display_height, float scroll_x, float scroll_y, bool word_wrapping, int caret_index, params_t* params)
 		{
 			height *= get_font_scaling();
 
 			set_position(instance, x, y + height);
-			set_rotation(instance, rotation);
+			set_other_params(instance, params);
 
 			const auto has_stencil = display_width != 0.f && display_height != 0.f;
 			if (has_stencil)
 			{
 				add_stencil(instance, 0.f, -height, display_width, display_height);
 				set_position(instance, x - scroll_x, y + height - scroll_y);
-				set_rotation(instance, rotation);
+				set_other_params(instance, params);
 			}
 
 			set_material(instance, nullptr);
@@ -927,19 +961,19 @@ namespace renderer
 		}
 
 		float draw_text_internal(game::fox::gr::dg::plugins::Draw2DRenderer* instance, const char* text, float height, float x, float y, float* color, 
-			float display_width, float display_height, float scroll_x, float scroll_y, bool word_wrapping, int caret_index, float rotation)
+			float display_width, float display_height, float scroll_x, float scroll_y, bool word_wrapping, int caret_index, params_t* params)
 		{
 			height *= get_font_scaling();
 
 			set_position(instance, x, y + height);
-			set_rotation(instance, rotation);
+			set_other_params(instance, params);
 
 			const auto has_stencil = display_width != 0.f && display_height != 0.f;
 			if (has_stencil)
 			{
 				add_stencil(instance, 0.f, -height, display_width, display_height);
 				set_position(instance, x - scroll_x, y + height - scroll_y);
-				set_rotation(instance, rotation);
+				set_other_params(instance, params);
 			}
 
 			set_material(instance, nullptr);
@@ -1235,15 +1269,17 @@ namespace renderer
 
 	float draw_text_artist(game::fox::gr::dg::plugins::Draw2DRenderer* instance, const char* text, float height,
 		float x, float y, float* color, bool formatted, float display_width, float display_height,
-		float scroll_x, float scroll_y, bool word_wrapping, int caret_index)
+		float scroll_x, float scroll_y, bool word_wrapping, int caret_index, params_t* params)
 	{
 		set_position(instance, x, y + height);
+		set_other_params(instance, params);
 
 		const auto has_stencil = display_width != 0.f && display_height != 0.f;
 		if (has_stencil)
 		{
 			add_stencil(instance, 0.f, -height, display_width, display_height);
 			set_position(instance, x - scroll_x, y + height - scroll_y);
+			set_other_params(instance, params);
 		}
 
 		set_material(instance, nullptr);
@@ -1274,7 +1310,7 @@ namespace renderer
 
 	float draw_text(game::fox::gr::dg::plugins::Draw2DRenderer* instance, const char* text, float height, 
 		float x, float y, float* color, float* outline_color, bool formatted, float display_width, float display_height, 
-		float scroll_x, float scroll_y, bool word_wrapping, int caret_index, float rotation)
+		float scroll_x, float scroll_y, bool word_wrapping, int caret_index, params_t* params)
 	{
 		const auto fn = formatted
 			? draw_text_internal_formatted
@@ -1282,14 +1318,14 @@ namespace renderer
 
 		if (outline_color != nullptr)
 		{
-			fn(instance, text, height, x + 0.5f, y + 0.5f, outline_color, display_width, display_height, scroll_x, scroll_y, word_wrapping, caret_index, rotation);
+			fn(instance, text, height, x + 0.5f, y + 0.5f, outline_color, display_width, display_height, scroll_x, scroll_y, word_wrapping, caret_index, params);
 		}
 		
-		return fn(instance, text, height, x, y, color, display_width, display_height, scroll_x, scroll_y, word_wrapping, caret_index, rotation);
+		return fn(instance, text, height, x, y, color, display_width, display_height, scroll_x, scroll_y, word_wrapping, caret_index, params);
 	}
 
 	float draw_text_with_cursor(game::fox::gr::dg::plugins::Draw2DRenderer* instance, const char* text, int cursor,
-		float height, float x, float y, float* color, float* outline_color, bool formatted, float display_width, float rotation)
+		float height, float x, float y, float* color, float* outline_color, bool formatted, float display_width, params_t* params)
 	{
 		static char buffer[0x2000]{};
 		std::memset(buffer, 0, sizeof(buffer));
@@ -1331,28 +1367,28 @@ namespace renderer
 			}
 		}
 
-		return draw_text(instance, buffer, height, x, y, color, outline_color, formatted, display_width, display_width, scroll_x, 0.f, false, caret_index, rotation);
+		return draw_text(instance, buffer, height, x, y, color, outline_color, formatted, display_width, display_width, scroll_x, 0.f, false, caret_index, params);
 	}
 
 	void draw_box(game::fox::gr::dg::plugins::Draw2DRenderer* instance, float x, float y, float width,
-		float height, float* color, float* outline_color, float outline_thickness, float rotation)
+		float height, float* color, float* outline_color, float outline_thickness, params_t* params)
 	{
-		draw_box_internal(instance, 0, x, y, width, height, color, rotation);
+		draw_box_internal(instance, 0, x, y, width, height, color, params);
 		
 		if (outline_color != nullptr)
 		{
-			draw_box_internal(instance, 0, x - outline_thickness, y, outline_thickness, height, outline_color, rotation);
-			draw_box_internal(instance, 0, x + width, y, outline_thickness, height, outline_color, rotation);
+			draw_box_internal(instance, 0, x - outline_thickness, y, outline_thickness, height, outline_color, params);
+			draw_box_internal(instance, 0, x + width, y, outline_thickness, height, outline_color, params);
 		
-			draw_box_internal(instance, 0, x - outline_thickness, y - outline_thickness, width + 2 * outline_thickness, outline_thickness, outline_color, rotation);
-			draw_box_internal(instance, 0, x - outline_thickness, y + height, width + 2 * outline_thickness, outline_thickness, outline_color, rotation);
+			draw_box_internal(instance, 0, x - outline_thickness, y - outline_thickness, width + 2 * outline_thickness, outline_thickness, outline_color, params);
+			draw_box_internal(instance, 0, x - outline_thickness, y + height, width + 2 * outline_thickness, outline_thickness, outline_color, params);
 		}
 	}
 
 	void draw_material(game::fox::gr::dg::plugins::Draw2DRenderer* instance, unsigned int material, float x, float y, float width,
-		float height, float* color, float rotation)
+		float height, float* color, params_t* params)
 	{
-		draw_box_internal(instance, material, x, y, width, height, color, rotation);
+		draw_box_internal(instance, material, x, y, width, height, color, params);
 	}
 
 	void add_stencil(game::fox::gr::dg::plugins::Draw2DRenderer* instance, float x, float y, float width, float height)

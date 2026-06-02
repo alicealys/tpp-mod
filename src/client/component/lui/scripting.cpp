@@ -227,6 +227,31 @@ namespace lui::scripting
 					element_state.color.b = color["b"].get_or(current_state.color.b);
 					element_state.color.a = color["a"].get_or(current_state.color.a);
 				}
+				else
+				{
+					element_state.color.r = current_state.color.r;
+					element_state.color.g = current_state.color.g;
+					element_state.color.b = current_state.color.b;
+					element_state.color.a = current_state.color.a;
+				}
+
+				auto perspective = state["perspective"];
+				if (perspective.is<sol::table>())
+				{
+					element_state.position.perspective.params[0] = perspective["param0"].get_or(current_state.position.perspective.params[0]);
+					element_state.position.perspective.params[1] = perspective["param1"].get_or(current_state.position.perspective.params[1]);
+					element_state.position.perspective.params[2] = perspective["param2"].get_or(current_state.position.perspective.params[2]);
+					element_state.position.perspective.params[3] = perspective["param3"].get_or(current_state.position.perspective.params[3]);
+					element_state.position.perspective.params[4] = perspective["param4"].get_or(current_state.position.perspective.params[4]);
+				}
+				else
+				{
+					element_state.position.perspective.params[0] = current_state.position.perspective.params[0];
+					element_state.position.perspective.params[1] = current_state.position.perspective.params[1];
+					element_state.position.perspective.params[2] = current_state.position.perspective.params[2];
+					element_state.position.perspective.params[3] = current_state.position.perspective.params[3];
+					element_state.position.perspective.params[4] = current_state.position.perspective.params[4];
+				}
 
 				element.register_animation_state(name, element_state);
 			};

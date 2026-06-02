@@ -150,7 +150,11 @@ namespace lui
 		const auto width = (draw_info.rect.right - draw_info.rect.left);
 		const auto height = (draw_info.rect.bottom - draw_info.rect.top);
 
-		renderer::add_draw_material(this->material_->resource.data, draw_info.rect.left, draw_info.rect.top, width, height, color, draw_info.rotation);
+		::renderer::params_t renderer_params{};
+		renderer_params.rotation = draw_info.rotation;
+		std::memcpy(&renderer_params.perspective, &draw_info.perspective, sizeof(renderer_params.perspective));
+
+		renderer::add_draw_material(this->material_->resource.data, draw_info.rect.left, draw_info.rect.top, width, height, color, &renderer_params);
 	}
 
 	void ui_image::set_uv_center(float u, float v, const std::uint32_t type)

@@ -103,6 +103,11 @@ namespace lui
 			draw_info.rect.right = 1280.f;
 			draw_info.rect.bottom = 720.f;
 			draw_info.alpha = 1.f;
+			draw_info.perspective.params[0] = 1.f;
+			draw_info.perspective.params[1] = 0.f;
+			draw_info.perspective.params[2] = 0.f;
+			draw_info.perspective.params[3] = 0.f;
+			draw_info.perspective.params[4] = 0.f;
 
 			get_root_element()->draw(draw_info);
 		}
