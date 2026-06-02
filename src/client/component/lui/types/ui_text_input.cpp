@@ -62,7 +62,30 @@ namespace lui
 		const auto width = (draw_info.rect.right - draw_info.rect.left);
 		const auto height = (draw_info.rect.bottom - draw_info.rect.top);
 
+		auto buffer = this->buffer_.data();
+
+		const auto cursor_width = ::renderer::calc_text_width("_", state.height);
+		const auto text_width = ::renderer::calc_text_width(buffer, state.height, this->formatted_, false, 0.f, nullptr, this->cursor_);
+		const auto hint_text_width = ::renderer::calc_text_width(this->hint_text_.data(), state.height, this->formatted_, false, 0.f, nullptr, this->cursor_);
+
 		auto x = draw_info.rect.left;
+		auto hint_x = x;
+
+		if (text_width < width)
+		{
+			switch (state.position.alignment)
+			{
+			case ALIGN_CENTER:
+				x = draw_info.rect.left + width / 2.f - text_width / 2.f;
+				hint_x = draw_info.rect.left + width / 2.f - hint_text_width / 2.f;
+				break;
+			case ALIGN_RIGHT:
+				x = draw_info.rect.right - text_width - cursor_width;
+				hint_x = draw_info.rect.right - hint_text_width - cursor_width * 2.f;
+				break;
+			}
+		}
+
 		auto y = 0.f;
 
 		switch (state.position.vertical_alignment)
@@ -78,15 +101,13 @@ namespace lui
 			break;
 		}
 
-		auto buffer = this->buffer_.data();
-
 		::renderer::params_t renderer_params{};
 		renderer_params.rotation = draw_info.rotation;
 		std::memcpy(&renderer_params.perspective, &draw_info.perspective, sizeof(renderer_params.perspective));
 
 		if (buffer[0] == 0)
 		{
-			renderer::add_draw_text(this->hint_text_.data(), state.height, x, y, hint_color, outline_color, this->formatted_,
+			renderer::add_draw_text(this->hint_text_.data(), state.height, hint_x, y, hint_color, outline_color, this->formatted_,
 				width, height, false, false, &renderer_params);
 		}
 
