@@ -17,6 +17,7 @@ namespace fobs
 	namespace
 	{
 		vars::var_ptr var_fob_security_challenge_mode;
+		vars::var_ptr var_fob_security_challenge_min_level;
 
 		bool custom_lobbies_enabled()
 		{
@@ -142,6 +143,8 @@ namespace fobs
 		utils::hook::detour cmd_get_own_fob_list_result_unpack_hook;
 
 		utils::hook::detour fob_target_receive_enemy_basic_info_hook;
+
+		utils::hook::detour fob_mission2_callback_update_hook;
 
 		utils::concurrency::container<state_t> state;
 		
@@ -598,14 +601,8 @@ namespace fobs
 			return res;
 		}
 
-		void fob_target_receive_enemy_basic_info_stub(game::tpp::net::FobTarget* fob_target, game::tpp::net::CmdGetFobTargetListResult<0>* list)
+		void receive_custom_challenge_list(game::tpp::net::FobTarget* fob_target, game::tpp::net::CmdGetFobTargetListResult<0>* list)
 		{
-			if (!custom_lobbies_enabled() || list->type.data->buffer != "CHALLENGE"s)
-			{
-				fob_target_receive_enemy_basic_info_hook.invoke<void>(fob_target, list);
-				return;
-			}
-
 			game::tpp::net::DisplayName_::ClearList(fob_target->displayName1);
 			game::tpp::net::DisplayName_::ClearList(fob_target->displayName2);
 
@@ -661,6 +658,62 @@ namespace fobs
 			game::tpp::net::DisplayName_::GetDisplayName(fob_target->displayName2);
 		}
 
+		void receive_filtered_challenge_list(game::tpp::net::FobTarget* fob_target, game::tpp::net::CmdGetFobTargetListResult<0>* list, int min_level)
+		{
+			game::tpp::net::DisplayName_::ClearList(fob_target->displayName1);
+			game::tpp::net::DisplayName_::ClearList(fob_target->displayName2);
+
+			const auto has_min_level = [&](game::tpp::net::FobTargetInfo* target)
+			{
+				for (auto o = 0; o < target->num_param; o++)
+				{
+					if (target->mother_base_param[o].security_rank >= min_level)
+					{
+						return true;
+					}
+				}
+
+				return false;
+			};
+
+			auto info_index = 0;
+			for (auto i = 0; i < list->target_num; i++)
+			{
+				if (!has_min_level(&list->targets[i]))
+				{
+					continue;
+				}
+
+				game::tpp::net::FobTarget_::ReceiveBasicInfoCommon(fob_target, &fob_target->playerInfos[info_index], &list->targets[i]);
+				if (++info_index >= fob_target->maxPlayers)
+				{
+					break;
+				}
+			}
+
+			game::tpp::net::DisplayName_::GetDisplayName(fob_target->displayName1);
+			game::tpp::net::DisplayName_::GetDisplayName(fob_target->displayName2);
+		}
+
+		void fob_target_receive_enemy_basic_info_stub(game::tpp::net::FobTarget* fob_target, game::tpp::net::CmdGetFobTargetListResult<0>* list)
+		{
+			std::memset(fob_target->playerInfos, 0, sizeof(game::tpp::mbm::PlayerBasicInfo) * fob_target->maxPlayers);
+
+			if (list->type.data->buffer != "CHALLENGE"s)
+			{
+				fob_target_receive_enemy_basic_info_hook.invoke<void>(fob_target, list);
+				return;
+			}
+
+			if (custom_lobbies_enabled())
+			{
+				receive_custom_challenge_list(fob_target, list);
+				return;
+			}
+
+			receive_filtered_challenge_list(fob_target, list, var_fob_security_challenge_min_level->current.get_int());
+		}
+
 		void initialize_steam()
 		{
 			if (steam_api.initialized)
@@ -695,6 +748,70 @@ namespace fobs
 				var_fob_security_challenge_mode->changed = false;
 			}
 		}
+
+		bool request_refresh_current_tab{};
+
+		void request_refresh_tab()
+		{
+			request_refresh_current_tab = true;
+		}
+
+		void refresh_current_tab(game::tpp::ui::menu::mbm::impl::FobMission2CallbackImpl* fob_mission)
+		{
+			if (fob_mission->state != 52)
+			{
+				return;
+			}
+
+			fob_mission->hasLoadedTab[fob_mission->currentTab] = 0;
+			switch (fob_mission->currentTab)
+			{
+			case 0:
+				fob_mission->state = 20;
+				break;
+			case 1:
+				fob_mission->state = 22;
+				break;
+			case 2:
+				fob_mission->state = 24;
+				break;
+			case 3:
+				fob_mission->state = 28;
+				break;
+			case 4:
+				fob_mission->state = 30;
+				break;
+			case 5:
+				fob_mission->state = 26;
+				break;
+			case 6:
+				fob_mission->state = 32;
+				break;
+			case 7:
+				fob_mission->state = 35;
+				break;
+			case 8:
+				fob_mission->state = 39;
+				break;
+			case 9:
+				fob_mission->state = 41;
+				break;
+			default:
+				fob_mission->state = 45;
+				break;
+			}
+		}
+
+		void fob_mission2_callback_update_stub(game::tpp::ui::menu::mbm::impl::FobMission2CallbackImpl* fob_mission, void* a2, void* a3)
+		{
+			if (request_refresh_current_tab)
+			{
+				refresh_current_tab(fob_mission);
+				request_refresh_current_tab = false;
+			}
+
+			fob_mission2_callback_update_hook.invoke<void>(fob_mission, a2, a3);
+		}
 	}
 
 	class component final : public component_interface
@@ -709,6 +826,11 @@ namespace fobs
 
 			var_fob_security_challenge_mode = vars::register_int("fob_security_challenge_mode", 0, 0, 1,
 				vars::var_flag_saved, "security challenge mode (0 = konami, 1 = steam lobbies)");
+
+			var_fob_security_challenge_min_level = vars::register_int("fob_security_challenge_min_level", 0, 0, 99,
+				vars::var_flag_saved, "filter out fobs with security level < (value)");
+
+			command::add("fob_refresh_tab", request_refresh_tab);
 		}
 
 		void start() override
@@ -732,6 +854,8 @@ namespace fobs
 			cmd_sync_resource_result_unpack_hook.create(SELECT_VALUE_LANG(0x145B09E50, 0x1474DEB10), cmd_sync_resource_result_unpack_stub);
 
 			fob_target_receive_enemy_basic_info_hook.create(SELECT_VALUE_LANG(0x1459F5940, 0x147443580), fob_target_receive_enemy_basic_info_stub);
+
+			fob_mission2_callback_update_hook.create(SELECT_VALUE_LANG(0x1416951C0, 0x141695310), fob_mission2_callback_update_stub);
 
 			scheduler::loop(run_frame, scheduler::net);
 		}
