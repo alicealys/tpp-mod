@@ -1921,12 +1921,34 @@ namespace game
 		fox::nt::impl::SessionIdle* sessionIdle;
 	};
 
-	namespace tpp::ui::menu::impl
+	namespace tpp::ui
 	{
-		struct MenuSystemImpl
+		namespace menu
 		{
+			namespace impl
+			{
+				struct MenuSystemImpl
+				{
 
-		};
+				};
+			}
+
+			namespace mbm
+			{
+				namespace impl
+				{
+					struct FobMission2CallbackImpl
+					{
+						char __pad0[176];
+						char state;
+						char __pad1[11399];
+						char currentTab;
+						char hasLoadedTab[10];
+						char __pad2[0x10000];
+					};
+				}
+			}
+		}
 	}
 
 	namespace tpp::mbm
