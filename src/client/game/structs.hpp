@@ -491,6 +491,13 @@ namespace game
 			void* queue;
 		};
 
+		struct LuaAutoPtr
+		{
+			fox::Lua* lua;
+			int top;
+			int a2;
+		};
+
 		struct HashMapBase
 		{
 			char __pad0[48];

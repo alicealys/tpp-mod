@@ -44,6 +44,12 @@ namespace game
 			WEAK symbol<char*(fox::Buffer* buffer)> GetBuffer{0x14C240CB0, 0x14CB3BB00, 0x14CACA8A0, 0x14CA27EE0};
 		}
 
+		namespace LuaAutoPtr_
+		{
+			WEAK symbol<void(LuaAutoPtr*, char, char, const char*)> LuaAutoPtr_{0x14006A3A0, 0x1404766D0, 0x14006A4E0, 0x14006B1C0};
+			WEAK symbol<void(LuaAutoPtr*)> LuaAutoPtr__destructor{0x14006A770, 0x14006B720, 0x14006A8B0, 0x14006B590};
+		}
+
 		namespace fs
 		{
 			namespace PathCodeImpl_
@@ -381,6 +387,7 @@ namespace game
 
 		WEAK symbol<bool(lua_State* L, int)> lua_toboolean{0x141A12330, 0x14CA2BC80, 0x141A12450, 0x14C92AEC0};
 		WEAK symbol<int(lua_State* L, int)> lua_tointeger{0x141A12390, 0x14146E670, 0x141A124B0, 0x14146E620};
+		WEAK symbol<double(lua_State* L, int)> lua_tonumber{0x141A12460, 0x14146E740, 0x141A12580, 0x14146E6F0};
 		WEAK symbol<const char*(lua_State* L, int idx, size_t* len)> lua_tolstring{0x14C1ECA70, 0x14CA2C890, 0x14C992060, 0x14C92BE20};
 
 		WEAK symbol<void(lua_State* L)> lua_pushnil{0x141A11BA0, 0x14146DE70, 0x141A11CC0, 0x14146DE20};
