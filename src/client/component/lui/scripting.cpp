@@ -830,8 +830,23 @@ namespace lui::scripting
 
 			state["game"]["playsound"] = utils::play_sound;
 			state["game"]["executelua"] = [](const std::string& code)
+				-> sol::lua_value
 			{
-				::scripting::script_exec(code);
+				const auto res = ::scripting::script_exec(code);
+				if (res.has_value())
+				{
+					switch (res->get_type())
+					{
+					case LUA_TBOOLEAN:
+						return res->get_bool();
+					case LUA_TNUMBER:
+						return res->get_number();
+					case LUA_TSTRING:
+						return res->get_string();
+					}
+				}
+
+				return sol::lua_nil;
 			};
 
 			state["game"]["localize"] = [](const std::string& str)

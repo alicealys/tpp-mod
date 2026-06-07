@@ -30,6 +30,92 @@
 
 namespace scripting
 {
+	lua_lock::lua_lock()
+	{
+		game::fox::LuaAutoPtr_::LuaAutoPtr_(&this->instance_, 1, 1, nullptr);
+	}
+
+	lua_lock::~lua_lock()
+	{
+		game::fox::LuaAutoPtr_::LuaAutoPtr__destructor(&this->instance_);
+	}
+
+	game::fox::LuaAutoPtr* lua_lock::get_instance()
+	{
+		return &this->instance_;
+	}
+
+	game::fox::Lua* lua_lock::get_lua()
+	{
+		return this->instance_.lua;
+	}
+
+	game::lua::lua_State* lua_lock::get_lua_state()
+	{
+		return this->instance_.lua->state;
+	}
+
+	lua_value::lua_value(game::lua::lua_State* state, int index)
+	{
+		this->type_ = game::lua::lua_type(state, -1);
+		size_t len{};
+		switch (this->type_)
+		{
+		case LUA_TBOOLEAN:
+			this->value_ = game::lua::lua_toboolean(state, -1);
+			break;
+		case LUA_TNUMBER:
+			this->value_ = game::lua::lua_tonumber(state, -1);
+			break;
+		case LUA_TSTRING:
+			this->value_ = game::lua::lua_tolstring(state, -1, &len);
+			break;
+		}
+	}
+
+	std::int32_t lua_value::get_type() const
+	{
+		return this->type_;
+	}
+
+	bool lua_value::get_bool() const
+	{
+		return std::get<bool>(this->value_);
+	}
+
+	double lua_value::get_number() const
+	{
+		return std::get<double>(this->value_);
+	}
+
+	std::string lua_value::get_string() const
+	{
+		return std::get<std::string>(this->value_);
+	}
+
+	std::string lua_value::to_string() const
+	{
+		switch (this->type_)
+		{
+		case LUA_TNIL:
+			return "nil";
+		case LUA_TBOOLEAN:
+			return this->get_bool() ? "true" : "false";
+		case LUA_TNUMBER:
+			return utils::string::va("%g", this->get_number());
+		case LUA_TSTRING:
+			return this->get_string();
+		case LUA_TTABLE:
+			return "[table]";
+		case LUA_TUSERDATA:
+			return "[userdata]";
+		case LUA_TFUNCTION:
+			return "[function]";
+		}
+
+		return "nil";
+	}
+
 	namespace
 	{
 		utils::hook::detour lua_init_hook;
@@ -328,7 +414,9 @@ namespace scripting
 
 		void script_var_command(const command::params& params)
 		{
-			const auto state = (*game::s_instances)->state;
+			const auto lock = acquire_lock();
+			const auto state = lock->get_lua_state();
+
 			if (state == nullptr)
 			{
 				return;
@@ -345,27 +433,38 @@ namespace scripting
 		}
 	}
 
-	void script_exec(const std::string& code)
+	std::unique_ptr<lua_lock> acquire_lock()
 	{
-		const auto state = (*game::s_instances)->state;
+		return std::make_unique<lua_lock>();
+	}
+
+	std::optional<lua_value> script_exec(const std::string& code)
+	{
+		const auto lock = acquire_lock();
+		const auto state = lock->get_lua_state();
+
 		if (state == nullptr)
 		{
-			return;
+			return {};
 		}
 
 		loading_custom_script = true;
 		const auto _0 = gsl::finally([&]
 		{
 			loading_custom_script = false;
+			game_lua_pop(state, 1);
 		});
 
-		if (game::lua::luaL_loadstring(state, code.data()) != 0 || game::lua::lua_pcall(state, 0, 0, 0) != 0)
+		if (game::lua::luaL_loadstring(state, code.data()) != 0 ||
+			game::lua::lua_pcall(state, 0, 1, 0) != 0)
 		{
 			size_t size{};
-			const auto error = game::lua::lua_tolstring(state, -1, &size);
-			console::error("Execution error: %s\n", error);
-			game_lua_pop(state, 1);
+			const auto result = game::lua::lua_tolstring(state, -1, &size);
+			console::error("Execution error: %s\n", result);
+			return {};
 		}
+
+		return {lua_value(state, -1)};
 	}
 
 	class component final : public component_interface
@@ -399,7 +498,12 @@ namespace scripting
 					return;
 				}
 
-				script_exec(params.join(1));
+				const auto res = script_exec(params.join(1));
+				if (res.has_value())
+				{
+					const auto str = res->to_string();
+					console::info("< %s", str.data());
+				}
 			});
 
 			command::add("script_load", [](const command::params& params)
@@ -417,6 +521,16 @@ namespace scripting
 				command::add("disconnect", []
 				{
 					script_exec("TppMission.GameOverAbortMission()");
+				});
+
+				command::add("mission_restart", []
+				{
+					script_exec("TppMission.ExecuteRestartMission(false)");
+				});
+
+				command::add("mission_loadcheckpoint", []
+				{
+					script_exec("TppMission.ExecuteContinueFromCheckPoint(nil, nil, false)");
 				});
 			}
 		}
