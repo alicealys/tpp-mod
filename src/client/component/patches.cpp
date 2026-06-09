@@ -5,6 +5,7 @@
 
 #include "vars.hpp"
 #include "scheduler.hpp"
+#include "console.hpp"
 
 #include <utils/hook.hpp>
 #include <utils/flags.hpp>
@@ -26,6 +27,7 @@ namespace patches
 		vars::var_ptr var_camera_fovscale;
 		vars::var_ptr var_camera_fp_fovscale;
 		vars::var_ptr var_camera_fp_preserve;
+		vars::var_ptr var_get_url_list_version_override;
 
 		void set_timer_resolution()
 		{
@@ -429,6 +431,33 @@ namespace patches
 			utils::hook::jump(SELECT_VALUE_LANG(0x1407A8060, 0x1407A7A80), utils::hook::assemble(sub_1407A7F70_stub), true);
 			fv2_resource_manager_get_model_hook.create(SELECT_VALUE_LANG(0x1438AE8D0, 0x1436E73F0), fv2_resource_manager_get_model_stub);
 		}
+
+		utils::hook::detour cmd_get_url_list_unpack_hook;
+		char cmd_get_url_list_unpack_stub(void* a1)
+		{
+			auto result = cmd_get_url_list_unpack_hook.invoke<char>(a1);
+			uint32_t override_version = var_get_url_list_version_override->current.get_int();
+
+			if (override_version == 0)
+			{
+				return result;
+			}
+			
+			uint32_t* base = (uint32_t*)a1;
+			uint32_t count = base[198];
+			for (int i = 0; i < (int)count; i++)
+			{
+				game::fox::SharedString* type = (game::fox::SharedString*)&base[(6 * i + 24)];
+
+				if (type->data->buffer && (strcmp(type->data->buffer, "GATE") == 0 || strcmp(type->data->buffer, "WEB") == 0))
+				{
+					console::info("[patches] overriding version in CMD_GET_URL_LIST to %d", override_version);
+					base[6 * i + 28] = override_version;
+				}
+			}
+
+			return result;
+		}
 	}
 
 	class component final : public component_interface
@@ -466,6 +495,9 @@ namespace patches
 
 			var_camera_fp_preserve = vars::register_bool("camera_fp_preserve", false, 
 				vars::var_flag_saved, "preserve first person camera mode after leaving ADS");
+
+			var_get_url_list_version_override = vars::register_int("var_get_url_list_version_override", 0, 0, 100, 
+				vars::var_flag_saved, "Override server version");
 
 			if (game::environment::is_tpp())
 			{
@@ -514,6 +546,7 @@ namespace patches
 				}
 
 				get_ramble_speed_hook.create(SELECT_VALUE_LANG(0x1468DA3F0, 0x1484C25F0), get_ramble_speed_stub);
+				cmd_get_url_list_unpack_hook.create(SELECT_VALUE(0x14080DAE0, 0x1405A7E60, 0x14080D730, 0x1405A7A90), cmd_get_url_list_unpack_stub);
 
 				utils::hook::nop(SELECT_VALUE_LANG(0x144D21F3E, 0x144B8861D), 6);
 				utils::hook::call(SELECT_VALUE_LANG(0x144D21F3E, 0x144B8861D), strncpy_s_stub);
