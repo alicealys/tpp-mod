@@ -538,6 +538,9 @@ namespace patches
 				const auto time_system = game::fox::GetTimeSystem();
 				printf("frametime: %f, fps: %i\n", time_system.frameTime, static_cast<int>(1.f / time_system.frameTime));
 			});
+
+			// ignore server version
+			utils::hook::set<std::uint8_t>(SELECT_VALUE(0x1407D2932, 0x140572C3B, 0x1407D2572, 0x14057263F), 0xEB);
 		}
 	};
 }

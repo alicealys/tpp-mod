@@ -357,39 +357,42 @@ namespace session
 	public:
 		void pre_load() override
 		{
-			command::add("ban", [](const command::params& params)
+			if (game::environment::is_mgo())
 			{
-				if (params.size() < 2)
+				command::add("ban", [](const command::params& params)
 				{
-					console::info("usage: ban <steam id>\n");
-					return;
-				}
+					if (params.size() < 2)
+					{
+						console::info("usage: ban <steam id>\n");
+						return;
+					}
 
-				const auto id = params.get_uint64(1);
-				scheduler::once([id]
-				{
-					game::steam_id steam_id{.bits = id};
-					matchmaking::ban_player_from_lobby(id);
-					dedicated_server::ban_player_from_session(steam_id);
-				}, scheduler::session);
-			});
+					const auto id = params.get_uint64(1);
+					scheduler::once([id]
+					{
+						game::steam_id steam_id{.bits = id};
+						matchmaking::ban_player_from_lobby(id);
+						dedicated_server::ban_player_from_session(steam_id);
+					}, scheduler::session);
+				});
 
-			command::add("unban", [](const command::params& params)
-			{
-				if (params.size() < 2)
+				command::add("unban", [](const command::params& params)
 				{
-					console::info("usage: unban <steam id>\n");
-					return;
-				}
+					if (params.size() < 2)
+					{
+						console::info("usage: unban <steam id>\n");
+						return;
+					}
 
-				const auto id = params.get_uint64(1);
-				scheduler::once([id]
-				{
-					game::steam_id steam_id{.bits = id};
-					matchmaking::unban_player_from_lobby(id);
-					dedicated_server::unban_player_from_session(steam_id);
-				}, scheduler::session);
-			});
+					const auto id = params.get_uint64(1);
+					scheduler::once([id]
+					{
+						game::steam_id steam_id{.bits = id};
+						matchmaking::unban_player_from_lobby(id);
+						dedicated_server::unban_player_from_session(steam_id);
+					}, scheduler::session);
+				});
+			}
 		}
 
 		void start() override
