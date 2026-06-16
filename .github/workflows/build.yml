@@ -75,7 +75,7 @@ jobs:
         run: ssh ${{ secrets.ALICE_MASTER_SSH_USER }}@${{ secrets.ALICE_MASTER_SSH_ADDRESS }} rm -rf ${{ env.ALICE_MASTER_PATH }}/tpp-mod/*
 
       - name: Upload binary
-        run: rsync -avz dinput8.dll ${{ secrets.ALICE_MASTER_SSH_USER }}@${{ secrets.ALICE_MASTER_SSH_ADDRESS }}:${{ env.ALICE_MASTER_PATH }}/tpp-mod/
+        run: rsync -avz dinput8.dll ${{ secrets.ALICE_MASTER_SSH_USER }}@${{ secrets.ALICE_MASTER_SSH_ADDRESS }}:${{ env.ALICE_MASTER_PATH }}/tpp-mod/day1820/
 
       - name: Publish changes
         run: ssh ${{ secrets.ALICE_MASTER_SSH_USER }}@${{ secrets.ALICE_MASTER_SSH_ADDRESS }} ${{ secrets.ALICE_MASTER_SSH_CHANGE_PUBLISH_COMMAND }}
