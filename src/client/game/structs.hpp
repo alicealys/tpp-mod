@@ -401,6 +401,23 @@ namespace game
 
 		};
 
+		struct pfimpl
+		{
+			__int32 refCount;
+			__int32 pad;
+		};
+
+		struct SharedObject
+		{
+			struct vtable
+			{
+				void(__fastcall* __destructor)(SharedObject*);
+				void(__fastcall* Release)(SharedObject*);
+			};
+			vtable* __vftable;
+			pfimpl pf;
+		};
+
 		struct Quark
 		{
 			struct vtable
@@ -427,7 +444,7 @@ namespace game
 
 		struct Buffer
 		{
-			char* data;
+			void* data;
 			void* a2;
 			size_t offset;
 			size_t size;
@@ -1861,7 +1878,7 @@ namespace game
 			{
 				struct vtable
 				{
-
+					void(__fastcall* __destructor)(fox::ncl::NclMessageBase*);
 				};
 
 				vtable* __vftable;
@@ -1876,7 +1893,12 @@ namespace game
 			{
 				struct vtable
 				{
-
+					void(__fastcall* __destructor)(fox::ncl::NclJsonMessage*);
+					__int64(__fastcall* Serialize)(fox::ncl::NclJsonMessage*, fox::Buffer*);
+					__int64(__fastcall* Deserialize)(fox::ncl::NclJsonMessage*, fox::Buffer*);
+					char(__fastcall* Pack)(fox::ncl::NclJsonMessage*);
+					char(__fastcall* Unpack)(fox::ncl::NclJsonMessage*);
+					int(__fastcall* meth_06)(fox::ncl::NclJsonMessage*);
 				};
 
 				vtable* __vftable;
@@ -1888,7 +1910,7 @@ namespace game
 			{
 				struct vtable
 				{
-
+					void(__fastcall* __destructor)(fox::ncl::NclJsonMessageBase*);
 				};
 
 				vtable* __vftable;
@@ -1917,6 +1939,63 @@ namespace game
 				NclJsonMessage jsonMessage;
 				vtable* __vftable;
 				fox::String result;
+			};
+#pragma pack(pop)
+
+#pragma pack(push, 1)
+			struct NclDaemon
+			{
+				char __pad0[56];
+				char isLogin;
+				char __pad1[7];
+				fox::SharedString sessionKey;
+				unsigned char key[16];
+				char __pad2[96];
+				fox::String ip1;
+				fox::String ip2;
+			};
+#pragma pack(pop)
+
+			static_assert(offsetof(NclDaemon, key) == 72);
+
+			struct NclCryptBlowfish
+			{
+				struct vtable
+				{
+
+				};
+
+				fox::ncl::NclCryptBlowfish::vtable* __vftable;
+				char __pad0[4168];
+			};
+
+#pragma pack(push, 1)
+			struct NclHttpCodec
+			{
+				struct vtable
+				{
+					void(__fastcall* __destructor)(fox::ncl::NclHttpCodec*);
+					void(__fastcall* Release)(fox::ncl::NclHttpCodec*);
+					void(__fastcall* SetMessage)(fox::ncl::NclHttpCodec*, fox::ncl::NclJsonMessageBase*, fox::ncl::NclJsonMessageResult*);
+					void(__fastcall* Post)(fox::ncl::NclHttpCodec*);
+				};
+
+				fox::ncl::NclHttpCodec::vtable* __vftable;
+				void* ptr1;
+				fox::ncl::NclCryptBlowfish* blow;
+				fox::ncl::NclJsonMessageBase* messageBase;
+				fox::ncl::NclJsonMessageResult* messageResult;
+				void* ptr5;
+				void* callback;
+				void* ptr7;
+				void* ptr8;
+				char a1;
+				__int16 a2;
+				char __pad0[5];
+				void* ptr10;
+				int a3;
+				char __pad1[4];
+				void* ptr12;
 			};
 #pragma pack(pop)
 		}
@@ -2853,12 +2932,39 @@ namespace game
 			RequestDisplayImpl* requestDisplay;
 		};
 
-		struct FobTarget
+		struct ServerReceiveBase
 		{
-			char __pad0[16];
-			int a1;
+			struct vtable
+			{
+				void(__fastcall* __destructor)(tpp::net::ServerReceiveBase*);
+				void(__fastcall* Release)(tpp::net::ServerReceiveBase*);
+				void(__fastcall* Receive)(tpp::net::ServerReceiveBase*, void** ptr);
+				void(__fastcall* Success)(tpp::net::ServerReceiveBase*, void** ptr);
+				void(__fastcall* Failure)(tpp::net::ServerReceiveBase*, void** ptr);
+			};
+
+			vtable* __vftable;
+			fox::pfimpl pf;
+		};
+
+		struct ServerRequestBase
+		{
+			struct vtable
+			{
+
+			};
+
+			tpp::net::ServerRequestBase::vtable* __vftable;
+			fox::ncl::NclHttpCodec* httpCodec;
+			int state;
+			int mode;
 			fox::StringId unkString;
-			char __pad1[8];
+			int a5;
+			char a6;
+		};
+
+		struct FobTarget : ServerRequestBase
+		{
 			mbm::PlayerBasicInfo* playerInfos;
 			char __pad2[8];
 			short maxPlayers;
