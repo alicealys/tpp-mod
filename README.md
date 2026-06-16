@@ -7,14 +7,18 @@ https://discord.gg/hYfW9MEEGF
 
 ## Installation
 
-tpp-mod only supports original steam releases (latest), any kind of modified or pirated version is **NOT** supported.   
+tpp-mod only supports original steam releases (latest).  
+Any kind of modified or pirated version is **NOT** supported.   
+
+For older builds go here:
+- [23 March 2021](https://github.com/alicealys/tpp-mod/tree/day1820)
 
 | version | sha1 | support |
 | --- | --- | --- |
-| mgsvtpp.exe (eng, 1.0.15.3) | 17AC94A4BC9F88B035A45122C8A67EFA38D03F2A | ✔️ |
-| mgsvmgo.exe (eng, 1.1.2.7) | 8690C7C27C94DD6A452BA6A612B7B485918F3BAF | ✔️ |
-| mgsvtpp.exe (jpn, 1.0.15.3) | 3A87F626732158890A07688D32A2523CD8EADA71 | ✔️ |
-| mgsvmgo.exe (jpn, 1.1.2.7) | D6ADF7685B0F0639B2A949D0E96A06E853DAEEB8 | ✔️ |
+| mgsvtpp.exe (eng, 1.0.15.4) | D763B9B6CC1DB749B45B0FED2742F56571AE8FFA | ❌ |
+| mgsvmgo.exe (eng, 1.1.2.8) | C6F6108DB0A6FFF5BEACFAB6773B0CB192527CE7 | ❌ |
+| mgsvtpp.exe (jpn, 1.0.15.4) | 54BC743D1D7D98678EF4CC8D5BC98439F92AA1F7 | ❌ |
+| mgsvmgo.exe (jpn, 1.1.2.8) | 505BBF337DED2DFDD4F86FAAA2F4A9DC3CE935B0 | ❌ |
 
 - Download [dinput8.dll](https://github.alicent.cat/tpp-mod/dinput8.dll) and copy it to the game folder.  
 

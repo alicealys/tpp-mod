@@ -22,26 +22,26 @@ namespace game
 
 		binary_t binaries[mode_count] =
 		{
-			{"mgsvtpp.exe (eng, 1.0.15.3)", mode_tpp_eng, true},
-			{"mgsvmgo.exe (eng, 1.1.2.7)", mode_mgo_eng, true},
-			{"mgsvtpp.exe (jpn, 1.0.15.3)", mode_tpp_jpn, true},
-			{"mgsvmgo.exe (jpn, 1.1.2.7)", mode_mgo_jpn, true},
+			{"mgsvtpp.exe (eng, 1.0.15.4)", mode_tpp_eng, false},
+			{"mgsvmgo.exe (eng, 1.1.2.8)", mode_mgo_eng, false},
+			{"mgsvtpp.exe (jpn, 1.0.15.4)", mode_tpp_jpn, false},
+			{"mgsvmgo.exe (jpn, 1.1.2.8)", mode_mgo_jpn, false},
 		};
 
 		std::unordered_map<std::string, binary_t> hashes_sha1 =
 		{
-			{"17AC94A4BC9F88B035A45122C8A67EFA38D03F2A", binaries[mode_tpp_eng]},
-			{"8690C7C27C94DD6A452BA6A612B7B485918F3BAF", binaries[mode_mgo_eng]},
-			{"3A87F626732158890A07688D32A2523CD8EADA71", binaries[mode_tpp_jpn]},
-			{"D6ADF7685B0F0639B2A949D0E96A06E853DAEEB8", binaries[mode_mgo_jpn]},
+			{"D763B9B6CC1DB749B45B0FED2742F56571AE8FFA", binaries[mode_tpp_eng]},
+			{"C6F6108DB0A6FFF5BEACFAB6773B0CB192527CE7", binaries[mode_mgo_eng]},
+			{"54BC743D1D7D98678EF4CC8D5BC98439F92AA1F7", binaries[mode_tpp_jpn]},
+			{"505BBF337DED2DFDD4F86FAAA2F4A9DC3CE935B0", binaries[mode_mgo_jpn]},
 		};
 
 		std::unordered_map<std::string, binary_t> hashes_md5 =
 		{
-			{"7CC5F282B068F741ADDA2BB1076FB721", binaries[mode_tpp_eng]},
-			{"AF8E107DFDCDCCC78135E6C4D369D0FA", binaries[mode_mgo_eng]},
-			{"FF4093C96DE16465130AB1F1E6D42DD3", binaries[mode_tpp_jpn]},
-			{"D2223EFAA5B77F45C0271BECB70AE60A", binaries[mode_mgo_jpn]},
+			{"5362E39F6FC9CC330059379A9A602649", binaries[mode_tpp_eng]},
+			{"8E13DE0EDA115A702AA096A8E85FD129", binaries[mode_mgo_eng]},
+			{"E6BB25CDDEE36849F5F53237746F68DE", binaries[mode_tpp_jpn]},
+			{"EB3EC459B1CF9199D01088A545433340", binaries[mode_mgo_jpn]},
 		};
 
 		std::unordered_map<std::string, game_mode> gamemodes =
