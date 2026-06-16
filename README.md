@@ -7,7 +7,8 @@ https://discord.gg/hYfW9MEEGF
 
 ## Installation
 
-tpp-mod only supports original steam releases (latest), any kind of modified or pirated version is **NOT** supported.   
+This branch of tpp-mod only supports version **Tpp_steam_mst_en_day1820Mgo_patch_0212_1307** (Build 6239679 on 23 March 2021).  
+Any kind of modified or pirated version is **NOT** supported.   
 
 | version | sha1 | support |
 | --- | --- | --- |
@@ -16,7 +17,7 @@ tpp-mod only supports original steam releases (latest), any kind of modified or 
 | mgsvtpp.exe (jpn, 1.0.15.3) | 3A87F626732158890A07688D32A2523CD8EADA71 | ✔️ |
 | mgsvmgo.exe (jpn, 1.1.2.7) | D6ADF7685B0F0639B2A949D0E96A06E853DAEEB8 | ✔️ |
 
-- Download [dinput8.dll](https://github.alicent.cat/tpp-mod/dinput8.dll) and copy it to the game folder.  
+- Download [dinput8.dll](https://github.alicent.cat/tpp-mod/day1820/dinput8.dll) and copy it to the game folder.  
 
 Configuration files are stored in `%localappdata%\tpp-mod`
 

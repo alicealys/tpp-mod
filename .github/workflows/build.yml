@@ -72,7 +72,7 @@ jobs:
         run: ssh-keyscan -H ${{ secrets.ALICE_MASTER_SSH_ADDRESS }} >> ~/.ssh/known_hosts
 
       - name: Remove old data files
-        run: ssh ${{ secrets.ALICE_MASTER_SSH_USER }}@${{ secrets.ALICE_MASTER_SSH_ADDRESS }} rm -rf ${{ env.ALICE_MASTER_PATH }}/tpp-mod/*
+        run: ssh ${{ secrets.ALICE_MASTER_SSH_USER }}@${{ secrets.ALICE_MASTER_SSH_ADDRESS }} rm -rf ${{ env.ALICE_MASTER_PATH }}/tpp-mod/day1820/*
 
       - name: Upload binary
         run: rsync -avz dinput8.dll ${{ secrets.ALICE_MASTER_SSH_USER }}@${{ secrets.ALICE_MASTER_SSH_ADDRESS }}:${{ env.ALICE_MASTER_PATH }}/tpp-mod/day1820/
