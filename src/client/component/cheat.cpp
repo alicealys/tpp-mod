@@ -293,7 +293,7 @@ namespace cheat
 			a.jmp(continue_);
 
 			a.bind(continue_);
-			a.jmp(SELECT_VALUE_LANG(0x1408335B4, 0x1408331E4));
+			a.jmp(SELECT_VALUE_LANG(0x140834214, 0x1408331E4));
 		}
 
 		int get_develop_limit()
@@ -303,9 +303,9 @@ namespace cheat
 
 		void cmd_get_server_item_list_result_unpack_stub2(utils::hook::assembler& a)
 		{
-			a.call(SELECT_VALUE_LANG(0x141A0B8F0, 0x141A0BA10));
+			a.call(SELECT_VALUE_LANG(0x141A0B6C0, 0x141A0BA10));
 			a.mov(rcx, rax);
-			a.call(SELECT_VALUE_LANG(0x141A0BEC0, 0x141A0BFE0));
+			a.call(SELECT_VALUE_LANG(0x141A0BC90, 0x141A0BFE0));
 
 			a.push(eax);
 			a.push(rcx);
@@ -320,7 +320,7 @@ namespace cheat
 			a.cmovnz(eax, ecx);
 
 			a.mov(dword_ptr(rsi, 0x2860), eax);
-			a.jmp(SELECT_VALUE_LANG(0x14083362F, 0x14083325F));
+			a.jmp(SELECT_VALUE_LANG(0x14083428F, 0x14083325F));
 		}
 
 		utils::hook::detour cmd_check_server_item_correct_hook;
@@ -563,18 +563,18 @@ namespace cheat
 				var_cheat_no_deployment_cost = vars::register_bool("cheat_no_deployment_cost", false, 
 					vars::var_flag_cheat | vars::var_flag_saved, "disable mission deployment cost");
 
-				utils::hook::jump(SELECT_VALUE_LANG(0x14083359C, 0x1408331CC), utils::hook::assemble(cmd_get_server_item_list_result_unpack_stub), true);
-				utils::hook::jump(SELECT_VALUE_LANG(0x14083361C, 0x14083324C), utils::hook::assemble(cmd_get_server_item_list_result_unpack_stub2), true);
+				utils::hook::jump(SELECT_VALUE_LANG(0x1408341FC, 0x1408331CC), utils::hook::assemble(cmd_get_server_item_list_result_unpack_stub), true);
+				utils::hook::jump(SELECT_VALUE_LANG(0x14083427C, 0x14083324C), utils::hook::assemble(cmd_get_server_item_list_result_unpack_stub2), true);
 
-				cmd_check_server_item_correct_hook.create(SELECT_VALUE_LANG(0x145B4DE40, 0x14752AD10), cmd_check_server_item_correct_stub);
+				cmd_check_server_item_correct_hook.create(SELECT_VALUE_LANG(0x140835160, 0x14752AD10), cmd_check_server_item_correct_stub);
 			
-				send_suspicion_play_data_hook.create(SELECT_VALUE_LANG(0x140809DD0, 0x140809A30), send_suspicion_play_data_stub);
+				send_suspicion_play_data_hook.create(SELECT_VALUE_LANG(0x14080A970, 0x140809A30), send_suspicion_play_data_stub);
 
-				mission_preparation_get_total_gmp_cost_hook.create(SELECT_VALUE_LANG(0x1416BC400, 0x1416BC550), mission_preparation_get_total_gmp_cost_stub);
-				mission_preparation_get_all_equip_resource_hook.create(SELECT_VALUE_LANG(0x1416BB610, 0x1416BB760), mission_preparation_get_all_equip_resource_stub);
-				mission_preparation_calc_equip_resource_hook.create(SELECT_VALUE_LANG(0x140953030, 0x140952A50), mission_preparation_calc_equip_resource_stub);
-				utils::hook::nop(SELECT_VALUE_LANG(0x14095AA16, 0x14095A456), 6);
-				utils::hook::call(SELECT_VALUE_LANG(0x14095AA16, 0x14095A456), mission_preparation_sub_gmp_stub);
+				mission_preparation_get_total_gmp_cost_hook.create(SELECT_VALUE_LANG(0x1416BB450, 0x1416BC550), mission_preparation_get_total_gmp_cost_stub);
+				mission_preparation_get_all_equip_resource_hook.create(SELECT_VALUE_LANG(0x1416BA660, 0x1416BB760), mission_preparation_get_all_equip_resource_stub);
+				mission_preparation_calc_equip_resource_hook.create(SELECT_VALUE_LANG(0x140953AF0, 0x140952A50), mission_preparation_calc_equip_resource_stub);
+				utils::hook::nop(SELECT_VALUE_LANG(0x14095B466, 0x14095A456), 6);
+				utils::hook::call(SELECT_VALUE_LANG(0x14095B466, 0x14095A456), mission_preparation_sub_gmp_stub);
 			}
 			else
 			{

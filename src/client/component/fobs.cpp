@@ -840,22 +840,22 @@ namespace fobs
 				return;
 			}
 
-			cmd_get_fob_target_list_result_unpack_hook.create(SELECT_VALUE_LANG(0x140816F40, 0x140816B90), cmd_get_fob_target_list_result_unpack_stub);
-			cmd_get_fob_target_list_option_pack_hook.create(SELECT_VALUE_LANG(0x145B1AE00, 0x1474F31B0), cmd_get_fob_target_list_option_pack_stub);
+			cmd_get_fob_target_list_result_unpack_hook.create(SELECT_VALUE_LANG(0x140817CB0, 0x140816B90), cmd_get_fob_target_list_result_unpack_stub);
+			cmd_get_fob_target_list_option_pack_hook.create(SELECT_VALUE_LANG(0x140817B60, 0x1474F31B0), cmd_get_fob_target_list_option_pack_stub);
 
-			cmd_set_security_challenge_option_pack_hook.create(SELECT_VALUE_LANG(0x145BAE010, 0x14758B7D0), cmd_set_security_challenge_option_pack_stub);
-			cmd_set_security_challenge_result_unpack_hook.create(SELECT_VALUE_LANG(0x145B22420, 0x1474FB2E0), cmd_set_security_challenge_result_unpack_stub);
+			cmd_set_security_challenge_option_pack_hook.create(SELECT_VALUE_LANG(0x140858A70, 0x14758B7D0), cmd_set_security_challenge_option_pack_stub);
+			cmd_set_security_challenge_result_unpack_hook.create(SELECT_VALUE_LANG(0x140849F50, 0x1474FB2E0), cmd_set_security_challenge_result_unpack_stub);
 
-			cmd_get_playerlist_result_unpack_hook.create(SELECT_VALUE_LANG(0x1407E2820, 0x1407E2450), cmd_get_playerlist_result_unpack_stub);
-			cmd_set_currentplayer_result_unpack_hook.create(SELECT_VALUE_LANG(0x1459CDBC0, 0x147414460), cmd_set_currentplayer_result_unpack_stub);
-			cmd_sync_mother_base_option_pack_hook.create(SELECT_VALUE_LANG(0x145B05460, 0x1474DA240), cmd_sync_mother_base_option_pack_stub);
-			cmd_get_own_fob_list_result_unpack_hook.create(SELECT_VALUE_LANG(0x140845C80, 0x1408458B0), cmd_get_own_fob_list_result_unpack_stub);
-			cmd_sync_soldier_bin_pack_hook.create(SELECT_VALUE_LANG(0x145B0B710, 0x1474E11F0), cmd_sync_soldier_bin_pack_stub);
-			cmd_sync_resource_result_unpack_hook.create(SELECT_VALUE_LANG(0x145B09E50, 0x1474DEB10), cmd_sync_resource_result_unpack_stub);
+			cmd_get_playerlist_result_unpack_hook.create(SELECT_VALUE_LANG(0x1407E3350, 0x1407E2450), cmd_get_playerlist_result_unpack_stub);
+			cmd_set_currentplayer_result_unpack_hook.create(SELECT_VALUE_LANG(0x1407E3B50, 0x147414460), cmd_set_currentplayer_result_unpack_stub);
+			cmd_sync_mother_base_option_pack_hook.create(SELECT_VALUE_LANG(0x14080F7B0, 0x1474DA240), cmd_sync_mother_base_option_pack_stub);
+			cmd_get_own_fob_list_result_unpack_hook.create(SELECT_VALUE_LANG(0x140846BD0, 0x1408458B0), cmd_get_own_fob_list_result_unpack_stub);
+			cmd_sync_soldier_bin_pack_hook.create(SELECT_VALUE_LANG(0x1408132A0, 0x1474E11F0), cmd_sync_soldier_bin_pack_stub);
+			cmd_sync_resource_result_unpack_hook.create(SELECT_VALUE_LANG(0x140812AA0, 0x1474DEB10), cmd_sync_resource_result_unpack_stub);
 
-			fob_target_receive_enemy_basic_info_hook.create(SELECT_VALUE_LANG(0x1459F5940, 0x147443580), fob_target_receive_enemy_basic_info_stub);
+			fob_target_receive_enemy_basic_info_hook.create(SELECT_VALUE_LANG(0x1407EF730, 0x147443580), fob_target_receive_enemy_basic_info_stub);
 
-			fob_mission2_callback_update_hook.create(SELECT_VALUE_LANG(0x1416951C0, 0x141695310), fob_mission2_callback_update_stub);
+			fob_mission2_callback_update_hook.create(SELECT_VALUE_LANG(0x141694330, 0x141695310), fob_mission2_callback_update_stub);
 
 			scheduler::loop(run_frame, scheduler::net);
 		}

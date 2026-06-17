@@ -479,7 +479,7 @@ namespace game_console
 
 			if (con.history_index != -1)
 			{
-				strncpy_s(con.input, con.history.at(con.history_index).data(), sizeof(con.input));
+				strncpy_s(con.input, con.history.at(con.history_index).data(), _TRUNCATE);
 				con.cursor = static_cast<int>(std::strlen(con.input));
 			}
 		}
@@ -496,7 +496,7 @@ namespace game_console
 
 			if (con.history_index != -1)
 			{
-				strncpy_s(con.input, con.history.at(con.history_index).data(), sizeof(con.input));
+				strncpy_s(con.input, con.history.at(con.history_index).data(), _TRUNCATE);
 				con.cursor = static_cast<int>(strlen(con.input));
 			}
 		}
@@ -515,7 +515,8 @@ namespace game_console
 
 			if (con.input[0])
 			{
-				con.history.push_front(con.input);
+				const auto len = std::strlen(con.input);
+				con.history.push_front({con.input, len});
 			}
 
 			if (con.history.size() > 10)
