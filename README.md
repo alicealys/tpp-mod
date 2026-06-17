@@ -20,7 +20,7 @@ For older builds go here:
 | mgsvtpp.exe (jpn, 1.0.15.4) | 54BC743D1D7D98678EF4CC8D5BC98439F92AA1F7 | ❌ |
 | mgsvmgo.exe (jpn, 1.1.2.8) | 505BBF337DED2DFDD4F86FAAA2F4A9DC3CE935B0 | ❌ |
 
-- Download [dinput8.dll](https://github.alicent.cat/tpp-mod/dinput8.dll) and copy it to the game folder.  
+- Download [dinput8.dll](https://github.alicent.cat/tpp-mod/latest/dinput8.dll) and copy it to the game folder.  
 
 Configuration files are stored in `%localappdata%\tpp-mod`
 
