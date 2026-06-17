@@ -606,6 +606,12 @@ namespace command
 
 			});
 
+			command::add("framestats", []()
+			{
+				const auto time_system = game::fox::GetTimeSystem();
+				console::info("frametime: %f, fps: %i\n", time_system.frameTime, static_cast<int>(1.f / time_system.frameTime));
+			});
+
 			if (game::environment::is_tpp())
 			{
 				command::add("startmgo", []

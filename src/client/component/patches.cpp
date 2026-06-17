@@ -429,23 +429,6 @@ namespace patches
 			utils::hook::jump(SELECT_VALUE_LANG(0x1407A8060, 0x1407A7A80), utils::hook::assemble(sub_1407A7F70_stub), true);
 			fv2_resource_manager_get_model_hook.create(SELECT_VALUE_LANG(0x1438AE8D0, 0x1436E73F0), fv2_resource_manager_get_model_stub);
 		}
-
-		__int64 vertex_buffer_resource_get_buffer_address_stub(__int64 a1)
-		{
-			if (*reinterpret_cast<int*>(a1 + 36) == 1 || *reinterpret_cast<int*>(a1 + 36) == 3)
-			{
-				return *reinterpret_cast<__int64*>(a1 + 40) + *reinterpret_cast<__int64*>(a1 + 48);
-			}
-			else
-			{
-				return 0;
-			}
-		}
-
-		void patch_denuvo_funcs()
-		{
-			utils::hook::jump(SELECT_VALUE(0x14472D030, 0x0, 0x0, 0x0), vertex_buffer_resource_get_buffer_address_stub);
-		}
 	}
 
 	class component final : public component_interface
@@ -549,13 +532,6 @@ namespace patches
 
 			patch_sensitivity();
 			patch_fov();
-			patch_denuvo_funcs();
-
-			command::add("framestats", []()
-			{
-				const auto time_system = game::fox::GetTimeSystem();
-				printf("frametime: %f, fps: %i\n", time_system.frameTime, static_cast<int>(1.f / time_system.frameTime));
-			});
 		}
 	};
 }
