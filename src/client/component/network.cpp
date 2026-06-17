@@ -216,14 +216,14 @@ namespace network
 				return;
 			}
 
-			utils::hook::set(SELECT_VALUE(0x145970AFD, 0x0) + 3, var_net_port->latched.get_int());
-			utils::hook::set(SELECT_VALUE(0x145970B0B, 0x0) + 3, var_net_port->latched.get_int());
+			utils::hook::set(SELECT_VALUE(0x1407D318C, 0x0) + 3, var_net_port->latched.get_int());
+			utils::hook::set(SELECT_VALUE(0x1407D3197, 0x0) + 3, var_net_port->latched.get_int());
 
-			nt_daemon_constructor_hook.create(SELECT_VALUE(0x1459ACD80, 0x0), nt_daemon_constructor_stub);
-			cmd_get_fob_target_detail_result_unpack_hook.create(SELECT_VALUE(0x14081BDC0, 0x0), cmd_get_fob_target_detail_result_unpack_stub);
+			nt_daemon_constructor_hook.create(SELECT_VALUE(0x1407DD710, 0x0), nt_daemon_constructor_stub);
+			cmd_get_fob_target_detail_result_unpack_hook.create(SELECT_VALUE(0x14081CB30, 0x0), cmd_get_fob_target_detail_result_unpack_stub);
 
-			utils::hook::nop(SELECT_VALUE(0x14C4006EE, 0x0), 0x6); // SteamAPI_RegisterCallback
-			utils::hook::nop(SELECT_VALUE(0x14C40072F, 0x0), 0x6); // ^
+			utils::hook::nop(SELECT_VALUE(0x141A5F4EE, 0x0), 0x6); // SteamAPI_RegisterCallback
+			utils::hook::nop(SELECT_VALUE(0x141A5F52F, 0x0), 0x6); // ^
 		}
 	};
 }
