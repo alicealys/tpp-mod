@@ -2,7 +2,7 @@
 
 #include "../scripting.hpp"
 
-namespace lui::scripting
+namespace lui::scripting::json
 {
-	void setup_json(sol::state& state);
+	void setup(sol::state& state);
 }

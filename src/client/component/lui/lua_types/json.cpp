@@ -4,7 +4,7 @@
 
 #include <utils/string.hpp>
 
-namespace lui::scripting
+namespace lui::scripting::json
 {
 	namespace
 	{
@@ -92,52 +92,63 @@ namespace lui::scripting
 		}
 	}
 
-	void setup_json(sol::state& state)
+	void setup(sol::state& state)
 	{
 		auto json_type = state.new_usertype<nlohmann::json>("json", sol::constructors<nlohmann::json()>());
 
+		const auto index_value = [&](nlohmann::json& v, const sol::this_state s)
+			-> sol::lua_value
+		{
+			const auto type = v.type();
+			switch (type)
+			{
+			case nlohmann::json::value_t::number_integer:
+			{
+				const auto int_64 = v.get<std::int64_t>();
+				if (static_cast<std::int32_t>(int_64) == int_64)
+				{
+					return static_cast<std::int32_t>(int_64);
+				}
+				else
+				{
+					return int_64;
+				}
+			}
+			case nlohmann::json::value_t::number_float:
+				return {s, v.get<float>()};
+			case nlohmann::json::value_t::number_unsigned:
+			{
+				const auto int_64 = v.get<std::uint64_t>();
+				if (static_cast<std::uint32_t>(int_64) == int_64)
+				{
+					return static_cast<std::uint32_t>(int_64);
+				}
+				else
+				{
+					return int_64;
+				}
+			}
+			case nlohmann::json::value_t::string:
+				return {s, v.get<std::string>()};
+			case nlohmann::json::value_t::boolean:
+				return {s, v.get<bool>()};
+			}
+
+			return {s, &v};
+		};
+
 		json_type[sol::meta_function::index] = sol::overload(
-			[](nlohmann::json& value, const sol::this_state s, const std::string& key)
+			[&](nlohmann::json& value, const sol::this_state s, const std::string& key)
 				-> sol::lua_value
 			{
 				auto& v = value[key];
-				const auto type = v.type();
-				switch (type)
-				{
-				case nlohmann::json::value_t::number_integer:
-					return {s, v.get<std::int32_t>()};
-				case nlohmann::json::value_t::number_float:
-					return {s, v.get<float>()};
-				case nlohmann::json::value_t::number_unsigned:
-					return {s, v.get<std::uint32_t>()};
-				case nlohmann::json::value_t::string:
-					return {s, v.get<std::string>()};
-				case nlohmann::json::value_t::boolean:
-					return {s, v.get<bool>()};
-				}
-
-				return {s, &v};
+				return index_value(v, s);
 			},
-			[](nlohmann::json& value, const sol::this_state s, const int index)
+			[&](nlohmann::json& value, const sol::this_state s, const int index)
 				-> sol::lua_value
 			{
 				auto& v = value[index];
-				const auto type = v.type();
-				switch (type)
-				{
-				case nlohmann::json::value_t::number_integer:
-					return {s, v.get<std::int32_t>()};
-				case nlohmann::json::value_t::number_float:
-					return {s, v.get<float>()};
-				case nlohmann::json::value_t::number_unsigned:
-					return {s, v.get<std::uint32_t>()};
-				case nlohmann::json::value_t::string:
-					return {s, v.get<std::string>()};
-				case nlohmann::json::value_t::boolean:
-					return {s, v.get<bool>()};
-				}
-
-				return {s, &v};
+				return index_value(v, s);
 			}
 		);
 
@@ -195,6 +206,11 @@ namespace lui::scripting
 				}
 			}
 		);
+
+		json_type[sol::meta_function::length] = [](nlohmann::json& value)
+		{
+			return value.size();
+		};
 
 		json_type["dump"] = sol::overload(
 			[](nlohmann::json& value)
