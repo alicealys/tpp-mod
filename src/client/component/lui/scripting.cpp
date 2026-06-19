@@ -20,6 +20,7 @@
 #include "types/ui_timer.hpp"
 
 #include "lua_types/json.hpp"
+#include "lua_types/http.hpp"
 
 #include <utils/io.hpp>
 
@@ -828,7 +829,8 @@ namespace lui::scripting
 
 		void register_utility(sol::state& state)
 		{
-			setup_json(state);
+			json::setup(state);
+			http::setup(state);
 
 			state["game"] = sol::table::create(state.lua_state());
 
@@ -1146,6 +1148,15 @@ namespace lui::scripting
 
 			state["fobs"]["removecustomtarget"] = fobs::remove_custom_fob_target;
 			state["fobs"]["clearcustomtargets"] = fobs::clear_custom_fob_targets;
+
+			state["steam"] = state.create_table();
+			state["steam"]["getfriendpersonaname"] = [](const std::uint64_t xuid)
+			{
+				const auto steam_friends = (*game::SteamFriends)();
+				game::steam_id steam_id{};
+				steam_id.bits = xuid;
+				return steam_friends->__vftable->GetFriendPersonaName(steam_friends, steam_id);
+			};
 		}
 
 		void initialize_state(sol::state& state)
@@ -1224,11 +1235,14 @@ namespace lui::scripting
 
 	void run_frame()
 	{
-		get_state().collect_garbage();
+		auto& state = get_state();
+		http::run_frame(state);
+		state.collect_garbage();
 	}
 
 	void stop()
 	{
+		http::clear();
 		get_state() = {};
 	}
 }

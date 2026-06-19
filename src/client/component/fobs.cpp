@@ -718,6 +718,7 @@ namespace fobs
 
 					std::memcpy(&fob_target->playerInfos[i], &target, sizeof(game::tpp::mbm::PlayerBasicInfo));
 					game::tpp::net::DisplayName_::AddList(fob_target->displayName1, &fob_target->playerInfos[i].owner_account);
+					++i;
 				}
 			});
 		}

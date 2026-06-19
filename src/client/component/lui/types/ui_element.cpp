@@ -358,7 +358,7 @@ namespace lui
 		}
 		else if ((current_pos.anchor & ANCHOR_RIGHT) != 0)
 		{
-			rect.left = parent_rect.right - current_state.width;
+			rect.left = parent_rect.right - current_state.width - current_pos.rect.right;
 		}
 
 		if ((current_pos.anchor & ANCHOR_RIGHT) != 0)
