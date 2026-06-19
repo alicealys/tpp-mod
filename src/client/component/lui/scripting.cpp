@@ -19,6 +19,8 @@
 #include "types/ui_text_input.hpp"
 #include "types/ui_timer.hpp"
 
+#include "lua_types/json.hpp"
+
 #include <utils/io.hpp>
 
 namespace lui::scripting
@@ -826,6 +828,8 @@ namespace lui::scripting
 
 		void register_utility(sol::state& state)
 		{
+			setup_json(state);
+
 			state["game"] = sol::table::create(state.lua_state());
 
 			state["game"]["playsound"] = utils::play_sound;
