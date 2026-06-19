@@ -24,6 +24,7 @@ namespace lui
 		const auto now = get_current_msec();
 		if (now - this->last_fired_ > this->delay_)
 		{
+			this->event_.target = parent;
 			parent->dispatch_event(this->event_);
 			this->last_fired_ = now;
 

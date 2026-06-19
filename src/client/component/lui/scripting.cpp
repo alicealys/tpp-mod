@@ -1150,6 +1150,23 @@ namespace lui::scripting
 			state["fobs"]["clearcustomtargets"] = fobs::clear_custom_fob_targets;
 
 			state["steam"] = state.create_table();
+			
+			state["steam"]["requestuserinformation"] = [](const std::uint64_t xuid)
+			{
+				const auto steam_friends = (*game::SteamFriends)();
+				game::steam_id steam_id{};
+				steam_id.bits = xuid;
+				return steam_friends->__vftable->RequestUserInformation(steam_friends, steam_id, true);
+			};
+
+			state["steam"]["activategameoverlaytouser"] = [](const std::string& dialog, const std::uint64_t xuid)
+			{
+				const auto steam_friends = (*game::SteamFriends)();
+				game::steam_id steam_id{};
+				steam_id.bits = xuid;
+				return steam_friends->__vftable->ActivateGameOverlayToUser(steam_friends, dialog.data(), steam_id);
+			};
+
 			state["steam"]["getfriendpersonaname"] = [](const std::uint64_t xuid)
 			{
 				const auto steam_friends = (*game::SteamFriends)();
