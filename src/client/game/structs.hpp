@@ -525,7 +525,7 @@ namespace game
 #pragma pack(push, 1)
 			struct FirstPartyAccount
 			{
-				__int64 id;
+				unsigned __int64 id;
 				char name[129];
 			};
 #pragma pack(pop)
