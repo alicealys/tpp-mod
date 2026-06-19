@@ -1,8 +1,6 @@
 #include <std_include.hpp>
 #include "loader/component_loader.hpp"
 
-#include "game/game.hpp"
-
 #include "fobs.hpp"
 #include "vars.hpp"
 #include "console.hpp"
@@ -148,6 +146,8 @@ namespace fobs
 
 		utils::concurrency::container<state_t> state;
 		
+		utils::concurrency::container<custom_fob_targets_t> custom_fob_targets;
+
 		void update_lobby(state_t& s)
 		{
 			const auto steam_matchmaking = steam_api.steam_matchmaking();
@@ -695,9 +695,41 @@ namespace fobs
 			game::tpp::net::DisplayName_::GetDisplayName(fob_target->displayName2);
 		}
 
+		void add_custom_targets(const std::string& type, game::tpp::net::FobTarget* fob_target)
+		{
+			auto i = 0;
+			for (; i < fob_target->maxPlayers; i++)
+			{
+				if (fob_target->playerInfos[i].owner_account.id == 0)
+				{
+					break;
+				}
+			}
+
+			custom_fob_targets.access([&](custom_fob_targets_t& types)
+			{
+				auto& targets = types[type];
+				for (auto& target : targets)
+				{
+					if (i >= fob_target->maxPlayers)
+					{
+						break;
+					}
+
+					std::memcpy(&fob_target->playerInfos[i], &target, sizeof(game::tpp::mbm::PlayerBasicInfo));
+					game::tpp::net::DisplayName_::AddList(fob_target->displayName1, &fob_target->playerInfos[i].owner_account);
+				}
+			});
+		}
+
 		void fob_target_receive_enemy_basic_info_stub(game::tpp::net::FobTarget* fob_target, game::tpp::net::CmdGetFobTargetListResult<0>* list)
 		{
 			std::memset(fob_target->playerInfos, 0, sizeof(game::tpp::mbm::PlayerBasicInfo) * fob_target->maxPlayers);
+
+			const auto _0 = gsl::finally([&]
+			{
+				add_custom_targets(list->type.data->buffer, fob_target);
+			});
 
 			if (list->type.data->buffer != "CHALLENGE"s)
 			{
@@ -812,6 +844,52 @@ namespace fobs
 
 			fob_mission2_callback_update_hook.invoke<void>(fob_mission, a2, a3);
 		}
+	}
+
+	void add_custom_fob_target(const std::string& type, const game::tpp::mbm::PlayerBasicInfo& info)
+	{
+		custom_fob_targets.access([&](custom_fob_targets_t& types)
+		{
+			auto& targets = types[type];
+			for (auto& target : targets)
+			{
+				if (target.owner_account.id == info.owner_account.id)
+				{
+					return;
+				}
+			}
+
+			targets.emplace_back(info);
+		});
+	}
+
+	void remove_custom_fob_target(const std::string& type, const std::uint64_t steam_id)
+	{
+		custom_fob_targets.access([&](custom_fob_targets_t& types)
+		{
+			auto& targets = types[type];
+			for (auto i = targets.begin(); i != targets.end(); ++i)
+			{
+				if (i->owner_account.id == steam_id)
+				{
+					i = targets.erase(i);
+					return;
+				}
+			}
+		});
+	}
+
+	void clear_custom_fob_targets()
+	{
+		custom_fob_targets.access([&](custom_fob_targets_t& types)
+		{
+			types.clear();
+		});
+	}
+
+	void access_custom_fob_targets(const std::function<void(custom_fob_targets_t&)> callback)
+	{
+		custom_fob_targets.access(callback);
 	}
 
 	class component final : public component_interface

@@ -8,6 +8,7 @@
 #include "../scripting.hpp"
 #include "../command.hpp"
 #include "../vars.hpp"
+#include "../fobs.hpp"
 
 #include "types/ui_button.hpp"
 #include "types/ui_element.hpp"
@@ -91,7 +92,6 @@ namespace lui::scripting
 				try
 				{
 					state.safe_script_file(script);
-
 				}
 				catch (const std::exception& e)
 				{
@@ -928,6 +928,220 @@ namespace lui::scripting
 			};
 
 			state["utils"]["setvarfromstring"] = vars::set_var_from_string;
+
+			state["fobs"] = sol::table::create(state.lua_state());
+			state["fobs"]["addcustomtarget"] = [](const std::string& type, const sol::table& target)
+			{
+				static game::tpp::mbm::PlayerBasicInfo info;
+				std::memset(&info, 0, sizeof(info));
+
+				auto owner_info_v = target.get<sol::lua_value>("owner_info");
+				auto mother_base_param_v = target.get<sol::lua_value>("mother_base_param");
+				auto owner_detail_record_v = target.get<sol::lua_value>("owner_detail_record");
+				auto owner_fob_record_v = target.get<sol::lua_value>("owner_fob_record");
+				
+				if (owner_info_v.is<sol::table>())
+				{
+					auto owner_info = owner_info_v.as<sol::table>();
+					info.owner_account.id = owner_info.get_or("xuid", 0ull);
+					info.owner_player_id = owner_info.get_or("player_id", 0);
+					info.cluster = static_cast<char>(owner_info.get_or("cluster", 0));
+					info.owner_ugc = owner_info.get_or("ugc", 1) == 1;
+				}
+
+				if (mother_base_param_v.is<sol::table>())
+				{
+					auto mother_base_param = mother_base_param_v.as<sol::table>();
+
+					for (auto& [k, v] : mother_base_param)
+					{
+						if (info.mother_base_num >= 4)
+						{
+							break;
+						}
+
+						auto param = v.as<sol::table>();
+						auto i = info.mother_base_num++;
+						const auto construct_param = param.get_or("construct_param", 0);
+
+						info.mother_base_id[i] = param.get_or("mother_base_id", 0);
+						info.platform_count[i] = static_cast<char>(param.get_or("platform_count", 0));
+						info.security_rank[i] = static_cast<char>(param.get_or("security_rank", 0));
+						info.area_id[i] = static_cast<char>((construct_param >> 1) & 0x7F);
+						info.construct_param2[i] = static_cast<char>((construct_param >> 22) & 0x3F);
+					}
+				}
+
+				info.mother_base_num++;
+
+				if (owner_detail_record_v.is<sol::table>())
+				{
+					auto owner_detail_record = owner_detail_record_v.as<sol::table>();
+					
+					auto emblem_v = owner_detail_record.get<sol::lua_value>("emblem");
+					auto espionage_v = owner_detail_record.get<sol::lua_value>("espionage");
+					auto sneak_rank_v = owner_detail_record.get<sol::lua_value>("sneak_rank");
+					auto league_rank_v = owner_detail_record.get<sol::lua_value>("league_rank");
+
+					info.fields1.follow = owner_detail_record.get_or("follow", 0) == 1;
+					info.fields1.follower = owner_detail_record.get_or("follower", 0) == 1;
+					info.fields1.enemy = owner_detail_record.get_or("enemy", 0) == 1;
+					info.fields1.help = owner_detail_record.get_or("help", 0) == 1;
+					info.fields1.online = owner_detail_record.get_or("online", 0) == 1;
+					info.fields1.insurance = owner_detail_record.get_or("insurance", 0) == 1;
+					info.fields1.hero = owner_detail_record.get_or("hero", 0) == 1;
+					info.nameplate_id = static_cast<char>(owner_detail_record.get_or("name_plate_id", 0));
+					info.nuclear = static_cast<char>(owner_detail_record.get_or("nuclear", 0));
+					info.staff_num = static_cast<short>(owner_detail_record.get_or("staff_count", 0));
+
+					if (espionage_v.is<sol::table>())
+					{
+						auto espionage = espionage_v.as<sol::table>();
+						info.espionage_section = static_cast<short>(espionage.get_or("section", 0));
+						info.espionage_win = static_cast<short>(espionage.get_or("win", 0));
+						info.espionage_score = espionage.get_or("score", 0);
+						info.espionage_total = info.espionage_win + static_cast<short>(espionage.get_or("lose", 0));
+					}
+
+					if (league_rank_v.is<sol::table>())
+					{
+						auto league_rank = league_rank_v.as<sol::table>();
+						info.league_rank_grade = static_cast<char>(league_rank.get_or("grade", 0));
+						info.league_rank_rank = league_rank.get_or("rank", 0);
+					}
+
+					if (sneak_rank_v.is<sol::table>())
+					{
+						auto sneak_rank = sneak_rank_v.as<sol::table>();
+						info.sneak_rank_grade = static_cast<char>(sneak_rank.get_or("grade", 0));
+						info.sneak_rank_rank = sneak_rank.get_or("rank", 0);
+					}
+
+					if (emblem_v.is<sol::table>())
+					{
+						auto emblem = emblem_v.as<sol::table>();
+						auto parts = emblem.get<sol::table>("parts");
+
+						auto i = 0;
+						for (auto& [k, v] : parts)
+						{
+							auto part = v.as<sol::table>();
+							info.owner_emblem.texture_tag[i] = part.get_or("texture_tag", 0);
+							info.owner_emblem.base_color[i] = part.get_or("base_color", 0);
+							info.owner_emblem.frame_color[i] = part.get_or("frame_color", 0);
+							info.owner_emblem.position_x[i] = static_cast<char>(part.get_or("position_x", 0));
+							info.owner_emblem.position_y[i] = static_cast<char>(part.get_or("position_y", 0));
+							info.owner_emblem.scale[i] = static_cast<char>(part.get_or("scale", 0));
+							info.owner_emblem.rotate[i] = static_cast<char>(part.get_or("rotate", 0));
+
+							i++;
+							if (i >= 4)
+							{
+								break;
+							}
+						}
+					}
+				}
+			
+				if (owner_fob_record_v.is<sol::table>())
+				{
+					auto owner_fob_record = owner_fob_record_v.as<sol::table>();
+
+					auto processing_resource_v = owner_fob_record.get<sol::lua_value>("processing_resource");
+					auto usable_resource_v = owner_fob_record.get<sol::lua_value>("usable_resource");
+					auto capture_resource_v = owner_fob_record.get<sol::lua_value>("capture_resource");
+					auto staff_count_v = owner_fob_record.get<sol::lua_value>("staff_count");
+					auto capture_staff_count_v = owner_fob_record.get<sol::lua_value>("capture_staff_count");
+					auto injury_staff_count_v = owner_fob_record.get<sol::lua_value>("injury_staff_count");
+				
+					info.attack_count = owner_fob_record.get_or("attack_count", 0);
+					info.attack_gmp = owner_fob_record.get_or("attack_gmp", 0);
+					info.capture_nuclear = owner_fob_record.get_or("capture_nuclear", 0);
+					info.capture_resource_count = owner_fob_record.get_or("capture_resource_count", 0);
+					info.capture_staff = owner_fob_record.get_or("capture_staff", 0);
+					info.date_time = owner_fob_record.get_or("date_time", 0);
+					info.left_hour2 = owner_fob_record.get_or("left_hour", 0);
+					info.support_count1 = owner_fob_record.get_or("support_count", 0);
+					info.supported_count = owner_fob_record.get_or("supported_count", 0);
+				
+					if (processing_resource_v.is<sol::table>())
+					{
+						auto resource = processing_resource_v.as<sol::table>();
+						info.processing_resource.fuel_resource = resource.get_or("fuel_resource", 0);
+						info.processing_resource.biotic_resource = resource.get_or("biotic_resource", 0);
+						info.processing_resource.common_metal = resource.get_or("common_metal", 0);
+						info.processing_resource.minor_metal = resource.get_or("minor_metal", 0);
+						info.processing_resource.precious_metal = resource.get_or("precious_metal", 0);
+					}
+
+					if (usable_resource_v.is<sol::table>())
+					{
+						auto resource = usable_resource_v.as<sol::table>();
+						info.usable_resource.fuel_resource = resource.get_or("fuel_resource", 0);
+						info.usable_resource.biotic_resource = resource.get_or("biotic_resource", 0);
+						info.usable_resource.common_metal = resource.get_or("common_metal", 0);
+						info.usable_resource.minor_metal = resource.get_or("minor_metal", 0);
+						info.usable_resource.precious_metal = resource.get_or("precious_metal", 0);
+					}
+
+					if (capture_resource_v.is<sol::table>())
+					{
+						auto resource = capture_resource_v.as<sol::table>();
+						info.capture_resource.fuel_resource = resource.get_or("fuel_resource", 0);
+						info.capture_resource.biotic_resource = resource.get_or("biotic_resource", 0);
+						info.capture_resource.common_metal = resource.get_or("common_metal", 0);
+						info.capture_resource.minor_metal = resource.get_or("minor_metal", 0);
+						info.capture_resource.precious_metal = resource.get_or("precious_metal", 0);
+					}
+
+					if (staff_count_v.is<sol::table>())
+					{
+						auto count = staff_count_v.as<sol::table>();
+						auto i = 0;
+						for (auto& [k, v] : count)
+						{
+							info.staff_count[i++] = v.as<short>();
+							if (i >= 10)
+							{
+								break;
+							}
+						}
+					}
+
+					if (capture_staff_count_v.is<sol::table>())
+					{
+						auto count = capture_staff_count_v.as<sol::table>();
+						auto i = 0;
+						for (auto& [k, v] : count)
+						{
+							info.capture_staff_count[i++] = v.as<short>();
+							if (i >= 10)
+							{
+								break;
+							}
+						}
+					}
+
+					if (injury_staff_count_v.is<sol::table>())
+					{
+						auto count = injury_staff_count_v.as<sol::table>();
+						auto i = 0;
+						for (auto& [k, v] : count)
+						{
+							info.injury_staff_count[i++] = v.as<short>();
+							if (i >= 10)
+							{
+								break;
+							}
+						}
+					}
+				}
+
+				fobs::add_custom_fob_target(type, info);
+			};
+
+			state["fobs"]["removecustomtarget"] = fobs::remove_custom_fob_target;
+			state["fobs"]["clearcustomtargets"] = fobs::clear_custom_fob_targets;
 		}
 
 		void initialize_state(sol::state& state)
