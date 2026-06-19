@@ -6,6 +6,7 @@
 #include "scheduler.hpp"
 #include "console.hpp"
 #include "vars.hpp"
+#include "custom_server.hpp"
 
 #include <utils/string.hpp>
 #include <utils/hook.hpp>
@@ -17,7 +18,7 @@ namespace custom_server
 {
 	namespace
 	{
-		char custom_url[0x2000]{};
+		char custom_url[0x100]{};
 
 		utils::hook::detour file_read_hook;
 		utils::hook::detour file_write_hook;
@@ -30,6 +31,8 @@ namespace custom_server
 		};
 
 		vars::var_ptr var_custom_server;
+		vars::var_ptr var_net_proxy_url;
+		vars::var_ptr var_net_server_url_ovveride;
 
 		struct steam_storage;
 
@@ -167,22 +170,8 @@ namespace custom_server
 			const auto new_path = get_new_path();
 			return CreateFileW(new_path.data(), desired_access, share_mode, security_attributes, creation_disp, flags, template_file);
 		}
-	}
 
-	bool is_using_custom_server()
-	{
-		return custom_url[0] != 0;
-	}
-
-	class component final : public component_interface
-	{
-	public:
-		void pre_load() override
-		{
-			var_custom_server = vars::register_string("net_custom_server", "", vars::var_flag_saved | vars::var_flag_latched, "custom server url");
-		}
-
-		void start() override
+		void apply_custom_server()
 		{
 			const auto custom_server = var_custom_server->current.get_string();
 
@@ -208,6 +197,75 @@ namespace custom_server
 			}
 
 			utils::hook::inject(SELECT_VALUE(0x1407D346C, 0x140572AD6, 0x1407D23EC, 0x1405724C6) + 3, custom_url);
+		}
+
+		BOOL win_http_set_option_stub(HINTERNET handle, DWORD option, LPVOID buffer, DWORD buffer_length)
+		{
+			auto result = WinHttpSetOption(handle, option, buffer, buffer_length);
+
+			const auto url = var_net_proxy_url->current.get_string();
+			if (!url.empty())
+			{
+				auto url_w = utils::string::convert(url);
+				WINHTTP_PROXY_INFO proxy = {};
+				proxy.dwAccessType = WINHTTP_ACCESS_TYPE_NAMED_PROXY;
+				proxy.lpszProxy = url_w.data();
+				result &= WinHttpSetOption(handle, WINHTTP_OPTION_PROXY, &proxy, sizeof(proxy));
+			}
+
+			if (result == 0)
+			{
+				console::error("error setting http proxy: %i", GetLastError());
+			}
+
+			return result;
+		}
+
+		BOOL win_http_crack_url_stub(LPCWSTR url, DWORD length, DWORD flags, LPURL_COMPONENTS url_components)
+		{
+			const auto domain = var_net_server_url_ovveride->current.get_string();
+			static const auto original_len = std::strlen("https://mgstpp-game.konamionline.com");
+
+			std::wstring new_url;
+			if (!domain.empty() && !is_using_custom_server())
+			{
+				new_url = utils::string::convert(domain);
+				new_url += (url + original_len);
+				url = new_url.data();
+			}
+
+			return WinHttpCrackUrl(url, length, flags, url_components);
+		}
+
+		void patch_win_http()
+		{
+			utils::hook::nop(SELECT_VALUE(0x141A5C9F6, 0x0, 0x0, 0x0), 6);
+			utils::hook::call(SELECT_VALUE(0x141A5C9F6, 0x0, 0x0, 0x0), win_http_set_option_stub);
+
+			utils::hook::nop(SELECT_VALUE(0x141A5CA98, 0x0, 0x0, 0x0), 6);
+			utils::hook::call(SELECT_VALUE(0x141A5CA98, 0x0, 0x0, 0x0), win_http_crack_url_stub);
+		}
+	}
+
+	bool is_using_custom_server()
+	{
+		return custom_url[0] != 0;
+	}
+
+	class component final : public component_interface
+	{
+	public:
+		void pre_load() override
+		{
+			var_custom_server = vars::register_string("net_custom_server", "", vars::var_flag_saved | vars::var_flag_latched, "custom server url (empty = disabled)");
+			var_net_proxy_url = vars::register_string("net_proxy_url", "", vars::var_flag_saved, "proxy url for backend server (example: http://1.2.3.4:1234 empty = disabled)");
+			var_net_server_url_ovveride = vars::register_string("net_server_base_url_ovveride", "", vars::var_flag_saved, "override the backend server's base url (empty = disabled)");
+		}
+
+		void start() override
+		{
+			apply_custom_server();
+			patch_win_http();
 		}
 	};
 }
