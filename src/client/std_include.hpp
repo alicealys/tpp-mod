@@ -49,6 +49,7 @@
 #include <wincrypt.h>
 #include <dwmapi.h>
 #include <windowsx.h>
+#include <winhttp.h>
 
 // min and max is required by gdi, therefore NOMINMAX won't work
 #ifdef max
@@ -114,6 +115,7 @@
 #pragma comment(lib, "iphlpapi.lib")
 #pragma comment(lib, "Crypt32.lib")
 #pragma comment(lib, "d3d11.lib")
+#pragma comment(lib, "winhttp.lib")
 
 #include "resource.hpp"
 
