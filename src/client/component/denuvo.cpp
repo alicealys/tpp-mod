@@ -108,7 +108,7 @@ namespace denuvo
 		{
 			const auto util = game::fox::uix::impl::GetUixUtilityToFeedQuarkEnvironment();
 			const auto vtable = reinterpret_cast<__int64*>(util->__vftable);
-			return utils::hook::invoke<__int64>(vtable[234], id);
+			return utils::hook::invoke<__int64>(vtable[234], util, id);
 		}
 
 		__int64 geo_sweep_block_add_data_stub(__int64 a1, __int64 a2, __int64 a3)
