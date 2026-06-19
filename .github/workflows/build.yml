@@ -51,10 +51,9 @@ jobs:
     name: Deploy artifacts
     needs: build
     runs-on: ubuntu-latest
-    if: github.event_name == 'push' && ('refs/heads/day1280')
+    if: github.event_name == 'push' && (github.ref == 'refs/heads/day1820')
     steps:
       - name: Setup main environment
-        if: github.ref == 'refs/heads/day1280'
         run: echo "ALICE_MASTER_PATH=${{ secrets.ALICE_MASTER_SSH_PATH }}" >> $GITHUB_ENV
 
       - name: Download Release binaries
