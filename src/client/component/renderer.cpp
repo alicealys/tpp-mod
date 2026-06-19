@@ -864,11 +864,10 @@ namespace renderer
 			float x, float y, float width, float height, float* color, params_t* params)
 		{
 			set_position(instance, x + width / 2.f, y + height / 2.f);
-			set_texture(instance, nullptr);
+			set_material(instance, nullptr);
 			set_cull_mode_alpha(instance, 2, 1);
 			set_color(instance, color);
 			set_other_params(instance, params);
-			set_material(instance, nullptr);
 
 			if (material != 0)
 			{

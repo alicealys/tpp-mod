@@ -178,19 +178,27 @@ namespace game
 
 	struct ISteamFriends;
 
+	typedef std::int16_t FriendsGroupID_t;
+
 	struct /*VFT*/ ISteamFriends_vtbl
 	{
 		const char* (__fastcall* GetPersonaName)(ISteamFriends* this_);
 		unsigned __int64(__fastcall* SetPersonaName)(ISteamFriends* this_, const char* pchPersonaName);
 		int(__fastcall* GetPersonaState)(ISteamFriends* this_);
 		int(__fastcall* GetFriendCount)(ISteamFriends* this_, int eFriendFlags);
-		steam_id(__fastcall* GetFriendByIndex)(ISteamFriends* this_, int iFriend, int iFriendFlags);
+		void(__fastcall* GetFriendByIndex)(ISteamFriends* this_, steam_id* out, int iFriend, int iFriendFlags);
 		int(__fastcall* GetFriendRelationship)(ISteamFriends* this_, steam_id steamIDFriend);
 		int(__fastcall* GetFriendPersonaState)(ISteamFriends* this_, steam_id steamIDFriend);
 		const char* (__fastcall* GetFriendPersonaName)(ISteamFriends* this_, steam_id steamIDFriend);
 		bool(__fastcall* GetFriendGamePlayed)(ISteamFriends* this_, steam_id steamIDFriend, void* pFriendGameInfo);
 		const char* (__fastcall* GetFriendPersonaNameHistory)(ISteamFriends* this_, steam_id steamIDFriend, int iPersonaName);
+		int(__fastcall* GetFriendSteamLevel)(ISteamFriends* this_, steam_id steamIDFriend);
 		const char* (__fastcall* GetPlayerNickname)(ISteamFriends* this_, steam_id steamIDFriend);
+		int(__fastcall* GetFriendsGroupCount)(ISteamFriends* this_);
+		FriendsGroupID_t(__fastcall* GetFriendsGroupIDByIndex)(ISteamFriends* this_, int iFG);
+		const char* (__fastcall* GetFriendsGroupName)(ISteamFriends* this_, FriendsGroupID_t friendsGroupID);
+		int(__fastcall* GetFriendsGroupMembersCount)(ISteamFriends* this_, FriendsGroupID_t friendsGroupID);
+		void(__fastcall* GetFriendsGroupMembersList)(ISteamFriends* this_, FriendsGroupID_t friendsGroupID, steam_id* pOutSteamIDMembers, int nMembersCount);
 		bool(__fastcall* HasFriend)(ISteamFriends* this_, steam_id steamIDFriend, int eFriendFlags);
 		int(__fastcall* GetClanCount)(ISteamFriends* this_);
 		steam_id(__fastcall* GetClanByIndex)(ISteamFriends* this_, int iClan);
