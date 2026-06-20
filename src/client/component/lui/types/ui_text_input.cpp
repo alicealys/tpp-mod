@@ -411,10 +411,12 @@ namespace lui
 		if (!focused && this->has_focus())
 		{
 			ui_text_input::current_focused_id = -1;
+			this->dispatch_event("unfocused");
 		}
 		else if (focused)
 		{
 			ui_text_input::current_focused_id = this->input_id_;
+			this->dispatch_event("focused");
 		}
 	}
 
