@@ -146,7 +146,6 @@ namespace custom_server
 			return buffer;
 		}
 
-
 		HANDLE create_file_stub(LPCWSTR file_name, DWORD desired_access, DWORD share_mode, 
 			LPSECURITY_ATTRIBUTES security_attributes, DWORD creation_disp, DWORD flags, HANDLE template_file)
 		{
@@ -199,6 +198,18 @@ namespace custom_server
 			utils::hook::inject(SELECT_VALUE(0x1407D346C, 0x140572D76, 0x1407D23EC, 0x1405724C6) + 3, custom_url);
 		}
 
+		std::wstring parse_proxy_url(const std::string& url)
+		{
+			auto url_w = utils::string::convert(url);
+
+			while (url_w.ends_with(L"/"))
+			{
+				url_w.pop_back();
+			}
+
+			return url_w;
+		}
+
 		BOOL win_http_set_option_stub(HINTERNET handle, DWORD option, LPVOID buffer, DWORD buffer_length)
 		{
 			auto result = WinHttpSetOption(handle, option, buffer, buffer_length);
@@ -206,7 +217,7 @@ namespace custom_server
 			const auto url = var_net_proxy_url->current.get_string();
 			if (!url.empty())
 			{
-				auto url_w = utils::string::convert(url);
+				auto url_w = parse_proxy_url(url);
 				WINHTTP_PROXY_INFO proxy = {};
 				proxy.dwAccessType = WINHTTP_ACCESS_TYPE_NAMED_PROXY;
 				proxy.lpszProxy = url_w.data();
@@ -224,13 +235,13 @@ namespace custom_server
 		BOOL win_http_crack_url_stub(LPCWSTR url, DWORD length, DWORD flags, LPURL_COMPONENTS url_components)
 		{
 			const auto domain = var_net_server_url_ovveride->current.get_string();
-			static const auto original_len = std::strlen("https://mgstpp-game.konamionline.com");
+			const auto pos = StrStrW(url, L"/tppstm");
 
 			std::wstring new_url;
 			if (!domain.empty() && !is_using_custom_server())
 			{
 				new_url = utils::string::convert(domain);
-				new_url += (url + original_len);
+				new_url += (url + (pos - url));
 				url = new_url.data();
 			}
 
