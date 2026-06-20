@@ -260,7 +260,7 @@ namespace cheat
 			a.bind(continue_);
 			a.pop(rax);
 			a.cmp(eax, 0x80);
-			a.jmp(SELECT_VALUE_LANG(0x140598945, 0x140598325));
+			a.jmp(SELECT_VALUE_LANG(0x140598B15, 0x140598325));
 		}
 
 		void cmd_get_server_item_list_result_unpack_stub(utils::hook::assembler& a)
