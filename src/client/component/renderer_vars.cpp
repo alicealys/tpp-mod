@@ -33,7 +33,7 @@ namespace renderer_vars
 				return true;
 			}
 
-			return *reinterpret_cast<int*>(SELECT_VALUE(0x142B79984, 0x142074DB4, 0x142B79984, 0x142074E04)) == 1;
+			return *reinterpret_cast<int*>(SELECT_VALUE(0x142B79984, 0x142074DA4, 0x142B79984, 0x142074E04)) == 1;
 		}
 
 		void volumetric_fog_manager_update_stub(utils::hook::assembler& a)
@@ -53,10 +53,10 @@ namespace renderer_vars
 			a.test(sil, sil);
 			a.jnz(fog_enabled);
 
-			a.jmp(SELECT_VALUE(0x1406BAF39, 0x14045B9C9, 0x1406B9C29, 0x14045B5E9));
+			a.jmp(SELECT_VALUE(0x1406BAF39, 0x14045BFD9, 0x1406B9C29, 0x14045B5E9));
 
 			a.bind(fog_enabled);
-			a.jmp(SELECT_VALUE(0x1406BAFD8, 0x14045BA68, 0x1406B9CC8, 0x14045B688));
+			a.jmp(SELECT_VALUE(0x1406BAFD8, 0x14045C078, 0x1406B9CC8, 0x14045B688));
 		}
 
 		void gr_plugin_2d_main_exec_stub(void* a1, void* a2, void* a3)
@@ -107,10 +107,10 @@ namespace renderer_vars
 			var_r_fxaa = vars::register_int("r_fxaa", 2, 0, 2, vars::var_flag_saved, "enable fxaa (0 = disabled, 1 = enabled, 2 = unchanged)");
 			var_r_draw2d = vars::register_bool("r_draw2d", true, vars::var_flag_saved, "draw 2d");
 
-			utils::hook::jump(SELECT_VALUE(0x1406BAF2C, 0x14045B9BC, 0x1406B9C1C, 0x14045B5DC), utils::hook::assemble(volumetric_fog_manager_update_stub), true);
-			utils::hook::jump(SELECT_VALUE(0x1402155B5, 0x149C16F65, 0x143A52E75, 0x148D8B305), utils::hook::assemble(gr_plugin_fxaa_main_exec_stub), true);
+			utils::hook::jump(SELECT_VALUE(0x1406BAF2C, 0x14045BFCC, 0x1406B9C1C, 0x14045B5DC), utils::hook::assemble(volumetric_fog_manager_update_stub), true);
+			utils::hook::jump(SELECT_VALUE(0x1402155B5, 0x140B1BCA5, 0x143A52E75, 0x148D8B305), utils::hook::assemble(gr_plugin_fxaa_main_exec_stub), true);
 
-			gr_plugin_2d_main_exec_hook.create(SELECT_VALUE(0x1401C0AD0, 0x149908FD0, 0x143792570, 0x148B41FB0), gr_plugin_2d_main_exec_stub);
+			gr_plugin_2d_main_exec_hook.create(SELECT_VALUE(0x1401C0AD0, 0x140AB0980, 0x143792570, 0x148B41FB0), gr_plugin_2d_main_exec_stub);
 		}
 	};
 }

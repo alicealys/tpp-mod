@@ -23,7 +23,7 @@ namespace game
 		binary_t binaries[mode_count] =
 		{
 			{"mgsvtpp.exe (eng, 1.0.15.4)", mode_tpp_eng, true},
-			{"mgsvmgo.exe (eng, 1.1.2.8)", mode_mgo_eng, false},
+			{"mgsvmgo.exe (eng, 1.1.2.8)", mode_mgo_eng, true},
 			{"mgsvtpp.exe (jpn, 1.0.15.4)", mode_tpp_jpn, false},
 			{"mgsvmgo.exe (jpn, 1.1.2.8)", mode_mgo_jpn, false},
 		};

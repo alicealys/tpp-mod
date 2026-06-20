@@ -196,7 +196,7 @@ namespace custom_server
 				utils::hook::jump(SELECT_VALUE_LANG(0x14016FC2B, 0x14357A1FB), utils::hook::assemble(steam_storage_read_file_stub), true);
 			}
 
-			utils::hook::inject(SELECT_VALUE(0x1407D346C, 0x140572AD6, 0x1407D23EC, 0x1405724C6) + 3, custom_url);
+			utils::hook::inject(SELECT_VALUE(0x1407D346C, 0x140572D76, 0x1407D23EC, 0x1405724C6) + 3, custom_url);
 		}
 
 		BOOL win_http_set_option_stub(HINTERNET handle, DWORD option, LPVOID buffer, DWORD buffer_length)
@@ -239,11 +239,11 @@ namespace custom_server
 
 		void patch_win_http()
 		{
-			utils::hook::nop(SELECT_VALUE(0x141A5C9F6, 0x0, 0x0, 0x0), 6);
-			utils::hook::call(SELECT_VALUE(0x141A5C9F6, 0x0, 0x0, 0x0), win_http_set_option_stub);
+			utils::hook::nop(SELECT_VALUE(0x141A5C9F6, 0x1414AE416, 0x0, 0x0), 6);
+			utils::hook::call(SELECT_VALUE(0x141A5C9F6, 0x1414AE416, 0x0, 0x0), win_http_set_option_stub);
 
-			utils::hook::nop(SELECT_VALUE(0x141A5CA98, 0x0, 0x0, 0x0), 6);
-			utils::hook::call(SELECT_VALUE(0x141A5CA98, 0x0, 0x0, 0x0), win_http_crack_url_stub);
+			utils::hook::nop(SELECT_VALUE(0x141A5CA98, 0x1414AE4B8, 0x0, 0x0), 6);
+			utils::hook::call(SELECT_VALUE(0x141A5CA98, 0x1414AE4B8, 0x0, 0x0), win_http_crack_url_stub);
 		}
 	}
 

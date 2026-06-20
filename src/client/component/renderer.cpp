@@ -1422,8 +1422,8 @@ namespace renderer
 				return;
 			}
 
-			load_font_data_hook.create(SELECT_VALUE(0x140224820, 0x140B2AD30, 0x140224DE0, 0x140B2A2E0), load_font_data_stub);
-			execute_draw_hook.create(SELECT_VALUE(0x1402E7630, 0x14A1E36B0, 0x143E18FF0, 0x149234EB0), execute_draw_stub);
+			load_font_data_hook.create(SELECT_VALUE(0x140224820, 0x140B2A5F0, 0x140224DE0, 0x140B2A2E0), load_font_data_stub);
+			execute_draw_hook.create(SELECT_VALUE(0x1402E7630, 0x140BD9ED0, 0x143E18FF0, 0x149234EB0), execute_draw_stub);
 		}
 	};
 }

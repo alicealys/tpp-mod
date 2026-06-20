@@ -239,7 +239,7 @@ namespace matchmaking
 
 			if (request_disconnect)
 			{
-				utils::hook::invoke<void>(SELECT_VALUE_LANG(0x140891C80, 0x140891740), game::s_mgoMatchMakingManager.get(), 1);
+				utils::hook::invoke<void>(SELECT_VALUE_LANG(0x140892870, 0x140891740), game::s_mgoMatchMakingManager.get(), 1);
 			}
 
 			request_match_rotate = false;
@@ -487,8 +487,8 @@ namespace matchmaking
 				return;
 			}
 
-			create_lobby_cb_hook.create(SELECT_VALUE_LANG(0x144EF10B0, 0x1466D0C80), create_lobby_cb_stub);
-			create_lobby_hook.create(SELECT_VALUE_LANG(0x1405A1970, 0x1405A1380), create_lobby_stub);
+			create_lobby_cb_hook.create(SELECT_VALUE_LANG(0x1405A18E0, 0x1466D0C80), create_lobby_cb_stub);
+			create_lobby_hook.create(SELECT_VALUE_LANG(0x1405A1B60, 0x1405A1380), create_lobby_stub);
 
 			scheduler::once(hook_steam_matchmaking, scheduler::net);
 			scheduler::loop(run_frame, scheduler::session);
