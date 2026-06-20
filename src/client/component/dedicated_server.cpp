@@ -41,7 +41,7 @@ namespace dedicated_server
 
 		void translate_messages_stub(void* a1)
 		{
-			utils::hook::invoke<void>(0x140071410, a1);
+			utils::hook::invoke<void>(0x1400710C0, a1);
 
 			while (true)
 			{
