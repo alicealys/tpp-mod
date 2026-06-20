@@ -410,7 +410,7 @@ namespace text_chat::ui
 				return;
 			}
 
-			announce_log_view_hook.create(SELECT_VALUE(0x140863C60, 0x1405E7610, 0x140862CE0, 0x1405E7020), announce_log_view_stub);
+			announce_log_view_hook.create(SELECT_VALUE(0x140863C60, 0x1405E7270, 0x140862CE0, 0x1405E7020), announce_log_view_stub);
 		}
 	};
 }

@@ -209,7 +209,7 @@ namespace scepad
                     return;
                 }
 
-                state_gun_fire_hook.create(SELECT_VALUE(0x14106F4E0, 0x141060A60, 0x14106FD70, 0x141060130), state_gun_fire_stub);
+                state_gun_fire_hook.create(SELECT_VALUE(0x14106F4E0, 0x14105FF40, 0x14106FD70, 0x141060130), state_gun_fire_stub);
 
                 console::info("[scepad] DSX++ client initialized");
 

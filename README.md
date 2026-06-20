@@ -16,7 +16,7 @@ For older builds go here:
 | version | sha1 | support |
 | --- | --- | --- |
 | mgsvtpp.exe (eng, 1.0.15.4) | D763B9B6CC1DB749B45B0FED2742F56571AE8FFA | ✔️ |
-| mgsvmgo.exe (eng, 1.1.2.8) | C6F6108DB0A6FFF5BEACFAB6773B0CB192527CE7 | ❌ |
+| mgsvmgo.exe (eng, 1.1.2.8) | C6F6108DB0A6FFF5BEACFAB6773B0CB192527CE7 | ✔️ |
 | mgsvtpp.exe (jpn, 1.0.15.4) | 54BC743D1D7D98678EF4CC8D5BC98439F92AA1F7 | ❌ |
 | mgsvmgo.exe (jpn, 1.1.2.8) | 505BBF337DED2DFDD4F86FAAA2F4A9DC3CE935B0 | ❌ |
 

@@ -61,7 +61,7 @@ namespace patches
 		{
 			unsigned int data{};
 			const char value[] = "99c85cdbf2c837d50d37c82af2c837d5c12d5e80fbc837d5f2c837d5f2c837d5f2";
-			utils::hook::invoke<unsigned int*>(SELECT_VALUE_LANG(0x1402DCD30, 0x1402DCB70), &data, unk + 288, value, sizeof(value) - 1);
+			utils::hook::invoke<unsigned int*>(SELECT_VALUE_LANG(0x1402DCF30, 0x1402DCB70), &data, unk + 288, value, sizeof(value) - 1);
 			*res = 0;
 		}
 
@@ -86,27 +86,38 @@ namespace patches
 			}
 		}
 
+		void job_pool_configuration_stub(__int64 a1)
+		{
+			*reinterpret_cast<int*>(a1 + 8) = 1;
+			*reinterpret_cast<unsigned __int64*>(a1) = 0x3F89A02900419A03ull;
+			*reinterpret_cast<int*>(a1 + 12) = 49152;
+			*reinterpret_cast<__int64*>(a1 + 24) = 0;
+			*reinterpret_cast<__int64*>(a1 + 32) = 0;
+			*reinterpret_cast<int*>(a1 + 16) = 1000;
+			*reinterpret_cast<int*>(a1 + 8) = get_processor_count_stub();
+		}
+
 		void unlock_fps()
 		{
 			set_timer_resolution();
 			
 			if (game::environment::is_mgo())
 			{
-				utils::hook::call(SELECT_VALUE_LANG(0x14002AFAB, 0x14002AFCB), get_processor_count_stub);
-				utils::hook::call(SELECT_VALUE_LANG(0x142361744, 0x1422E6BE4), get_processor_count_stub);
+				utils::hook::call(SELECT_VALUE_LANG(0x14002AA7B, 0x14002AFCB), get_processor_count_stub);
+				utils::hook::jump(SELECT_VALUE_LANG(0x14002AED0, 0x0), job_pool_configuration_stub);
 			}
 			else
 			{
 				utils::hook::jump(SELECT_VALUE_LANG(0x140034260, 0x142F1E260), get_processor_count_stub);
 			}
 
-			utils::hook::call(SELECT_VALUE(0x140032C9C, 0x14241449F, 0x142F18E1F, 0x1423F700F), thread_sleep);
+			utils::hook::call(SELECT_VALUE(0x140032C9C, 0x1400328CC, 0x142F18E1F, 0x1423F700F), thread_sleep);
 
 			// unlock framerate always
-			utils::hook::jump(SELECT_VALUE(0x1400810AA, 0x14008195A, 0x14008142A, 0x14008181A),
-				SELECT_VALUE(0x140081278, 0x140081B28, 0x1400815F8, 0x1400819E8));
+			utils::hook::jump(SELECT_VALUE(0x1400810AA, 0x1400822CA, 0x14008142A, 0x14008181A),
+				SELECT_VALUE(0x140081278, 0x140082498, 0x1400815F8, 0x1400819E8));
 
-			leave_frame_hook.create(SELECT_VALUE(0x14007FDB0, 0x1425CA340, 0x14320E630, 0x1426DABC0), leave_frame_stub);
+			leave_frame_hook.create(SELECT_VALUE(0x14007FDB0, 0x140081060, 0x14320E630, 0x1426DABC0), leave_frame_stub);
 		}
 
 		HANDLE create_mutex_stub(LPSECURITY_ATTRIBUTES attributes, BOOL owner, LPCWSTR name)
@@ -195,7 +206,7 @@ namespace patches
 			constexpr const auto base_value = 0.016683333f;
 			static auto value = base_value;
 
-			utils::hook::inject(SELECT_VALUE(0x141206ECC, 0x1411B869B, 0x142ADAE18, 0x141EE0A14) + 4, &value);
+			utils::hook::inject(SELECT_VALUE(0x141206ECC, 0x1411B7C3B, 0x142ADAE18, 0x141EE0A14) + 4, &value);
 
 			var_sensitivity->set_callback = []()
 			{
@@ -204,7 +215,7 @@ namespace patches
 
 			var_sensitivity->set_callback->operator()();
 
-			utils::hook::jump(SELECT_VALUE(0x1409CCB60, 0x146C09510, 0x147F4C990, 0x1476CD770), player_mouse_event_update_stub);
+			utils::hook::jump(SELECT_VALUE(0x1409CCB60, 0x1407AFAA0, 0x147F4C990, 0x1476CD770), player_mouse_event_update_stub);
 		}
 
 		void scale_fov(game::tpp::gm::player::impl::PlayerCameraImpl* camera, vars::var_ptr var)
@@ -283,10 +294,10 @@ namespace patches
 			a.jz(no_update);
 
 			a.bind(do_update);
-			a.jmp(SELECT_VALUE(0x14101DDA5, 0x141016463, 0x14101E5F5, 0x141015B43));
+			a.jmp(SELECT_VALUE(0x14101DDA5, 0x141015943, 0x14101E5F5, 0x141015B43));
 
 			a.bind(no_update);
-			a.jmp(SELECT_VALUE(0x14101DDCC, 0x14101648A, 0x14101E61C, 0x141015B6A));
+			a.jmp(SELECT_VALUE(0x14101DDCC, 0x14101596A, 0x14101E61C, 0x141015B6A));
 		}
 
 		void tps_camera_update_parameter_stub(utils::hook::assembler& a)
@@ -309,7 +320,7 @@ namespace patches
 			a.or_(dl, al);
 			a.test(dl, dl);
 			a.jz(no_update);
-			a.jmp(SELECT_VALUE(0x1412BD4E6, 0x14C13FBD6, 0x14A6AE6F6, 0x14BFD0A46));
+			a.jmp(SELECT_VALUE(0x1412BD4E6, 0x141222B16, 0x14A6AE6F6, 0x14BFD0A46));
 
 			a.bind(no_update);
 			a.xor_(al, al);
@@ -338,13 +349,13 @@ namespace patches
 			a.test(bpl, bpl);
 			a.jz(no_update);
 
-			a.jmp(SELECT_VALUE(0x1412A06D3, 0x14C116B06, 0x14A602CF6, 0x14BFA5E66));
+			a.jmp(SELECT_VALUE(0x1412A06D3, 0x1412147F3, 0x14A602CF6, 0x14BFA5E66));
 
 			a.bind(loop);
-			a.jmp(SELECT_VALUE(0x1412A0694, 0x14C116AC7, 0x14A602CB7, 0x14BFA5E27));
+			a.jmp(SELECT_VALUE(0x1412A0694, 0x1412147B4, 0x14A602CB7, 0x14BFA5E27));
 
 			a.bind(no_update);
-			a.jmp(SELECT_VALUE(0x1412A06DB, 0x14C116B0E, 0x14A602CFE, 0x14BFA5E6E));
+			a.jmp(SELECT_VALUE(0x1412A06DB, 0x1412147FB, 0x14A602CFE, 0x14BFA5E6E));
 		}
 
 		utils::hook::detour subjective_camera_set_default_hook;
@@ -360,14 +371,14 @@ namespace patches
 
 		void patch_fov()
 		{
-			subjective_camera_set_parameter_hook.create(SELECT_VALUE(0x14105AE20, 0x14104C650, 0x14105B6B0, 0x14104BD20), subjective_camera_set_parameter_stub);
-			player_camera_set_tps_params_hook.create(SELECT_VALUE(0x14111B5D0, 0x14BE550C0, 0x14A25F300, 0x14BD71D40), player_camera_set_tps_params_stub);
-			player_camera_set_around_params_hook.create(SELECT_VALUE(0x14111AAA0, 0x14BE4EB00, 0x14A25BB10, 0x14BD6C270), player_camera_set_around_params_stub);
-			subjective_camera_set_default_hook.create(SELECT_VALUE(0x14129F170, 0x14C111260, 0x14A5EA060, 0x14BFA05F0), subjective_camera_set_default_stub);
+			subjective_camera_set_parameter_hook.create(SELECT_VALUE(0x14105AE20, 0x14104BB30, 0x14105B6B0, 0x14104BD20), subjective_camera_set_parameter_stub);
+			player_camera_set_tps_params_hook.create(SELECT_VALUE(0x14111B5D0, 0x141103390, 0x14A25F300, 0x14BD71D40), player_camera_set_tps_params_stub);
+			player_camera_set_around_params_hook.create(SELECT_VALUE(0x14111AAA0, 0x141102860, 0x14A25BB10, 0x14BD6C270), player_camera_set_around_params_stub);
+			subjective_camera_set_default_hook.create(SELECT_VALUE(0x14129F170, 0x141213420, 0x14A5EA060, 0x14BFA05F0), subjective_camera_set_default_stub);
 
-			utils::hook::jump(SELECT_VALUE(0x14101DD99, 0x141016455, 0x14101E5E9, 0x141015B35), utils::hook::assemble(around_camera_update_parameter_stub), true);
-			utils::hook::jump(SELECT_VALUE(0x1412BD4D0, 0x14C13FBC0, 0x14A6AE6E0, 0x14BFD0A30), utils::hook::assemble(tps_camera_update_parameter_stub), true);
-			utils::hook::jump(SELECT_VALUE(0x1412A06C4, 0x14C116AF7, 0x14A602CE7, 0x14BFA5E57), utils::hook::assemble(subjective_camera_update_parameter_stub), true);
+			utils::hook::jump(SELECT_VALUE(0x14101DD99, 0x141015935, 0x14101E5E9, 0x141015B35), utils::hook::assemble(around_camera_update_parameter_stub), true);
+			utils::hook::jump(SELECT_VALUE(0x1412BD4D0, 0x141222B00, 0x14A6AE6E0, 0x14BFD0A30), utils::hook::assemble(tps_camera_update_parameter_stub), true);
+			utils::hook::jump(SELECT_VALUE(0x1412A06C4, 0x1412147E4, 0x14A602CE7, 0x14BFA5E57), utils::hook::assemble(subjective_camera_update_parameter_stub), true);
 		}
 
 		void shell_impl_active_shell_at_empty_work_stub(utils::hook::assembler& a)
@@ -392,7 +403,7 @@ namespace patches
 			a.bind(continue_);
 			a.movd(xmm13, eax);
 			a.lea(eax, qword_ptr(rdi, -0x146));
-			a.jmp(SELECT_VALUE_LANG(0x14125F671, 0x14125F091));
+			a.jmp(SELECT_VALUE_LANG(0x14125EBE1, 0x14125F091));
 		}
 
 		void sub_1407A7F70_stub(utils::hook::assembler& a)
@@ -405,11 +416,11 @@ namespace patches
 
 			a.test(rax, rax);
 			a.jz(is_nullptr);
-			a.jmp(SELECT_VALUE_LANG(0x1407A806D, 0x1407A7A8D));
+			a.jmp(SELECT_VALUE_LANG(0x1407A7C1D, 0x1407A7A8D));
 
 			a.bind(is_nullptr);
 			a.mov(al, 1);
-			a.jmp(SELECT_VALUE_LANG(0x1407A80DA, 0x1407A7AFA));
+			a.jmp(SELECT_VALUE_LANG(0x1407A7C8A, 0x1407A7AFA));
 		}
 
 		utils::hook::detour fv2_resource_manager_get_model_hook;
@@ -425,9 +436,9 @@ namespace patches
 
 		void patch_mgo_crashes()
 		{
-			utils::hook::jump(SELECT_VALUE_LANG(0x14125F651, 0x14125F071), utils::hook::assemble(shell_impl_active_shell_at_empty_work_stub), true);
-			utils::hook::jump(SELECT_VALUE_LANG(0x1407A8060, 0x1407A7A80), utils::hook::assemble(sub_1407A7F70_stub), true);
-			fv2_resource_manager_get_model_hook.create(SELECT_VALUE_LANG(0x1438AE8D0, 0x1436E73F0), fv2_resource_manager_get_model_stub);
+			utils::hook::jump(SELECT_VALUE_LANG(0x14125EBC1, 0x14125F071), utils::hook::assemble(shell_impl_active_shell_at_empty_work_stub), true);
+			utils::hook::jump(SELECT_VALUE_LANG(0x1407A7C10, 0x1407A7A80), utils::hook::assemble(sub_1407A7F70_stub), true);
+			fv2_resource_manager_get_model_hook.create(SELECT_VALUE_LANG(0x14029FE80, 0x1436E73F0), fv2_resource_manager_get_model_stub);
 		}
 	}
 
@@ -501,7 +512,7 @@ namespace patches
 			if (game::environment::is_mgo())
 			{
 				// /AppData 99c85cdbf2c837d50d37c82af2c837d5c12d5e80fbc837d5f2c837d5f2c837d5f2 (command line arg)
-				utils::hook::jump(SELECT_VALUE_LANG(0x143AA8300, 0x143A76D50), sub_143AA8300_stub);
+				utils::hook::jump(SELECT_VALUE_LANG(0x1402DD2F0, 0x143A76D50), sub_143AA8300_stub);
 
 				patch_mgo_crashes();
 			}
@@ -519,11 +530,11 @@ namespace patches
 				utils::hook::call(SELECT_VALUE_LANG(0x1405597A1, 0x144B8861D), strncpy_s_stub);
 			}
 
-			utils::hook::nop(SELECT_VALUE(0x1400013F9, 0x1422339D8, 0x142E4F8E8, 0x142232258), 6);
-			utils::hook::call(SELECT_VALUE(0x1400013F9, 0x1422339D8, 0x142E4F8E8, 0x142232258), create_mutex_stub);
+			utils::hook::nop(SELECT_VALUE(0x1400013F9, 0x1400014E9, 0x142E4F8E8, 0x142232258), 6);
+			utils::hook::call(SELECT_VALUE(0x1400013F9, 0x1400014E9, 0x142E4F8E8, 0x142232258), create_mutex_stub);
 			
 			// disable _purecall error
-			utils::hook::set<std::uint8_t>(SELECT_VALUE(0x141A05976, 0x141461F6A, 0x141A05CB6, 0x141461E0A), 0xC3);
+			utils::hook::set<std::uint8_t>(SELECT_VALUE(0x141A05976, 0x14146177A, 0x141A05CB6, 0x141461E0A), 0xC3);
 
 			if (var_unlock_fps->latched.enabled() || game::environment::is_dedi())
 			{

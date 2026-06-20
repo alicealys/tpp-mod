@@ -581,7 +581,7 @@ namespace cheat
 				var_cheat_unlockall_gear = vars::register_bool("cheat_unlockall_gear", false, 
 					vars::var_flag_cheat | vars::var_flag_saved, "unlock all gear");
 
-				utils::hook::jump(SELECT_VALUE_LANG(0x140598938, 0x140598318), utils::hook::assemble(get_purchasable_item_list_stub), true, true);
+				utils::hook::jump(SELECT_VALUE_LANG(0x140598B08, 0x140598318), utils::hook::assemble(get_purchasable_item_list_stub), true, true);
 			}
 		}
 

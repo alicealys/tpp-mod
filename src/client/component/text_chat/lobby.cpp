@@ -153,7 +153,7 @@ namespace text_chat::lobby
 				return;
 			}
 
-			on_lobby_chat_msg_hook.create(SELECT_VALUE_LANG(0x1405A3DF0, 0x1405A3810), on_lobby_chat_msg_stub);
+			on_lobby_chat_msg_hook.create(SELECT_VALUE_LANG(0x1405A4000, 0x1405A3810), on_lobby_chat_msg_stub);
 
 			command::add("say", [](const command::params& params)
 			{
