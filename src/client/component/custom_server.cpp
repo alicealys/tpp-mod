@@ -361,7 +361,7 @@ namespace custom_server
 
 			if (compressed)
 			{
-				message_data = utils::compression::zlib::decompress(data);
+				message_data = utils::compression::zlib::decompress(message_data);
 			}
 
 			message["data"] = nlohmann::json::parse(message_data);
