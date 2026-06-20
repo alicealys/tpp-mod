@@ -103,7 +103,7 @@ namespace lui::scripting
 			}
 		}
 
-		sol::lua_value cast_element(sol::state& state, ui_element& element)
+		sol::lua_value cast_element(const sol::this_state state, ui_element& element)
 		{
 			switch (element.get_type())
 			{
@@ -134,13 +134,24 @@ namespace lui::scripting
 
 			usertype[sol::meta_function::index] = [](const ui_element& element, const sol::this_state s,
 				const sol::lua_value& key)
+				-> sol::lua_value
 			{
+				if (!element.lua_metadata.valid())
+				{
+					return {s, sol::lua_nil};
+				}
+
 				return element.lua_metadata[key];
 			};
 
-			usertype[sol::meta_function::new_index] = [](ui_element& element, const sol::this_state s,
+			usertype[sol::meta_function::new_index] = [&state](ui_element& element, const sol::this_state s,
 				const sol::lua_value& key, const sol::lua_value& value)
 			{
+				if (!element.lua_metadata.valid())
+				{
+					element.lua_metadata = state.create_table();
+				}
+
 				element.lua_metadata[key] = value;
 			};
 
@@ -330,11 +341,11 @@ namespace lui::scripting
 				element.set_rect(rect);
 			};
 
-			usertype["registereventhandler"] = [&state](ui_element& element, const std::string& name, const sol::unsafe_function& function)
+			usertype["registereventhandler"] = [](ui_element& element, const sol::this_state s, const std::string& name, const sol::unsafe_function& function)
 			{
-				element.register_event_handler(name, [&state, function](ui_element& element, const event_t& event)
+				element.register_event_handler(name, [s, function](ui_element& element, const event_t& event)
 				{
-					function(cast_element(state, element), event);
+					function(cast_element(s, element), event);
 				});
 			};
 
@@ -396,9 +407,9 @@ namespace lui::scripting
 
 			register_base_methods(state, usertype);
 
-			usertype["cast"] = [&state](ui_element& element)
+			usertype["cast"] = [](ui_element& element, const sol::this_state s)
 			{
-				return cast_element(state, element);
+				return cast_element(s, element);
 			};
 
 			state["lui"]["uielement"] = state.create_table();
@@ -1247,7 +1258,16 @@ namespace lui::scripting
 		auto& state = get_state();
 		state = {};
 		initialize_state(state);
+
 		load_scripts(state, "tpp-mod/ui_scripts/");
+		if (game::environment::is_mgo())
+		{
+			load_scripts(state, "tpp-mod/ui_scripts/mgo/");
+		}
+		else
+		{
+			load_scripts(state, "tpp-mod/ui_scripts/tpp/");
+		}
 	}
 
 	void run_frame()
