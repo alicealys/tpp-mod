@@ -452,8 +452,8 @@ namespace game
 
 		struct Buffer
 		{
-			void* data;
-			void* a2;
+			char* data;
+			char* a2;
 			size_t offset;
 			size_t size;
 			size_t capacity;

@@ -663,4 +663,171 @@ namespace utils::cryptography
 	{
 		prng_.read(data, size);
 	}
+
+	blowfish::blowfish()
+	{
+		std::memcpy(this->s_, initial_s, sizeof(initial_s));
+	}
+
+	std::uint32_t blowfish::f(std::uint32_t x)
+	{
+		const auto a = (x >> 24) & 0x00FF;
+		const auto b = (x >> 16) & 0x00FF;
+		const auto c = (x >> 8) & 0x00FF;
+		const auto d = x & 0x00FF;
+
+		auto y = (this->s_[0][a] + this->s_[1][b]) & 0xFFFFFFFF;
+		y = y ^ (this->s_[2][c] & 0xFFFFFFFF);
+		y = (y + this->s_[3][d]) & 0xFFFFFFFF;
+
+		return y;
+	}
+
+	void blowfish::encrypt_single(std::uint32_t& xl, std::uint32_t& xr)
+	{
+		for (auto i = 0u; i < this->n_; i++)
+		{
+			xl ^= this->p_[i];
+			xr = this->f(xl) ^ xr;
+			std::swap(xl, xr);
+		}
+
+		std::swap(xl, xr);
+		xr ^= this->p_[this->n_];
+		xl ^= this->p_[this->n_ + 1];
+	}
+
+	void blowfish::decrypt_single(std::uint32_t& xl, std::uint32_t& xr)
+	{
+		for (auto i = this->n_ + 1; i > 1; i--)
+		{
+			xl ^= this->p_[i];
+			xr = this->f(xl) ^ xr;
+			std::swap(xl, xr);
+		}
+
+		std::swap(xl, xr);
+		xr ^= this->p_[1];
+		xl ^= this->p_[0];
+	}
+
+	void blowfish::set_key(std::uint8_t* key, const size_t len)
+	{
+		auto j = 0;
+		for (auto i = 0u; i < this->n_ + 2; i++)
+		{
+			std::uint32_t data{};
+			for (auto o = 0; o < 4; o++)
+			{
+				data = data << 8;
+				data |= (key[j] & 0x000000FF);
+				j++;
+
+				if (j >= len)
+				{
+					j = 0;
+				}
+			}
+
+			this->p_[i] = initial_p[i] ^ data;
+		}
+
+		std::uint32_t datal{};
+		std::uint32_t datar{};
+
+		for (auto i = 0u; i < this->n_ + 2; i += 2)
+		{
+			this->encrypt_single(datal, datar);
+			this->p_[i] = datal;
+			this->p_[i + 1] = datar;
+		}
+
+		for (auto i = 0u; i < 4; i++)
+		{
+			for (auto o = 0u; o < 256; o += 2)
+			{
+				this->encrypt_single(datal, datar);
+				this->s_[i][o] = datal;
+				this->s_[i][o + 1] = datar;
+			}
+		}
+	}
+
+	void blowfish::set_key(const std::string& key_b64)
+	{
+		const auto key = utils::cryptography::base64::decode(key_b64);
+		this->set_key(reinterpret_cast<std::uint8_t*>(
+			reinterpret_cast<size_t>(key.data())), key.size());
+	}
+
+	std::string blowfish::encrypt(const std::string& data_)
+	{
+		std::string data = data_;
+		const auto mod = (data.size() % 8);
+		if (mod != 0)
+		{
+			const auto byte_count = 8 - mod;
+			for (auto i = 0; i < byte_count; i++)
+			{
+				data += static_cast<char>(byte_count);
+			}
+		}
+
+		std::string text;
+		for (auto offset = 0u; offset < data.size(); offset += 8)
+		{
+			const auto chunk = data.substr(offset, 8);
+			auto chunk_l = chunk.substr(0, 4);
+			auto chunk_r = chunk.substr(4, 4);
+
+			auto xl = static_cast<std::uint32_t>(_byteswap_ulong(*reinterpret_cast<std::uint32_t*>(chunk_l.data())));
+			auto xr = static_cast<std::uint32_t>(_byteswap_ulong(*reinterpret_cast<std::uint32_t*>(chunk_r.data())));
+
+			this->encrypt_single(xl, xr);
+
+			xl = _byteswap_ulong(xl);
+			xr = _byteswap_ulong(xr);
+
+			text.append(reinterpret_cast<char*>(&xl), 4);
+			text.append(reinterpret_cast<char*>(&xr), 4);
+		}
+
+		return utils::cryptography::base64::encode(text);
+	}
+
+	std::string blowfish::decrypt(const std::string& data)
+	{
+		const auto decoded_data = utils::cryptography::base64::decode(data);
+		if (decoded_data.size() == 0 || (decoded_data.size() % 8) != 0)
+		{
+			throw std::runtime_error("invalid data");
+		}
+
+		std::string text;
+		for (auto offset = 0u; offset < decoded_data.size(); offset += 8)
+		{
+			const auto chunk = decoded_data.substr(offset, 8);
+			auto chunk_l = chunk.substr(0, 4);
+			auto chunk_r = chunk.substr(4, 4);
+
+			auto xl = static_cast<std::uint32_t>(_byteswap_ulong(*reinterpret_cast<std::uint32_t*>(chunk_l.data())));
+			auto xr = static_cast<std::uint32_t>(_byteswap_ulong(*reinterpret_cast<std::uint32_t*>(chunk_r.data())));
+
+			this->decrypt_single(xl, xr);
+
+			xl = _byteswap_ulong(xl);
+			xr = _byteswap_ulong(xr);
+
+			text.append(reinterpret_cast<char*>(&xl), 4);
+			text.append(reinterpret_cast<char*>(&xr), 4);
+		}
+
+		const auto last_char = text[text.size() - 1];
+		if (last_char <= 8)
+		{
+			text = text.substr(0, text.size() - static_cast<size_t>(last_char));
+		}
+
+		return text;
+	}
 }

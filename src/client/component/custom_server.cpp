@@ -13,6 +13,8 @@
 #include <utils/flags.hpp>
 #include <utils/io.hpp>
 #include <utils/cryptography.hpp>
+#include <utils/http.hpp>
+#include <utils/compression.hpp>
 
 namespace custom_server
 {
@@ -256,11 +258,165 @@ namespace custom_server
 			utils::hook::nop(SELECT_VALUE(0x141A5CA98, 0x1414AE4B8, 0x0, 0x0), 6);
 			utils::hook::call(SELECT_VALUE(0x141A5CA98, 0x1414AE4B8, 0x0, 0x0), win_http_crack_url_stub);
 		}
+
+		std::uint8_t* get_static_key()
+		{
+			static std::uint8_t static_key[16] =
+			{
+				0xD8, 0x89, 0x0A, 0xF0,
+				0x66, 0xC9, 0x6B, 0x40,
+				0xD7, 0x01, 0xAE, 0xFC,
+				0x43, 0x6F, 0xF9, 0xFE
+			};
+
+			return static_key;
+		}
+
+		std::string encrypt_data(const std::string& data, game::fox::ncl::NclDaemon* ncl_daemon)
+		{
+			utils::cryptography::blowfish blow;
+
+			auto key = ncl_daemon != nullptr
+				? ncl_daemon->key
+				: get_static_key();
+
+			blow.set_key(key, 16);
+			return blow.encrypt(data);
+		}
+
+		std::string decrypt_data(const std::string& data, game::fox::ncl::NclDaemon* ncl_daemon)
+		{
+			utils::cryptography::blowfish blow;
+
+			auto key = ncl_daemon != nullptr
+				? ncl_daemon->key
+				: get_static_key();
+
+			blow.set_key(key, 16);
+			return blow.decrypt(data);
+		}
+
+		std::string serialize_message(const nlohmann::json& data, game::fox::ncl::NclDaemon* ncl_daemon)
+		{
+			nlohmann::json message;
+
+			auto compress = false;
+
+			const auto use_crypto = ncl_daemon != nullptr && ncl_daemon->sessionKey.data != nullptr;
+
+			message["compress"] = compress;
+			message["session_crypto"] = use_crypto;
+			message["session_key"] = use_crypto ? ncl_daemon->sessionKey.data->buffer : "";
+
+			auto data_serialized = data.dump();
+			const auto original_size = data_serialized.size();
+
+			if (compress)
+			{
+				data_serialized = utils::compression::zlib::compress(data_serialized);
+			}
+
+			if (use_crypto)
+			{
+				data_serialized = encrypt_data(data_serialized, ncl_daemon);
+			}
+
+			if (compress && !use_crypto)
+			{
+				data_serialized = utils::cryptography::base64::encode(data_serialized);
+			}
+
+			message["data"] = data_serialized;
+			message["original_size"] = original_size;
+
+			auto message_serialized = message.dump();
+
+			message_serialized = encrypt_data(message_serialized, nullptr);
+			message_serialized = utils::string::replace(message_serialized, "+", "%2B");
+
+			return "httpMsg="s + message_serialized;
+		}
+
+		std::optional<nlohmann::json> deserialize_message(const std::string& data, game::fox::ncl::NclDaemon* ncl_daemon)
+		{
+			auto message_deserialized = utils::string::replace(data, "\r\n", "");
+			message_deserialized = decrypt_data(message_deserialized, nullptr);
+
+			auto message = nlohmann::json::parse(message_deserialized);
+
+			if (!message["data"].is_string())
+			{
+				return {message};
+			}
+
+			auto message_data = message["data"].get<std::string>();
+			const auto compressed = message["compress"].is_boolean() && message["compress"].get<bool>();
+			const auto session_crypto = message["session_crypto"].is_boolean() && message["session_crypto"].get<bool>();
+
+			if (session_crypto)
+			{
+				message_data = utils::string::replace(message_data, "\r\n", "");
+				message_data = decrypt_data(message_data, ncl_daemon);
+			}
+
+			if (compressed)
+			{
+				message_data = utils::compression::zlib::decompress(data);
+			}
+
+			message["data"] = nlohmann::json::parse(message_data);
+			return {message};
+		}
 	}
 
 	bool is_using_custom_server()
 	{
 		return custom_url[0] != 0;
+	}
+
+	std::optional<nlohmann::json> send_command(const std::string& endpoint, const nlohmann::json& data, bool use_session)
+	{
+		const auto ncl_daemon = *game::fox::ncl::NclDaemon_::s_instance;
+
+		const auto endpoint_id = game::fox::FoxStrHash32(endpoint.data(), std::strlen(endpoint.data()));
+		const auto url = game::fox::ncl::NclDaemon_::GetUrl(ncl_daemon, endpoint_id);
+		if (url == nullptr)
+		{
+			return {};
+		}
+
+		const auto crypto = use_session ? ncl_daemon : nullptr;
+		auto post_data = serialize_message(data, crypto);
+
+		utils::http::headers headers;
+		headers["Connection"] = "Keep-Alive";
+		headers["Content-Type"] = "application/x-www-form-urlencoded";
+
+		const auto proxy_url = var_net_proxy_url->current.get_string();
+		const auto result = utils::http::post_data(url->data->buffer, post_data, headers, {}, proxy_url);
+		if (!result.has_value())
+		{
+			return {};
+		}
+
+		const auto& value = result.value();
+		if (value.response_code != 200)
+		{
+			return {};
+		}
+
+		if (value.buffer.size() == 0)
+		{
+			return {};
+		}
+
+		const auto msg = deserialize_message(value.buffer, crypto);
+		if (msg.has_value() && msg->contains("data"))
+		{
+			return {msg->operator[]("data")};
+		}
+
+		return {};
 	}
 
 	class component final : public component_interface

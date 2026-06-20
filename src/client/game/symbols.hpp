@@ -71,6 +71,15 @@ namespace game
 			}
 		}
 
+		namespace ncl
+		{
+			namespace NclDaemon_
+			{
+				WEAK symbol<NclDaemon*> s_instance{0x142C87A50, 0x0, 0x0, 0x0};
+				WEAK symbol<SharedString* (NclDaemon*, StringId)> GetUrl{0x1491B2A30, 0x0, 0x0, 0x0};
+			}
+		}
+
 		namespace uix
 		{
 			namespace impl
