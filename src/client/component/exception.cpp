@@ -137,7 +137,6 @@ namespace exception
 
 		LPTOP_LEVEL_EXCEPTION_FILTER WINAPI set_unhandled_exception_filter_stub(LPTOP_LEVEL_EXCEPTION_FILTER)
 		{
-			// Don't register anything here...
 			return &exception_filter;
 		}
 	}

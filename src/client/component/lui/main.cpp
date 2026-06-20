@@ -150,6 +150,11 @@ namespace lui
 	public:
 		void post_load() override
 		{
+			if (game::environment::is_dedi())
+			{
+				return;
+			}
+
 			command::add("lui_restart", []()
 			{
 				restart_requested = true;

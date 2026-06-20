@@ -34,11 +34,11 @@ namespace directx
 			return;
 		}
 
-		utils::hook::nop(0x14A16243C, 5);
-		utils::hook::nop(0x14A16244A, 5);
+		utils::hook::nop(0x140BBC9D0, 5);
+		utils::hook::nop(0x140BBC9DE, 5);
+		utils::hook::nop(0x140BB9BBE, 3);
 
-		utils::hook::nop(0x140BBA76E, 3);
-		utils::hook::jump(0x141465284, create_dxgi_factory);
-		utils::hook::jump(0x14146528A, d3d11_create_device);
+		utils::hook::jump(0x141464A94, create_dxgi_factory);
+		utils::hook::jump(0x141464A9A, d3d11_create_device);
 	}
 }
