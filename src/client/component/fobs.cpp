@@ -893,6 +893,14 @@ namespace fobs
 		custom_fob_targets.access(callback);
 	}
 
+	std::uint32_t get_own_player_id()
+	{
+		return state.access<std::uint32_t>([&](state_t& s)
+		{
+			return s.own_lobby_info.player_id;
+		});
+	}
+
 	class component final : public component_interface
 	{
 	public:

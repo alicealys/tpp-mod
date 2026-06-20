@@ -8,8 +8,6 @@ namespace lui::scripting::json
 {
 	namespace
 	{
-		nlohmann::json lua_to_json(const sol::lua_value& value);
-
 		nlohmann::json table_to_json(const sol::lua_value& value)
 		{
 			const auto table = value.as<sol::table>();
@@ -62,33 +60,33 @@ namespace lui::scripting::json
 				return object;
 			}
 		}
+	}
+	
+	nlohmann::json lua_to_json(const sol::lua_value& value)
+	{
+		const auto type = value.value().get_type();
 
-		nlohmann::json lua_to_json(const sol::lua_value& value)
+		switch (type)
 		{
-			const auto type = value.value().get_type();
-
-			switch (type)
+		case sol::type::boolean:
+			return value.as<bool>();
+		case sol::type::number:
+		{
+			const auto val_float = value.as<float>();
+			const auto val_int = static_cast<float>(value.as<int>());
+			if (val_int == val_float)
 			{
-			case sol::type::boolean:
-				return value.as<bool>();
-			case sol::type::number:
-			{
-				const auto val_float = value.as<float>();
-				const auto val_int = static_cast<float>(value.as<int>());
-				if (val_int == val_float)
-				{
-					return static_cast<int>(val_int);
-				}
+				return static_cast<int>(val_int);
+			}
 
-				return val_float;
-			}
-			case sol::type::string:
-				return value.as<std::string>();
-			case sol::type::table:
-				return table_to_json(value);
-			default:
-				return {};
-			}
+			return val_float;
+		}
+		case sol::type::string:
+			return value.as<std::string>();
+		case sol::type::table:
+			return table_to_json(value);
+		default:
+			return {};
 		}
 	}
 
@@ -103,31 +101,11 @@ namespace lui::scripting::json
 			switch (type)
 			{
 			case nlohmann::json::value_t::number_integer:
-			{
-				const auto int_64 = v.get<std::int64_t>();
-				if (static_cast<std::int32_t>(int_64) == int_64)
-				{
-					return static_cast<std::int32_t>(int_64);
-				}
-				else
-				{
-					return int_64;
-				}
-			}
+				return {s, v.get<std::int64_t>()};
 			case nlohmann::json::value_t::number_float:
 				return {s, v.get<float>()};
 			case nlohmann::json::value_t::number_unsigned:
-			{
-				const auto int_64 = v.get<std::uint64_t>();
-				if (static_cast<std::uint32_t>(int_64) == int_64)
-				{
-					return static_cast<std::uint32_t>(int_64);
-				}
-				else
-				{
-					return int_64;
-				}
-			}
+				return {s, v.get<std::uint64_t>()};
 			case nlohmann::json::value_t::string:
 				return {s, v.get<std::string>()};
 			case nlohmann::json::value_t::boolean:
@@ -144,66 +122,49 @@ namespace lui::scripting::json
 				auto& v = value[key];
 				return index_value(v, s);
 			},
-			[&](nlohmann::json& value, const sol::this_state s, const int index)
+			[&](nlohmann::json& value, const sol::this_state s, const std::int32_t index)
 				-> sol::lua_value
 			{
-				auto& v = value[index];
+				auto& v = value[index - 1];
 				return index_value(v, s);
 			}
 		);
 
+		const auto new_index_value = []<typename T>(nlohmann::json& value, const T& key, const sol::lua_value& new_value)
+		{
+			if (new_value.is<std::int64_t>())
+			{
+				value[key] = new_value.as<std::int64_t>();
+				return;
+			}
+
+			if (new_value.is<std::string>())
+			{
+				value[key] = new_value.as<std::string>();
+				return;
+			}
+
+			if (new_value.is<float>())
+			{
+				value[key] = new_value.as<float>();
+				return;
+			}
+
+			if (new_value.is<nlohmann::json>())
+			{
+				value[key] = new_value.as<nlohmann::json>();
+				return;
+			}
+		};
+
 		json_type[sol::meta_function::new_index] = sol::overload(
-			[](nlohmann::json& value, const std::string& key, const sol::lua_value& new_value)
+			[&](nlohmann::json& value, const std::string& key, const sol::lua_value& new_value)
 			{
-				if (new_value.is<int>())
-				{
-					value[key] = new_value.as<int>();
-					return;
-				}
-
-				if (new_value.is<std::string>())
-				{
-					value[key] = new_value.as<std::string>();
-					return;
-				}
-
-				if (new_value.is<float>())
-				{
-					value[key] = new_value.as<float>();
-					return;
-				}
-
-				if (new_value.is<nlohmann::json>())
-				{
-					value[key] = new_value.as<nlohmann::json>();
-					return;
-				}
+				new_index_value(value, key, new_value);
 			},
-			[](nlohmann::json& value, const int index, const sol::lua_value& new_value)
+			[&](nlohmann::json& value, const std::int32_t index, const sol::lua_value& new_value)
 			{
-				if (new_value.is<int>())
-				{
-					value[index] = new_value.as<int>();
-					return;
-				}
-
-				if (new_value.is<std::string>())
-				{
-					value[index] = new_value.as<std::string>();
-					return;
-				}
-
-				if (new_value.is<float>())
-				{
-					value[index] = new_value.as<float>();
-					return;
-				}
-
-				if (new_value.is<nlohmann::json>())
-				{
-					value[index] = new_value.as<nlohmann::json>();
-					return;
-				}
+				new_index_value(value, index - 1, new_value);
 			}
 		);
 
@@ -217,7 +178,7 @@ namespace lui::scripting::json
 			{
 				return value.dump();
 			},
-				[](nlohmann::json& value, int indent)
+			[](nlohmann::json& value, int indent)
 			{
 				return value.dump(indent);
 			}
@@ -279,9 +240,9 @@ namespace lui::scripting::json
 			case nlohmann::json::value_t::number_float:
 				return {s, value.get<float>()};
 			case nlohmann::json::value_t::number_integer:
-				return {s, value.get<int>()};
+				return {s, value.get<std::int64_t>()};
 			case nlohmann::json::value_t::number_unsigned:
-				return {s, value.get<unsigned int>()};
+				return {s, value.get<std::uint64_t>()};
 			case nlohmann::json::value_t::string:
 				return {s, value.get<std::string>()};
 			case nlohmann::json::value_t::array:

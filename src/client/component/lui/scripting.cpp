@@ -21,6 +21,7 @@
 
 #include "lua_types/json.hpp"
 #include "lua_types/http.hpp"
+#include "lua_types/io.hpp"
 
 #include <utils/io.hpp>
 
@@ -842,6 +843,7 @@ namespace lui::scripting
 		{
 			json::setup(state);
 			http::setup(state);
+			io::setup(state);
 
 			state["game"] = sol::table::create(state.lua_state());
 
@@ -1159,6 +1161,7 @@ namespace lui::scripting
 
 			state["fobs"]["removecustomtarget"] = fobs::remove_custom_fob_target;
 			state["fobs"]["clearcustomtargets"] = fobs::clear_custom_fob_targets;
+			state["fobs"]["getownplayerid"] = fobs::get_own_player_id;
 
 			state["steam"] = state.create_table();
 			
