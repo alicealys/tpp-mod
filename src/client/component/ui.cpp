@@ -139,6 +139,18 @@ namespace ui
 			graph_manager_get_palette_color_hook.create(SELECT_VALUE(0x141DAB770, 0x140E1C6D0, 0x0, 0x0), graph_manager_get_palette_color_stub);
 			utils::hook::jump(SELECT_VALUE(0x141DBD559, 0x140E2E8F9, 0x0, 0x0), utils::hook::assemble(model_node_create_common_stub), true);
 			model_node_common_destructor_hook.create(SELECT_VALUE(0x141DBD320, 0x140E2E6C0, 0x0, 0x0), model_node_common_destructor_stub);
+
+			// remove "Open Legal & Privacy" button
+			if (game::environment::is_tpp())
+			{
+				utils::hook::set<std::uint8_t>(SELECT_VALUE_LANG(0x1412D6B97, 0x0), 0xEB);
+				utils::hook::set<std::uint8_t>(SELECT_VALUE_LANG(0x1415EE3ED, 0x0), 0xEB);
+				utils::hook::set<std::uint8_t>(SELECT_VALUE_LANG(0x1412D8A87, 0x0), 0xEB);
+			}
+			else
+			{
+				utils::hook::set<std::uint8_t>(SELECT_VALUE_LANG(0x1413EDFDF, 0x0), 0xEB);
+			}
 		}
 
 		void start() override
