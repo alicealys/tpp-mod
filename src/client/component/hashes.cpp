@@ -19,7 +19,8 @@ namespace hashes
 		utils::memory::allocator allocator;
 
 		std::mutex map_mutex;
-		std::unordered_map<std::uint64_t, const char*> string_map;
+		std::unordered_map<std::uint64_t, std::string> string_map;
+		std::unordered_map<std::uint32_t, std::string> string_map_l;
 
 		utils::hook::detour fox_str_hash_hook;
 		utils::hook::detour shared_string_to_string_id_hook;
@@ -31,8 +32,9 @@ namespace hashes
 
 			if (!string_map.contains(result.id))
 			{
-				const auto copy = allocator.duplicate_string(std::string{str, str + size});
-				string_map.insert(std::make_pair(result.id, copy));
+				const auto string = std::string{str, str + size};
+				string_map.insert(std::make_pair(result.id, string));
+				string_map_l.insert(std::make_pair(result.f.l, string));
 			}
 
 			return result;
@@ -53,7 +55,7 @@ namespace hashes
 		}
 	}
 
-	const char* lookup(const std::uint64_t id)
+	std::string lookup(const std::uint64_t id)
 	{
 		const auto iter = string_map.find(id);
 		if (iter != string_map.end())
@@ -64,9 +66,20 @@ namespace hashes
 		return "(unknown)";
 	}
 
-	const char* lookup(const game::fox::StringId id)
+	std::string lookup(const game::fox::StringId id)
 	{
 		return lookup(id.id);
+	}
+
+	std::string lookup_l(const std::uint32_t id)
+	{
+		const auto iter = string_map_l.find(id);
+		if (iter != string_map_l.end())
+		{
+			return iter->second;
+		}
+
+		return "(unknown)";
 	}
 
 	game::fox::StringId compute(const char* str)
@@ -102,7 +115,7 @@ namespace hashes
 				std::string buffer;
 				for (const auto& [k, v] : string_map)
 				{
-					buffer.append(utils::string::va("0x%llX: %s\n", k, v));
+					buffer.append(utils::string::va("0x%llX: %s\n", k, v.data()));
 				}
 
 				const auto path = "tpp-mod/strings.txt";
