@@ -868,12 +868,20 @@ namespace lui::scripting
 				return sol::lua_nil;
 			};
 
-			state["game"]["localize"] = [](const std::string& str)
-			{
-				game::fox::StringId str_id{};
-				game::tpp::ui::utility::GetStringId(&str_id, str.data());
-				return game::tpp::ui::utility::GetLangText(str_id);
-			};
+			state["game"]["localize"] = sol::overload(
+				[](const std::uint64_t id)
+				{
+					game::fox::StringId str_id{};
+					str_id.id = id;
+					return game::tpp::ui::utility::GetLangText(str_id);
+				},
+				[](const std::string& str)
+				{
+					game::fox::StringId str_id{};
+					game::tpp::ui::utility::GetStringId(&str_id, str.data());
+					return game::tpp::ui::utility::GetLangText(str_id);
+				}
+			);
 
 			state["game"]["getcurrentlocationid"] = []()
 			{
