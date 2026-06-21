@@ -1484,7 +1484,13 @@ namespace game
 			struct LayoutComponent;
 			struct Layout;
 			struct GraphState;
-			struct ModelNodeCommon;
+
+			struct ModelNodeCommon
+			{
+				char __pad0[108];
+				std::uint32_t hash;
+			};
+
 			struct Animation;
 
 			struct Font
@@ -5271,10 +5277,10 @@ namespace game
 			void* (__fastcall* SetVisible2)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::LayoutComponent*, bool);
 			void* (__fastcall* IsVisible1)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::ModelNode*);
 			void* (__fastcall* IsVisible2)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::LayoutComponent*);
-			void* (__fastcall* SetAlpha1)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::ModelNode*, float);
-			void* (__fastcall* SetAlpha2)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::LayoutComponent*, float);
-			void* (__fastcall* GetAlpha3)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::ModelNode*);
-			void* (__fastcall* GetAlpha4)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::LayoutComponent*);
+			void (__fastcall* SetAlpha1)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::ModelNode*, float);
+			void (__fastcall* SetAlpha2)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::LayoutComponent*, float);
+			float (__fastcall* GetAlpha1)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::ModelNode*);
+			float (__fastcall* GetAlpha2)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::LayoutComponent*);
 			void* (__fastcall* SetColorRGB1)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::ModelNode*, fox::Rgba8);
 			void* (__fastcall* SetColorRGB2)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::LayoutComponent*, fox::Rgba8);
 			void* (__fastcall* SetColorRGB3)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::ModelNode*, fox::Color*);
@@ -5518,28 +5524,30 @@ namespace game
 			void* (__fastcall* SendVisibleWindowMessage)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::WindowInterface*, bool);
 			void* (__fastcall* SendConnectWindowMessage)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::WindowInterface*, fox::ui::Model*, fox::ui::ModelNode*);
 			void* (__fastcall* GetChildWindowInterface)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::WindowInterface const*, fox::StringId);
-			void* (__fastcall* GetLayout1)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::Layout const*, fox::StringId);
-			void* (__fastcall* GetLayout2)(fox::uix::impl::UixUtilityImpl* this_, void* const, fox::StringId);
-			void* (__fastcall* GetLayout3)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::WindowInterface const*, fox::StringId);
+			void* pad1[2];
+			fox::ui::Layout* (__fastcall* GetLayout1)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::Layout const*, fox::StringId);
+			fox::ui::Layout* (__fastcall* GetLayout2)(fox::uix::impl::UixUtilityImpl* this_, void* const, fox::StringId);
+			fox::ui::Layout* (__fastcall* GetLayout3)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::WindowInterface const*, fox::StringId);
 			void* (__fastcall* IsHaveLayout)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::Layout const*, fox::StringId);
-			void* (__fastcall* GetModel)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::Layout const*, fox::StringId);
+			void* pad2[1];
+			fox::ui::Model* (__fastcall* GetModel)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::Layout const*, fox::StringId);
 			void* (__fastcall* GetAnimation1)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::Model const*, fox::StringId);
 			void* (__fastcall* GetAnimation2)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::Layout const*, fox::StringId);
 			void* (__fastcall* IsHaveModelNodeCommon)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::Model const*, fox::StringId);
 			void* (__fastcall* GetModelNodeCommon)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::Model const*, fox::StringId);
 			void* (__fastcall* GetModelNodeText)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::Model const*, fox::StringId);
-			void* (__fastcall* GetModelNodeMesh)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::Model const*, fox::StringId);
+			fox::ui::ModelNodeMesh* (__fastcall* GetModelNodeMesh)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::Model const*, fox::StringId);
 			void* (__fastcall* GetModelNodeLine)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::Model const*, fox::StringId);
 			void* (__fastcall* GetOrthogonalProjectionScaleFromModelComponentCamera)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::Model*);
-			void* pad[6];
+			void* pad3[3];
 			void* (__fastcall* SetVisible1)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::ModelNode*, bool);
 			void* (__fastcall* SetVisible2)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::LayoutComponent*, bool);
 			void* (__fastcall* IsVisible1)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::ModelNode*);
 			void* (__fastcall* IsVisible2)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::LayoutComponent*);
-			void* (__fastcall* SetAlpha1)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::ModelNode*, float);
-			void* (__fastcall* SetAlpha2)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::LayoutComponent*, float);
-			void* (__fastcall* GetAlpha3)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::ModelNode*);
-			void* (__fastcall* GetAlpha4)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::LayoutComponent*);
+			void (__fastcall* SetAlpha1)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::ModelNode*, float);
+			void (__fastcall* SetAlpha2)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::LayoutComponent*, float);
+			float (__fastcall* GetAlpha1)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::ModelNode*);
+			float (__fastcall* GetAlpha2)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::LayoutComponent*);
 			void* (__fastcall* SetColorRGB1)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::ModelNode*, fox::Rgba8);
 			void* (__fastcall* SetColorRGB2)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::LayoutComponent*, fox::Rgba8);
 			void* (__fastcall* SetColorRGB3)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::ModelNode*, fox::Color*);
@@ -5630,7 +5638,7 @@ namespace game
 			void* (__fastcall* SetShaderBaseTexUvRepeat)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::ModelNodeMesh*, float, float);
 			void* (__fastcall* SetShaderMaskTexUvRepeat)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::ModelNodeMesh*, float, float);
 			void* (__fastcall* SetShaderScreenTexUvRepeat)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::ModelNodeMesh*, float, float);
-			void* pad2[3];
+			void* pad4[3];
 			void* (__fastcall* SetVertexTranslate)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::ModelNodeMesh*, unsigned int, Vectormath::Aos::Vector3*, Vectormath::Aos::Vector3*);
 			void* (__fastcall* FindWindow_)(fox::uix::impl::UixUtilityImpl* this_, fox::StringId);
 			void* (__fastcall* EnableAllInheritance)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::WindowInterface const*);
