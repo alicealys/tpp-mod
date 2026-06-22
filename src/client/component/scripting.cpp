@@ -506,6 +506,16 @@ namespace scripting
 				}
 			});
 
+			command::add("script_exec_n", [](const command::params& params)
+			{
+				if (params.size() < 2)
+				{
+					return;
+				}
+
+				script_exec(params.join(1));
+			});
+
 			command::add("script_load", [](const command::params& params)
 			{
 				if (params.size() < 2)
