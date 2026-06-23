@@ -14,7 +14,7 @@ namespace ui
 	namespace
 	{
 		vars::var_ptr ui_mbdvc_color;
-		vars::var_ptr ui_mbdvc_text_color;
+		vars::var_ptr ui_custom_colors_enable;
 
 		std::unordered_set<std::uint32_t> mbdvc_color_hashes =
 		{
@@ -32,7 +32,7 @@ namespace ui
 
 		__int64 graph_manager_get_palette_color_stub(void* a1, unsigned int hash, game::fox::Color* color)
 		{
-			if (mbdvc_color_hashes.contains(hash))
+			if (ui_custom_colors_enable->current.enabled() && mbdvc_color_hashes.contains(hash))
 			{
 				const auto mb_color = ui_mbdvc_color->current.get_color();
 				color->values[0] = mb_color.r;
@@ -67,6 +67,11 @@ namespace ui
 
 		void update_bg_nodes()
 		{
+			if (!ui_custom_colors_enable->current.enabled())
+			{
+				return;
+			}
+
 			const auto color = ui_mbdvc_color->current.get_color();
 			for (auto& node : mbdvc_nodes)
 			{
@@ -135,6 +140,9 @@ namespace ui
 
 			ui_mbdvc_color = vars::register_color("ui_mb_color", color, vars::var_flag_saved, "idroid ui background color");
 			ui_mbdvc_color->set_callback = update_bg_nodes;
+
+			ui_custom_colors_enable = vars::register_bool("ui_color_tweaks", false, vars::var_flag_saved, "enable ui color tweaks");
+			ui_custom_colors_enable->set_callback = update_bg_nodes;
 
 			graph_manager_get_palette_color_hook.create(SELECT_VALUE(0x141DAB770, 0x140E1C6D0, 0x0, 0x0), graph_manager_get_palette_color_stub);
 			utils::hook::jump(SELECT_VALUE(0x141DBD559, 0x140E2E8F9, 0x0, 0x0), utils::hook::assemble(model_node_create_common_stub), true);

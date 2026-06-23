@@ -5415,6 +5415,7 @@ namespace game
 			void* (__fastcall* SetTextUnitsForModelNodeText)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::ModelNodeText*, fox::ui::TextUnit*, unsigned int);
 			void* (__fastcall* CreateBoxText)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::ModelNodeText*, fox::ui::TextUnit*, unsigned int, char const*, bool, bool);
 			void* (__fastcall* CreateScrollBoxText)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::ModelNodeText*, fox::ui::TextUnit*, unsigned int, char const*);
+			void* pad5[5];
 			void* (__fastcall* GetLangText1)(fox::uix::impl::UixUtilityImpl* this_, fox::StringId);
 			void* (__fastcall* GetLangText2)(fox::uix::impl::UixUtilityImpl* this_, fox::StringId);
 			void* (__fastcall* StartTextScroll)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::ModelNodeText*);
@@ -5453,7 +5454,7 @@ namespace game
 			void* (__fastcall* RotEularRadianToDegree)(fox::uix::impl::UixUtilityImpl* this_, Vectormath::Aos::Vector3*);
 			void* (__fastcall* RotEularDegreeToRadian)(fox::uix::impl::UixUtilityImpl* this_, Vectormath::Aos::Vector3*);
 			void* (__fastcall* GetPathIdFromChar)(fox::uix::impl::UixUtilityImpl* this_, char const*);
-			void* (__fastcall* GetPaletteColor)(fox::uix::impl::UixUtilityImpl* this_, fox::StringId);
+			fox::Color* (__fastcall* GetPaletteColor)(fox::uix::impl::UixUtilityImpl* this_, fox::Color*, fox::StringId);
 		};
 
 		struct UixUtilityImpl_vtbl_tpp
@@ -5682,6 +5683,7 @@ namespace game
 			void* (__fastcall* SetTextUnitsForModelNodeText)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::ModelNodeText*, fox::ui::TextUnit*, unsigned int);
 			void* (__fastcall* CreateBoxText)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::ModelNodeText*, fox::ui::TextUnit*, unsigned int, char const*, bool, bool);
 			void* (__fastcall* CreateScrollBoxText)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::ModelNodeText*, fox::ui::TextUnit*, unsigned int, char const*);
+			void* pad5[5];
 			void* (__fastcall* GetLangText1)(fox::uix::impl::UixUtilityImpl* this_, fox::StringId);
 			void* (__fastcall* GetLangText2)(fox::uix::impl::UixUtilityImpl* this_, fox::StringId);
 			void* (__fastcall* StartTextScroll)(fox::uix::impl::UixUtilityImpl* this_, fox::ui::ModelNodeText*);
@@ -5720,7 +5722,7 @@ namespace game
 			void* (__fastcall* RotEularRadianToDegree)(fox::uix::impl::UixUtilityImpl* this_, Vectormath::Aos::Vector3*);
 			void* (__fastcall* RotEularDegreeToRadian)(fox::uix::impl::UixUtilityImpl* this_, Vectormath::Aos::Vector3*);
 			void* (__fastcall* GetPathIdFromChar)(fox::uix::impl::UixUtilityImpl* this_, char const*);
-			void* (__fastcall* GetPaletteColor)(fox::uix::impl::UixUtilityImpl* this_, fox::StringId);
+			fox::Color* (__fastcall* GetPaletteColor)(fox::uix::impl::UixUtilityImpl* this_, fox::Color*, fox::StringId);
 		};
 
 		union UixUtilityImpl_vtbl
