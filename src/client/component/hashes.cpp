@@ -102,6 +102,20 @@ namespace hashes
 
 		void start() override
 		{
+			command::add("hash_string", [](const command::params& params)
+			{
+				const auto str = params.get(1);
+				const auto hash = game::fox::FoxStrHash32(str.data(), str.size());
+				console::info("hash: 0x%llX, low: 0x%X", hash.id, hash.f.l);
+			});
+
+			command::add("hash_path", [](const command::params& params)
+			{
+				const auto str = params.get(1);
+				const auto hash = game::fox::fs::PathCodeImpl_::FromString(str.data());
+				console::info("hash: 0x%llX", hash);
+			});
+
 			if (!utils::flags::has_flag("dump-hashes"))
 			{
 				return;

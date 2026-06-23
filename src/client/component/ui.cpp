@@ -15,6 +15,8 @@ namespace ui
 	{
 		vars::var_ptr ui_mbdvc_color;
 		vars::var_ptr ui_custom_colors_enable;
+		vars::var_ptr ui_disable_noise;
+		vars::var_ptr ui_disable_dot_pattern;
 
 		std::unordered_set<std::uint32_t> mbdvc_color_hashes =
 		{
@@ -29,6 +31,7 @@ namespace ui
 
 		utils::hook::detour graph_manager_get_palette_color_hook;
 		utils::hook::detour model_node_common_destructor_hook;
+		utils::hook::detour create_resource_from_path_hook;
 
 		__int64 graph_manager_get_palette_color_stub(void* a1, unsigned int hash, game::fox::Color* color)
 		{
@@ -125,6 +128,27 @@ namespace ui
 
 			a.jmp(SELECT_VALUE(0x141DBD568, 0x140E2E908, 0x0, 0x0));
 		}
+
+		unsigned int create_resource_from_path_stub(game::fox::Path* path)
+		{
+			if (ui_disable_noise->current.enabled())
+			{
+				switch (path->id)
+				{
+				case 0x15692A9C64A9E4D6: // /Assets/tpp/common_source/ui/common_texture/cm_noise_512.ftex
+				case 0x156BE0C0307C1BE0: // /Assets/tpp/common_source/ui/common_texture/cm_noise_256.ftex
+					path->id = 0x156929125C00F11A; // /Assets/fox/ui/texture/cm_ui_blank_alp.ftex
+					break;
+				}
+			}
+
+			if (ui_disable_dot_pattern->current.enabled() && path->id == 0x156BD7ED5CE38A27)
+			{
+				path->id = 0x156929125C00F11A; // /Assets/fox/ui/texture/cm_ui_blank_alp.ftex
+			}
+
+			return create_resource_from_path_hook.invoke<unsigned int>(path);
+		}
 	}
 
 	class component final : public component_interface
@@ -144,9 +168,14 @@ namespace ui
 			ui_custom_colors_enable = vars::register_bool("ui_color_tweaks", false, vars::var_flag_saved, "enable ui color tweaks");
 			ui_custom_colors_enable->set_callback = update_bg_nodes;
 
+			ui_disable_noise = vars::register_bool("ui_disable_noise", false, vars::var_flag_saved, "disable ui noise (needs restart)");
+			ui_disable_dot_pattern = vars::register_bool("ui_disable_dot_pattern", false, vars::var_flag_saved, "disable dot pattern (needs restart)");
+
 			graph_manager_get_palette_color_hook.create(SELECT_VALUE(0x141DAB770, 0x140E1C6D0, 0x0, 0x0), graph_manager_get_palette_color_stub);
 			utils::hook::jump(SELECT_VALUE(0x141DBD559, 0x140E2E8F9, 0x0, 0x0), utils::hook::assemble(model_node_create_common_stub), true);
 			model_node_common_destructor_hook.create(SELECT_VALUE(0x141DBD320, 0x140E2E6C0, 0x0, 0x0), model_node_common_destructor_stub);
+
+			create_resource_from_path_hook.create(game::fox::gr::dg::TextureManager_::CreateResourceFromFile.get(), create_resource_from_path_stub);
 
 			// remove "Open Legal & Privacy" button
 			if (game::environment::is_tpp())
