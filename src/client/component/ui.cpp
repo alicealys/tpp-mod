@@ -168,14 +168,17 @@ namespace ui
 			ui_custom_colors_enable = vars::register_bool("ui_color_tweaks", false, vars::var_flag_saved, "enable ui color tweaks");
 			ui_custom_colors_enable->set_callback = update_bg_nodes;
 
-			ui_disable_noise = vars::register_bool("ui_disable_noise", false, vars::var_flag_saved, "disable ui noise (needs restart)");
-			ui_disable_dot_pattern = vars::register_bool("ui_disable_dot_pattern", false, vars::var_flag_saved, "disable dot pattern (needs restart)");
-
 			graph_manager_get_palette_color_hook.create(SELECT_VALUE(0x141DAB770, 0x140E1C6D0, 0x0, 0x0), graph_manager_get_palette_color_stub);
 			utils::hook::jump(SELECT_VALUE(0x141DBD559, 0x140E2E8F9, 0x0, 0x0), utils::hook::assemble(model_node_create_common_stub), true);
 			model_node_common_destructor_hook.create(SELECT_VALUE(0x141DBD320, 0x140E2E6C0, 0x0, 0x0), model_node_common_destructor_stub);
 
-			create_resource_from_path_hook.create(game::fox::gr::dg::TextureManager_::CreateResourceFromFile.get(), create_resource_from_path_stub);
+			if (game::environment::is_tpp())
+			{
+				ui_disable_noise = vars::register_bool("ui_disable_noise", false, vars::var_flag_saved, "disable ui noise (needs restart)");
+				ui_disable_dot_pattern = vars::register_bool("ui_disable_dot_pattern", false, vars::var_flag_saved, "disable dot pattern (needs restart)");
+
+				create_resource_from_path_hook.create(game::fox::gr::dg::TextureManager_::CreateResourceFromFile.get(), create_resource_from_path_stub);
+			}
 
 			// remove "Open Legal & Privacy" button
 			if (game::environment::is_tpp())
