@@ -663,7 +663,7 @@ namespace renderer
 			game::fox::gr::dg::plugins::Draw2DRenderer_::Execute_Packet2DBox(instance, &packet);
 		}
 
-		void add_box2(game::fox::gr::dg::plugins::Draw2DRenderer* instance, float width, float height, float* uv = nullptr)
+		void add_box2(game::fox::gr::dg::plugins::Draw2DRenderer* instance, float x, float y, float width, float height, float* uv = nullptr)
 		{
 			game::fox::Color color{};
 			color.values[0] = 1.f;
@@ -702,31 +702,34 @@ namespace renderer
 				result_uv[3][1] = uv[3];
 			}
 
+			auto start_x = x + width / 2.f;
+			auto start_y = y + height / 2.f;
+
 			game::fox::gr::Packet2DTriangleStrip<4> triangle_strip{};
 			triangle_strip.vertices[0].color = color_int;
-			triangle_strip.vertices[0].v[0] = float_to_half(-0.5f * width);
-			triangle_strip.vertices[0].v[1] = float_to_half(0.5f * height);
+			triangle_strip.vertices[0].v[0] = float_to_half(start_x + -0.5f * width);
+			triangle_strip.vertices[0].v[1] = float_to_half(start_y + 0.5f * height);
 			triangle_strip.vertices[0].v[2] = float_to_half(0.f);
 			triangle_strip.vertices[0].v[3] = float_to_half(result_uv[0][0]);
 			triangle_strip.vertices[0].v[4] = float_to_half(result_uv[0][1]);
 
 			triangle_strip.vertices[1].color = color_int;
-			triangle_strip.vertices[1].v[0] = float_to_half(-0.5f * width);
-			triangle_strip.vertices[1].v[1] = float_to_half(-0.5f * height);
+			triangle_strip.vertices[1].v[0] = float_to_half(start_x + -0.5f * width);
+			triangle_strip.vertices[1].v[1] = float_to_half(start_y + -0.5f * height);
 			triangle_strip.vertices[1].v[2] = float_to_half(0.f);
 			triangle_strip.vertices[1].v[3] = float_to_half(result_uv[1][0]);
 			triangle_strip.vertices[1].v[4] = float_to_half(result_uv[1][1]);
 
 			triangle_strip.vertices[2].color = color_int;
-			triangle_strip.vertices[2].v[0] = float_to_half(0.5f * width);
-			triangle_strip.vertices[2].v[1] = float_to_half(0.5f * height);
+			triangle_strip.vertices[2].v[0] = float_to_half(start_x + 0.5f * width);
+			triangle_strip.vertices[2].v[1] = float_to_half(start_y + 0.5f * height);
 			triangle_strip.vertices[2].v[2] = float_to_half(0.f);
 			triangle_strip.vertices[2].v[3] = float_to_half(result_uv[2][0]);
 			triangle_strip.vertices[2].v[4] = float_to_half(result_uv[2][1]);
 
 			triangle_strip.vertices[3].color = color_int;
-			triangle_strip.vertices[3].v[0] = float_to_half(0.5f * width);
-			triangle_strip.vertices[3].v[1] = float_to_half(-0.5f * height);
+			triangle_strip.vertices[3].v[0] = float_to_half(start_x + 0.5f * width);
+			triangle_strip.vertices[3].v[1] = float_to_half(start_y + -0.5f * height);
 			triangle_strip.vertices[3].v[2] = float_to_half(0.f);
 			triangle_strip.vertices[3].v[3] = float_to_half(result_uv[3][0]);
 			triangle_strip.vertices[3].v[4] = float_to_half(result_uv[3][1]);
@@ -863,7 +866,7 @@ namespace renderer
 		void draw_box_internal(game::fox::gr::dg::plugins::Draw2DRenderer* instance, unsigned int material,
 			float x, float y, float width, float height, float* color, params_t* params)
 		{
-			set_position(instance, x + width / 2.f, y + height / 2.f);
+			set_position(instance, 0.f, 0.f);
 			set_material(instance, nullptr);
 			set_cull_mode_alpha(instance, 2, 1);
 			set_color(instance, color);
@@ -874,7 +877,7 @@ namespace renderer
 				set_material(instance, material);
 			}
 
-			add_box2(instance, width, height);
+			add_box2(instance, x, y, width, height);
 		}
 
 		float draw_text_internal_formatted(game::fox::gr::dg::plugins::Draw2DRenderer* instance, const char* text, float height, float x, float y, float* color,
@@ -882,14 +885,14 @@ namespace renderer
 		{
 			height *= get_font_scaling();
 
-			set_position(instance, x, y + height);
+			set_position(instance, 0.f, 0.f);
 			set_other_params(instance, params);
 
 			const auto has_stencil = display_width != 0.f && display_height != 0.f;
 			if (has_stencil)
 			{
-				add_stencil(instance, 0.f, -height, display_width, display_height);
-				set_position(instance, x - scroll_x, y + height - scroll_y);
+				add_stencil(instance, x, y, display_width, display_height);
+				set_position(instance, -scroll_x, -scroll_y);
 				set_other_params(instance, params);
 			}
 
@@ -911,8 +914,8 @@ namespace renderer
 				set_color(instance, color);
 			}
 
-			auto offset_x = 0.f;
-			auto offset_y = 0.f;
+			auto offset_x = x;
+			auto offset_y = y + height;
 
 			float string_color[4]{};
 			string_color[0] = 1.f;
@@ -964,14 +967,14 @@ namespace renderer
 		{
 			height *= get_font_scaling();
 
-			set_position(instance, x, y + height);
+			set_position(instance, 0.f, 0.f);
 			set_other_params(instance, params);
 
 			const auto has_stencil = display_width != 0.f && display_height != 0.f;
 			if (has_stencil)
 			{
-				add_stencil(instance, 0.f, -height, display_width, display_height);
-				set_position(instance, x - scroll_x, y + height - scroll_y);
+				add_stencil(instance, x, y, display_width, display_height);
+				set_position(instance, -scroll_x, -scroll_y);
 				set_other_params(instance, params);
 			}
 
@@ -993,7 +996,7 @@ namespace renderer
 				set_color(instance, color);
 			}
 
-			const auto width = add_string_custom(instance, text, -1, height, nullptr, 0.f, 0.f, word_wrapping, display_width, caret_index);
+			const auto width = add_string_custom(instance, text, -1, height, nullptr, x, y + height, word_wrapping, display_width, caret_index);
 			if (has_stencil)
 			{
 				remove_stencil(instance);
@@ -1270,14 +1273,14 @@ namespace renderer
 		float x, float y, float* color, bool formatted, float display_width, float display_height,
 		float scroll_x, float scroll_y, bool word_wrapping, int caret_index, params_t* params)
 	{
-		set_position(instance, x, y + height);
+		set_position(instance, 0.f, 0.f);
 		set_other_params(instance, params);
 
 		const auto has_stencil = display_width != 0.f && display_height != 0.f;
 		if (has_stencil)
 		{
-			add_stencil(instance, 0.f, -height, display_width, display_height);
-			set_position(instance, x - scroll_x, y + height - scroll_y);
+			add_stencil(instance, x, y, display_width, display_height);
+			set_position(instance, -scroll_x, -scroll_y);
 			set_other_params(instance, params);
 		}
 
@@ -1299,7 +1302,7 @@ namespace renderer
 			set_color(instance, color);
 		}
 
-		const auto width = add_string_custom_artist(instance, text, -1, height, nullptr, 0.f, 0.f, formatted, word_wrapping, display_width, caret_index);
+		const auto width = add_string_custom_artist(instance, text, -1, height, nullptr, x, y + height, formatted, word_wrapping, display_width, caret_index);
 		if (has_stencil)
 		{
 			remove_stencil(instance);

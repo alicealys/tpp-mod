@@ -216,7 +216,7 @@ namespace lui
 	void ui_image::set_texture(const std::string& path, const std::uint32_t type)
 	{
 		const auto hash = game::fox::fs::PathCodeImpl_::FromString(path.data());
-		this->set_texture(hash);
+		this->set_texture(hash, type);
 	}
 
 	void ui_image::set_blend(const float blend, const std::uint32_t type)
@@ -324,8 +324,8 @@ namespace lui
 			image->textures_[i].blend = 1.f;
 		}
 
-		image->set_shader("fox_2d_Basic_LyBL");
-		image->set_texture("/Assets/tpp/common_source/ui/common_texture/cm_wht_64.ftex");
+		image->set_shader("fox_2d_Basic_LyMUL");
+		image->set_texture("/Assets/tpp/common_source/ui/common_texture/cm_wht_64.ftex", TEXTURE_BASE);
 
 		return image;
 	}
