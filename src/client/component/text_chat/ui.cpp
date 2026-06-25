@@ -54,7 +54,6 @@ namespace text_chat::ui
 			float line_height;
 			float width;
 			float height;
-			float display_width_adjust;
 			float scrollbar_width = 6.f;
 			float chat_direction = 1.f;
 		} chat_settings{};
@@ -215,7 +214,7 @@ namespace text_chat::ui
 				color_outline[2] = 0.f;
 				color_outline[3] = alpha;
 
-				const auto display_width = chat_settings.width - chat_settings.margin * 2.f - chat_settings.scrollbar_width - chat_settings.font_height;
+				const auto display_width = chat_settings.width - chat_settings.margin * 2.f - chat_settings.scrollbar_width;
 				auto lines = 1;
 				renderer::calc_text_width(message.buffer, chat_settings.font_height, true, true, display_width, &lines);
 
@@ -321,8 +320,7 @@ namespace text_chat::ui
 				chat_settings.margin = 4.f;
 				chat_settings.scrollbar_width = 5.f * scale;
 				chat_settings.font_height = chat_settings.base_font_height * scale;
-				chat_settings.line_height = chat_settings.base_line_height * scale;	
-				chat_settings.display_width_adjust = -chat_settings.font_height;
+				chat_settings.line_height = chat_settings.base_line_height * scale;
 				chat_settings.height = var_chat_height->current.get_int() * chat_settings.line_height;
 				chat_settings.chat_direction = var_chat_direction->current.get_int() == 0 ? 1.f : -1.f;
 
