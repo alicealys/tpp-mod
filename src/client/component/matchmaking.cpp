@@ -290,7 +290,7 @@ namespace matchmaking
 		void update_kick_list()
 		{
 			const auto kick_num = std::min(16ull, kicked_steam_ids.size());
-			set_lobby_data("kick_num", kicked_steam_ids.size());
+			set_lobby_data("kick_num", kick_num);
 			
 			auto index = 0;
 			for (const auto& id : kicked_steam_ids)
