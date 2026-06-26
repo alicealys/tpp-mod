@@ -394,7 +394,7 @@ namespace patches
 			a.test(r14, r14);
 			a.jz(is_nullptr);
 
-			a.mov(eax, word_ptr(r14, rax, 1));
+			a.movzx(eax, word_ptr(r14, rax, 1));
 			a.jmp(continue_);
 
 			a.bind(is_nullptr);
