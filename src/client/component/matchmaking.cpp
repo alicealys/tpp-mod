@@ -289,12 +289,17 @@ namespace matchmaking
 
 		void update_kick_list()
 		{
+			const auto kick_num = std::min(16ull, kicked_steam_ids.size());
 			set_lobby_data("kick_num", kicked_steam_ids.size());
-
+			
 			auto index = 0;
 			for (const auto& id : kicked_steam_ids)
 			{
 				set_lobby_data(utils::string::va("kicked_id_%d", index++), id);
+				if (index >= 16)
+				{
+					break;
+				}
 			}
 		}
 
@@ -499,8 +504,12 @@ namespace matchmaking
 
 			create_lobby_cb_hook.create(SELECT_VALUE_LANG(0x1405A18E0, 0x1466D0C80), create_lobby_cb_stub);
 			create_lobby_hook.create(SELECT_VALUE_LANG(0x1405A1B60, 0x1405A1380), create_lobby_stub);
+
+			// cap kick_num to 16
 			utils::hook::nop(SELECT_VALUE_LANG(0x1405A29DE, 0x0), 6);
-			utils::hook::call(SELECT_VALUE_LANG(0x1405A29DE, 0x0), atoi_stub); // cap kick_num to 16
+			utils::hook::call(SELECT_VALUE_LANG(0x1405A29DE, 0x0), atoi_stub); 
+			utils::hook::nop(SELECT_VALUE_LANG(0x1405D4AEE, 0x0), 6);
+			utils::hook::call(SELECT_VALUE_LANG(0x1405D4AEE, 0x0), atoi_stub);
 
 			scheduler::once(hook_steam_matchmaking, scheduler::net);
 			scheduler::loop(run_frame, scheduler::session);
