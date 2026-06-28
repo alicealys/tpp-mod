@@ -108,7 +108,7 @@ namespace server_logging
 		void pre_load() override
 		{
 			var_server_logging = vars::register_bool("net_server_logging", false, vars::var_flag_saved, "enable server logging");
-			var_net_server_heartbeat = vars::register_int("net_server_heartbeat", 0, 0, std::numeric_limits<int>::max(), 0, "backend server heartbeat interval");
+			var_net_server_heartbeat = vars::register_int("net_server_heartbeat", 0, vars::var_flag_saved, std::numeric_limits<int>::max(), 0, "backend server heartbeat interval");
 		}
 
 		void start() override
