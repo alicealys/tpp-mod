@@ -434,10 +434,29 @@ namespace patches
 			return fv2_resource_manager_get_model_hook.invoke<void*>(a1, a2);
 		}
 
+		void sub_1411126C0_stub(utils::hook::assembler& a)
+		{
+			const auto l1 = a.new_label();
+			static char buf[0x1000]{};
+
+			a.mov(rax, qword_ptr(rcx));
+			a.call(qword_ptr(rax, 0x158));
+			a.movzx(r8d, word_ptr(rbp, -0x38));
+			a.mov(r15d, 0x7FF);
+
+			a.test(rax, rax);
+			a.jnz(l1);
+			a.mov(rax, &buf);
+
+			a.bind(l1);
+			a.jmp(SELECT_VALUE_LANG(0x141112E1D, 0x0));
+		}
+
 		void patch_mgo_crashes()
 		{
 			utils::hook::jump(SELECT_VALUE_LANG(0x14125EBC1, 0x14125F071), utils::hook::assemble(shell_impl_active_shell_at_empty_work_stub), true);
 			utils::hook::jump(SELECT_VALUE_LANG(0x1407A7C10, 0x1407A7A80), utils::hook::assemble(sub_1407A7F70_stub), true);
+			utils::hook::jump(SELECT_VALUE_LANG(0x141112E0C, 0x0), utils::hook::assemble(sub_1411126C0_stub), true);
 			fv2_resource_manager_get_model_hook.create(SELECT_VALUE_LANG(0x14029FE80, 0x1436E73F0), fv2_resource_manager_get_model_stub);
 		}
 
