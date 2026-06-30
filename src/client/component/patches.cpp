@@ -440,6 +440,46 @@ namespace patches
 			utils::hook::jump(SELECT_VALUE_LANG(0x1407A7C10, 0x1407A7A80), utils::hook::assemble(sub_1407A7F70_stub), true);
 			fv2_resource_manager_get_model_hook.create(SELECT_VALUE_LANG(0x14029FE80, 0x1436E73F0), fv2_resource_manager_get_model_stub);
 		}
+
+		utils::hook::detour json_get_hook;
+
+		struct json_value
+		{
+			union u_t
+			{
+				int integer;
+				double value;
+				char byte;
+				void* ptr;
+			};
+
+			u_t u;
+			char type;
+		};
+
+		json_value* json_get_stub(void* j, const char* key)
+		{
+			const auto value = json_get_hook.invoke<json_value*>(j, key);
+			if (value->type == 1 || value->type == 2)
+			{
+				if (key == "voluntary_coord_camera_count"s)
+				{
+					value->u.integer = std::min(1, value->u.integer);
+				}
+
+				if (key == "voluntary_coord_mine_count"s)
+				{
+					value->u.integer = std::min(4, value->u.integer);
+				}
+			}
+
+			return value;
+		}
+
+		void patch_fob_security()
+		{
+			json_get_hook.create(SELECT_VALUE_LANG(0x141A0B7D0, 0x0), json_get_stub);
+		}
 	}
 
 	class component final : public component_interface
@@ -543,6 +583,11 @@ namespace patches
 
 			patch_sensitivity();
 			patch_fov();
+
+			if (game::environment::is_tpp())
+			{
+				patch_fob_security();
+			}
 		}
 	};
 }
