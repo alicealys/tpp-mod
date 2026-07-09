@@ -1122,7 +1122,7 @@ namespace renderer
 			auto draw = false;
 			for (auto i = *parameters->drawList; i != nullptr; i = i->next)
 			{
-				if (i->priority > 100)
+				if (i->priority > 100 && i->priority < 250)
 				{
 					draw = true;
 					break;

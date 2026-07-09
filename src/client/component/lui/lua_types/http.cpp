@@ -105,5 +105,6 @@ namespace lui::scripting::http
 	void clear()
 	{
 		requests.clear();
+		server_requests.clear();
 	}
 }
