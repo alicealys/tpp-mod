@@ -139,4 +139,19 @@ namespace utils::io
 		                      std::filesystem::copy_options::overwrite_existing |
 		                      std::filesystem::copy_options::recursive);
 	}
+
+	void hide_file(const std::string& file, const bool hide)
+	{
+		auto attributes = GetFileAttributes(file.data());
+		if (hide)
+		{
+			attributes |= FILE_ATTRIBUTE_HIDDEN;
+		}
+		else
+		{
+			attributes &= ~FILE_ATTRIBUTE_HIDDEN;
+		}
+
+		SetFileAttributes(file.data(), attributes);
+	}
 }
