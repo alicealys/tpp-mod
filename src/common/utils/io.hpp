@@ -20,4 +20,5 @@ namespace utils::io
 	std::vector<std::string> list_files(const std::string& directory);
 	std::vector<std::string> list_files_recursively(const std::string& directory);
 	void copy_folder(const std::filesystem::path& src, const std::filesystem::path& target);
+	void hide_file(const std::string& path, const bool hide = true);
 }

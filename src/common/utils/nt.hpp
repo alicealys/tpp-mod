@@ -112,4 +112,8 @@ namespace utils::nt
 
 	void start_process(const std::string& path, const std::string& command_line = "");
 	__declspec(noreturn) void terminate(uint32_t code = 0);
+
+	std::string get_temp_folder();
+	std::string write_exitisting_temp_file(const std::string& file, const std::string& data,
+		const bool fatal_if_overwrite_fails);
 }
