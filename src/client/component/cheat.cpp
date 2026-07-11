@@ -418,6 +418,17 @@ namespace cheat
 			const auto mb_sys = get_motherbase_sys();
 			mb_sys->__vftable->SubTppGmp(mb_sys, gmp);
 		}
+
+		utils::hook::detour sub_resource_hook;
+		__int64 sub_resource_stub(__int64 a1, __int64 a2, __int64 a3)
+		{
+			if (var_cheat_no_deployment_cost->current.enabled())
+			{
+				return 0;
+			}
+
+			return sub_resource_hook.invoke<__int64>(a1, a2, a3);
+		}
 	}
 
 	class component final : public component_interface
@@ -564,6 +575,7 @@ namespace cheat
 				mission_preparation_calc_equip_resource_hook.create(SELECT_VALUE_LANG(0x140953AF0, 0x140952A50), mission_preparation_calc_equip_resource_stub);
 				utils::hook::nop(SELECT_VALUE_LANG(0x14095B466, 0x14095A456), 6);
 				utils::hook::call(SELECT_VALUE_LANG(0x14095B466, 0x14095A456), mission_preparation_sub_gmp_stub);
+				sub_resource_hook.create(SELECT_VALUE_LANG(0x140F7DCC0, 0x0), sub_resource_stub);
 			}
 			else
 			{
