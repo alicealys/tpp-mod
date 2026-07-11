@@ -105,6 +105,8 @@ namespace cheat
 				break;
 			}
 
+			header->fields.unk = 0;
+
 			status->fields.proficiency = 15;
 			status->fields.ds_medal = 1;
 			status->fields.ds_cross = 1;
@@ -116,6 +118,7 @@ namespace cheat
 			status->fields.unselectable = 0;
 			status->fields.direct_contract = 0;
 			status->fields.enemy = 0;
+			status->fields.designation = 1 + index % 7;
 
 			switch (status->fields.designation)
 			{
@@ -138,24 +141,19 @@ namespace cheat
 			case game::tpp::mbm::impl::StaffControllerImpl::DESIGNATION_MEDICAL:
 				header->fields.stat_distribution = game::tpp::mbm::impl::StaffControllerImpl::STAT_DIST_MEDICAL_PLUS_AND_COMBAT_PLUS;
 				break;
-			default:
-			case game::tpp::mbm::impl::StaffControllerImpl::DESIGNATION_BRIG:
-				status->fields.designation = game::tpp::mbm::impl::StaffControllerImpl::DESIGNATION_WAITING_ROOM_1;
-				break;
 			}
 		}
 
-		void modify_stats(game::tpp::mbm::impl::StaffControllerImpl::StaffHeader* header, game::tpp::mbm::impl::StaffControllerImpl::StaffStatusSync* status)
+		void modify_stats(
+			game::tpp::mbm::impl::StaffControllerImpl::StaffHeader* header,
+			game::tpp::mbm::impl::StaffControllerImpl::StaffSeed* seed,
+			game::tpp::mbm::impl::StaffControllerImpl::StaffStatusSync* status)
 		{
-			auto total_staff = 0;
 			for (auto i = 0; i < 3500; i++)
 			{
-				if (status[i].fields.designation >= game::tpp::mbm::impl::StaffControllerImpl::DESIGNATION_UNITS_START &&
-					status[i].fields.designation < game::tpp::mbm::impl::StaffControllerImpl::DESIGNATION_COUNT)
-				{
-					++total_staff;
-					modify_stats_internal(&header[i], &status[i], i);
-				}
+				seed[i].fields.unk1 = 0;
+				seed[i].fields.unk2 = utils::cryptography::random::get_integer();
+				modify_stats_internal(&header[i], &status[i], i);
 			}
 
 			static std::vector<std::uint32_t> required_skills =
@@ -166,34 +164,16 @@ namespace cheat
 				{game::tpp::mbm::impl::StaffControllerImpl::SKILL_MEDIC_3},
 			};
 
-			const auto staff_per_skill = total_staff / required_skills.size();
-			auto assigned_skills = 0;
-			auto current_skill = 0;
-			auto staff_assigned = 0;
-
 			for (auto i = 0; i < 3500; i++)
 			{
-				if (status[i].fields.designation >= game::tpp::mbm::impl::StaffControllerImpl::DESIGNATION_UNITS_START && 
-					status[i].fields.designation <= game::tpp::mbm::impl::StaffControllerImpl::DESIGNATION_UNITS_END)
+				if (i < game::tpp::mbm::impl::StaffControllerImpl::SKILL_ANTI_BALLISTIC_MISSILE_ENGINEER_3)
 				{
-					header[i].fields.skill = required_skills[current_skill];
-
-					++assigned_skills;
-					++staff_assigned;
-					
-					if (assigned_skills >= staff_per_skill && ((total_staff - staff_assigned) >= staff_per_skill))
-					{
-						assigned_skills = 0;
-						++current_skill;
-						if (current_skill >= required_skills.size())
-						{
-							break;
-						}
-					}
-					else if (total_staff == staff_assigned)
-					{
-						break;
-					}
+					header[i].fields.skill = i;
+				}
+				else
+				{
+					const auto skill_index = i % required_skills.size();
+					header[i].fields.skill = required_skills[skill_index];
 				}
 			}
 		}
@@ -225,8 +205,17 @@ namespace cheat
 				return;
 			}
 
+			mb_sys->staffController->staffCount = 3500;
+
+			for (auto i = 0; i < 7; i++)
+			{
+				mb_sys->staffController->sectionCounts[i] = 500;
+				mb_sys->staffController->sectionLevels[i] = 162;
+			}
+
 			modify_stats(
 				mb_sys->staffController->mbmStaffSvarsHeaders,
+				mb_sys->staffController->mbmStaffSvarsSeeds,
 				mb_sys->staffController->mbmStaffSvarsStatusesSync);
 		}
 

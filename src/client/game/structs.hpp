@@ -2432,8 +2432,13 @@ namespace game
 					std::uint32_t data;
 				};
 
-				struct StaffSeed
+				union StaffSeed
 				{
+					struct
+					{
+						std::uint32_t unk1 : 11;
+						std::uint32_t unk2 : 21;
+					} fields;
 					std::uint32_t data;
 				};
 
