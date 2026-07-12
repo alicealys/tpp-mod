@@ -50,9 +50,15 @@ namespace custom_server
 			steam_storage_vftbl* vftbl;
 		};
 
-		std::string get_custom_server_data_folder()
+		std::string get_url_hash()
 		{
 			const auto url_hash = utils::cryptography::sha1::compute(custom_url, true).substr(0, 8);
+			return url_hash;
+		}
+
+		std::string get_custom_server_data_folder()
+		{
+			const auto url_hash = get_url_hash();
 			const auto folder = std::format("tpp-mod\\steam_storage\\server-{}", url_hash);
 			return folder;
 		}
@@ -181,7 +187,8 @@ namespace custom_server
 
 		std::string get_auth_token_save_path()
 		{
-			const auto path = utils::properties::get_appdata_path() / "auth_token";
+			const auto url_hash = get_url_hash();
+			const auto path = utils::properties::get_appdata_path() / "auth_tokens" / url_hash;
 			return path.generic_string();
 		}
 
