@@ -15,6 +15,7 @@
 #include <utils/cryptography.hpp>
 #include <utils/http.hpp>
 #include <utils/compression.hpp>
+#include <utils/properties.hpp>
 
 namespace custom_server
 {
@@ -172,10 +173,75 @@ namespace custom_server
 			return CreateFileW(new_path.data(), desired_access, share_mode, security_attributes, creation_disp, flags, template_file);
 		}
 
+		struct auth_ticket_custom_t
+		{
+			std::uint64_t account_id;
+			char auth_token[32];
+		};
+
+		std::string get_auth_token_save_path()
+		{
+			const auto path = utils::properties::get_appdata_path() / "auth_token";
+			return path.generic_string();
+		}
+
+		std::optional<std::string> get_auth_token()
+		{
+			const auto auth_token = utils::flags::get_flag("auth-token");
+			if (auth_token.has_value() && auth_token->size() == sizeof(auth_ticket_custom_t::auth_token))
+			{
+				return auth_token;
+			}
+
+			const auto path = get_auth_token_save_path();
+			std::string data;
+			if (utils::io::read_file(path, &data))
+			{
+				const auto token = utils::string::trim(data);
+				if (token.size() == sizeof(auth_ticket_custom_t::auth_token))
+				{
+					return {token};
+				}
+			}
+
+			return {};
+		}
+
+		utils::hook::detour get_auth_session_ticket_hook;
+		unsigned int get_auth_session_ticket_stub(game::ISteamUser* this_, void* data, int max_size, int* ticket_size)
+		{
+			const auto auth_token = get_auth_token();
+			if (!auth_token.has_value() || 
+				auth_token->size() != sizeof(auth_ticket_custom_t::auth_token) || 
+				max_size < sizeof(auth_ticket_custom_t))
+			{
+				return get_auth_session_ticket_hook.invoke<unsigned int>(this_, data, max_size, ticket_size);
+			}
+
+			game::steam_id steam_id{};
+			this_->__vftable->GetSteamID(this_, &steam_id);
+
+			utils::io::write_file(get_auth_token_save_path(), auth_token.value());
+
+			const auto ticket = reinterpret_cast<auth_ticket_custom_t*>(data);
+			ticket->account_id = steam_id.bits;
+			std::memcpy(ticket->auth_token, auth_token->data(), sizeof(auth_ticket_custom_t::auth_token));
+			*ticket_size = sizeof(auth_ticket_custom_t);
+
+			static char dummy_ticket[512]{};
+			static int dummy_ticket_size{};
+			return get_auth_session_ticket_hook.invoke<unsigned int>(this_, dummy_ticket, 512, &dummy_ticket_size);
+		}
+
+		void hook_steam_user()
+		{
+			const auto steam_user = (*game::SteamUser)();
+			get_auth_session_ticket_hook.create(steam_user->__vftable->GetAuthSessionTicket, get_auth_session_ticket_stub);
+		}
+
 		void apply_custom_server()
 		{
 			const auto custom_server = var_custom_server->current.get_string();
-
 			if (custom_server.empty())
 			{
 				return;
@@ -198,6 +264,8 @@ namespace custom_server
 			}
 
 			utils::hook::inject(SELECT_VALUE(0x1407D346C, 0x140572D76, 0x1407D23EC, 0x1405724C6) + 3, custom_url);
+
+			scheduler::once(hook_steam_user, scheduler::net);
 		}
 
 		std::wstring parse_proxy_url(const std::string& url)
