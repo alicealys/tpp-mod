@@ -192,12 +192,17 @@ namespace custom_server
 			return path.generic_string();
 		}
 
-		std::optional<std::string> get_auth_token()
+		std::optional<std::string> get_auth_token(bool from_file = true)
 		{
 			const auto auth_token = utils::flags::get_flag("auth-token");
 			if (auth_token.has_value() && auth_token->size() == sizeof(auth_ticket_custom_t::auth_token))
 			{
 				return auth_token;
+			}
+
+			if (!from_file)
+			{
+				return {};
 			}
 
 			const auto path = get_auth_token_save_path();
@@ -246,6 +251,15 @@ namespace custom_server
 			get_auth_session_ticket_hook.create(steam_user->__vftable->GetAuthSessionTicket, get_auth_session_ticket_stub);
 		}
 
+		void set_command_line_stub(char* buffer, size_t size, const char* arg1, const char* arg2)
+		{
+			const auto auth_token = get_auth_token(false);
+			if (auth_token.has_value())
+			{
+				snprintf(buffer, size, "-auth-token %s", auth_token->data());
+			}
+		}
+
 		void apply_custom_server()
 		{
 			const auto custom_server = var_custom_server->current.get_string();
@@ -271,6 +285,7 @@ namespace custom_server
 			}
 
 			utils::hook::inject(SELECT_VALUE(0x1407D346C, 0x140572D76, 0x1407D23EC, 0x1405724C6) + 3, custom_url);
+			utils::hook::call(SELECT_VALUE(0x14052EF25, 0x1402DCE75, 0x0, 0x0), set_command_line_stub);
 
 			scheduler::once(hook_steam_user, scheduler::net);
 		}
