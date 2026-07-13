@@ -50,6 +50,7 @@ namespace command
 
 			std::vector<const char*> cmds;
 
+			auto was_space = true;
 			while (*command_line)
 			{
 				if (*command_line == '"')
@@ -57,16 +58,18 @@ namespace command
 					inq = !inq;
 				}
 
-				if ((*command_line == '+' || *command_line == '-') && !inq)
+				if ((*command_line == '+' || *command_line == '-') && !inq && was_space)
 				{
 					const auto cmd = command_line + 1;
 					if (*command_line == '+')
 					{
 						cmds.emplace_back(cmd);
 					}
+
 					*command_line = '\0';
 				}
 
+				was_space = *command_line == ' ';
 				command_line++;
 			}
 
