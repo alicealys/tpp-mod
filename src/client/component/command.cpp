@@ -56,12 +56,14 @@ namespace command
 				{
 					inq = !inq;
 				}
-				// look for a + separating character
-				// if commandLine came from a file, we might have real line seperators
-				if ((*command_line == '+' && !inq) || *command_line == '\n' || *command_line == '\r')
+
+				if ((*command_line == '+' || *command_line == '-') && !inq)
 				{
 					const auto cmd = command_line + 1;
-					cmds.emplace_back(cmd);
+					if (*command_line == '+')
+					{
+						cmds.emplace_back(cmd);
+					}
 					*command_line = '\0';
 				}
 
