@@ -324,29 +324,10 @@ namespace custom_server
 			return result;
 		}
 
-		BOOL win_http_crack_url_stub(LPCWSTR url, DWORD length, DWORD flags, LPURL_COMPONENTS url_components)
-		{
-			const auto domain = var_net_server_url_ovveride->current.get_string();
-			const auto pos = StrStrW(url, L"/tppstm");
-
-			std::wstring new_url;
-			if (!domain.empty() && !is_using_custom_server())
-			{
-				new_url = utils::string::convert(domain);
-				new_url += (url + (pos - url));
-				url = new_url.data();
-			}
-
-			return WinHttpCrackUrl(url, length, flags, url_components);
-		}
-
 		void patch_win_http()
 		{
 			utils::hook::nop(SELECT_VALUE(0x141A5C9F6, 0x1414AE416, 0x0, 0x0), 6);
 			utils::hook::call(SELECT_VALUE(0x141A5C9F6, 0x1414AE416, 0x0, 0x0), win_http_set_option_stub);
-
-			utils::hook::nop(SELECT_VALUE(0x141A5CA98, 0x1414AE4B8, 0x0, 0x0), 6);
-			utils::hook::call(SELECT_VALUE(0x141A5CA98, 0x1414AE4B8, 0x0, 0x0), win_http_crack_url_stub);
 		}
 
 		std::uint8_t* get_static_key()
@@ -516,7 +497,6 @@ namespace custom_server
 		{
 			var_custom_server = vars::register_string("net_custom_server", "", vars::var_flag_saved | vars::var_flag_latched, "custom server url (empty = disabled)");
 			var_net_proxy_url = vars::register_string("net_proxy_url", "", vars::var_flag_saved, "proxy url for backend server (example: http://1.2.3.4:1234 empty = disabled)");
-			var_net_server_url_ovveride = vars::register_string("net_server_base_url_ovveride", "", vars::var_flag_saved, "override the backend server's base url (empty = disabled)");
 		}
 
 		void start() override
