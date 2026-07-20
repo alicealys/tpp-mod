@@ -56,11 +56,57 @@ namespace custom_server
 			return url_hash;
 		}
 
-		std::string get_custom_server_data_folder()
+		std::string get_legacy_custom_server_data_folder()
 		{
 			const auto url_hash = get_url_hash();
 			const auto folder = std::format("tpp-mod\\steam_storage\\server-{}", url_hash);
 			return folder;
+		}
+
+		std::uint64_t get_user_steamid()
+		{
+			const auto steam_user = (*game::SteamUser)();
+			game::steam_id steam_id{};
+			steam_user->__vftable->GetSteamID(steam_user, &steam_id);
+			return steam_id.bits;
+		}
+
+		std::string get_base_path()
+		{
+			const auto steam_id = get_user_steamid();
+			const auto appdata = utils::properties::get_appdata_path();
+			return std::format("{}\\userdata\\{}", appdata.generic_string(), steam_id);
+		}
+
+		std::string get_custom_server_data_folder()
+		{
+			const auto url_hash = get_url_hash();
+			return std::format("{}\\steam_storage\\server-{}", get_base_path(), url_hash);
+		}
+
+		std::string get_auth_token_save_path()
+		{
+			const auto url_hash = get_url_hash();
+			return std::format("{}\\auth_tokens\\{}", get_base_path(), url_hash);
+		}
+
+		void migrate_from_legacy_folder()
+		{
+			const auto legacy_folder = get_legacy_custom_server_data_folder();
+			const auto new_folder = get_custom_server_data_folder();
+			if (utils::io::directory_exists(legacy_folder) && !utils::io::directory_exists(new_folder))
+			{
+				utils::io::create_directory(new_folder);
+				utils::io::copy_folder(legacy_folder, new_folder);
+				utils::io::remove_directory(legacy_folder);
+			}
+
+			const auto appdata = utils::properties::get_appdata_path();
+			const auto old_auth_tokens_path = std::format("{}\\auth_tokens", appdata.generic_string());
+			if (utils::io::directory_exists(old_auth_tokens_path))
+			{
+				utils::io::remove_directory(old_auth_tokens_path);
+			}
 		}
 
 		std::string get_custom_server_data_file_path(const std::string& file_name)
@@ -185,13 +231,6 @@ namespace custom_server
 			char auth_token[32];
 		};
 
-		std::string get_auth_token_save_path()
-		{
-			const auto url_hash = get_url_hash();
-			const auto path = utils::properties::get_appdata_path() / "auth_tokens" / url_hash;
-			return path.generic_string();
-		}
-
 		std::optional<std::string> get_auth_token(bool from_file = true)
 		{
 			const auto auth_token = utils::flags::get_flag("auth-token");
@@ -247,6 +286,11 @@ namespace custom_server
 
 		void hook_steam_user()
 		{
+			migrate_from_legacy_folder();
+
+			const auto folder = get_custom_server_data_folder();
+			utils::io::write_file(std::format("{}\\server_url.txt", folder), custom_url);
+
 			const auto steam_user = (*game::SteamUser)();
 			get_auth_session_ticket_hook.create(steam_user->__vftable->GetAuthSessionTicket, get_auth_session_ticket_stub);
 		}
@@ -277,9 +321,6 @@ namespace custom_server
 				file_write_hook.create(SELECT_VALUE_LANG(0x1401703C0, 0x14357B660), file_write_stub);
 
 				utils::hook::set(SELECT_VALUE_LANG(0x14208D260, 0x14E1300B8), create_file_stub);
-
-				const auto folder = get_custom_server_data_folder();
-				utils::io::write_file(std::format("{}\\server_url.txt", folder), custom_url);
 
 				utils::hook::jump(SELECT_VALUE_LANG(0x14016FC2B, 0x14357A1FB), utils::hook::assemble(steam_storage_read_file_stub), true);
 			}

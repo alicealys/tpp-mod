@@ -36,7 +36,6 @@ namespace patches
 
 		void thread_sleep()
 		{
-			std::this_thread::yield();
 		}
 
 		unsigned int get_processor_count()
@@ -506,7 +505,7 @@ namespace patches
 	public:
 		void pre_load() override
 		{
-			var_worker_count = vars::register_int("com_worker_count", 4, 2, std::numeric_limits<int>::max(),
+			var_worker_count = vars::register_int("com_worker_count", 4, 2, std::thread::hardware_concurrency(),
 				vars::var_flag_saved | vars::var_flag_latched, "maxiumum number of job executor worker threads");
 
 			var_unlock_fps = vars::register_bool("com_unlock_fps", false, 
