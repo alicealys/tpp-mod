@@ -475,6 +475,15 @@ namespace patches
 			char type;
 		};
 
+		struct fob_construct_param_fields_t
+		{
+			std::uint32_t unk1 : 1;
+			std::uint32_t area_id : 7;
+			std::uint32_t color : 4;
+			std::uint32_t area_code : 7;
+			std::uint32_t unk3 : 13;
+		};
+
 		json_value* json_get_stub(void* j, const char* key)
 		{
 			const auto value = json_get_hook.invoke<json_value*>(j, key);
@@ -488,6 +497,18 @@ namespace patches
 				if (key == "voluntary_coord_mine_count"s)
 				{
 					value->u.integer = std::min(4, value->u.integer);
+				}
+
+				if (key == "construct_param"s && value->u.integer == 0)
+				{
+					fob_construct_param_fields_t default_construct_param{};
+					default_construct_param.unk1 = 1;
+					default_construct_param.area_id = 70;
+					default_construct_param.color = 0;
+					default_construct_param.area_code = 70;
+					default_construct_param.unk3 = 56;
+
+					value->u.integer = *reinterpret_cast<int*>(&default_construct_param);
 				}
 			}
 
