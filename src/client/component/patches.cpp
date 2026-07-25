@@ -475,14 +475,65 @@ namespace patches
 			char type;
 		};
 
-		struct fob_construct_param_fields_t
+		union fob_construct_param_t
 		{
-			std::uint32_t unk1 : 1;
-			std::uint32_t area_id : 7;
-			std::uint32_t color : 4;
-			std::uint32_t area_code : 7;
-			std::uint32_t unk3 : 13;
+			struct
+			{
+				std::uint32_t unk1 : 1;
+				std::uint32_t area : 7;
+				std::uint32_t color_bits1 : 4;
+				std::uint32_t layout : 10;
+				std::uint32_t lat_long : 6;
+				std::uint32_t color_bits2 : 1;
+				std::uint32_t pad : 3;
+			} fields;
+			std::uint32_t packed;
 		};
+
+		void validate_construct_param(fob_construct_param_t& param)
+		{
+			param.fields.unk1 = 1;
+			param.fields.pad = 0;
+
+#define SNAP_VALUE(value, min, max, ceil) \
+			if (value >= min && param.fields.layout <= ceil) \
+			{ \
+				value = std::clamp(param.fields.layout, min, max); \
+			} \
+
+			if (param.fields.layout >= 10 && param.fields.layout <= 110)
+			{
+				SNAP_VALUE(param.fields.layout, 10u, 13u, 19u);
+				SNAP_VALUE(param.fields.layout, 20u, 23u, 29u);
+				SNAP_VALUE(param.fields.layout, 30u, 33u, 39u);
+				SNAP_VALUE(param.fields.layout, 40u, 43u, 49u);
+				SNAP_VALUE(param.fields.layout, 50u, 53u, 59u);
+				SNAP_VALUE(param.fields.layout, 60u, 63u, 69u);
+				SNAP_VALUE(param.fields.layout, 70u, 73u, 79u);
+				SNAP_VALUE(param.fields.layout, 80u, 83u, 89u);
+				SNAP_VALUE(param.fields.layout, 90u, 93u, 99u);
+				SNAP_VALUE(param.fields.layout, 100u, 103u, 110u);
+			}
+			else
+			{
+				param.fields.layout = 10;
+			}
+
+			if (param.fields.area >= 10 && param.fields.area < 80)
+			{
+				SNAP_VALUE(param.fields.layout, 10u, 11u, 19u);
+				SNAP_VALUE(param.fields.layout, 20u, 21u, 29u);
+				SNAP_VALUE(param.fields.layout, 30u, 32u, 39u);
+				SNAP_VALUE(param.fields.layout, 40u, 42u, 49u);
+				SNAP_VALUE(param.fields.layout, 50u, 53u, 59u);
+				SNAP_VALUE(param.fields.layout, 60u, 63u, 69u);
+				SNAP_VALUE(param.fields.layout, 70u, 71u, 79u);
+			}
+			else
+			{
+				param.fields.area = 10;
+			}
+		}
 
 		json_value* json_get_stub(void* j, const char* key)
 		{
@@ -499,16 +550,12 @@ namespace patches
 					value->u.integer = std::min(4, value->u.integer);
 				}
 
-				if (key == "construct_param"s && value->u.integer == 0)
+				if (key == "construct_param"s)
 				{
-					fob_construct_param_fields_t default_construct_param{};
-					default_construct_param.unk1 = 1;
-					default_construct_param.area_id = 70;
-					default_construct_param.color = 0;
-					default_construct_param.area_code = 70;
-					default_construct_param.unk3 = 56;
-
-					value->u.integer = *reinterpret_cast<int*>(&default_construct_param);
+					fob_construct_param_t param{};
+					param.packed = value->u.integer;
+					validate_construct_param(param);
+					value->u.integer = param.packed;
 				}
 			}
 
