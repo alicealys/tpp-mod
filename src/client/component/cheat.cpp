@@ -87,7 +87,7 @@ namespace cheat
 		void modify_stats_internal(game::tpp::mbm::impl::StaffControllerImpl::StaffHeader* header,
 			game::tpp::mbm::impl::StaffControllerImpl::StaffStatusSync* status, const std::uint32_t index)
 		{
-			header->fields.peak_rank = game::tpp::mbm::impl::StaffControllerImpl::RANK_SPP;
+			header->fields.peak_rank = game::tpp::mbm::STAFF_SECTION_RANK_SPP;
 			header->fields.stat_bonus = 3;
 			header->fields.suppress_stats = 0;
 
@@ -122,23 +122,23 @@ namespace cheat
 
 			switch (status->fields.designation)
 			{
-			case game::tpp::mbm::impl::StaffControllerImpl::DESIGNATION_COMBAT:
-			case game::tpp::mbm::impl::StaffControllerImpl::DESIGNATION_SECURITY:
+			case game::tpp::mbm::SECTION_COMBAT:
+			case game::tpp::mbm::SECTION_SECURITY:
 				header->fields.stat_distribution = game::tpp::mbm::impl::StaffControllerImpl::STAT_DIST_COMBAT_PLUS_AND_INTEL_PLUS;
 				break;
-			case game::tpp::mbm::impl::StaffControllerImpl::DESIGNATION_RND:
+			case game::tpp::mbm::SECTION_DEVELOP:
 				header->fields.stat_distribution = game::tpp::mbm::impl::StaffControllerImpl::STAT_DIST_RND_PLUS_AND_BASE_DEV_PLUS;
 				break;
-			case game::tpp::mbm::impl::StaffControllerImpl::DESIGNATION_BASE_DEV:
+			case game::tpp::mbm::SECTION_BASE_DEV:
 				header->fields.stat_distribution = game::tpp::mbm::impl::StaffControllerImpl::STAT_DIST_BASE_DEV_PLUS_AND_INTEL_PLUS;
 				break;
-			case game::tpp::mbm::impl::StaffControllerImpl::DESIGNATION_SUPPORT:
+			case game::tpp::mbm::SECTION_SUPPORT:
 				header->fields.stat_distribution = game::tpp::mbm::impl::StaffControllerImpl::STAT_DIST_SUPPORT_PLUS_AND_COMBAT_PLUS;
 				break;
-			case game::tpp::mbm::impl::StaffControllerImpl::DESIGNATION_INTEL:
+			case game::tpp::mbm::SECTION_SPY:
 				header->fields.stat_distribution = game::tpp::mbm::impl::StaffControllerImpl::STAT_DIST_INTEL_PLUS_AND_COMBAT_PLUS;
 				break;
-			case game::tpp::mbm::impl::StaffControllerImpl::DESIGNATION_MEDICAL:
+			case game::tpp::mbm::SECTION_MEDICAL:
 				header->fields.stat_distribution = game::tpp::mbm::impl::StaffControllerImpl::STAT_DIST_MEDICAL_PLUS_AND_COMBAT_PLUS;
 				break;
 			}
@@ -158,15 +158,19 @@ namespace cheat
 
 			static std::vector<std::uint32_t> required_skills =
 			{
-				{game::tpp::mbm::impl::StaffControllerImpl::SKILL_RANGER_3},
-				{game::tpp::mbm::impl::StaffControllerImpl::SKILL_SENTRY_3},
-				{game::tpp::mbm::impl::StaffControllerImpl::SKILL_DEFENDER_3},
-				{game::tpp::mbm::impl::StaffControllerImpl::SKILL_MEDIC_3},
+				{game::tpp::mbm::STAFF_SKILL_ID_RANGER_LV3},
+				{game::tpp::mbm::STAFF_SKILL_ID_SENTRY_LV3},
+				{game::tpp::mbm::STAFF_SKILL_ID_DEFENDER_LV3},
+				{game::tpp::mbm::STAFF_SKILL_ID_MEDIC_LV3},
 			};
 
 			for (auto i = 0; i < 3500; i++)
 			{
-				if (i < game::tpp::mbm::impl::StaffControllerImpl::SKILL_ANTI_BALLISTIC_MISSILE_ENGINEER_3)
+				if (i < game::tpp::mbm::STAFF_SKILL_ID_INTERCEPTOR_MISSILE_ENGINEER_LV3 &&
+					i != game::tpp::mbm::STAFF_SKILL_ID_TROUBLEMAKER_HARASSMENT &&
+					i != game::tpp::mbm::STAFF_SKILL_ID_TROUBLEMAKER_INTEMPERATELY &&
+					i != game::tpp::mbm::STAFF_SKILL_ID_TROUBLEMAKER_VIOLENCE &&
+					i != game::tpp::mbm::STAFF_SKILL_ID_NONE)
 				{
 					header[i].fields.skill = i;
 				}
@@ -346,7 +350,6 @@ namespace cheat
 			if (params.size() < 2)
 			{
 				const auto cmd = params.get(0);
-				console::warn("WARNING: modifying resource counts CAN get you banned! (confirmed by experience) use at your own risk.");
 				console::info("usage: %s <resource index> <amount>\n", cmd.data());
 				for (auto i = 0; i < 59; i++)
 				{
