@@ -100,13 +100,31 @@ namespace matchmaking
 
 		void update_match_settings()
 		{
-			const auto match_container = game::s_mgoMatchMakingManager->match_container;
+			const auto match_container = game::s_mgoMatchMakingManager->match_container; 
 			if (match_container == nullptr || match_container->match == nullptr)
 			{
 				return;
 			}
 
-			std::memcpy(&match_container->match->match_settings, &match_settings, sizeof(game::match_settings_t));
+			const auto match = match_container->match;
+			if (match_settings.rules.pl_current_match < 0)
+			{
+				match_settings.rules.pl_current_match = 0;
+			}
+
+			if (match_settings.rules.pl_current_match > 4)
+			{
+				match_settings.rules.pl_current_match = 4;
+			}
+
+			match_settings.map_id = match_settings.rules.slots[match_settings.rules.pl_current_match].m_map_id;
+			match_settings.match_rule = match_settings.rules.slots[match_settings.rules.pl_current_match].m_match_rule;
+			match_settings.walker_gear = match_settings.rules.slots[match_settings.rules.pl_current_match].m_walker_gear;
+			match_settings.day_night = match_settings.rules.slots[match_settings.rules.pl_current_match].m_dn;
+			match_settings.match_variant = match_settings.rules.slots[match_settings.rules.pl_current_match].m_variant;
+			match_settings.unique_char = match_settings.rules.slots[match_settings.rules.pl_current_match].m_unique_char;
+
+			std::memcpy(&match->match_settings, &match_settings, sizeof(game::match_settings_t));
 		}
 
 		void create_lobby_stub(game::mgo_match_t* match, game::match_settings_t* settings)
@@ -510,6 +528,10 @@ namespace matchmaking
 			utils::hook::call(SELECT_VALUE_LANG(0x1405A29DE, 0x0), atoi_stub); 
 			utils::hook::nop(SELECT_VALUE_LANG(0x1405D4AEE, 0x0), 6);
 			utils::hook::call(SELECT_VALUE_LANG(0x1405D4AEE, 0x0), atoi_stub);
+
+			// set location id to map id if bigger than 7
+			utils::hook::set<std::uint16_t>(SELECT_VALUE_LANG(0x1408A21AA, 0x0), 0xC388);
+			utils::hook::set<std::uint16_t>(SELECT_VALUE_LANG(0x14089A7EA, 0x0), 0xC388);
 
 			scheduler::once(hook_steam_matchmaking, scheduler::net);
 			scheduler::loop(run_frame, scheduler::session);
