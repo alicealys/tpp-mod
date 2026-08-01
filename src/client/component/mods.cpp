@@ -20,13 +20,43 @@ namespace mods
     {
         utils::hook::detour fs_module_init_hook;
 
+        std::unordered_map<std::string, game::fox::fs::MountPoint*> custom_mount_points;
+
         void add_patch_file(const std::string& path)
         {
-            const auto handle = game::fox::fs::FileLocationManager_::CreatePackMountPoint("patch", path.data(), 0, 17);
+            const auto abs_path = std::filesystem::absolute(path);
+            const auto path_str = abs_path.generic_string();
+
+            if (custom_mount_points.contains(path_str))
+            {
+                return;
+            }
+
+            console::debug("adding patch file %s\n", path_str.data());
+
+            const auto handle = game::fox::fs::FileLocationManager_::CreatePackMountPoint("patch", path_str.data(), 0, 17);
             if (handle)
             {
                 game::fox::fs::FileLocationManager_::SetIoHandleCount(handle, 0x10);
             }
+
+            custom_mount_points.insert(std::make_pair(path_str, handle));
+        }
+
+        void remove_patch_file(const std::string& path)
+        {
+            const auto abs_path = std::filesystem::absolute(path);
+            const auto path_str = abs_path.generic_string();
+            const auto iter = custom_mount_points.find(path_str);
+
+            if (iter == custom_mount_points.end())
+            {
+                return;
+            }
+
+            console::debug("removing patch file %s\n", path_str.data());
+            game::fox::fs::MountPoint_::Destroy(iter->second);
+            custom_mount_points.erase(iter);
         }
 
         void fs_module_init_stub()
@@ -120,6 +150,28 @@ namespace mods
                 }
 
                 load(path);
+            });
+
+            command::add("fs_addpatch", [](const command::params& params)
+            {
+                if (params.size() < 2)
+                {
+                    return;
+                }
+
+                const auto path = params.get(1);
+                add_patch_file(path.data());
+            });
+
+            command::add("fs_removepatch", [](const command::params& params)
+            {
+                if (params.size() < 2)
+                {
+                    return;
+                }
+
+                const auto path = params.get(1);
+                remove_patch_file(path.data());
             });
         }
     };
