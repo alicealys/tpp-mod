@@ -352,6 +352,17 @@ namespace session
 		return ruleset->playerTeams[ruleset->localPlayerSessionIndex];
 	}
 
+	const char* get_player_name(const unsigned char index)
+	{
+		const auto ruleset = get_active_ruleset();
+		if (ruleset == nullptr || index >= ruleset->numPlayers)
+		{
+			return nullptr;
+		}
+
+		return ruleset->unk1.__vftable->GetGamerTagBySessionIndex(&ruleset->unk1, index);
+	}
+
 	class component final : public component_interface
 	{
 	public:

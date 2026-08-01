@@ -110,6 +110,6 @@ namespace utils::string
 
 	std::string trim(const std::string& str, const std::string& whitespace = " \t\n\r\f\v");
 
-	char normalize_ascii_extended(char c);
+	char normalize_ascii_extended(char c, char bad_char = '?');
 	bool is_char_text(char c);
 }

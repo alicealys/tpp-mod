@@ -80,7 +80,7 @@ namespace text_chat
 		auto index = 0;
 		for (auto i = 0; i < msg.size(); i++)
 		{
-			auto c = utils::string::normalize_ascii_extended(msg[i]);
+			auto c = utils::string::normalize_ascii_extended(msg[i], '\0');
 			if (!utils::string::is_char_text(c))
 			{
 				continue;
