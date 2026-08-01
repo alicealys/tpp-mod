@@ -513,10 +513,6 @@ namespace matchmaking
 			create_lobby_cb_hook.create(SELECT_VALUE_LANG(0x1405A18E0, 0x1466D0C80), create_lobby_cb_stub);
 			create_lobby_hook.create(SELECT_VALUE_LANG(0x1405A1B60, 0x1405A1380), create_lobby_stub);
 
-			// set location id to map id if bigger than 7
-			utils::hook::set<std::uint16_t>(SELECT_VALUE_LANG(0x1408A21AA, 0x0), 0xC388);
-			utils::hook::set<std::uint16_t>(SELECT_VALUE_LANG(0x14089A7EA, 0x0), 0xC388);
-
 			scheduler::once(hook_steam_matchmaking, scheduler::net);
 			scheduler::loop(run_frame, scheduler::session);
 
