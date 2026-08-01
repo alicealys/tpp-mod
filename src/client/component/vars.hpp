@@ -110,7 +110,8 @@ namespace vars
 		bool enabled() const;
 		std::int32_t get_int() const;
 		float get_float() const;
-		std::string get_string() const;
+		const std::string& get_string() const;
+		const char* get_c_string() const;
 
 		vec2_t get_vec2() const;
 		vec3_t get_vec3() const;

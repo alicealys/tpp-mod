@@ -311,4 +311,39 @@ namespace utils::nt
 			"Temporary file was already written, but differs. It can't be overwritten as it's still in use: " +
 			file_path);
 	}
+
+	void relaunch_self(const std::string& extra_command_line, bool override_command_line)
+	{
+		const utils::nt::library self;
+
+		STARTUPINFOA startup_info;
+		PROCESS_INFORMATION process_info;
+
+		ZeroMemory(&startup_info, sizeof(startup_info));
+		ZeroMemory(&process_info, sizeof(process_info));
+		startup_info.cb = sizeof(startup_info);
+
+		char current_dir[MAX_PATH]{};
+		GetCurrentDirectoryA(sizeof(current_dir), current_dir);
+
+		std::string command_line = GetCommandLineA();
+		if (!extra_command_line.empty() || override_command_line)
+		{
+			if (override_command_line)
+			{
+				command_line = extra_command_line;
+			}
+			else
+			{
+				command_line += " " + extra_command_line;
+			}
+		}
+
+		CreateProcessA(self.get_path().data(), command_line.data(), nullptr, nullptr, false,
+			CREATE_NEW_CONSOLE, nullptr, current_dir, &startup_info, &process_info);
+
+		if (process_info.hThread && process_info.hThread != INVALID_HANDLE_VALUE) CloseHandle(process_info.hThread);
+		if (process_info.hProcess && process_info.hProcess != INVALID_HANDLE_VALUE) CloseHandle(process_info.hProcess);
+	}
+
 }

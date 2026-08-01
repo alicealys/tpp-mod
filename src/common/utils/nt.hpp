@@ -116,4 +116,5 @@ namespace utils::nt
 	std::string get_temp_folder();
 	std::string write_exitisting_temp_file(const std::string& file, const std::string& data,
 		const bool fatal_if_overwrite_fails);
+	void relaunch_self(const std::string& extra_command_line = "", bool override_command_line = false);
 }

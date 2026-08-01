@@ -323,7 +323,7 @@ namespace matchmaking
 
 		void update_match_password()
 		{
-			const auto password = var_match_password->current.get_string();
+			const auto& password = var_match_password->current.get_string();
 			if (password.empty())
 			{
 				set_lobby_data("has_password", 0);

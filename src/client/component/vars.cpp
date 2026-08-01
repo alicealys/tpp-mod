@@ -76,9 +76,15 @@ namespace vars
 		return std::get<float>(this->value_);
 	}
 
-	std::string var_value::get_string() const
+	const std::string& var_value::get_string() const
 	{
 		return std::get<std::string>(this->value_);
+	}
+
+	const char* var_value::get_c_string() const
+	{
+		const auto& str = std::get<std::string>(this->value_);
+		return str.data();
 	}
 
 	vec2_t var_value::get_vec2() const
