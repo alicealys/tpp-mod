@@ -5,7 +5,6 @@
 
 #include "command.hpp"
 #include "console.hpp"
-#include "patches.hpp"
 #include "scheduler.hpp"
 #include "vars.hpp"
 #include "filesystem.hpp"
