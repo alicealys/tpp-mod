@@ -535,9 +535,54 @@ namespace patches
 			}
 		}
 
-		json_value* json_get_stub(void* j, const char* key)
+		void validate_common_security(json_value* j)
+		{
+			const auto do_value = [&](const char* key, int max)
+			{
+				const auto value = json_get_hook.invoke<json_value*>(j, key);
+				if (value != nullptr && (value->type == 1 || value->type == 2))
+				{
+					value->u.integer = std::clamp(value->u.integer, 0, max);
+				}
+			};
+
+			do_value("uav", 2);
+			do_value("mine", 9);
+			do_value("decoy", 9);
+			do_value("camera", 7);
+			do_value("soldier", 8);
+			do_value("antitheft", 10);
+			do_value("ir_sensor", 5);
+		}
+
+		void validate_unique_security(json_value* j)
+		{
+			const auto do_value = [&](const char* key, int max)
+			{
+				const auto value = json_get_hook.invoke<json_value*>(j, key);
+				if (value != nullptr && (value->type == 1 || value->type == 2))
+				{
+					value->u.integer = std::clamp(value->u.integer, 0, max);
+				}
+			};
+
+			do_value("uav", 4);
+			do_value("mine", 12);
+			do_value("decoy", 12);
+			do_value("camera", 8);
+			do_value("soldier", 12);
+			do_value("antitheft", 22);
+			do_value("ir_sensor", 5);
+		}
+
+		json_value* json_get_stub(json_value* j, const char* key)
 		{
 			const auto value = json_get_hook.invoke<json_value*>(j, key);
+			if (value == nullptr)
+			{
+				return value;
+			}
+
 			if (value->type == 1 || value->type == 2)
 			{
 				if (key == "voluntary_coord_camera_count"s)
@@ -556,6 +601,20 @@ namespace patches
 					param.packed = value->u.integer;
 					validate_construct_param(param);
 					value->u.integer = param.packed;
+				}
+			}
+			else if (value->type == 0 || value->type == 7)
+			{
+				if (key == "common1_security"s ||
+					key == "common2_security"s ||
+					key == "common3_security"s)
+				{
+					validate_common_security(value);
+				}
+
+				if (key == "unique_security"s)
+				{
+					validate_unique_security(value);
 				}
 			}
 
