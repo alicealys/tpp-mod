@@ -528,6 +528,14 @@ namespace game
 			char __pad0[48];
 		};
 
+		namespace fs
+		{
+			struct MountPoint
+			{
+
+			};
+		}
+
 		namespace gk
 		{
 #pragma pack(push, 1)

@@ -25,7 +25,7 @@ namespace text_chat::mutes
 		{
 			std::unordered_set<std::uint64_t> list;
 
-			const auto str = cl_muted_players->current.get_string();
+			const auto& str = cl_muted_players->current.get_string();
 			const auto tokens = utils::string::split(str, ';');
 			for (const auto& token : tokens)
 			{

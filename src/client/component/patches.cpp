@@ -155,7 +155,7 @@ namespace patches
 		const char* get_persona_name_stub(game::ISteamFriends* this_)
 		{
 			static char buffer[0x200]{};
-			const auto name = var_name->current.get_string();
+			const auto& name = var_name->current.get_string();
 			strncpy_s(buffer, sizeof(buffer), name.data(), name.size());
 			return buffer;
 		}
@@ -686,7 +686,7 @@ namespace patches
 						return;
 					}
 
-					const auto name = var_name->current.get_string();
+					const auto& name = var_name->current.get_string();
 					strncpy_s(inst->ptr1->ptr1->ptr2->name, sizeof(inst->ptr1->ptr1->ptr2->name), name.data(), name.size());
 				};
 			}

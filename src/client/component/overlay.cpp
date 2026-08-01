@@ -8,6 +8,7 @@
 #include "scheduler.hpp"
 #include "session.hpp"
 #include "vars.hpp"
+#include "mods.hpp"
 
 #include <utils/hook.hpp>
 #include <utils/memory.hpp>
@@ -19,6 +20,7 @@ namespace overlay
 	{
 		vars::var_ptr var_ui_draw_fps;
 		vars::var_ptr var_ui_draw_ping;
+		vars::var_ptr var_ui_draw_mod;
 
 		float color_good[4] = {0.6f, 1.0f, 0.0f, 1.0f};
 		float color_ok[4] = {1.0f, 0.7f, 0.3f, 1.0f};
@@ -182,7 +184,7 @@ namespace overlay
 			return buffer;
 		}
 
-		void draw_overlay(game::fox::gr::dg::plugins::Draw2DRenderer* instance)
+		void draw_fps_ping(game::fox::gr::dg::plugins::Draw2DRenderer* instance)
 		{
 			const auto fps = static_cast<int>(cg_perf.average);
 
@@ -265,6 +267,39 @@ namespace overlay
 				renderer::draw_text(instance, ping_text, font_size, offset_x + ping_label_width, text_y, ping_color, color_outline);
 			}
 		}
+
+		void draw_mod_name(game::fox::gr::dg::plugins::Draw2DRenderer* instance)
+		{
+			const auto& mod = mods::var_fs_mod_path->latched.get_string();
+			if (mod.empty())
+			{
+				return;
+			}
+
+			static float color[4]{};
+			color[0] = 1.f;
+			color[1] = 1.f;
+			color[2] = 0.f;
+			color[3] = 1.f;
+
+			const auto font_size = 14.f;
+			const auto x = 1280.f - 20.f;
+			const auto y = 30.f;
+
+			const auto text = utils::string::va("Mod loaded: %s", mod.data());
+			const auto ping_value_width = renderer::calc_text_width(text, font_size);
+			renderer::draw_text(instance, text, font_size, x - ping_value_width, y, color, color_outline);
+		}
+
+		void draw_overlay(game::fox::gr::dg::plugins::Draw2DRenderer* instance)
+		{
+			draw_fps_ping(instance);
+
+			if (var_ui_draw_mod->current.enabled())
+			{
+				draw_mod_name(instance);
+			}
+		}
 	}
 
 	class component final : public component_interface
@@ -279,6 +314,7 @@ namespace overlay
 
 			var_ui_draw_fps = vars::register_bool("ui_draw_fps", 0, vars::var_flag_saved, "draw fps counter");
 			var_ui_draw_ping = vars::register_bool("ui_draw_ping", 0, vars::var_flag_saved, "draw ping counter");
+			var_ui_draw_mod = vars::register_bool("ui_draw_mod", 1, vars::var_flag_saved, "draw mod name");
 
 			renderer::on_frame(draw_overlay);
 		}

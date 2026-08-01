@@ -306,7 +306,7 @@ namespace custom_server
 
 		void apply_custom_server()
 		{
-			const auto custom_server = var_custom_server->current.get_string();
+			const auto& custom_server = var_custom_server->current.get_string();
 			if (custom_server.empty())
 			{
 				return;
@@ -347,7 +347,7 @@ namespace custom_server
 		{
 			auto result = WinHttpSetOption(handle, option, buffer, buffer_length);
 
-			const auto url = var_net_proxy_url->current.get_string();
+			const auto& url = var_net_proxy_url->current.get_string();
 			if (!url.empty())
 			{
 				auto url_w = parse_proxy_url(url);
@@ -504,7 +504,7 @@ namespace custom_server
 		headers["Connection"] = "Keep-Alive";
 		headers["Content-Type"] = "application/x-www-form-urlencoded";
 
-		const auto proxy_url = var_net_proxy_url->current.get_string();
+		const auto& proxy_url = var_net_proxy_url->current.get_string();
 		const auto result = utils::http::post_data(url->data->buffer, post_data, headers, {}, proxy_url);
 		if (!result.has_value())
 		{
