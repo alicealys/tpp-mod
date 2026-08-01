@@ -34,6 +34,15 @@ Configuration files are stored in `%localappdata%\tpp-mod`
 |:-:|
 | in game console |
 
+### Security
+
+Various crash/DoS exploits and other vulnerabilities have been patched. 
+
+### Performance
+
+The performance and FPS drop issues (notably the avatar edit menu, but also extends to the rest of the game) that have been introduced in the June 6 2026 update have been fixed.
+
+### Misc
 - discord rich presence
 - unlock fps and custom fps capping
 - fps and ping counter
