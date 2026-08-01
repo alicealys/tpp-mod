@@ -146,11 +146,6 @@ namespace patches
 			return scale_ramble_speed(value);
 		}
 
-		int strncpy_s_stub(char* dst, size_t size, char* src, size_t max_count)
-		{
-			return strncpy_s(dst, size, src, _TRUNCATE);
-		}
-
 		utils::hook::detour get_persona_name_hook;
 		const char* get_persona_name_stub(game::ISteamFriends* this_)
 		{
@@ -379,252 +374,6 @@ namespace patches
 			utils::hook::jump(SELECT_VALUE(0x1412BD4D0, 0x141222B00, 0x14A6AE6E0, 0x14BFD0A30), utils::hook::assemble(tps_camera_update_parameter_stub), true);
 			utils::hook::jump(SELECT_VALUE(0x1412A06C4, 0x1412147E4, 0x14A602CE7, 0x14BFA5E57), utils::hook::assemble(subjective_camera_update_parameter_stub), true);
 		}
-
-		void shell_impl_active_shell_at_empty_work_stub(utils::hook::assembler& a)
-		{
-			const auto is_nullptr = a.new_label();
-			const auto continue_ = a.new_label();
-
-			a.mov(eax, 0xFE00);
-			a.test(word_ptr(r13, 0x32), ax);
-			a.mov(rax, r11);
-			a.setnz(al);
-
-			a.test(r14, r14);
-			a.jz(is_nullptr);
-
-			a.movzx(eax, word_ptr(r14, rax, 1));
-			a.jmp(continue_);
-
-			a.bind(is_nullptr);
-			a.xor_(rax, rax);
-
-			a.bind(continue_);
-			a.movd(xmm13, eax);
-			a.lea(eax, qword_ptr(rdi, -0x146));
-			a.jmp(SELECT_VALUE_LANG(0x14125EBE1, 0x14125F091));
-		}
-
-		void sub_1407A7F70_stub(utils::hook::assembler& a)
-		{
-			const auto is_nullptr = a.new_label();
-
-			a.mov(rcx, qword_ptr(rcx, 0x3D0));
-			a.mov(rax, qword_ptr(rcx));
-			a.call(qword_ptr(rax, 0x20));
-
-			a.test(rax, rax);
-			a.jz(is_nullptr);
-			a.jmp(SELECT_VALUE_LANG(0x1407A7C1D, 0x1407A7A8D));
-
-			a.bind(is_nullptr);
-			a.mov(al, 1);
-			a.jmp(SELECT_VALUE_LANG(0x1407A7C8A, 0x1407A7AFA));
-		}
-
-		utils::hook::detour fv2_resource_manager_get_model_hook;
-		void* fv2_resource_manager_get_model_stub(void* a1, void* a2)
-		{
-			if (a1 == nullptr)
-			{
-				return nullptr;
-			}
-
-			return fv2_resource_manager_get_model_hook.invoke<void*>(a1, a2);
-		}
-
-		void sub_1411126C0_stub(utils::hook::assembler& a)
-		{
-			const auto l1 = a.new_label();
-			static char buf[0x1000]{};
-
-			a.mov(rax, qword_ptr(rcx));
-			a.call(qword_ptr(rax, 0x158));
-			a.movzx(r8d, word_ptr(rbp, -0x38));
-			a.mov(r15d, 0x7FF);
-
-			a.test(rax, rax);
-			a.jnz(l1);
-			a.mov(rax, &buf);
-
-			a.bind(l1);
-			a.jmp(SELECT_VALUE_LANG(0x141112E1D, 0x0));
-		}
-
-		void patch_mgo_crashes()
-		{
-			utils::hook::jump(SELECT_VALUE_LANG(0x14125EBC1, 0x14125F071), utils::hook::assemble(shell_impl_active_shell_at_empty_work_stub), true);
-			utils::hook::jump(SELECT_VALUE_LANG(0x1407A7C10, 0x1407A7A80), utils::hook::assemble(sub_1407A7F70_stub), true);
-			utils::hook::jump(SELECT_VALUE_LANG(0x141112E0C, 0x0), utils::hook::assemble(sub_1411126C0_stub), true);
-			fv2_resource_manager_get_model_hook.create(SELECT_VALUE_LANG(0x14029FE80, 0x1436E73F0), fv2_resource_manager_get_model_stub);
-		}
-
-		utils::hook::detour json_get_hook;
-
-		struct json_value
-		{
-			union u_t
-			{
-				int integer;
-				double value;
-				char byte;
-				void* ptr;
-			};
-
-			u_t u;
-			char type;
-		};
-
-		union fob_construct_param_t
-		{
-			struct
-			{
-				std::uint32_t unk1 : 1;
-				std::uint32_t area : 7;
-				std::uint32_t color_bits1 : 4;
-				std::uint32_t layout : 10;
-				std::uint32_t lat_long : 6;
-				std::uint32_t color_bits2 : 1;
-				std::uint32_t pad : 3;
-			} fields;
-			std::uint32_t packed;
-		};
-
-		void validate_construct_param(fob_construct_param_t& param)
-		{
-			param.fields.unk1 = 1;
-			param.fields.pad = 0;
-
-#define SNAP_VALUE(value, min, max, ceil) \
-			if (value >= min && param.fields.layout <= ceil) \
-			{ \
-				value = std::clamp(param.fields.layout, min, max); \
-			} \
-
-			if (param.fields.layout >= 10 && param.fields.layout <= 110)
-			{
-				SNAP_VALUE(param.fields.layout, 10u, 13u, 19u);
-				SNAP_VALUE(param.fields.layout, 20u, 23u, 29u);
-				SNAP_VALUE(param.fields.layout, 30u, 33u, 39u);
-				SNAP_VALUE(param.fields.layout, 40u, 43u, 49u);
-				SNAP_VALUE(param.fields.layout, 50u, 53u, 59u);
-				SNAP_VALUE(param.fields.layout, 60u, 63u, 69u);
-				SNAP_VALUE(param.fields.layout, 70u, 73u, 79u);
-				SNAP_VALUE(param.fields.layout, 80u, 83u, 89u);
-				SNAP_VALUE(param.fields.layout, 90u, 93u, 99u);
-				SNAP_VALUE(param.fields.layout, 100u, 103u, 110u);
-			}
-			else
-			{
-				param.fields.layout = 10;
-			}
-
-			if (param.fields.area >= 10 && param.fields.area < 80)
-			{
-				SNAP_VALUE(param.fields.layout, 10u, 11u, 19u);
-				SNAP_VALUE(param.fields.layout, 20u, 21u, 29u);
-				SNAP_VALUE(param.fields.layout, 30u, 32u, 39u);
-				SNAP_VALUE(param.fields.layout, 40u, 42u, 49u);
-				SNAP_VALUE(param.fields.layout, 50u, 53u, 59u);
-				SNAP_VALUE(param.fields.layout, 60u, 63u, 69u);
-				SNAP_VALUE(param.fields.layout, 70u, 71u, 79u);
-			}
-			else
-			{
-				param.fields.area = 10;
-			}
-		}
-
-		void validate_common_security(json_value* j)
-		{
-			const auto do_value = [&](const char* key, int max)
-			{
-				const auto value = json_get_hook.invoke<json_value*>(j, key);
-				if (value != nullptr && (value->type == 1 || value->type == 2))
-				{
-					value->u.integer = std::clamp(value->u.integer, 0, max);
-				}
-			};
-
-			do_value("uav", 2);
-			do_value("mine", 9);
-			do_value("decoy", 9);
-			do_value("camera", 7);
-			do_value("soldier", 8);
-			do_value("antitheft", 10);
-			do_value("ir_sensor", 5);
-		}
-
-		void validate_unique_security(json_value* j)
-		{
-			const auto do_value = [&](const char* key, int max)
-			{
-				const auto value = json_get_hook.invoke<json_value*>(j, key);
-				if (value != nullptr && (value->type == 1 || value->type == 2))
-				{
-					value->u.integer = std::clamp(value->u.integer, 0, max);
-				}
-			};
-
-			do_value("uav", 4);
-			do_value("mine", 12);
-			do_value("decoy", 12);
-			do_value("camera", 8);
-			do_value("soldier", 12);
-			do_value("antitheft", 22);
-			do_value("ir_sensor", 5);
-		}
-
-		json_value* json_get_stub(json_value* j, const char* key)
-		{
-			const auto value = json_get_hook.invoke<json_value*>(j, key);
-			if (value == nullptr)
-			{
-				return value;
-			}
-
-			if (value->type == 1 || value->type == 2)
-			{
-				if (key == "voluntary_coord_camera_count"s)
-				{
-					value->u.integer = std::min(1, value->u.integer);
-				}
-
-				if (key == "voluntary_coord_mine_count"s)
-				{
-					value->u.integer = std::min(4, value->u.integer);
-				}
-
-				if (key == "construct_param"s)
-				{
-					fob_construct_param_t param{};
-					param.packed = value->u.integer;
-					validate_construct_param(param);
-					value->u.integer = param.packed;
-				}
-			}
-			else if (value->type == 0 || value->type == 7)
-			{
-				if (key == "common1_security"s ||
-					key == "common2_security"s ||
-					key == "common3_security"s)
-				{
-					validate_common_security(value);
-				}
-
-				if (key == "unique_security"s)
-				{
-					validate_unique_security(value);
-				}
-			}
-
-			return value;
-		}
-
-		void patch_fob_security()
-		{
-			json_get_hook.create(SELECT_VALUE_LANG(0x141A0B7D0, 0x0), json_get_stub);
-		}
 	}
 
 	class component final : public component_interface
@@ -698,8 +447,6 @@ namespace patches
 			{
 				// /AppData 99c85cdbf2c837d50d37c82af2c837d5c12d5e80fbc837d5f2c837d5f2c837d5f2 (command line arg)
 				utils::hook::jump(SELECT_VALUE_LANG(0x1402DD2F0, 0x143A76D50), sub_143AA8300_stub);
-
-				patch_mgo_crashes();
 			}
 			else
 			{
@@ -710,9 +457,6 @@ namespace patches
 				}
 
 				get_ramble_speed_hook.create(SELECT_VALUE_LANG(0x140AFD550, 0x1484C25F0), get_ramble_speed_stub);
-
-				utils::hook::nop(SELECT_VALUE_LANG(0x1405597A1, 0x144B8861D), 6);
-				utils::hook::call(SELECT_VALUE_LANG(0x1405597A1, 0x144B8861D), strncpy_s_stub);
 			}
 
 			utils::hook::nop(SELECT_VALUE(0x1400013F9, 0x1400014E9, 0x142E4F8E8, 0x142232258), 6);
@@ -728,11 +472,6 @@ namespace patches
 
 			patch_sensitivity();
 			patch_fov();
-
-			if (game::environment::is_tpp())
-			{
-				patch_fob_security();
-			}
 		}
 	};
 }

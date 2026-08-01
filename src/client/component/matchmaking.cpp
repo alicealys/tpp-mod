@@ -396,16 +396,6 @@ namespace matchmaking
 			//utils::hook::set(&steam_matchmaking->__vftable->GetLobbyData, get_lobby_data_stub);
 			utils::hook::set(&steam_matchmaking->__vftable->AddRequestLobbyListNumericalFilter, add_request_lobby_list_numerical_filter);
 		}
-
-		int atoi_stub(const char* str)
-		{
-			auto count = std::atoi(str);
-			if (count > 16)
-			{
-				count = 16;
-			}
-			return count;
-		}
 	}
 
 	void ban_player_from_lobby(const std::uint64_t steam_id)
@@ -522,12 +512,6 @@ namespace matchmaking
 
 			create_lobby_cb_hook.create(SELECT_VALUE_LANG(0x1405A18E0, 0x1466D0C80), create_lobby_cb_stub);
 			create_lobby_hook.create(SELECT_VALUE_LANG(0x1405A1B60, 0x1405A1380), create_lobby_stub);
-
-			// cap kick_num to 16
-			utils::hook::nop(SELECT_VALUE_LANG(0x1405A29DE, 0x0), 6);
-			utils::hook::call(SELECT_VALUE_LANG(0x1405A29DE, 0x0), atoi_stub); 
-			utils::hook::nop(SELECT_VALUE_LANG(0x1405D4AEE, 0x0), 6);
-			utils::hook::call(SELECT_VALUE_LANG(0x1405D4AEE, 0x0), atoi_stub);
 
 			// set location id to map id if bigger than 7
 			utils::hook::set<std::uint16_t>(SELECT_VALUE_LANG(0x1408A21AA, 0x0), 0xC388);
