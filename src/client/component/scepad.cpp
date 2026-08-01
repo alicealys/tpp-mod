@@ -181,46 +181,46 @@ namespace scepad
                 console::error("[scepad] DSX++ client failed to send data!");
             }
         }
-
-        class component final : public component_interface
-        {
-        public:
-            void pre_load() override
-            {
-                if (game::environment::is_dedi())
-                {
-                    return;
-                }
-
-                var_dsx_enable = vars::register_bool("dsx_enable", true, 
-                    vars::var_flag_latched | vars::var_flag_saved, "enable DSX integration");
-            }
-
-            void start() override
-            {
-                if (game::environment::is_dedi() || !var_dsx_enable->current.enabled())
-                {
-                    return;
-                }
-
-                if (DSX::init() != DSX::Success) 
-                {
-                    console::error("[scepad] DSX++ client failed to initialize");
-                    return;
-                }
-
-                state_gun_fire_hook.create(SELECT_VALUE(0x14106F4E0, 0x14105FF40, 0x14106FD70, 0x141060130), state_gun_fire_stub);
-
-                console::info("[scepad] DSX++ client initialized");
-
-                scheduler::once([]
-                {
-                    scheduler::loop(update_scepad, scheduler::async, 30ms);
-                }, scheduler::net);
-                scheduler::loop(update_state, scheduler::main);
-            }
-        };
     }
+
+    class component final : public component_interface
+    {
+    public:
+        void pre_load() override
+        {
+            if (game::environment::is_dedi())
+            {
+                return;
+            }
+
+            var_dsx_enable = vars::register_bool("dsx_enable", true,
+                vars::var_flag_latched | vars::var_flag_saved, "enable DSX integration");
+        }
+
+        void start() override
+        {
+            if (game::environment::is_dedi() || !var_dsx_enable->current.enabled())
+            {
+                return;
+            }
+
+            if (DSX::init() != DSX::Success)
+            {
+                console::error("[scepad] DSX++ client failed to initialize");
+                return;
+            }
+
+            state_gun_fire_hook.create(SELECT_VALUE(0x14106F4E0, 0x14105FF40, 0x14106FD70, 0x141060130), state_gun_fire_stub);
+
+            console::info("[scepad] DSX++ client initialized");
+
+            scheduler::once([]
+            {
+                scheduler::loop(update_scepad, scheduler::async, 30ms);
+            }, scheduler::net);
+            scheduler::loop(update_state, scheduler::main);
+        }
+    };
 }
 
 REGISTER_COMPONENT(scepad::component)
