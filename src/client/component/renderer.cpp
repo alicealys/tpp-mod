@@ -491,8 +491,8 @@ namespace renderer
 			return offset_x;
 		}
 
-		float add_string_custom(game::fox::gr::dg::plugins::Draw2DRenderer* instance, const char* text, int length, float height, float* color = nullptr,
-			float start_x = 0.f, float start_y = 0.f, float offset_x = 0.f, float offset_y = 0.f, bool word_wrapping = false, float line_width = 0.f, int caret_index = -1)
+		float add_string_custom(game::fox::gr::dg::plugins::Draw2DRenderer* instance, const char* text, int length, float height, float* color,
+			float& offset_x, float& offset_y, float start_x, float start_y, bool word_wrapping = false, float line_width = 0.f, int caret_index = -1)
 		{
 			if (length < 0)
 			{
@@ -542,6 +542,8 @@ namespace renderer
 				instance->parameters->vertexBuffer, &instance->buffer, &instance->size, 144 * length));
 			std::memset(vertices, 0, sizeof(vertex_buffer) * length);
 
+			auto result_width = 0.f;
+
 			for (auto i = 0; i < length; i++)
 			{
 				game::fox::gr::dg::FontTextureMetrics font_metrics{};
@@ -549,6 +551,7 @@ namespace renderer
 
 				if (word_wrapping && offset_x + font_metrics.f9 * width >= line_width)
 				{
+					result_width = 0.f;
 					offset_x = 0.f;
 					offset_y += height;
 				}
@@ -607,13 +610,16 @@ namespace renderer
 					{
 					case '\t':
 						offset_x += width * 2.f;
+						result_width += width * 2.f;
 						break;
 					case '\n':
+						result_width = 0.f;
 						offset_x = 0.f;
 						offset_y += height;
 						break;
 					default:
 						offset_x += (font_metrics.f9 * width) + spacing;
+						result_width += (font_metrics.f9 * width) + spacing;
 						break;
 					}
 				}
@@ -638,7 +644,7 @@ namespace renderer
 			game::fox::gr::dg::CommandBuffer_::SetVector(instance->commandBuffer, 181, &vec1, 0);
 
 			game::fox::gr::dg::plugins::Draw2DRenderer_::DrawVertices(instance, 2, 24, 6 * length);
-			return offset_x;
+			return result_width;
 		}
 
 		void add_box(game::fox::gr::dg::plugins::Draw2DRenderer* instance, float x, float y, float z, float width, float height)
@@ -930,7 +936,7 @@ namespace renderer
 
 			const auto draw_current = [&](int skip_count)
 			{
-				offset_x += add_string_custom(instance, text, len, height, string_color, start_x, start_y, offset_x, offset_y,
+				add_string_custom(instance, text, len, height, string_color, offset_x, offset_y, start_x, start_y,
 					word_wrapping, display_width, caret_index);
 				text += len + skip_count;
 				len = 0;
@@ -953,8 +959,8 @@ namespace renderer
 
 			if (len > 0)
 			{
-				offset_x += add_string_custom(instance, text, len, height, string_color, start_x, start_y, 
-					offset_x, offset_y, word_wrapping, display_width, caret_index);
+				add_string_custom(instance, text, len, height, string_color, offset_x, offset_y, start_x, start_y,
+					word_wrapping, display_width, caret_index);
 			}
 
 			if (has_stencil)
@@ -1002,7 +1008,11 @@ namespace renderer
 				set_color(instance, color);
 			}
 
-			const auto width = add_string_custom(instance, text, -1, height, nullptr, start_x, start_y, 0.f, 0.f, word_wrapping, display_width, caret_index);
+			auto offset_x = 0.f;
+			auto offset_y = 0.f;
+
+			const auto width = add_string_custom(instance, text, -1, height, nullptr, offset_x, offset_y, 
+				start_x, start_y, word_wrapping, display_width, caret_index);
 			if (has_stencil)
 			{
 				remove_stencil(instance);
@@ -1250,11 +1260,15 @@ namespace renderer
 				continue;
 			}
 
-			if (word_wrapping && offset_x >= line_width)
+			if (word_wrapping && offset_x + font_metrics.f9 * width >= line_width) 
 			{
 				prev_offset = std::max(prev_offset, offset_x);
 				offset_x = 0.f;
-				(*line_count)++;
+
+				if (line_count != nullptr)
+				{
+					(*line_count)++;
+				}
 			}
 
 			switch (text[i])
