@@ -81,7 +81,24 @@ namespace text_chat::lobby
 				return;
 			}
 
-			const auto name = steam_friends->__vftable->GetFriendPersonaName(steam_friends, user);
+			auto is_self = false;
+			auto index = 0;
+			const auto client = session::get_client_by_steam_id(user.bits, &is_self, &index);
+			if (client == nullptr)
+			{
+				return;
+			}
+
+			auto name = session::get_player_name(static_cast<unsigned char>(index));
+			if (name == nullptr)
+			{
+				name = steam_friends->__vftable->GetFriendPersonaName(steam_friends, user);
+				if (name == nullptr)
+				{
+					return;
+				}
+			}
+
 			const auto is_team_message = msg_id == chat_team_message_msg_id;
 
 			const auto self_team = session::get_self_team();

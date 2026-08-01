@@ -262,13 +262,19 @@ namespace utils::string
 		return str.substr(first, range);
 	}
 
-	char normalize_ascii_extended(char c)
+	char normalize_ascii_extended(char c, char bad_char)
 	{
 		auto c_ = static_cast<unsigned char>(c);
-		const auto map = "????????????????????????????????????????????????????????????????AAAAAAACEEEEIIIIDNOOOOOxOUUUUYPSaaaaaaaceeeeiiiionooooo?ouuuuypy";
+		const auto map = "\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0AAAAAAACEEEEIIIIDNOOOOOxOUUUUYPSaaaaaaaceeeeiiiionooooo\0ouuuuypy";
 		if (c_ > 128 && c_ < 255)
 		{
-			return map[c_ - 128];
+			const auto mapped_char = map[c_ - 128];
+			if (mapped_char == 0)
+			{
+				return bad_char;
+			}
+
+			return mapped_char;
 		}
 
 		return c;

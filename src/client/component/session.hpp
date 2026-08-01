@@ -16,4 +16,5 @@ namespace session
 	game::tpp::mp::Ruleset* get_active_ruleset();
 	char get_player_team(const std::uint64_t steam_id);
 	char get_self_team();
+	const char* get_player_name(const unsigned char index);
 }

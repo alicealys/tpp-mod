@@ -6692,7 +6692,7 @@ namespace game
 				void(__fastcall* meth_17)(Ruleset_unk1*);
 				void(__fastcall* meth_18)(Ruleset_unk1*);
 				void(__fastcall* meth_19)(Ruleset_unk1*);
-				void(__fastcall* meth_20)(Ruleset_unk1*);
+				const char* (__fastcall* GetGamerTagBySessionIndex)(Ruleset_unk1*, unsigned char);
 				void(__fastcall* meth_21)(Ruleset_unk1*);
 				void(__fastcall* meth_22)(Ruleset_unk1*);
 				void(__fastcall* meth_23)(Ruleset_unk1*);
@@ -6716,15 +6716,17 @@ namespace game
 			char __pad1[64];
 			int numTeams;
 			TeamInfo** teams;
-			char __pad2[160];
+			char __pad2[20];
+			int numPlayers;
+			char __pad3[136];
 			int a1;
-			char __pad3[88];
+			char __pad4[88];
 			int state;
-			char __pad4[60];
+			char __pad5[60];
 			unsigned char currentRound;
-			char __pad5[9];
+			char __pad6[9];
 			unsigned char localPlayerSessionIndex;
-			char __pad6[961];
+			char __pad7[961];
 			char playerTeams[16];
 		};
 
