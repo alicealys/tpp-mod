@@ -8,9 +8,11 @@
 #include "matchmaking.hpp"
 #include "command.hpp"
 #include "scripting.hpp"
+#include "mods.hpp"
 
 #include <utils/hook.hpp>
 #include <utils/concurrency.hpp>
+#include <utils/io.hpp>
 
 namespace custom_maps
 {
@@ -29,16 +31,62 @@ namespace custom_maps
         using map_list_t = std::vector<map_info_t>;
         utils::concurrency::container<map_list_t> custom_map_list;
         std::string current_pack;
+        game::fox::fs::MountPoint* usermap_handle = nullptr;
+
+        std::optional<std::string> get_pack_base_name(const std::string& pack)
+        {
+            const auto start = pack.find_last_of('/');
+            const auto end = pack.find_last_of('.');
+
+            if (start < end && start != std::string::npos)
+            {
+                const auto name = pack.substr(start + 1, end - start - 1);
+                return {name};
+            }
+
+            return {};
+        }
+
+        void remove_current_map_packfile()
+        {
+            if (usermap_handle != nullptr)
+            {
+                game::fox::fs::MountPoint_::Destroy(usermap_handle);
+                usermap_handle = nullptr;
+            }
+        }
+
+        void try_add_map_packfile(const std::string& name)
+        {
+            current_pack = name;
+
+            const auto map_name = get_pack_base_name(name);
+            if (!map_name.has_value())
+            {
+                return;
+            }
+
+            const auto usermap_path = std::format("usermaps/{}/{}.dat", map_name.value(), map_name.value());
+            if (!utils::io::file_exists(usermap_path))
+            {
+                return;
+            }
+
+            console::debug("adding usermap packfile %s\n", usermap_path.data());
+            usermap_handle = mods::add_packfile(usermap_path, "texture", 255);
+        }
 
         game::fox::KernelString* get_location_package_path_stub(game::fox::KernelString* string, char* path)
         {
-            current_pack = path;
+            try_add_map_packfile(path);
             return utils::hook::invoke<game::fox::KernelString*>(SELECT_VALUE_LANG(0x1400165F0, 0x0), string, path);
         }
 
         utils::hook::detour get_package_paths_hook;
         void get_package_paths_stub(game::fox::Array<game::fox::Path>* paths, unsigned short location_code)
         {
+            console::debug("get package paths\n");
+            remove_current_map_packfile();
             current_pack = {};
 
             const auto found = custom_map_list.access<bool>([&](map_list_t& list)
@@ -54,7 +102,7 @@ namespace custom_maps
                 }
 
                 game::fox::Path path{};
-                current_pack = iter->location_pack;
+                try_add_map_packfile(iter->location_pack);
                 path.id = game::fox::fs::PathCodeImpl_::FromString(iter->location_pack.data());
                 game::fox::Array_::Path_PushBack(paths, &path);
                 return true;
@@ -209,18 +257,16 @@ namespace custom_maps
     {
         if (current_pack.empty())
         {
-            return "";
+            return {};
         }
 
-        const auto start = current_pack.find_last_of('/');
-        const auto end = current_pack.find_last_of('.');
-
-        if (start < end && start != std::string::npos)
+        const auto name = get_pack_base_name(current_pack);
+        if (name.has_value())
         {
-            return current_pack.substr(start + 1, end - start - 1);
+            return name.value();
         }
 
-        return current_pack;
+        return {};
     }
 
     class component final : public component_interface
@@ -283,7 +329,8 @@ namespace custom_maps
 
                 const auto map_id = static_cast<std::uint8_t>(params.get_int(1));
                 const auto location_code = static_cast<std::uint8_t>(params.get_int(2));
-                const auto location_pack = params.get(3);
+                const auto name = params.get(3);
+                const auto location_pack = format_location_package(name);
 
                 register_map(map_id, location_code, location_pack);
             });

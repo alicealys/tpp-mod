@@ -2,8 +2,6 @@
 
 #include "loader/component_loader.hpp"
 
-#include "game/game.hpp"
-
 #include "mods.hpp"
 #include "console.hpp"
 #include "scheduler.hpp"
@@ -120,24 +118,6 @@ namespace mods
             }
         }
 
-        game::fox::fs::MountPoint* add_patch_file(const std::string& path, const std::uint64_t type, const std::uint32_t flags)
-        {
-            const auto abs_path = std::filesystem::absolute(path);
-            const auto path_str = abs_path.generic_string();
-
-            const auto handle = game::fox::fs::MountPoint_::CreateWithPackFile(path.data(), path_str.data(), type, flags);
-            if (handle)
-            {
-                game::fox::fs::FileLocationManager_::SetIoHandleCount(handle, 0x10);
-            }
-            else
-            {
-                console::error("failed to create pack file %s\n", path.data());
-            }
-
-            return handle;
-        }
-
         void clear_mod(bool& needs_restart)
         {
             if (current_mod.path.has_value())
@@ -147,7 +127,7 @@ namespace mods
                 filesystem::unregister_path(path);
             }
 
-            needs_restart = (current_mod.flags & MOD_FLAG_NEEDS_RESTART) != 0;
+            needs_restart |= (current_mod.flags & MOD_FLAG_NEEDS_RESTART) != 0;
 
             for (auto& file : current_mod.pack_files)
             {
@@ -193,7 +173,7 @@ namespace mods
                 parse_mod_info(info_data, current_mod);
             }
 
-            needs_restart = (current_mod.flags & MOD_FLAG_NEEDS_RESTART) != 0;
+            needs_restart |= (current_mod.flags & MOD_FLAG_NEEDS_RESTART) != 0;
 
             for (auto& file : current_mod.pack_files)
             {
@@ -203,7 +183,7 @@ namespace mods
                 }
 
                 const auto pack_path = std::format("{}\\{}", normal_path, file.name);
-                file.handle = add_patch_file(pack_path, file.type, file.flags);
+                file.handle = add_packfile(pack_path, file.type, file.flags);
             }
 
             return true;
@@ -276,6 +256,30 @@ namespace mods
             command::execute("lui_restart");
 #endif
         }
+    }
+
+    game::fox::fs::MountPoint* add_packfile(const std::string& path, const std::uint64_t type, const std::uint32_t flags)
+    {
+        const auto abs_path = std::filesystem::absolute(path);
+        const auto path_str = abs_path.generic_string();
+
+        const auto handle = game::fox::fs::MountPoint_::CreateWithPackFile(path.data(), path_str.data(), type, flags);
+        if (handle)
+        {
+            game::fox::fs::FileLocationManager_::SetIoHandleCount(handle, 0x10);
+        }
+        else
+        {
+            console::error("failed to create pack file %s\n", path.data());
+        }
+
+        return handle;
+    }
+
+    game::fox::fs::MountPoint* add_packfile(const std::string& path, const std::string& type, const std::uint32_t flags)
+    {
+        const auto type_hash = game::fox::FoxStrHash32(type.data(), type.size());
+        return add_packfile(path, type_hash.id, flags);
     }
 
     void load(const std::string& path, const std::optional<std::string>& arg)
