@@ -263,12 +263,8 @@ namespace security
 
 		int atoi_stub(const char* str)
 		{
-			auto count = std::atoi(str);
-			if (count > 16)
-			{
-				count = 16;
-			}
-			return count;
+			const auto count = std::atoi(str);
+			return std::clamp(count, 0, 16);
 		}
 
 		int lua_nullsub(void* state)
