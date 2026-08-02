@@ -8,6 +8,8 @@
 #include "command.hpp"
 #include "matchmaking.hpp"
 #include "vars.hpp"
+#include "session.hpp"
+#include "custom_maps.hpp"
 
 #include <utils/string.hpp>
 #include <utils/hook.hpp>
@@ -83,24 +85,24 @@ namespace discord
 			return game::tpp::ui::utility::GetLangText(string_id);
 		}
 
-		std::string get_map_name(const int map_id)
+		std::string get_map_name(const std::string& name)
 		{
-			static std::unordered_map<int, std::uint32_t> maps =
+			static std::unordered_map<std::string, std::uint32_t> maps =
 			{
-				{0, jade_forest},
-				{1, gray_rampart},
-				{2, red_fortress},
-				{3, black_site},
-				{4, amber_station},
-				{5, coral_complex},
-				{6, azure_mountain},
-				{7, rust_palace},
+				{"afc0", jade_forest},
+				{"afda", gray_rampart},
+				{"afn0", red_fortress},
+				{"cuba", black_site},
+				{"afc1", amber_station},
+				{"mba0", coral_complex},
+				{"sva0", azure_mountain},
+				{"rma0", rust_palace},
 			};
 
-			const auto iter = maps.find(map_id);
+			const auto iter = maps.find(name);
 			if (iter == maps.end())
 			{
-				return "";
+				return name;
 			}
 
 			return get_localized_string(iter->second);
@@ -131,9 +133,10 @@ namespace discord
 			discord_strings = {};
 
 			const auto match_container = game::s_mgoMatchMakingManager->match_container;
-			const auto session = *game::s_pSession;
+			const auto ruleset = session::get_active_ruleset();
+			const auto script_vars = &game::fox::GetQuarkSystemTable()->applicationSystem->scriptVars->mgo;
 
-			if (session == nullptr || match_container == nullptr || match_container->match->lobby_id.bits == 0)
+			if (ruleset == nullptr || script_vars->rulesetId == 255)
 			{
 				discord_presence.state = "Main Menu";
 
@@ -144,28 +147,67 @@ namespace discord
 
 				discord_presence.partyId = nullptr;
 				discord_presence.joinSecret = nullptr;
+
 				discord_presence.largeImageKey = nullptr;
+				discord_presence.largeImageText = nullptr;
+				discord_presence.smallImageKey = nullptr;
+				discord_presence.smallImageText = nullptr;
 			}
 			else
 			{
-				discord_presence.state = "In a Match";
+				auto ruleset_id = script_vars->rulesetId;
 
+				if (ruleset_id >= 100)
+				{
+					script_vars->rulesetId -= 100;
+				}
+
+				const auto gamemode = get_gamemode_name(script_vars->rulesetId);
+				const auto mapname = custom_maps::get_current_map_name();
 				const auto steam_matchmaking = (*game::SteamMatchmaking)();
-				const auto max_members = steam_matchmaking->__vftable->GetLobbyMemberLimit(steam_matchmaking, match_container->match->lobby_id);
 
-				const auto map_id = std::atoi(steam_matchmaking->__vftable->GetLobbyData(steam_matchmaking, match_container->match->lobby_id, "map_id"));
-				const auto day_night = std::atoi(steam_matchmaking->__vftable->GetLobbyData(steam_matchmaking, match_container->match->lobby_id, "day_night"));
-				const auto match_rule = std::atoi(steam_matchmaking->__vftable->GetLobbyData(steam_matchmaking, match_container->match->lobby_id, "match_rule"));
+				if (script_vars->rulesetId != 4)
+				{
+					discord_strings.state = "In a Match";
+					discord_strings.details = std::format("{} - {}", gamemode, get_map_name(mapname));
+				}
+				else
+				{
+					discord_strings.state = gamemode;
+					discord_strings.details = get_map_name(mapname);
+				}
 
-				discord_strings.details = std::format("{} - {}", get_gamemode_name(match_rule), get_map_name(map_id));
-				discord_strings.large_image_key = utils::string::va("map_%i_%i", map_id, day_night);
-				discord_strings.large_image_text = get_map_name(map_id);
+				if (match_container != nullptr && match_container->match != nullptr && match_container->match->lobby_id.bits != 0)
+				{
+					discord_presence.partyMax = steam_matchmaking->__vftable->GetLobbyMemberLimit(steam_matchmaking, match_container->match->lobby_id);
+					discord_presence.partySize = steam_matchmaking->__vftable->GetNumLobbyMembers(steam_matchmaking, match_container->match->lobby_id);
 
-				discord_strings.join_secret = utils::string::va("%lli", match_container->match->lobby_id.bits);
-				discord_strings.party_id = utils::cryptography::sha1::compute(discord_strings.join_secret, true).substr(0, 8);
+					discord_strings.join_secret = utils::string::va("%lli", match_container->match->lobby_id.bits);
+					discord_strings.party_id = utils::cryptography::sha1::compute(discord_strings.join_secret, true).substr(0, 8);
+					discord_presence.partyId = discord_strings.party_id.data();
+					discord_presence.joinSecret = discord_strings.join_secret.data();
+					discord_presence.partyPrivacy = DISCORD_PARTY_PUBLIC;
+				}
+				else
+				{
+					discord_presence.partyMax = 1;
+					discord_presence.partySize = 1;
 
-				discord_presence.partyMax = max_members;
-				discord_presence.partySize = session->sessionInterface.__vftable->GetMemberCount(&session->sessionInterface);
+					discord_presence.partyId = nullptr;
+					discord_presence.joinSecret = nullptr;
+					discord_presence.partyPrivacy = DISCORD_PARTY_PRIVATE;
+				}
+
+				const auto team = ruleset->playerTeams[ruleset->localPlayerSessionIndex];
+
+				discord_strings.large_image_key = std::format("{}_{}", mapname, script_vars->isNight ? 1 : 0);
+				discord_strings.large_image_text = get_map_name(mapname);
+
+				if (script_vars->rulesetId != 4 && (team == 0 || team == 1))
+				{
+					discord_strings.small_image_key = std::format("team_{}", static_cast<int>(team));
+					discord_strings.small_image_text = team == 0 ? "SOLID" : "LIQUID";
+				}
 
 				if (discord_presence.startTimestamp == 0)
 				{
@@ -173,11 +215,13 @@ namespace discord
 						std::chrono::system_clock::now().time_since_epoch()).count();
 				}
 
-				discord_presence.partyId = discord_strings.party_id.data();
-				discord_presence.joinSecret = discord_strings.join_secret.data();
+				discord_presence.smallImageKey = discord_strings.small_image_key.data();
+				discord_presence.smallImageText = discord_strings.small_image_text.data();
 				discord_presence.largeImageKey = discord_strings.large_image_key.data();
+				discord_presence.largeImageText = discord_strings.large_image_text.data();
 			}
 
+			discord_presence.state = discord_strings.state.data();
 			discord_presence.details = discord_strings.details.data();
 		}
 
