@@ -512,7 +512,7 @@ namespace fobs
 
 				s.own_lobby_info.name_plate_id = option->name_plate_id;
 
-				const auto script_vars = game::fox::GetQuarkSystemTable()->applicationSystem->scriptVars;
+				const auto script_vars = &game::fox::GetQuarkSystemTable()->applicationSystem->scriptVars->tpp;
 				std::memcpy(&s.own_lobby_info.emblem.texture_tag, &script_vars->emblemTextureTag, sizeof(game::tpp::mbm::PlayerBasicInfo::Emblem));
 
 				update_lobby(s);
