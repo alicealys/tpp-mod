@@ -187,12 +187,12 @@ namespace cheat
 			const auto system_table = game::fox::GetQuarkSystemTable();
 			if (system_table == nullptr ||
 				system_table->applicationSystem == nullptr ||
-				system_table->applicationSystem->motherBaseManagementSystem == nullptr)
+				system_table->applicationSystem->tpp.motherBaseManagementSystem == nullptr)
 			{
 				return nullptr;
 			}
 
-			return system_table->applicationSystem->motherBaseManagementSystem;
+			return system_table->applicationSystem->tpp.motherBaseManagementSystem;
 		}
 
 		void do_staff_cheat()
