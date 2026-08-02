@@ -59,12 +59,12 @@ namespace game
 		{
 			namespace FileLocationManager_
 			{
-				WEAK symbol<MountPoint*(const char*, const char*, __int64, int)> CreatePackMountPoint{0x140048E20, 0x14003B6C0, 0x0, 0x0};
 				WEAK symbol<unsigned int(MountPoint*, unsigned int)> SetIoHandleCount{0x14004A200, 0x14004A2E0, 0x0, 0x0};
 			}
 
 			namespace MountPoint_
 			{
+				WEAK symbol<MountPoint* (const char*, const char*, __int64, int)> CreateWithPackFile{0x140048E20, 0x140049150, 0x0, 0x0};
 				WEAK symbol<void(MountPoint*)> Destroy{0x0, 0x140049510, 0x0, 0x0};
 			}
 
