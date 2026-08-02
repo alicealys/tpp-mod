@@ -134,7 +134,7 @@ namespace discord
 
 			const auto match_container = game::s_mgoMatchMakingManager->match_container;
 			const auto ruleset = session::get_active_ruleset();
-			const auto script_vars = &game::fox::GetQuarkSystemTable()->applicationSystem->scriptVars->mgo;
+			const auto script_vars = &game::fox::GetQuarkSystemTable()->applicationSystem->mgo.scriptVars->mgo;
 
 			if (ruleset == nullptr || script_vars->rulesetId == 255)
 			{

@@ -8,6 +8,7 @@
 #include "console.hpp"
 #include "scheduler.hpp"
 #include "filesystem.hpp"
+#include "scripting.hpp"
 
 #include <utils/hook.hpp>
 #include <utils/nt.hpp>
@@ -21,25 +22,31 @@ namespace mods
     {
         utils::hook::detour fs_module_init_hook;
 
+        enum mod_flag_t
+        {
+            MOD_FLAG_NONE = (0 << 0),
+            MOD_FLAG_NEEDS_RESTART = (1 << 0),
+        };
+
         struct mod_pack_file_t
         {
             std::string name;
             std::uint64_t type;
             std::uint32_t flags;
+            game::fox::fs::MountPoint* handle;
         };
 
         struct mod_info_t
         {
+            std::uint32_t flags;
             std::string name;
             std::string author;
             std::string version;
-            std::string path;
+            std::optional<std::string> path;
             std::vector<mod_pack_file_t> pack_files;
         };
 
-        std::unordered_map<std::string, game::fox::fs::MountPoint*> custom_mount_points;
-
-        mod_info_t current_mod;
+        mod_info_t current_mod{};
 
         void parse_mod_info(const std::string& data, mod_info_t& info)
         {
@@ -61,6 +68,12 @@ namespace mods
                 return {};
             };
 
+            auto& flags_j = mod_info_j["flags"];
+            if (flags_j.is_number_unsigned())
+            {
+                info.flags = flags_j.get<std::uint32_t>();
+            }
+
             info.name = try_string("name");
             info.author = try_string("author");
             info.version = try_string("version");
@@ -78,7 +91,7 @@ namespace mods
 
                 auto& name_j = files[i]["name"];
                 auto& type_j = files[i]["type"];
-                auto& flags_j = files[i]["flags"];
+                auto& file_flags_j = files[i]["flags"];
 
                 if (!name_j.is_string())
                 {
@@ -98,24 +111,19 @@ namespace mods
                     file.type = type_j.get<std::uint64_t>();
                 }
 
-                if (flags_j.is_number_unsigned())
+                if (file_flags_j.is_number_unsigned())
                 {
-                    file.flags = flags_j.get<std::uint32_t>();
+                    file.flags = file_flags_j.get<std::uint32_t>();
                 }
 
                 info.pack_files.emplace_back(file);
             }
         }
 
-        void add_patch_file(const std::string& path, const std::uint64_t type, const std::uint32_t flags)
+        game::fox::fs::MountPoint* add_patch_file(const std::string& path, const std::uint64_t type, const std::uint32_t flags)
         {
             const auto abs_path = std::filesystem::absolute(path);
             const auto path_str = abs_path.generic_string();
-
-            if (custom_mount_points.contains(path_str))
-            {
-                return;
-            }
 
             const auto handle = game::fox::fs::MountPoint_::CreateWithPackFile(path.data(), path_str.data(), type, flags);
             if (handle)
@@ -127,35 +135,57 @@ namespace mods
                 console::error("failed to create pack file %s\n", path.data());
             }
 
-            custom_mount_points.insert(std::make_pair(path_str, handle));
+            return handle;
         }
 
-        void remove_patch_file(const std::string& path)
+        void clear_mod(bool& needs_restart)
         {
-            const auto abs_path = std::filesystem::absolute(path);
-            const auto path_str = abs_path.generic_string();
-            const auto iter = custom_mount_points.find(path_str);
-
-            if (iter == custom_mount_points.end())
+            if (current_mod.path.has_value())
             {
-                return;
+                const auto& path = current_mod.path.value();
+                console::info("[Mods] Unloading mod: %s\n", path.data());
+                filesystem::unregister_path(path);
             }
 
-            console::debug("removing patch file %s\n", path_str.data());
-            game::fox::fs::MountPoint_::Destroy(iter->second);
-            custom_mount_points.erase(iter);
-        }
+            needs_restart = (current_mod.flags & MOD_FLAG_NEEDS_RESTART) != 0;
 
-        void set_mod(const std::string& path)
-        {
-            console::info("[Mods] Loading mod: %s\n", path.data());
+            for (auto& file : current_mod.pack_files)
+            {
+                if (file.handle != nullptr)
+                {
+                    game::fox::fs::MountPoint_::Destroy(file.handle);
+                }
+            }
 
             current_mod = {};
-            current_mod.path = path;
+        }
 
-            filesystem::register_path(path);
+        bool set_mod(const std::string& path, bool& needs_restart)
+        {
+            const auto fs_path = std::filesystem::path(path);
+            const auto normal_path = fs_path.lexically_normal().generic_string();
 
-            const auto info_path = std::format("{}\\mod.json", path);
+            if (!utils::io::directory_exists(normal_path) || !normal_path.starts_with("mods"))
+            {
+                console::error("[Mods] Invalid mod path %s\n", path.data());
+                return false;
+            }
+
+            if (current_mod.path.has_value() && current_mod.path.value() == normal_path)
+            {
+                return false;
+            }
+
+            clear_mod(needs_restart);
+
+            console::info("[Mods] Loading mod: %s\n", normal_path.data());
+
+            current_mod = {};
+            current_mod.path.emplace(normal_path);
+
+            filesystem::register_path(normal_path);
+
+            const auto info_path = std::format("{}\\mod.json", normal_path);
 
             std::string info_data;
             if (utils::io::read_file(info_path, &info_data))
@@ -163,16 +193,20 @@ namespace mods
                 parse_mod_info(info_data, current_mod);
             }
 
-            for (const auto& file : current_mod.pack_files)
+            needs_restart = (current_mod.flags & MOD_FLAG_NEEDS_RESTART) != 0;
+
+            for (auto& file : current_mod.pack_files)
             {
                 if (!file.name.ends_with(".dat"))
                 {
                     continue;
                 }
 
-                const auto pack_path = std::format("{}\\{}", path, file.name);
-                add_patch_file(pack_path, file.type, file.flags);
+                const auto pack_path = std::format("{}\\{}", normal_path, file.name);
+                file.handle = add_patch_file(pack_path, file.type, file.flags);
             }
+
+            return true;
         }
 
         void fs_module_init_stub()
@@ -184,7 +218,8 @@ namespace mods
             const auto& mod_path = var_fs_mod_path->latched.get_string();
             if (!mod_path.empty())
             {
-                set_mod(mod_path);
+                auto needs_restart = false;
+                set_mod(mod_path, needs_restart);
             }
         }
 
@@ -203,6 +238,14 @@ namespace mods
                 return false;
             }
 
+            const auto mission_code = game::tpp::ui::utility::GetCurrentLocationId();
+            const auto location_code = game::tpp::ui::utility::GetCurrentMissionId();
+
+            if (mission_code == 0xFFFF || mission_code == 1 || location_code == 0xFFFF || location_code == 1)
+            {
+                return false;
+            }
+
             return true;
         }
 
@@ -217,19 +260,60 @@ namespace mods
 
             return res;
         }
+
+        void reload_assets()
+        {
+            //const auto ui_system = game::environment::is_tpp()
+            //    ? game::fox::GetQuarkSystemTable()->applicationSystem->tpp.uiSystem
+            //    : game::fox::GetQuarkSystemTable()->applicationSystem->mgo.uiSystem;
+            //
+            //const auto menu_system = ui_system->menuSystem;
+            //menu_system->__vftable->SetLangChange(menu_system, 1);
+            
+            scripting::script_exec("Mission.LoadLocation({force=true});Mission.LoadMission({force=true})");
+
+#ifdef DEBUG
+            command::execute("lui_restart");
+#endif
+        }
     }
 
     void load(const std::string& path, const std::optional<std::string>& arg)
     {
-        auto cmd = std::format("+fs_mod {} {}", path, arg.value_or(""));
-        utils::nt::relaunch_self(cmd, true);
-        utils::nt::terminate();
+        auto needs_restart = false;
+        if (!set_mod(path, needs_restart))
+        {
+            return;
+        }
+
+        vars::set_var(var_fs_mod_path, path, vars::var_source_internal);
+
+        if (needs_restart)
+        {
+            auto cmd = std::format("+fs_mod \"{}\" {}", path, arg.value_or(""));
+            utils::nt::relaunch_self(cmd, true);
+            utils::nt::terminate();
+            return;
+        }
+
+        reload_assets();
     }
 
     void unload()
     {
-        utils::nt::relaunch_self("", true);
-        utils::nt::terminate();
+        auto needs_restart = false;
+
+        clear_mod(needs_restart);
+        vars::set_var(var_fs_mod_path, "", vars::var_source_internal);
+
+        if (needs_restart)
+        {
+            utils::nt::relaunch_self("", true);
+            utils::nt::terminate();
+            return;
+        }
+
+        reload_assets();
     }
 
     class component final : public component_interface
@@ -278,28 +362,6 @@ namespace mods
                 }
 
                 load(path);
-            });
-
-            command::add("fs_addpatch", [](const command::params& params)
-            {
-                if (params.size() < 2)
-                {
-                    return;
-                }
-
-                const auto path = params.get(1);
-                add_patch_file(path.data(), 0ull, 17);
-            });
-
-            command::add("fs_removepatch", [](const command::params& params)
-            {
-                if (params.size() < 2)
-                {
-                    return;
-                }
-
-                const auto path = params.get(1);
-                remove_patch_file(path.data());
             });
         }
     };

@@ -78,6 +78,11 @@ namespace scripting
 		return this->type_;
 	}
 
+	bool lua_value::is_bool() const
+	{
+		return this->type_ == LUA_TBOOLEAN;
+	}
+
 	bool lua_value::get_bool() const
 	{
 		return std::get<bool>(this->value_);
@@ -88,9 +93,19 @@ namespace scripting
 		return std::get<double>(this->value_);
 	}
 
+	bool lua_value::is_number() const
+	{
+		return this->type_ == LUA_TNUMBER;
+	}
+
 	std::string lua_value::get_string() const
 	{
 		return std::get<std::string>(this->value_);
+	}
+
+	bool lua_value::is_string() const
+	{
+		return this->type_ == LUA_TSTRING;
 	}
 
 	std::string lua_value::to_string() const

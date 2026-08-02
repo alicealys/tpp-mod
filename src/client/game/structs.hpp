@@ -2037,7 +2037,112 @@ namespace game
 			{
 				struct MenuSystemImpl
 				{
+					struct vtable
+					{
+						void(__fastcall* meth_000)(MenuSystemImpl*);
+						void(__fastcall* meth_001)(MenuSystemImpl*);
+						void(__fastcall* meth_002)(MenuSystemImpl*);
+						void(__fastcall* meth_003)(MenuSystemImpl*);
+						void(__fastcall* meth_004)(MenuSystemImpl*);
+						void(__fastcall* meth_005)(MenuSystemImpl*);
+						void(__fastcall* meth_006)(MenuSystemImpl*);
+						void(__fastcall* meth_007)(MenuSystemImpl*);
+						void(__fastcall* meth_008)(MenuSystemImpl*);
+						void(__fastcall* meth_009)(MenuSystemImpl*);
+						void(__fastcall* meth_010)(MenuSystemImpl*);
+						void(__fastcall* meth_011)(MenuSystemImpl*);
+						void(__fastcall* meth_012)(MenuSystemImpl*);
+						void(__fastcall* meth_013)(MenuSystemImpl*);
+						void(__fastcall* meth_014)(MenuSystemImpl*);
+						void(__fastcall* meth_015)(MenuSystemImpl*);
+						void(__fastcall* meth_016)(MenuSystemImpl*);
+						void(__fastcall* meth_017)(MenuSystemImpl*);
+						void(__fastcall* meth_018)(MenuSystemImpl*);
+						void(__fastcall* meth_019)(MenuSystemImpl*);
+						void(__fastcall* meth_020)(MenuSystemImpl*);
+						void(__fastcall* meth_021)(MenuSystemImpl*);
+						void(__fastcall* meth_022)(MenuSystemImpl*);
+						void(__fastcall* meth_023)(MenuSystemImpl*);
+						void(__fastcall* meth_024)(MenuSystemImpl*);
+						void(__fastcall* meth_025)(MenuSystemImpl*);
+						void(__fastcall* meth_026)(MenuSystemImpl*);
+						void(__fastcall* meth_027)(MenuSystemImpl*);
+						void(__fastcall* meth_028)(MenuSystemImpl*);
+						void(__fastcall* meth_029)(MenuSystemImpl*);
+						void(__fastcall* meth_030)(MenuSystemImpl*);
+						void(__fastcall* meth_031)(MenuSystemImpl*);
+						void(__fastcall* meth_032)(MenuSystemImpl*);
+						void(__fastcall* meth_033)(MenuSystemImpl*);
+						void(__fastcall* meth_034)(MenuSystemImpl*);
+						void(__fastcall* meth_035)(MenuSystemImpl*);
+						void(__fastcall* meth_036)(MenuSystemImpl*);
+						void(__fastcall* meth_037)(MenuSystemImpl*);
+						void(__fastcall* meth_038)(MenuSystemImpl*);
+						void(__fastcall* meth_039)(MenuSystemImpl*);
+						void(__fastcall* meth_040)(MenuSystemImpl*);
+						void(__fastcall* meth_041)(MenuSystemImpl*);
+						void(__fastcall* meth_042)(MenuSystemImpl*);
+						void(__fastcall* meth_043)(MenuSystemImpl*);
+						void(__fastcall* meth_044)(MenuSystemImpl*);
+						void(__fastcall* meth_045)(MenuSystemImpl*);
+						void(__fastcall* meth_046)(MenuSystemImpl*);
+						void(__fastcall* meth_047)(MenuSystemImpl*);
+						void(__fastcall* meth_048)(MenuSystemImpl*);
+						void(__fastcall* meth_049)(MenuSystemImpl*);
+						void(__fastcall* meth_050)(MenuSystemImpl*);
+						void(__fastcall* meth_051)(MenuSystemImpl*);
+						void(__fastcall* meth_052)(MenuSystemImpl*);
+						void(__fastcall* meth_053)(MenuSystemImpl*);
+						void(__fastcall* meth_054)(MenuSystemImpl*);
+						void(__fastcall* meth_055)(MenuSystemImpl*);
+						void(__fastcall* meth_056)(MenuSystemImpl*);
+						void(__fastcall* meth_057)(MenuSystemImpl*);
+						void(__fastcall* meth_058)(MenuSystemImpl*);
+						void(__fastcall* meth_059)(MenuSystemImpl*);
+						void(__fastcall* meth_060)(MenuSystemImpl*);
+						void(__fastcall* meth_061)(MenuSystemImpl*);
+						void(__fastcall* meth_062)(MenuSystemImpl*);
+						void(__fastcall* meth_063)(MenuSystemImpl*);
+						void(__fastcall* meth_064)(MenuSystemImpl*);
+						void(__fastcall* meth_065)(MenuSystemImpl*);
+						void(__fastcall* meth_066)(MenuSystemImpl*);
+						void(__fastcall* meth_067)(MenuSystemImpl*);
+						void(__fastcall* meth_068)(MenuSystemImpl*);
+						void(__fastcall* meth_069)(MenuSystemImpl*);
+						void(__fastcall* meth_070)(MenuSystemImpl*);
+						void(__fastcall* meth_071)(MenuSystemImpl*);
+						void(__fastcall* meth_072)(MenuSystemImpl*);
+						void(__fastcall* meth_073)(MenuSystemImpl*);
+						void(__fastcall* meth_074)(MenuSystemImpl*);
+						void(__fastcall* meth_075)(MenuSystemImpl*);
+						void(__fastcall* meth_076)(MenuSystemImpl*);
+						void(__fastcall* meth_077)(MenuSystemImpl*);
+						void(__fastcall* meth_078)(MenuSystemImpl*);
+						void(__fastcall* meth_079)(MenuSystemImpl*);
+						void(__fastcall* meth_080)(MenuSystemImpl*);
+						void(__fastcall* meth_081)(MenuSystemImpl*);
+						void(__fastcall* meth_082)(MenuSystemImpl*);
+						void(__fastcall* meth_083)(MenuSystemImpl*);
+						void(__fastcall* SetLangChange)(MenuSystemImpl*, char);
+						void(__fastcall* meth_085)(MenuSystemImpl*);
+						void(__fastcall* meth_086)(MenuSystemImpl*);
+						void(__fastcall* meth_087)(MenuSystemImpl*);
+						void(__fastcall* meth_088)(MenuSystemImpl*);
+						void(__fastcall* meth_089)(MenuSystemImpl*);
+						void(__fastcall* meth_090)(MenuSystemImpl*);
+						void(__fastcall* meth_091)(MenuSystemImpl*);
+						void(__fastcall* meth_092)(MenuSystemImpl*);
+						void(__fastcall* meth_093)(MenuSystemImpl*);
+						void(__fastcall* meth_094)(MenuSystemImpl*);
+						void(__fastcall* meth_095)(MenuSystemImpl*);
+						void(__fastcall* meth_096)(MenuSystemImpl*);
+						void(__fastcall* meth_097)(MenuSystemImpl*);
+						void(__fastcall* meth_098)(MenuSystemImpl*);
+						void(__fastcall* meth_099)(MenuSystemImpl*);
+						void(__fastcall* meth_100)(MenuSystemImpl*);
+					};
 
+					vtable* __vftable;
 				};
 			}
 
@@ -2056,6 +2161,15 @@ namespace game
 					};
 				}
 			}
+		}
+
+		namespace impl
+		{
+			struct UiSystemImpl
+			{
+				char __pad0[80];
+				tpp::ui::menu::impl::MenuSystemImpl* menuSystem;
+			};
 		}
 	}
 
@@ -7795,7 +7909,7 @@ namespace game
 
 	namespace fox
 	{
-		struct ApplicationSystem
+		struct ApplicationSystem_mgo
 		{
 			struct vtable
 			{
@@ -7810,7 +7924,26 @@ namespace game
 			void* attachUtility;
 			void* timeSystem;
 			void* gameConfig;
-			void* uiSystem;
+			void* unk;
+			tpp::ui::impl::UiSystemImpl* uiSystem;
+		};
+
+		struct ApplicationSystem_tpp
+		{
+			struct vtable
+			{
+
+			};
+
+			vtable* __vftable;
+			void* blockController;
+			tpp::gm::ScriptVars* scriptVars;
+			void* scriptVarsSystem;
+			void* gameUtility;
+			void* attachUtility;
+			void* timeSystem;
+			void* gameConfig;
+			tpp::ui::impl::UiSystemImpl* uiSystem;
 			void* demoService;
 			void* applicationSystemSub_9;
 			void* playerRecordInstance;
@@ -7924,6 +8057,12 @@ namespace game
 			void* applicationSystemSub_118;
 			void* applicationSystemSub_119;
 			void* applicationSystemSub_120;
+		};
+
+		union ApplicationSystem
+		{
+			ApplicationSystem_tpp tpp;
+			ApplicationSystem_mgo mgo;
 		};
 
 		struct QuarkSystemTable

@@ -512,7 +512,7 @@ namespace fobs
 
 				s.own_lobby_info.name_plate_id = option->name_plate_id;
 
-				const auto script_vars = &game::fox::GetQuarkSystemTable()->applicationSystem->scriptVars->tpp;
+				const auto script_vars = &game::fox::GetQuarkSystemTable()->applicationSystem->tpp.scriptVars->tpp;
 				std::memcpy(&s.own_lobby_info.emblem.texture_tag, &script_vars->emblemTextureTag, sizeof(game::tpp::mbm::PlayerBasicInfo::Emblem));
 
 				update_lobby(s);
@@ -530,12 +530,12 @@ namespace fobs
 				const auto system_table = game::fox::GetQuarkSystemTable();
 				if (system_table == nullptr ||
 					system_table->applicationSystem == nullptr ||
-					system_table->applicationSystem->motherBaseManagementSystem == nullptr)
+					system_table->applicationSystem->tpp.motherBaseManagementSystem == nullptr)
 				{
 					return;
 				}
 
-				const auto staff_controller = system_table->applicationSystem->motherBaseManagementSystem->staffController;
+				const auto staff_controller = system_table->applicationSystem->tpp.motherBaseManagementSystem->staffController;
 				for (auto i = 0; i < staff_controller->staffCount; i++)
 				{
 					const auto header = staff_controller->mbmStaffSvarsHeaders[i];

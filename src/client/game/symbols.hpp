@@ -65,7 +65,7 @@ namespace game
 			namespace MountPoint_
 			{
 				WEAK symbol<MountPoint* (const char*, const char*, __int64, int)> CreateWithPackFile{0x140048E20, 0x140049150, 0x0, 0x0};
-				WEAK symbol<void(MountPoint*)> Destroy{0x0, 0x140049510, 0x0, 0x0};
+				WEAK symbol<void(MountPoint*)> Destroy{0x140049270, 0x140049510, 0x0, 0x0};
 			}
 
 			namespace PathCodeImpl_
