@@ -98,6 +98,11 @@ namespace scripting
 		return this->type_ == LUA_TNUMBER;
 	}
 
+	bool lua_value::is_true() const
+	{
+		return this->is_bool() && this->get_bool();
+	}
+
 	std::string lua_value::get_string() const
 	{
 		return std::get<std::string>(this->value_);
