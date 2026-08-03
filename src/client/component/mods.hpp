@@ -10,5 +10,5 @@ namespace mods
     game::fox::fs::MountPoint* add_packfile(const std::string& path, const std::string& type, const std::uint32_t flags);
     game::fox::fs::MountPoint* add_packfile(const std::string& path, const std::uint64_t type, const std::uint32_t flags);
     void load(const std::string& path, const std::optional<std::string>& arg = {});
-    void unload();
+    void unload(const std::optional<std::string>& arg = {});
 }

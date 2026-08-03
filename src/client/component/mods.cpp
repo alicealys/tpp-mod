@@ -7,14 +7,20 @@
 #include "scheduler.hpp"
 #include "filesystem.hpp"
 #include "scripting.hpp"
+#include "matchmaking.hpp"
 
 #include <utils/hook.hpp>
 #include <utils/nt.hpp>
 #include <utils/io.hpp>
+#include <utils/http.hpp>
+#include <utils/cryptography.hpp>
+#include <utils/string.hpp>
+#include <zlib.h>
 
 namespace mods
 {
     vars::var_ptr var_fs_mod_path;
+    vars::var_ptr var_sv_base_url;
 
     namespace
     {
@@ -34,8 +40,18 @@ namespace mods
             game::fox::fs::MountPoint* handle;
         };
 
+        struct mod_download_file_t
+        {
+            bool done;
+            std::string url;
+            std::string path;
+            std::string hash;
+            std::string data;
+        };
+
         struct mod_info_t
         {
+            bool has_info;
             std::uint32_t flags;
             std::string name;
             std::string author;
@@ -46,6 +62,41 @@ namespace mods
 
         mod_info_t current_mod{};
 
+        enum mod_download_state_t
+        {
+            download_state_none = 0,
+            download_state_ask_begin = 1,
+            download_state_ask_wait = 2,
+            download_state_ask_end = 3,
+            download_state_start = 4,
+            download_state_dl_begin= 5,
+            download_state_dl_wait = 6,
+            download_state_dl_cancel = 7,
+            download_state_error = 8,
+            download_state_end = 9,
+        };
+
+        struct
+        {
+            std::mutex mutex;
+            std::string mod_path;
+            std::atomic_bool result;
+            std::atomic_uint32_t state;
+            std::vector<mod_download_file_t> files;
+            std::string server_url;
+            game::steam_id target_lobby;
+        } mod_download_state{};
+
+        std::string get_generic_buffer_hash(const std::string& buffer)
+        {
+            auto crc_value = crc32(0L, Z_NULL, 0);
+            crc_value = crc32(crc_value, reinterpret_cast<const std::uint8_t*>(buffer.data()),
+                static_cast<std::uint32_t>(buffer.size()));
+            std::string hash;
+            hash.append(reinterpret_cast<char*>(&crc_value), sizeof(crc_value));
+            return utils::string::dump_hex(hash, "");
+        }
+
         void parse_mod_info(const std::string& data, mod_info_t& info)
         {
             auto mod_info_j = nlohmann::json::parse(data, nullptr, false);
@@ -53,6 +104,8 @@ namespace mods
             {
                 return;
             }
+
+            info.has_info = true;
 
             const auto try_string = [&](const std::string& key)
                 -> std::string
@@ -226,6 +279,12 @@ namespace mods
                 return false;
             }
 
+            const auto match_container = game::s_mgoMatchMakingManager->match_container;
+            if (match_container != nullptr && match_container->match != nullptr && match_container->match->lobby_id.bits != 0)
+            {
+                return false;
+            }
+
             return true;
         }
 
@@ -255,6 +314,471 @@ namespace mods
 #ifdef DEBUG
             command::execute("lui_restart");
 #endif
+        }
+
+        void mod_download_ask_popup_update()
+        {
+            if (mod_download_state.state < download_state_ask_begin || mod_download_state.state > download_state_ask_end)
+            {
+                return;
+            }
+
+            const auto is_showing_popup = scripting::script_exec("return TppUiCommand.IsShowPopup(\"mod_download_ask_popup\")");
+            if (is_showing_popup.has_value() && is_showing_popup->is_true())
+            {
+                if (mod_download_state.state == download_state_ask_begin)
+                {
+                    mod_download_state.state = download_state_ask_wait;
+                }
+                return;
+            }
+            else if (mod_download_state.state != download_state_ask_wait)
+            {
+                return;
+            }
+
+            const auto result = scripting::script_exec("return TppUiCommand.GetPopupSelect()");
+            if (!result.has_value() || !result->is_number() || static_cast<int>(result->get_number()) != 1)
+            {
+                mod_download_state.state = download_state_ask_end;
+            }
+            else
+            {
+                mod_download_state.state = download_state_start;
+                scripting::script_exec(
+                    "TppUiCommand.ErasePopup(); TppUiCommand.ShowPopup(\"mod_download_progress_popup\", 0);"
+                );
+            }
+        }
+        
+        void mod_download_progress_popup_update()
+        {
+            const auto is_showing_popup = scripting::script_exec("return TppUiCommand.IsShowPopup(\"mod_download_progress_popup\")");
+            if (is_showing_popup.has_value() && is_showing_popup->is_true())
+            {
+                if (mod_download_state.state == download_state_dl_begin)
+                {
+                    mod_download_state.state = download_state_dl_wait;
+                }
+
+                mod_download_file_t* current_file = nullptr;
+                auto index = 0;
+                for (auto& file : mod_download_state.files)
+                {
+                    if (!file.done)
+                    {
+                        current_file = &file;
+                        break;
+                    }
+
+                    ++index;
+                }
+
+                const auto now = std::chrono::system_clock::now().time_since_epoch();
+                const auto now_ms = std::chrono::duration_cast<std::chrono::milliseconds>(now).count();
+                const auto dot_count = std::clamp((now_ms % 1000) / 250, 0ll, 3ll);
+                char dots[5] = "...";
+                dots[dot_count] = 0;
+
+                std::string script;
+                if (current_file != nullptr)
+                {
+                    script = std::format("TppUiCommand.SetPopupText(\"Downloading {} ({}/{}) {}\")", 
+                        current_file->path, index + 1, mod_download_state.files.size(), dots);
+                }
+                else
+                {
+                    script = std::format("TppUiCommand.SetPopupText(\"Done.\")");
+                }
+
+                scripting::script_exec(script);
+                return;
+            }
+            else if (mod_download_state.state != download_state_dl_wait)
+            {
+                return;
+            }
+
+            mod_download_state.state = download_state_dl_cancel;
+        }
+
+        void reset_mod_download()
+        {
+            std::lock_guard lock(mod_download_state.mutex);
+            mod_download_state.state = download_state_none;
+            mod_download_state.files.clear();
+            mod_download_state.server_url.clear();
+            mod_download_state.mod_path.clear();
+            mod_download_state.result = false;
+            mod_download_state.target_lobby.bits = 0;
+        }
+
+        void mod_download_update_async()
+        {
+            switch (mod_download_state.state)
+            {
+            case download_state_dl_begin:
+            case download_state_dl_wait:
+            {
+                auto all_done = true;
+                for (auto& file : mod_download_state.files)
+                {
+                    if (file.done)
+                    {
+                        continue;
+                    }
+
+                    all_done = false;
+                    const auto data = utils::http::get_data(file.url);
+                    if (mod_download_state.state != download_state_dl_begin && 
+                        mod_download_state.state != download_state_dl_wait)
+                    {
+                        return;
+                    }
+
+                    if (!data.has_value())
+                    {
+                        mod_download_state.state = download_state_error;
+                        return;
+                    }
+
+                    const auto hash = get_generic_buffer_hash(data.value());
+                    console::debug("download file hash %s == %s\n", file.hash.data(), hash.data());
+                    if (hash != file.hash)
+                    {
+                        mod_download_state.state = download_state_error;
+                        return;
+                    }
+
+                    std::lock_guard lock(mod_download_state.mutex);
+                    file.data = data.value();
+                    file.done = true;
+                }
+
+                if (all_done)
+                {
+                    mod_download_state.state = download_state_end;
+                    mod_download_state.result = true;
+                }
+            }
+            }
+        }
+
+        void mod_download_update()
+        {
+            static auto prev_state = mod_download_state.state.load();
+            if (prev_state != mod_download_state.state)
+            {
+                prev_state = mod_download_state.state;
+                console::debug("mod_download_state: %i\n", prev_state);
+            }
+
+            switch (mod_download_state.state)
+            {
+            case download_state_none:
+                return;
+            case download_state_ask_begin:
+            case download_state_ask_wait:
+                mod_download_ask_popup_update();
+                break;
+            case download_state_ask_end:
+                mod_download_state.state = download_state_none;
+                break;
+            case download_state_start:
+                mod_download_state.state = download_state_dl_begin;
+                break;
+            case download_state_dl_begin:
+            case download_state_dl_wait:
+            {
+                mod_download_progress_popup_update();
+                break;
+            }
+            case download_state_dl_cancel:
+                mod_download_state.result = false;
+                mod_download_state.state = download_state_end;
+                break;
+            case download_state_error:
+                scripting::script_exec(
+                    "TppUiCommand.ErasePopup();"
+                    "TppUiCommand.ShowPopup(\"mod_download_error\");"
+                    "TppUiCommand.SetPopupText(\"Failed to download mod\");");
+                mod_download_state.state = download_state_none;
+                console::debug("mod download error!\n");
+                reset_mod_download();
+                break;
+            case download_state_end:
+                scripting::script_exec("TppUiCommand.ErasePopup();");
+                mod_download_state.state = download_state_none;
+                const bool result = mod_download_state.result.load();
+                console::debug("mod download result: %i\n", result);
+
+                for (auto& file : mod_download_state.files)
+                {
+                    utils::io::write_file(file.path, file.data);
+                    utils::io::write_file(file.path + ".hash", file.hash);
+                }
+
+                const auto target = mod_download_state.target_lobby;
+                mods::load(mod_download_state.mod_path);
+                scheduler::once([target]
+                {
+                    matchmaking::connect_to_lobby(target);
+                }, scheduler::main, 3s);
+
+                reset_mod_download();
+                break;
+            }
+        }
+
+        bool check_download_mod(const game::steam_id lobby_id, 
+            std::string& new_fs_mod, 
+            std::string& error, 
+            std::string& base_url,
+            std::vector<mod_download_file_t>& files)
+        {
+            const auto steam_matchmaking = (*game::SteamMatchmaking)();
+
+            const auto get_key_int = [&](const char* key, const int index)
+            {
+                const char* key_str = key;
+                if (index != -1)
+                {
+                    key_str = utils::string::va("%s_%i", key, index);
+                }
+
+                return std::atoi(steam_matchmaking->__vftable->GetLobbyData(steam_matchmaking, lobby_id, key_str));
+            };
+
+            const auto get_value = [&](const char* key, const int index)
+                -> std::string
+            {
+                const char* key_str = key;
+                if (index != -1)
+                {
+                    key_str = utils::string::va("%s_%i", key, index);
+                }
+
+                return steam_matchmaking->__vftable->GetLobbyData(steam_matchmaking, lobby_id, key_str);
+            };
+
+            const auto server_mod = get_value("mod_path", -1);
+            if (server_mod.empty())
+            {
+                new_fs_mod = "";
+                return false;
+            }
+
+            base_url = get_value("mod_base_url", -1);
+            if (base_url.empty())
+            {
+                error = "Server has a mod, but has no URL to download it from!";
+                return false;
+            }
+
+            if (!base_url.starts_with("http://") && !base_url.starts_with("https://"))
+            {
+                error = "Server has a mod, but has an invalid URL to download it from!";
+                return false;
+            }
+
+            if (!base_url.ends_with("/"))
+            {
+                base_url.push_back('/');
+            }
+
+            if (!server_mod.starts_with("mods/") || server_mod.contains('.') || server_mod.contains("::"))
+            {
+                error = std::format("Invalid server mod value \"{}\"", server_mod);
+                return false;
+            }
+
+            const auto num_files = get_key_int("mod_file_count", -1);
+            if (num_files > 8)
+            {
+                error = std::format("Server has too many mod files ({})", num_files);
+                return false;
+            }
+
+            new_fs_mod = server_mod;
+
+            static std::unordered_set<std::string> allowed_file_types =
+            {
+                {".json"},
+                {".dat"},
+            };
+
+            for (auto i = 0; i < num_files; i++)
+            {
+                const auto file_name = get_value("mod_file_name", i);
+                const auto file_hash = get_value("mod_file_hash", i);
+
+                if (file_name.empty() || file_hash.empty() || 
+                    file_name.contains("..") || 
+                    file_name.contains("::") || 
+                    file_name.contains("\\") || 
+                    file_name.contains("/"))
+                {
+                    continue;
+                }
+
+                const auto dot_pos = file_name.find_last_of('.');
+                if (dot_pos == std::string::npos)
+                {
+                    continue;
+                }
+
+                const auto ext = file_name.substr(dot_pos);
+                if (!allowed_file_types.contains(ext))
+                {
+                    continue;
+                }
+
+                mod_download_file_t file{};
+                file.path = std::format("{}/{}", server_mod, file_name);
+                file.hash = utils::string::to_upper(file_hash);
+                file.url = base_url + file.path;
+
+                const auto hash_file = file.path + ".hash";
+                if (utils::io::file_exists(file.path) && utils::io::file_exists(hash_file))
+                {
+                    const auto data = utils::io::read_file(file.path);
+                    const auto hash = utils::io::read_file(hash_file);
+                    if (hash != file.hash)
+                    {
+                        files.emplace_back(file);
+                    }
+                }
+                else
+                {
+                    files.emplace_back(file);
+                }
+            }
+
+            return !files.empty();
+        }
+
+        void on_lobby_join(game::mgo_match_t* match, const game::steam_id lobby_id)
+        {
+            const auto self_id = matchmaking::get_current_steam_id();
+            if (match->error1 != 17 || match->lobby_owner.bits == self_id.bits)
+            {
+                return;
+            }
+
+            reset_mod_download();
+            mod_download_state.state = download_state_ask_begin;
+
+            std::string new_fs_mod;
+            std::string error;
+            std::string base_url;
+
+            auto needs_download = false;
+            needs_download |= check_download_mod(lobby_id, new_fs_mod, error, base_url, mod_download_state.files);
+
+            if (needs_download)
+            {
+                match->error1 = 30;
+                match->error2 = 0x8800000D;
+
+                mod_download_state.target_lobby = lobby_id;
+                mod_download_state.mod_path = new_fs_mod;
+
+                scripting::script_exec(std::format(
+                    "TppUiCommand.ErasePopup();"
+                    "TppUiCommand.ShowPopup(\"mod_download_ask_popup\", Popup.TYPE_TWO_BUTTON);"
+                    "TppUiCommand.SetPopupText(\"This server is running a mod, accept the download (url: {})?\")", base_url));
+            }
+            else if (!error.empty())
+            {
+                match->error1 = 30;
+                match->error2 = 0x8800000D;
+
+                scripting::script_exec(std::format(
+                    "TppUiCommand.ErasePopup();"
+                    "TppUiCommand.ShowPopup(\"mod_download_error_popup\");"
+                    "TppUiCommand.SetPopupText(\"{}\")", error));
+            }
+            else if (new_fs_mod != var_fs_mod_path->latched.get_string())
+            {
+                match->error1 = 30;
+                match->error2 = 0x8800000D;
+
+                const auto post_load_cmd = std::format("connect_lobby {}", lobby_id.bits);
+                const auto arg = std::format("+{}", post_load_cmd);
+
+                if (new_fs_mod.empty())
+                {
+                    mods::unload(arg);
+                }
+                else
+                {
+                    mods::load(new_fs_mod, arg);
+                }
+
+                scheduler::once([=]
+                {
+                    command::execute(post_load_cmd);
+                }, scheduler::main, 3s);
+            }
+        }
+
+        void on_lobby_create(game::mgo_match_t* match, const game::steam_id lobby_id)
+        {
+            if (!current_mod.path.has_value())
+            {
+                return;
+            }
+
+            const auto steam_matchmaking = (*game::SteamMatchmaking)();
+
+            const auto set_value_int = [&](const char* key, const int index, const int value)
+            {
+                std::string key_str = key;
+                if (index != -1)
+                {
+                    key_str = utils::string::va("%s_%i", key, index);
+                }
+
+                steam_matchmaking->__vftable->SetLobbyData(steam_matchmaking, lobby_id, key_str.data(), utils::string::va("%i", value));
+            };
+
+            const auto set_value = [&](const char* key, const int index, const std::string& value)
+            {
+                std::string key_str = key;
+                if (index != -1)
+                {
+                    key_str = utils::string::va("%s_%i", key, index);
+                }
+
+                steam_matchmaking->__vftable->SetLobbyData(steam_matchmaking, lobby_id, key_str.data(), value.data());
+            };
+
+            set_value("mod_path", -1, current_mod.path.value());
+            set_value("mod_base_url", -1, var_sv_base_url->current.get_string());
+
+            auto count = 0;
+            const auto add_file = [&](const std::string& name)
+            {
+                const auto path = std::format("{}\\{}", current_mod.path.value(), name);
+                const auto data = utils::io::read_file(path);
+                const auto hash = get_generic_buffer_hash(data);
+                auto index = count++;
+
+                set_value("mod_file_name", index, name);
+                set_value("mod_file_hash", index, hash);
+            };
+
+            if (current_mod.has_info)
+            {
+                add_file("mod.json");
+            }
+
+            for (auto& packfile : current_mod.pack_files)
+            {
+                add_file(packfile.name);
+            }
+
+            set_value_int("mod_file_count", -1, count);
         }
     }
 
@@ -303,7 +827,7 @@ namespace mods
         reload_assets();
     }
 
-    void unload()
+    void unload(const std::optional<std::string>& arg)
     {
         auto needs_restart = false;
 
@@ -312,6 +836,7 @@ namespace mods
 
         if (needs_restart)
         {
+            auto cmd = std::format("{}", arg.value_or(""));
             utils::nt::relaunch_self("", true);
             utils::nt::terminate();
             return;
@@ -327,8 +852,27 @@ namespace mods
         {
             var_fs_mod_path = vars::register_string("fs_mod", "", vars::var_flag_latched, "mod folder path");
 
+            if (game::environment::is_mgo())
+            {
+                var_sv_base_url = vars::register_string("sv_base_url", "", vars::var_flag_saved, "base url for server mod downloading (sent to lobby members)");
+            }
+
             fs_module_init_hook.create(SELECT_VALUE(0x14003A960, 0x14003A830, 0x0, 0x0), fs_module_init_stub);
             create_pack_mountpoint_hook.create(game::fox::fs::MountPoint_::CreateWithPackFile, create_pack_mountpoint_stub);
+        }
+
+        void start() override
+        {
+            if (!game::environment::is_mgo())
+            {
+                return;
+            }
+
+            matchmaking::register_callback(matchmaking::event_join_lobby, on_lobby_join);
+            matchmaking::register_callback(matchmaking::event_create_lobby, on_lobby_create);
+
+            scheduler::loop(mod_download_update, scheduler::main);
+            scheduler::loop(mod_download_update_async, scheduler::async);
 
             command::add("unloadmod", []()
             {
@@ -340,6 +884,7 @@ namespace mods
 
                 if (!can_load_mod())
                 {
+                    console::warn("cannot load mods right now");
                     return;
                 }
 

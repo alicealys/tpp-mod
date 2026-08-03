@@ -8255,16 +8255,32 @@ namespace game
 	};
 #pragma pack(pop)
 
+	struct steam_callback_t
+	{
+		struct vtable
+		{
+
+		};
+		vtable* __vftable;
+		int callback_flags;
+		int i_callback;
+		void* arg;
+		void* callback;
+	};
+
 #pragma pack(push, 1)
 	struct mgo_match_t
 	{
-		char __pad0[13];
+		int error1;
+		char __pad10[4];
+		int error2;
+		char __pad11[1];
 		char is_joining_invite;
 		steam_id invite_lobby_id;
 		char __pad1[2];
 		match_settings_t match_settings;
 		char __pad2[48];
-		short lobby_member_limit;
+		__int16 lobby_member_limit;
 		char __pad3[90];
 		steam_id lobby_owner;
 		char __pad4[76];
@@ -8275,7 +8291,17 @@ namespace game
 		char __pad6[2];
 		match_rules_t match_rules;
 		steam_id lobby_id2;
-		char __pad7[1604];
+		char __pad7[420];
+		steam_id kicked_ids[16];
+		int kick_num;
+		char __pad8[852];
+		steam_callback_t lobby_data_changed;
+		steam_callback_t lobby_chat_update;
+		steam_callback_t lobby_chat_msg;
+		steam_callback_t unk_callback1;
+		steam_callback_t unk_callback2;
+		steam_callback_t unk_callback3;
+		char __pad9[8];
 	};
 #pragma pack(pop)
 
