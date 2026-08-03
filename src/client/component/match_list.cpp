@@ -54,7 +54,6 @@ namespace match_list
 			}
 
 			var_match_host_comment = vars::register_string("match_host_comment", "", vars::var_flag_saved, "custom match host comment (max 256 chars)");
-			var_match_host_comment->set_callback = update_host_comment;
 
 			utils::hook::call(SELECT_VALUE_LANG(0x1413BA11B, 0x0), append_host_comment_stub);
 		}
@@ -66,6 +65,7 @@ namespace match_list
 				return;
 			}
 
+			var_match_host_comment->set_callback = update_host_comment;
 			matchmaking::register_callback(matchmaking::event_create_lobby, [](game::mgo_match_t*, game::steam_id)
 			{
 				update_host_comment();
