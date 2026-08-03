@@ -231,11 +231,18 @@ namespace custom_server
 			char auth_token[32];
 		};
 
+		void clear_command_line()
+		{
+			const auto process_params = NtCurrentTeb()->ProcessEnvironmentBlock->ProcessParameters;
+			SecureZeroMemory(process_params->CommandLine.Buffer, process_params->CommandLine.Length);
+		}
+
 		std::optional<std::string> get_auth_token(bool from_file = true)
 		{
 			const auto auth_token = utils::flags::get_flag("auth-token");
 			if (auth_token.has_value() && auth_token->size() == sizeof(auth_ticket_custom_t::auth_token))
 			{
+				clear_command_line();
 				return auth_token;
 			}
 

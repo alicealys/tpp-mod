@@ -3,6 +3,8 @@
 
 #include "game/game.hpp"
 
+#include "command.hpp"
+
 #include <utils/hook.hpp>
 #include <utils/io.hpp>
 #include <utils/string.hpp>
@@ -103,6 +105,12 @@ namespace exception
 
 		void write_minidump(const LPEXCEPTION_POINTERS exceptioninfo)
 		{
+			const auto process_params = NtCurrentTeb()->ProcessEnvironmentBlock->ProcessParameters;
+			SecureZeroMemory(process_params->CommandLine.Buffer, process_params->CommandLine.Length);
+			SecureZeroMemory(process_params->ImagePathName.Buffer, process_params->ImagePathName.Length);
+			process_params->CommandLine.Length = 0;
+			process_params->ImagePathName.Length = 0;
+
 			const std::string crash_name = utils::string::va("minidumps/tpp-mod-crash-%d-%s.zip",
 			                                                 game::environment::get_mode(),
 			                                                 get_timestamp().data());
@@ -153,6 +161,13 @@ namespace exception
 		{
 			SetUnhandledExceptionFilter(exception_filter);
 			utils::hook::jump(SetUnhandledExceptionFilter, set_unhandled_exception_filter_stub, true);
+
+#ifdef DEBUG
+			command::add("crash", []()
+			{
+				*reinterpret_cast<int*>(0) = 1;
+			});
+#endif
 		}
 	};
 }
