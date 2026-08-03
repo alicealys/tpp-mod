@@ -461,6 +461,11 @@ namespace matchmaking
 	{
 		game::steam_id result{};
 		const auto steam_user = (*game::SteamUser)();
+		if (steam_user == nullptr)
+		{
+			return {};
+		}
+
 		steam_user->__vftable->GetSteamID(steam_user, &result);
 		return result;
 	}
