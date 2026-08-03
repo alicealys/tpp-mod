@@ -14,6 +14,8 @@
 #include <utils/hook.hpp>
 #include <utils/string.hpp>
 
+#define MATCH_VERSION 160
+
 namespace matchmaking
 {
 	namespace
@@ -23,6 +25,7 @@ namespace matchmaking
 		vars::var_ptr var_match_max_players;
 		vars::var_ptr var_match_briefing_time;
 		vars::var_ptr var_match_password;
+		vars::var_ptr var_match_restricted;
 
 		utils::hook::detour create_lobby_cb_hook;
 		utils::hook::detour create_lobby_hook;
@@ -390,6 +393,11 @@ namespace matchmaking
 
 		bool set_lobby_data_stub(game::ISteamMatchmaking* this_, game::steam_id lobby_id, const char* key, const char* value)
 		{
+			if (var_match_restricted->current.enabled() && key == "version"s)
+			{
+				value = utils::string::va("%i", MATCH_VERSION);
+			}
+
 			console::debug("[SteamMatchmaking] SetLobbyData %s %s\n", key, value);
 			return steam_matchmaking_vtbl.SetLobbyData(this_, lobby_id, key, value);
 		}
@@ -403,7 +411,16 @@ namespace matchmaking
 		void add_request_lobby_list_numerical_filter(game::ISteamMatchmaking* this_, const char* key, int value, int compare)
 		{
 			console::debug("[SteamMatchmaking] AddRequestLobbyListNumericalFilter %s %i %i\n", key, value, compare);
-			steam_matchmaking_vtbl.AddRequestLobbyListNumericalFilter(this_, key, value, compare);
+
+			if (key == "version"s)
+			{
+				steam_matchmaking_vtbl.AddRequestLobbyListNumericalFilter(this_, key, MATCH_VERSION, -2);
+				steam_matchmaking_vtbl.AddRequestLobbyListNumericalFilter(this_, key, value, 2);
+			}
+			else
+			{
+				steam_matchmaking_vtbl.AddRequestLobbyListNumericalFilter(this_, key, value, compare);
+			}
 		}
 
 		void hook_steam_matchmaking()
@@ -496,6 +513,7 @@ namespace matchmaking
 			var_match_max_players = vars::register_int("match_max_players", 16, 0, 16, vars::var_flag_saved, "match maximum players override");
 			var_match_briefing_time = vars::register_int("match_briefing_time", 60, 0, 600, vars::var_flag_saved, "match briefing time override (seconds)");
 			var_match_password = vars::register_string("match_password", "", vars::var_flag_saved, "match password");
+			var_match_restricted = vars::register_bool("match_restricted", false, vars::var_flag_saved, "restrict match to tpp-mod users of compatible versions only");
 
 			var_match_password->set_callback = []()
 			{
