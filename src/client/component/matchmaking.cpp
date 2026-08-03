@@ -276,39 +276,6 @@ namespace matchmaking
 			request_disconnect = false;
 		}
 
-		void set_lobby_data(const std::string& key, const std::string& value)
-		{
-			static const auto current_steam_id = get_current_steam_id();
-			const auto match_container = game::s_mgoMatchMakingManager->match_container;
-			if (match_container == nullptr || 
-				match_container->match->lobby_id.bits == 0 || 
-				match_container->match->lobby_owner.bits != current_steam_id.bits)
-			{
-				return;
-			}
-
-			const auto steam_matchmaking = (*game::SteamMatchmaking)();
-			const auto res = steam_matchmaking->__vftable->SetLobbyData(steam_matchmaking, match_container->match->lobby_id, key.data(), value.data());
-			console::debug("[SteamMatchmaking] SetLobbyData(%s, %s) = %i\n", key.data(), value.data(), res);
-		}
-
-		void set_lobby_data(const std::string& key, const std::uint64_t value)
-		{
-			set_lobby_data(key, utils::string::va("%llu", value));
-		}
-
-		const char* get_lobby_data(const std::string& key)
-		{
-			const auto match_container = game::s_mgoMatchMakingManager->match_container;
-			if (match_container == nullptr)
-			{
-				return "";
-			}
-
-			const auto steam_matchmaking = (*game::SteamMatchmaking)();
-			return steam_matchmaking->__vftable->GetLobbyData(steam_matchmaking, match_container->match->lobby_id, key.data());
-		}
-
 		void run_callbacks(const std::uint32_t type, game::mgo_match_t* match, const game::steam_id lobby_id)
 		{
 			const auto match_container = game::s_mgoMatchMakingManager->match_container;
@@ -496,6 +463,39 @@ namespace matchmaking
 		const auto steam_user = (*game::SteamUser)();
 		steam_user->__vftable->GetSteamID(steam_user, &result);
 		return result;
+	}
+
+	void set_lobby_data(const std::string& key, const std::string& value)
+	{
+		static const auto current_steam_id = get_current_steam_id();
+		const auto match_container = game::s_mgoMatchMakingManager->match_container;
+		if (match_container == nullptr ||
+			match_container->match->lobby_id.bits == 0 ||
+			match_container->match->lobby_owner.bits != current_steam_id.bits)
+		{
+			return;
+		}
+
+		const auto steam_matchmaking = (*game::SteamMatchmaking)();
+		const auto res = steam_matchmaking->__vftable->SetLobbyData(steam_matchmaking, match_container->match->lobby_id, key.data(), value.data());
+		console::debug("[SteamMatchmaking] SetLobbyData(%s, %s) = %i\n", key.data(), value.data(), res);
+	}
+
+	void set_lobby_data(const std::string& key, const std::uint64_t value)
+	{
+		set_lobby_data(key, utils::string::va("%llu", value));
+	}
+
+	const char* get_lobby_data(const std::string& key)
+	{
+		const auto match_container = game::s_mgoMatchMakingManager->match_container;
+		if (match_container == nullptr)
+		{
+			return "";
+		}
+
+		const auto steam_matchmaking = (*game::SteamMatchmaking)();
+		return steam_matchmaking->__vftable->GetLobbyData(steam_matchmaking, match_container->match->lobby_id, key.data());
 	}
 
 	class component final : public component_interface
