@@ -11,6 +11,10 @@ namespace matchmaking
 
 	game::steam_id get_current_steam_id();
 
+	void set_lobby_data(const std::string& key, const std::string& value);
+	void set_lobby_data(const std::string& key, const std::uint64_t value);
+	const char* get_lobby_data(const std::string& key);
+
 	void ban_player_from_lobby(const std::uint64_t steam_id);
 	void unban_player_from_lobby(const std::uint64_t steam_id);
 	void kick_player_from_lobby(const std::uint64_t steam_id);
