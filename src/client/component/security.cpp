@@ -3,6 +3,8 @@
 
 #include "game/game.hpp"
 
+#include "console.hpp"
+
 #include <utils/hook.hpp>
 #include <utils/string.hpp>
 
@@ -269,6 +271,18 @@ namespace security
 
 		int lua_nullsub(void* state)
 		{
+			console::error("[Security] a script tried to call an unsafe lua function\n");
+			return 0;
+		}
+
+		int lua_nullsub_module(void* state)
+		{
+			return 0;
+		}
+
+		int system_stub(const char* arg)
+		{
+			console::error("[Security] a script tried to call 'system' (%s)\n", arg);
 			return 0;
 		}
 	}
@@ -305,10 +319,11 @@ namespace security
 			utils::hook::jump(SELECT_VALUE(0x141A31E20, 0x14148D140, 0x0, 0x0), lua_nullsub); // ^
 			utils::hook::jump(SELECT_VALUE(0x141A31730, 0x14148CA50, 0x0, 0x0), lua_nullsub); // ^
 			utils::hook::jump(SELECT_VALUE(0x141A35A40, 0x141490D60, 0x0, 0x0), lua_nullsub); // disable lua loadlib
-			utils::hook::jump(SELECT_VALUE(0x141A310D0, 0x14148C3F0, 0x0, 0x0), lua_nullsub); // disable lua io module
-			utils::hook::jump(SELECT_VALUE(0x141A35A10, 0x141490D30, 0x0, 0x0), lua_nullsub); // disable lua debug module
 
-			utils::hook::set<std::size_t>(SELECT_VALUE(0x14208DC60, 0x1416F0AA0, 0x0, 0x0), 0); // remove 'system' import
+			utils::hook::jump(SELECT_VALUE(0x141A310D0, 0x14148C3F0, 0x0, 0x0), lua_nullsub_module); // disable lua io module
+			utils::hook::jump(SELECT_VALUE(0x141A35A10, 0x141490D30, 0x0, 0x0), lua_nullsub_module); // disable lua debug module
+
+			utils::hook::set(SELECT_VALUE(0x14208DC60, 0x1416F0AA0, 0x0, 0x0), system_stub); // remove 'system' import
 		}
 	};
 }
