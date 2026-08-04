@@ -594,12 +594,12 @@ namespace utils::cryptography
 	}
 
 
-	std::uint32_t crc32::compute(const std::string& data, const bool hex)
+	std::uint32_t crc32::compute(const std::string& data)
 	{
-		return compute(cs(data.data()), data.size(), hex);
+		return compute(cs(data.data()), data.size());
 	}
 
-	std::uint32_t crc32::compute(const uint8_t* data, const size_t length, const bool hex)
+	std::uint32_t crc32::compute(const uint8_t* data, const size_t length)
 	{
 		auto crc_value = ::crc32(0L, Z_NULL, 0);
 		crc_value = ::crc32(crc_value, data, static_cast<std::uint32_t>(length));

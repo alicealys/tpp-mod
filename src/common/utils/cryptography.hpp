@@ -105,8 +105,8 @@ namespace utils::cryptography
 
 	namespace crc32
 	{
-		std::uint32_t compute(const std::string& data, bool hex = false);
-		std::uint32_t compute(const uint8_t* data, size_t length, bool hex = false);
+		std::uint32_t compute(const std::string& data);
+		std::uint32_t compute(const uint8_t* data, size_t length);
 	}
 
 	namespace base64

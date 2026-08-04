@@ -438,7 +438,7 @@ namespace mods
                         return;
                     }
 
-                    const auto hash = utils::cryptography::crc32::compute(data.value(), true);
+                    const auto hash = utils::cryptography::crc32::compute(data.value());
                     console::debug("[Mods] download file hash %X == %X\n", file.hash, hash);
                     if (hash != file.hash)
                     {
