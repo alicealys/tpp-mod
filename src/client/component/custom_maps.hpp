@@ -13,6 +13,7 @@ namespace custom_maps
 		const std::string& base_url, std::vector<mods::mod_download_file_t>& files);
 
 	void register_usermaps();
+	void register_maps();
 
 	std::uint8_t get_map_id(const std::string& name);
 	std::string get_map_name(const std::uint8_t index);
