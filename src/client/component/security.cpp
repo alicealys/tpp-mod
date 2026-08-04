@@ -34,7 +34,7 @@ namespace security
 			a.bind(continue_);
 			a.movd(xmm13, eax);
 			a.lea(eax, qword_ptr(rdi, -0x146));
-			a.jmp(SELECT_VALUE_LANG(0x14125EBE1, 0x14125F091));
+			a.jmp(SELECT_VALUE_LANG(0x14125EC51, 0x0));
 		}
 
 		void sub_1407A7F70_stub(utils::hook::assembler& a)
@@ -47,11 +47,11 @@ namespace security
 
 			a.test(rax, rax);
 			a.jz(is_nullptr);
-			a.jmp(SELECT_VALUE_LANG(0x1407A7C1D, 0x1407A7A8D));
+			a.jmp(SELECT_VALUE_LANG(0x1407A7C3D, 0x0));
 
 			a.bind(is_nullptr);
 			a.mov(al, 1);
-			a.jmp(SELECT_VALUE_LANG(0x1407A7C8A, 0x1407A7AFA));
+			a.jmp(SELECT_VALUE_LANG(0x1407A7CAA, 0x0));
 		}
 
 		utils::hook::detour fv2_resource_manager_get_model_hook;
@@ -80,15 +80,15 @@ namespace security
 			a.mov(rax, &buf);
 
 			a.bind(l1);
-			a.jmp(SELECT_VALUE_LANG(0x141112E1D, 0x0));
+			a.jmp(SELECT_VALUE_LANG(0x141112E8D, 0x0));
 		}
 
 		void patch_mgo_crashes()
 		{
-			utils::hook::jump(SELECT_VALUE_LANG(0x14125EBC1, 0x14125F071), utils::hook::assemble(shell_impl_active_shell_at_empty_work_stub), true);
-			utils::hook::jump(SELECT_VALUE_LANG(0x1407A7C10, 0x1407A7A80), utils::hook::assemble(sub_1407A7F70_stub), true);
-			utils::hook::jump(SELECT_VALUE_LANG(0x141112E0C, 0x0), utils::hook::assemble(sub_1411126C0_stub), true);
-			fv2_resource_manager_get_model_hook.create(SELECT_VALUE_LANG(0x14029FE80, 0x1436E73F0), fv2_resource_manager_get_model_stub);
+			utils::hook::jump(SELECT_VALUE_LANG(0x14125EC31, 0x0), utils::hook::assemble(shell_impl_active_shell_at_empty_work_stub), true);
+			utils::hook::jump(SELECT_VALUE_LANG(0x1407A7C30, 0x0), utils::hook::assemble(sub_1407A7F70_stub), true);
+			utils::hook::jump(SELECT_VALUE_LANG(0x141112E7C, 0x0), utils::hook::assemble(sub_1411126C0_stub), true);
+			fv2_resource_manager_get_model_hook.create(SELECT_VALUE_LANG(0x14029FE60, 0x0), fv2_resource_manager_get_model_stub);
 		}
 
 		utils::hook::detour json_get_hook;
@@ -297,8 +297,8 @@ namespace security
 				patch_mgo_crashes();
 
 				// cap kick_num to 16
-				utils::hook::nop(SELECT_VALUE_LANG(0x1405A29DE, 0x0), 6);
-				utils::hook::call(SELECT_VALUE_LANG(0x1405A29DE, 0x0), atoi_stub);
+				utils::hook::nop(SELECT_VALUE_LANG(0x1405A29CE, 0x0), 6);
+				utils::hook::call(SELECT_VALUE_LANG(0x1405A29CE, 0x0), atoi_stub);
 				utils::hook::nop(SELECT_VALUE_LANG(0x1405D4AEE, 0x0), 6);
 				utils::hook::call(SELECT_VALUE_LANG(0x1405D4AEE, 0x0), atoi_stub);
 			}
@@ -311,17 +311,17 @@ namespace security
 				utils::hook::call(SELECT_VALUE_LANG(0x1405597A1, 0x144B8861D), strncpy_s_stub);
 			}
 
-			utils::hook::jump(SELECT_VALUE(0x141A31640, 0x14148C960, 0x0, 0x0), lua_nullsub); // disable lua os func
-			utils::hook::jump(SELECT_VALUE(0x141A31E90, 0x14148D1B0, 0x0, 0x0), lua_nullsub); // ^
-			utils::hook::jump(SELECT_VALUE(0x141A317A0, 0x14148CAC0, 0x0, 0x0), lua_nullsub); // ^
-			utils::hook::jump(SELECT_VALUE(0x141A31680, 0x14148C9A0, 0x0, 0x0), lua_nullsub); // ^
-			utils::hook::jump(SELECT_VALUE(0x141A316D0, 0x14148C9F0, 0x0, 0x0), lua_nullsub); // ^
-			utils::hook::jump(SELECT_VALUE(0x141A31E20, 0x14148D140, 0x0, 0x0), lua_nullsub); // ^
-			utils::hook::jump(SELECT_VALUE(0x141A31730, 0x14148CA50, 0x0, 0x0), lua_nullsub); // ^
-			utils::hook::jump(SELECT_VALUE(0x141A35A40, 0x141490D60, 0x0, 0x0), lua_nullsub); // disable lua loadlib
+			utils::hook::jump(SELECT_VALUE(0x141A31640, 0x14148C9D0, 0x0, 0x0), lua_nullsub); // disable lua os func
+			utils::hook::jump(SELECT_VALUE(0x141A31E90, 0x14148D220, 0x0, 0x0), lua_nullsub); // ^
+			utils::hook::jump(SELECT_VALUE(0x141A317A0, 0x14148CB30, 0x0, 0x0), lua_nullsub); // ^
+			utils::hook::jump(SELECT_VALUE(0x141A31680, 0x14148CA10, 0x0, 0x0), lua_nullsub); // ^
+			utils::hook::jump(SELECT_VALUE(0x141A316D0, 0x14148CA60, 0x0, 0x0), lua_nullsub); // ^
+			utils::hook::jump(SELECT_VALUE(0x141A31E20, 0x14148D1B0, 0x0, 0x0), lua_nullsub); // ^
+			utils::hook::jump(SELECT_VALUE(0x141A31730, 0x14148CAC0, 0x0, 0x0), lua_nullsub); // ^
+			utils::hook::jump(SELECT_VALUE(0x141A35A40, 0x141490DD0, 0x0, 0x0), lua_nullsub); // disable lua loadlib
 
-			utils::hook::jump(SELECT_VALUE(0x141A310D0, 0x14148C3F0, 0x0, 0x0), lua_nullsub_module); // disable lua io module
-			utils::hook::jump(SELECT_VALUE(0x141A35A10, 0x141490D30, 0x0, 0x0), lua_nullsub_module); // disable lua debug module
+			utils::hook::jump(SELECT_VALUE(0x141A310D0, 0x14148C460, 0x0, 0x0), lua_nullsub_module); // disable lua io module
+			utils::hook::jump(SELECT_VALUE(0x141A35A10, 0x141490DA0, 0x0, 0x0), lua_nullsub_module); // disable lua debug module
 
 			utils::hook::set(SELECT_VALUE(0x14208DC60, 0x1416F0AA0, 0x0, 0x0), system_stub); // remove 'system' import
 		}

@@ -117,7 +117,7 @@ namespace ui
 		{
 			a.shufps(xmm2, xmm1, 0x55);
 			a.movss(xmm1, dword_ptr(rsp, 0x20));
-			a.call(SELECT_VALUE(0x141DBE160, 0x140E2F500, 0x0, 0x0));
+			a.call(SELECT_VALUE(0x141DBE160, 0x140E2F570, 0x0, 0x0));
 
 			a.pushad64();
 			a.movzx(eax, word_ptr(rbx, 0x4A));
@@ -126,7 +126,7 @@ namespace ui
 			a.call_aligned(add_model_node_common);
 			a.popad64();
 
-			a.jmp(SELECT_VALUE(0x141DBD568, 0x140E2E908, 0x0, 0x0));
+			a.jmp(SELECT_VALUE(0x141DBD568, 0x140E2E978, 0x0, 0x0));
 		}
 
 		unsigned int create_resource_from_path_stub(game::fox::Path* path)
@@ -168,9 +168,9 @@ namespace ui
 			ui_custom_colors_enable = vars::register_bool("ui_color_tweaks", false, vars::var_flag_saved, "enable ui color tweaks");
 			ui_custom_colors_enable->set_callback = update_bg_nodes;
 
-			graph_manager_get_palette_color_hook.create(SELECT_VALUE(0x141DAB770, 0x140E1C6D0, 0x0, 0x0), graph_manager_get_palette_color_stub);
-			utils::hook::jump(SELECT_VALUE(0x141DBD559, 0x140E2E8F9, 0x0, 0x0), utils::hook::assemble(model_node_create_common_stub), true);
-			model_node_common_destructor_hook.create(SELECT_VALUE(0x141DBD320, 0x140E2E6C0, 0x0, 0x0), model_node_common_destructor_stub);
+			graph_manager_get_palette_color_hook.create(SELECT_VALUE(0x141DAB770, 0x140E1C740, 0x0, 0x0), graph_manager_get_palette_color_stub);
+			utils::hook::jump(SELECT_VALUE(0x141DBD559, 0x140E2E969, 0x0, 0x0), utils::hook::assemble(model_node_create_common_stub), true);
+			model_node_common_destructor_hook.create(SELECT_VALUE(0x141DBD320, 0x140E2E730, 0x0, 0x0), model_node_common_destructor_stub);
 
 			if (game::environment::is_tpp())
 			{
@@ -189,7 +189,7 @@ namespace ui
 			}
 			else
 			{
-				utils::hook::set<std::uint8_t>(SELECT_VALUE_LANG(0x1413EDFDF, 0x0), 0xEB);
+				utils::hook::set<std::uint8_t>(SELECT_VALUE_LANG(0x1413EE04F, 0x0), 0xEB);
 			}
 		}
 

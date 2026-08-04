@@ -15,7 +15,7 @@
 #include <utils/hook.hpp>
 #include <utils/string.hpp>
 
-#define MATCH_VERSION 161
+#define MATCH_VERSION 170
 
 namespace matchmaking
 {
@@ -277,7 +277,7 @@ namespace matchmaking
 
 			if (request_disconnect)
 			{
-				utils::hook::invoke<void>(SELECT_VALUE_LANG(0x140892870, 0x140891740), game::s_mgoMatchMakingManager.get(), 1);
+				utils::hook::invoke<void>(SELECT_VALUE_LANG(0x140892850, 0x0), game::s_mgoMatchMakingManager.get(), 1);
 			}
 
 			request_match_rotate = false;
@@ -644,11 +644,11 @@ namespace matchmaking
 				return;
 			}
 
-			create_lobby_cb_hook.create(SELECT_VALUE_LANG(0x1405A18E0, 0x1466D0C80), create_lobby_cb_stub);
-			create_lobby_hook.create(SELECT_VALUE_LANG(0x1405A1B60, 0x1405A1380), create_lobby_stub);
+			create_lobby_cb_hook.create(SELECT_VALUE_LANG(0x1405A18D0, 0x0), create_lobby_cb_stub);
+			create_lobby_hook.create(SELECT_VALUE_LANG(0x1405A1B50, 0x0), create_lobby_stub);
 			join_lobby_cb_hook.create(SELECT_VALUE_LANG(0x1405A2F70, 0x0), join_lobby_cb_stub);
-			start_transition_hook.create(SELECT_VALUE_LANG(0x1408A23F0, 0x0), start_transition_stub);
-			match_start_hook.create(SELECT_VALUE_LANG(0x1408A1F30, 0x0), match_start_stub);
+			start_transition_hook.create(SELECT_VALUE_LANG(0x1408A23D0, 0x0), start_transition_stub);
+			match_start_hook.create(SELECT_VALUE_LANG(0x1408A1F10, 0x0), match_start_stub);
 
 			scheduler::once(hook_steam_matchmaking, scheduler::net);
 			scheduler::loop(run_frame, scheduler::session);

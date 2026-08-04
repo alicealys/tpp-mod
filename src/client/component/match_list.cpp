@@ -34,7 +34,7 @@ namespace match_list
 			}
 			else
 			{
-				utils::hook::invoke<void>(SELECT_VALUE_LANG(0x1413B8B40, 0x0), a1, a2, a3, a4);
+				utils::hook::invoke<void>(SELECT_VALUE_LANG(0x1413B8BB0, 0x0), a1, a2, a3, a4);
 			}
 		}
 
@@ -59,7 +59,7 @@ namespace match_list
 			a.mov(rax, qword_ptr(rsi));
 			a.call(qword_ptr(rax, 0x520));
 
-			a.jmp(SELECT_VALUE_LANG(0x1413A61E1, 0x0));
+			a.jmp(SELECT_VALUE_LANG(0x1413A6251, 0x0));
 		}
 
 		void match_list_map_name_stub2(utils::hook::assembler& a)
@@ -76,7 +76,7 @@ namespace match_list
 			a.mov(rcx, rdi);
 			a.mov(dword_ptr(rbx), edx);
 
-			a.jmp(SELECT_VALUE_LANG(0x1413BC1F6, 0x0));
+			a.jmp(SELECT_VALUE_LANG(0x1413BC1A6, 0x0));
 		}
 
 		static __int64 builtin_map_names[] =
@@ -132,7 +132,7 @@ namespace match_list
 			a.popad64();
 			a.pop(rax);
 
-			a.jmp(SELECT_VALUE_LANG(0x1413BA33A, 0x0));
+			a.jmp(SELECT_VALUE_LANG(0x1413BA2BA, 0x0));
 		}
 
 		void match_list_map_name_stub4(utils::hook::assembler& a)
@@ -149,7 +149,7 @@ namespace match_list
 			a.mov(dword_ptr(rdi), eax);
 			a.movsx(edx, byte_ptr(rsi, 0xC));
 
-			a.jmp(SELECT_VALUE_LANG(0x1413BB28F, 0x0));
+			a.jmp(SELECT_VALUE_LANG(0x1413BB23F, 0x0));
 		}
 
 		void match_list_map_name_stub5(utils::hook::assembler& a)
@@ -168,7 +168,7 @@ namespace match_list
 			a.mov(byte_ptr(rax, -0x1E), cl);
 			a.setnz(cl);
 
-			a.jmp(SELECT_VALUE_LANG(0x1413AAE67, 0x0));
+			a.jmp(SELECT_VALUE_LANG(0x1413AAED7, 0x0));
 		}
 
 		const char* get_custom_map_name2(int map_id)
@@ -213,7 +213,7 @@ namespace match_list
 			a.popad64();
 			a.pop(rax);
 
-			a.jmp(SELECT_VALUE_LANG(0x1413A6641, 0x0));
+			a.jmp(SELECT_VALUE_LANG(0x1413A66B1, 0x0));
 		}
 
 		utils::hook::detour get_map_count_hook;
@@ -293,7 +293,7 @@ namespace match_list
 			a.mov(rax, qword_ptr(rsp, 0xE0));
 			a.mov(r8, qword_ptr(rax, 0x28));
 
-			a.jmp(SELECT_VALUE_LANG(0x1413BA2CE, 0x0));
+			a.jmp(SELECT_VALUE_LANG(0x1413BA24E, 0x0));
 		}
 
 		void update_host_comment()
@@ -314,26 +314,26 @@ namespace match_list
 
 			var_match_host_comment = vars::register_string("match_host_comment", "", vars::var_flag_saved, "custom match host comment (max 256 chars)");
 
-			utils::hook::call(SELECT_VALUE_LANG(0x1413BA11B, 0x0), append_host_comment_stub);
+			utils::hook::call(SELECT_VALUE_LANG(0x1413BA09B, 0x0), append_host_comment_stub);
 
 			// handle custom map id
-			utils::hook::jump(SELECT_VALUE_LANG(0x1413A61BF, 0x0), utils::hook::assemble(match_list_map_name_stub1), true);
-			utils::hook::jump(SELECT_VALUE_LANG(0x1413BC1E9, 0x0), utils::hook::assemble(match_list_map_name_stub2), true);
-			utils::hook::jump(SELECT_VALUE_LANG(0x1413BA30B, 0x0), utils::hook::assemble(match_list_map_name_stub3), true);
-			utils::hook::jump(SELECT_VALUE_LANG(0x1413BB280, 0x0), utils::hook::assemble(match_list_map_name_stub4), true);
-			utils::hook::jump(SELECT_VALUE_LANG(0x1413AAE59, 0x0), utils::hook::assemble(match_list_map_name_stub5), true, true);
-			utils::hook::jump(SELECT_VALUE_LANG(0x1413A662C, 0x0), utils::hook::assemble(match_list_map_name_stub6), true);
+			utils::hook::jump(SELECT_VALUE_LANG(0x1413A622F, 0x0), utils::hook::assemble(match_list_map_name_stub1), true);
+			utils::hook::jump(SELECT_VALUE_LANG(0x1413BC199, 0x0), utils::hook::assemble(match_list_map_name_stub2), true);
+			utils::hook::jump(SELECT_VALUE_LANG(0x1413BA28B, 0x0), utils::hook::assemble(match_list_map_name_stub3), true);
+			utils::hook::jump(SELECT_VALUE_LANG(0x1413BB230, 0x0), utils::hook::assemble(match_list_map_name_stub4), true);
+			utils::hook::jump(SELECT_VALUE_LANG(0x1413AAEC9, 0x0), utils::hook::assemble(match_list_map_name_stub5), true, true);
+			utils::hook::jump(SELECT_VALUE_LANG(0x1413A669C, 0x0), utils::hook::assemble(match_list_map_name_stub6), true);
 			// todo: 01413A676E, rush mode
 
 			// map select
-			get_map_count_hook.create(SELECT_VALUE_LANG(0x1413A7440, 0x0), get_map_count_stub);
-			utils::hook::jump(SELECT_VALUE_LANG(0x1413A75B0, 0x0), get_map_name_stub);
-			//utils::hook::jump(SELECT_VALUE_LANG(0x1413B9230, 0x0), get_map_name_stub); // map filter
+			get_map_count_hook.create(SELECT_VALUE_LANG(0x1413A74B0, 0x0), get_map_count_stub);
+			utils::hook::jump(SELECT_VALUE_LANG(0x1413A7620, 0x0), get_map_name_stub);
+			//utils::hook::jump(SELECT_VALUE_LANG(0x1413B92A0, 0x0), get_map_name_stub); // map filter
 
 			// replace "RUSH" with "MOD"
-			utils::hook::nop(SELECT_VALUE_LANG(0x1413A94D5, 0x0), 6);
-			utils::hook::call(SELECT_VALUE_LANG(0x1413A94D5, 0x0), set_rush_text_stub);
-			utils::hook::jump(SELECT_VALUE_LANG(0x1413BA2B5, 0x0), utils::hook::assemble(match_list_rush_value_stub), true);
+			utils::hook::nop(SELECT_VALUE_LANG(0x1413A9545, 0x0), 6);
+			utils::hook::call(SELECT_VALUE_LANG(0x1413A9545, 0x0), set_rush_text_stub);
+			utils::hook::jump(SELECT_VALUE_LANG(0x1413BA235, 0x0), utils::hook::assemble(match_list_rush_value_stub), true);
 		}
 
 		void start() override

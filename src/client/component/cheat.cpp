@@ -253,7 +253,7 @@ namespace cheat
 			a.bind(continue_);
 			a.pop(rax);
 			a.cmp(eax, 0x80);
-			a.jmp(SELECT_VALUE_LANG(0x140598B15, 0x140598325));
+			a.jmp(SELECT_VALUE_LANG(0x140598B05, 0x0));
 		}
 
 		void cmd_get_server_item_list_result_unpack_stub(utils::hook::assembler& a)
@@ -286,7 +286,7 @@ namespace cheat
 			a.jmp(continue_);
 
 			a.bind(continue_);
-			a.jmp(SELECT_VALUE_LANG(0x140834214, 0x1408331E4));
+			a.jmp(SELECT_VALUE_LANG(0x140834214, 0x0));
 		}
 
 		int get_develop_limit()
@@ -296,9 +296,9 @@ namespace cheat
 
 		void cmd_get_server_item_list_result_unpack_stub2(utils::hook::assembler& a)
 		{
-			a.call(SELECT_VALUE_LANG(0x141A0B6C0, 0x141A0BA10));
+			a.call(SELECT_VALUE_LANG(0x141A0B6C0, 0x0));
 			a.mov(rcx, rax);
-			a.call(SELECT_VALUE_LANG(0x141A0BC90, 0x141A0BFE0));
+			a.call(SELECT_VALUE_LANG(0x141A0BC90, 0x0));
 
 			a.push(eax);
 			a.push(rcx);
@@ -313,7 +313,7 @@ namespace cheat
 			a.cmovnz(eax, ecx);
 
 			a.mov(dword_ptr(rsi, 0x2860), eax);
-			a.jmp(SELECT_VALUE_LANG(0x14083428F, 0x14083325F));
+			a.jmp(SELECT_VALUE_LANG(0x14083428F, 0x0));
 		}
 
 		utils::hook::detour cmd_check_server_item_correct_hook;
@@ -566,18 +566,18 @@ namespace cheat
 				var_cheat_no_deployment_cost = vars::register_bool("cheat_no_deployment_cost", false, 
 					vars::var_flag_cheat | vars::var_flag_saved, "disable mission deployment cost");
 
-				utils::hook::jump(SELECT_VALUE_LANG(0x1408341FC, 0x1408331CC), utils::hook::assemble(cmd_get_server_item_list_result_unpack_stub), true);
-				utils::hook::jump(SELECT_VALUE_LANG(0x14083427C, 0x14083324C), utils::hook::assemble(cmd_get_server_item_list_result_unpack_stub2), true);
+				utils::hook::jump(SELECT_VALUE_LANG(0x1408341FC, 0x0), utils::hook::assemble(cmd_get_server_item_list_result_unpack_stub), true);
+				utils::hook::jump(SELECT_VALUE_LANG(0x14083427C, 0x0), utils::hook::assemble(cmd_get_server_item_list_result_unpack_stub2), true);
 
-				cmd_check_server_item_correct_hook.create(SELECT_VALUE_LANG(0x140835160, 0x14752AD10), cmd_check_server_item_correct_stub);
+				cmd_check_server_item_correct_hook.create(SELECT_VALUE_LANG(0x140835160, 0x0), cmd_check_server_item_correct_stub);
 			
-				send_suspicion_play_data_hook.create(SELECT_VALUE_LANG(0x14080A970, 0x140809A30), send_suspicion_play_data_stub);
+				send_suspicion_play_data_hook.create(SELECT_VALUE_LANG(0x14080A970, 0x0), send_suspicion_play_data_stub);
 
-				mission_preparation_get_total_gmp_cost_hook.create(SELECT_VALUE_LANG(0x1416BB450, 0x1416BC550), mission_preparation_get_total_gmp_cost_stub);
-				mission_preparation_get_all_equip_resource_hook.create(SELECT_VALUE_LANG(0x1416BA660, 0x1416BB760), mission_preparation_get_all_equip_resource_stub);
-				mission_preparation_calc_equip_resource_hook.create(SELECT_VALUE_LANG(0x140953AF0, 0x140952A50), mission_preparation_calc_equip_resource_stub);
-				utils::hook::nop(SELECT_VALUE_LANG(0x14095B466, 0x14095A456), 6);
-				utils::hook::call(SELECT_VALUE_LANG(0x14095B466, 0x14095A456), mission_preparation_sub_gmp_stub);
+				mission_preparation_get_total_gmp_cost_hook.create(SELECT_VALUE_LANG(0x1416BB450, 0x0), mission_preparation_get_total_gmp_cost_stub);
+				mission_preparation_get_all_equip_resource_hook.create(SELECT_VALUE_LANG(0x1416BA660, 0x0), mission_preparation_get_all_equip_resource_stub);
+				mission_preparation_calc_equip_resource_hook.create(SELECT_VALUE_LANG(0x140953AF0, 0x0), mission_preparation_calc_equip_resource_stub);
+				utils::hook::nop(SELECT_VALUE_LANG(0x14095B466, 0x0), 6);
+				utils::hook::call(SELECT_VALUE_LANG(0x14095B466, 0x0), mission_preparation_sub_gmp_stub);
 				sub_resource_hook.create(SELECT_VALUE_LANG(0x140F7DCC0, 0x0), sub_resource_stub);
 			}
 			else
@@ -585,7 +585,7 @@ namespace cheat
 				var_cheat_unlockall_gear = vars::register_bool("cheat_unlockall_gear", false, 
 					vars::var_flag_cheat | vars::var_flag_saved, "unlock all gear");
 
-				utils::hook::jump(SELECT_VALUE_LANG(0x140598B08, 0x140598318), utils::hook::assemble(get_purchasable_item_list_stub), true, true);
+				utils::hook::jump(SELECT_VALUE_LANG(0x140598AF8, 0x0), utils::hook::assemble(get_purchasable_item_list_stub), true, true);
 			}
 		}
 
