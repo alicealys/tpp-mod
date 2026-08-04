@@ -1,5 +1,7 @@
 #pragma once
 
+#include "game/game.hpp"
+
 namespace matchmaking
 {
 	enum event_callback_t
@@ -7,9 +9,14 @@ namespace matchmaking
 		event_create_lobby = 0,
 		event_join_lobby = 1,
 		event_leave_lobby = 2,
+		event_start_transition = 3,
+		event_match_start = 4,
 	};
 
 	game::steam_id get_current_steam_id();
+	game::steam_id get_last_requested_lobby();
+	game::mgo_match_t* get_match();
+	bool is_host();
 
 	void set_lobby_data(const std::string& key, const std::string& value);
 	void set_lobby_data(const std::string& key, const std::uint64_t value);

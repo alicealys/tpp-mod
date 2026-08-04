@@ -8,6 +8,9 @@
 #include "filesystem.hpp"
 #include "scripting.hpp"
 #include "matchmaking.hpp"
+#include "custom_maps.hpp"
+
+#include "utils/steam.hpp"
 
 #include <utils/hook.hpp>
 #include <utils/nt.hpp>
@@ -15,7 +18,7 @@
 #include <utils/http.hpp>
 #include <utils/cryptography.hpp>
 #include <utils/string.hpp>
-#include <zlib.h>
+#include <utils/concurrency.hpp>
 
 namespace mods
 {
@@ -38,15 +41,6 @@ namespace mods
             std::uint64_t type;
             std::uint32_t flags;
             game::fox::fs::MountPoint* handle;
-        };
-
-        struct mod_download_file_t
-        {
-            bool done;
-            std::string url;
-            std::string path;
-            std::string hash;
-            std::string data;
         };
 
         struct mod_info_t
@@ -87,15 +81,16 @@ namespace mods
             game::steam_id target_lobby;
         } mod_download_state{};
 
-        std::string get_generic_buffer_hash(const std::string& buffer)
+        struct hash_job_t
         {
-            auto crc_value = crc32(0L, Z_NULL, 0);
-            crc_value = crc32(crc_value, reinterpret_cast<const std::uint8_t*>(buffer.data()),
-                static_cast<std::uint32_t>(buffer.size()));
-            std::string hash;
-            hash.append(reinterpret_cast<char*>(&crc_value), sizeof(crc_value));
-            return utils::string::dump_hex(hash, "");
-        }
+            std::string path;
+            std::atomic_bool done;
+            std::function<void(const std::uint32_t)> callback;
+        };
+
+        using hash_job_list_t = std::deque<std::unique_ptr<hash_job_t>>;
+        std::atomic_size_t hash_job_count = 0;
+        utils::concurrency::container<hash_job_list_t> hash_jobs;
 
         void parse_mod_info(const std::string& data, mod_info_t& info)
         {
@@ -294,7 +289,7 @@ namespace mods
             const auto res = create_pack_mountpoint_hook.invoke<game::fox::fs::MountPoint*>(type, name, a3, flags);
             if (res != nullptr)
             {
-                console::debug("create mount point: %s %s %lli %i\n", type, name, a3, flags);
+                console::debug("[FS Module] create mount point: %s %s %lli %i\n", type, name, a3, flags);
             }
 
             return res;
@@ -438,14 +433,16 @@ namespace mods
 
                     if (!data.has_value())
                     {
+                        console::error("[Mods] failed to download mod file %s, no data from server\n", file.path.data());
                         mod_download_state.state = download_state_error;
                         return;
                     }
 
-                    const auto hash = get_generic_buffer_hash(data.value());
-                    console::debug("download file hash %s == %s\n", file.hash.data(), hash.data());
+                    const auto hash = utils::cryptography::crc32::compute(data.value(), true);
+                    console::debug("[Mods] download file hash %X == %X\n", file.hash, hash);
                     if (hash != file.hash)
                     {
+                        console::error("[Mods] failed to download mod file %s, hash mismatch\n", file.path.data());
                         mod_download_state.state = download_state_error;
                         return;
                     }
@@ -470,7 +467,7 @@ namespace mods
             if (prev_state != mod_download_state.state)
             {
                 prev_state = mod_download_state.state;
-                console::debug("mod_download_state: %i\n", prev_state);
+                console::debug("[Mods] mod_download_state: %i\n", prev_state);
             }
 
             switch (mod_download_state.state)
@@ -501,29 +498,55 @@ namespace mods
                 scripting::script_exec(
                     "TppUiCommand.ErasePopup();"
                     "TppUiCommand.ShowPopup(\"mod_download_error\");"
-                    "TppUiCommand.SetPopupText(\"Failed to download mod\");");
+                    "TppUiCommand.SetPopupText(\"Failed to download mod, check console for details\");");
                 mod_download_state.state = download_state_none;
-                console::debug("mod download error!\n");
+                console::debug("[Mods] mod download error!\n");
                 reset_mod_download();
                 break;
             case download_state_end:
                 scripting::script_exec("TppUiCommand.ErasePopup();");
                 mod_download_state.state = download_state_none;
                 const bool result = mod_download_state.result.load();
-                console::debug("mod download result: %i\n", result);
+                console::debug("[Mods] mod download result: %i\n", result);
 
                 for (auto& file : mod_download_state.files)
                 {
-                    utils::io::write_file(file.path, file.data);
-                    utils::io::write_file(file.path + ".hash", file.hash);
+                    const auto hash_file = file.path + ".hash";
+                    if (!utils::io::write_file(file.path, file.data) || 
+                        !utils::io::write_file(hash_file, std::to_string(file.hash)))
+                    {
+                        console::error("[Mods] failed to write file %s\n", file.path.data());
+                        mod_download_state.state = download_state_error;
+                        break;
+                    }
                 }
 
+                scripting::script_exec("TppUiCommand.StopMbDvcTerminal()");
+
                 const auto target = mod_download_state.target_lobby;
-                mods::load(mod_download_state.mod_path);
-                scheduler::once([target]
+                if (mod_download_state.mod_path.empty() && !current_mod.path.has_value())
                 {
-                    matchmaking::connect_to_lobby(target);
-                }, scheduler::main, 3s);
+                    scheduler::once([=]
+                    {
+                        matchmaking::connect_to_lobby(target);
+                    }, scheduler::main, 100ms);
+                }
+                else
+                {
+                    if (mod_download_state.mod_path.empty())
+                    {
+                        mods::unload();
+                    }
+                    else
+                    {
+                        mods::load(mod_download_state.mod_path);
+                    }
+
+                    scheduler::once([target]
+                    {
+                        matchmaking::connect_to_lobby(target);
+                    }, scheduler::main, 3s);
+                }
 
                 reset_mod_download();
                 break;
@@ -536,39 +559,19 @@ namespace mods
             std::string& base_url,
             std::vector<mod_download_file_t>& files)
         {
-            const auto steam_matchmaking = (*game::SteamMatchmaking)();
-
-            const auto get_key_int = [&](const char* key, const int index)
+            base_url = utils::steam::get_lobby_data<std::string>(lobby_id, "mod_base_url", -1, 256);
+            if (!base_url.ends_with("/"))
             {
-                const char* key_str = key;
-                if (index != -1)
-                {
-                    key_str = utils::string::va("%s_%i", key, index);
-                }
+                base_url.push_back('/');
+            }
 
-                return std::atoi(steam_matchmaking->__vftable->GetLobbyData(steam_matchmaking, lobby_id, key_str));
-            };
-
-            const auto get_value = [&](const char* key, const int index)
-                -> std::string
-            {
-                const char* key_str = key;
-                if (index != -1)
-                {
-                    key_str = utils::string::va("%s_%i", key, index);
-                }
-
-                return steam_matchmaking->__vftable->GetLobbyData(steam_matchmaking, lobby_id, key_str);
-            };
-
-            const auto server_mod = get_value("mod_path", -1);
+            const auto server_mod = utils::steam::get_lobby_data<std::string>(lobby_id, "mod_path", -1, 32);
             if (server_mod.empty())
             {
                 new_fs_mod = "";
                 return false;
             }
 
-            base_url = get_value("mod_base_url", -1);
             if (base_url.empty())
             {
                 error = "Server has a mod, but has no URL to download it from!";
@@ -581,18 +584,13 @@ namespace mods
                 return false;
             }
 
-            if (!base_url.ends_with("/"))
-            {
-                base_url.push_back('/');
-            }
-
             if (!server_mod.starts_with("mods/") || server_mod.contains('.') || server_mod.contains("::"))
             {
                 error = std::format("Invalid server mod value \"{}\"", server_mod);
                 return false;
             }
 
-            const auto num_files = get_key_int("mod_file_count", -1);
+            const auto num_files = utils::steam::get_lobby_data<std::int32_t>(lobby_id, "mod_file_num");
             if (num_files > 8)
             {
                 error = std::format("Server has too many mod files ({})", num_files);
@@ -609,40 +607,40 @@ namespace mods
 
             for (auto i = 0; i < num_files; i++)
             {
-                const auto file_name = get_value("mod_file_name", i);
-                const auto file_hash = get_value("mod_file_hash", i);
+                const auto file_name = utils::steam::get_lobby_data<std::string>(lobby_id, "mod_file_name", i, 32);
+                const auto file_hash = utils::steam::get_lobby_data<std::uint32_t>(lobby_id, "mod_file_hash", i);
 
-                if (file_name.empty() || file_hash.empty() || 
-                    file_name.contains("..") || 
-                    file_name.contains("::") || 
-                    file_name.contains("\\") || 
-                    file_name.contains("/"))
+                if (!validate_file_name(file_name) || file_hash == 0)
                 {
-                    continue;
+                    error = "Invalid mod filename";
+                    return false;
                 }
 
                 const auto dot_pos = file_name.find_last_of('.');
                 if (dot_pos == std::string::npos)
                 {
-                    continue;
+                    error = "Invalid mod filename";
+                    return false;
                 }
 
                 const auto ext = file_name.substr(dot_pos);
                 if (!allowed_file_types.contains(ext))
                 {
-                    continue;
+                    error = "Invalid mod file type";
+                    return false;
                 }
 
                 mod_download_file_t file{};
                 file.path = std::format("{}/{}", server_mod, file_name);
-                file.hash = utils::string::to_upper(file_hash);
+                file.hash = file_hash;
                 file.url = base_url + file.path;
 
                 const auto hash_file = file.path + ".hash";
                 if (utils::io::file_exists(file.path) && utils::io::file_exists(hash_file))
                 {
-                    const auto data = utils::io::read_file(file.path);
-                    const auto hash = utils::io::read_file(hash_file);
+                    const auto hash_txt = utils::io::read_file(hash_file);
+                    const auto hash = std::strtoul(hash_txt.data(), nullptr, 0);
+
                     if (hash != file.hash)
                     {
                         files.emplace_back(file);
@@ -657,115 +655,31 @@ namespace mods
             return !files.empty();
         }
 
-        void on_lobby_join(game::mgo_match_t* match, const game::steam_id lobby_id)
-        {
-            const auto self_id = matchmaking::get_current_steam_id();
-            if (match->error1 != 17 || match->lobby_owner.bits == self_id.bits)
-            {
-                return;
-            }
-
-            reset_mod_download();
-            mod_download_state.state = download_state_ask_begin;
-
-            std::string new_fs_mod;
-            std::string error;
-            std::string base_url;
-
-            auto needs_download = false;
-            needs_download |= check_download_mod(lobby_id, new_fs_mod, error, base_url, mod_download_state.files);
-
-            if (needs_download)
-            {
-                match->error1 = 30;
-                match->error2 = 0x8800000D;
-
-                mod_download_state.target_lobby = lobby_id;
-                mod_download_state.mod_path = new_fs_mod;
-
-                scripting::script_exec(std::format(
-                    "TppUiCommand.ErasePopup();"
-                    "TppUiCommand.ShowPopup(\"mod_download_ask_popup\", Popup.TYPE_TWO_BUTTON);"
-                    "TppUiCommand.SetPopupText(\"This server is running a mod, accept the download (url: {})?\")", base_url));
-            }
-            else if (!error.empty())
-            {
-                match->error1 = 30;
-                match->error2 = 0x8800000D;
-
-                scripting::script_exec(std::format(
-                    "TppUiCommand.ErasePopup();"
-                    "TppUiCommand.ShowPopup(\"mod_download_error_popup\");"
-                    "TppUiCommand.SetPopupText(\"{}\")", error));
-            }
-            else if (new_fs_mod != var_fs_mod_path->latched.get_string())
-            {
-                match->error1 = 30;
-                match->error2 = 0x8800000D;
-
-                const auto post_load_cmd = std::format("connect_lobby {}", lobby_id.bits);
-                const auto arg = std::format("+{}", post_load_cmd);
-
-                if (new_fs_mod.empty())
-                {
-                    mods::unload(arg);
-                }
-                else
-                {
-                    mods::load(new_fs_mod, arg);
-                }
-
-                scheduler::once([=]
-                {
-                    command::execute(post_load_cmd);
-                }, scheduler::main, 3s);
-            }
-        }
-
         void on_lobby_create(game::mgo_match_t* match, const game::steam_id lobby_id)
         {
+            utils::steam::set_lobby_data(lobby_id, "mod_base_url", var_sv_base_url->current.get_string());
+            custom_maps::on_lobby_create(match, lobby_id);
+
             if (!current_mod.path.has_value())
             {
                 return;
             }
 
-            const auto steam_matchmaking = (*game::SteamMatchmaking)();
-
-            const auto set_value_int = [&](const char* key, const int index, const int value)
-            {
-                std::string key_str = key;
-                if (index != -1)
-                {
-                    key_str = utils::string::va("%s_%i", key, index);
-                }
-
-                steam_matchmaking->__vftable->SetLobbyData(steam_matchmaking, lobby_id, key_str.data(), utils::string::va("%i", value));
-            };
-
-            const auto set_value = [&](const char* key, const int index, const std::string& value)
-            {
-                std::string key_str = key;
-                if (index != -1)
-                {
-                    key_str = utils::string::va("%s_%i", key, index);
-                }
-
-                steam_matchmaking->__vftable->SetLobbyData(steam_matchmaking, lobby_id, key_str.data(), value.data());
-            };
-
-            set_value("mod_path", -1, current_mod.path.value());
-            set_value("mod_base_url", -1, var_sv_base_url->current.get_string());
+            utils::steam::set_lobby_data(lobby_id, "mod_path", current_mod.path.value());
 
             auto count = 0;
             const auto add_file = [&](const std::string& name)
             {
                 const auto path = std::format("{}\\{}", current_mod.path.value(), name);
                 const auto data = utils::io::read_file(path);
-                const auto hash = get_generic_buffer_hash(data);
                 auto index = count++;
 
-                set_value("mod_file_name", index, name);
-                set_value("mod_file_hash", index, hash);
+                add_hash_job(path, [lobby_id, index](const std::uint32_t hash)
+                {
+                    utils::steam::set_lobby_data(lobby_id, "mod_file_hash", hash, index);
+                });
+
+                utils::steam::set_lobby_data(lobby_id, "mod_file_name", name, index);
             };
 
             if (current_mod.has_info)
@@ -778,8 +692,163 @@ namespace mods
                 add_file(packfile.name);
             }
 
-            set_value_int("mod_file_count", -1, count);
+            utils::steam::set_lobby_data(lobby_id, "mod_file_num", count);
         }
+
+        void run_hash_jobs()
+        {
+            const auto job = hash_jobs.access<std::unique_ptr<hash_job_t>>([](hash_job_list_t& list)
+                -> std::unique_ptr<hash_job_t>
+            {
+                if (list.empty())
+                {
+                    return nullptr;
+                }
+
+                std::unique_ptr<hash_job_t> job = std::move(list.front());
+                list.pop_front(); 
+                return job;
+            });
+
+            if (job.get() == nullptr)
+            {
+                return;
+            }
+
+            std::ifstream stream(job->path, std::ios::binary);
+        
+            std::string buffer;
+            buffer.resize(0x10000);
+            
+            auto crc_value = crc32(0L, Z_NULL, 0);
+            while (stream.is_open() && !stream.eof())
+            {
+                stream.read(buffer.data(), buffer.size());
+                crc_value = crc32(crc_value, reinterpret_cast<std::uint8_t*>(buffer.data()), static_cast<std::uint32_t>(stream.gcount()));
+                std::memset(buffer.data(), 0, buffer.size());
+            }
+
+            console::debug("hash job completed: %X\n", crc_value);
+            job->callback(crc_value);
+            --hash_job_count;
+        }
+
+        bool wait_for_hash_jobs_stub(__int64 a1)
+        {
+            const auto result = utils::hook::invoke<char>(SELECT_VALUE_LANG(0x140370920, 0x0), a1);
+            if (!matchmaking::is_host())
+            {
+                return result;
+            }
+
+            console::debug("hashes left: %i\n", hash_job_count.load());
+            return result || hash_job_count > 0;
+        }
+    }
+
+    bool try_download_mod(game::mgo_match_t* match, const game::steam_id lobby_id)
+    {
+        const auto self_id = matchmaking::get_current_steam_id();
+        if (match->error1 != 17 || match->lobby_owner.bits == self_id.bits)
+        {
+            return false;
+        }
+
+        custom_maps::sync_registered_maps(lobby_id);
+        reset_mod_download();
+
+        std::string new_fs_mod;
+        std::string error;
+        std::string base_url;
+
+        auto needs_download = false;
+        needs_download |= check_download_mod(lobby_id, new_fs_mod, error, base_url, mod_download_state.files);
+        needs_download |= custom_maps::check_download_map(lobby_id, error, base_url, mod_download_state.files);
+
+        if (needs_download)
+        {
+            match->error1 = 30;
+            match->error2 = 0x8800000D;
+
+            mod_download_state.target_lobby = lobby_id;
+            mod_download_state.mod_path = new_fs_mod;
+            mod_download_state.state = download_state_ask_begin;
+
+            scripting::script_exec(std::format(
+                "TppUiCommand.ErasePopup();"
+                "TppUiCommand.ShowPopup(\"mod_download_ask_popup\", Popup.TYPE_TWO_BUTTON);"
+                "TppUiCommand.SetPopupText(\"This server is running a mod, accept the download (url: {})?\")", base_url));
+
+            return true;
+        }
+        else if (!error.empty())
+        {
+            match->error1 = 30;
+            match->error2 = 0x8800000D;
+
+            scripting::script_exec(std::format(
+                "TppUiCommand.ErasePopup();"
+                "TppUiCommand.ShowPopup(\"mod_download_error_popup\");"
+                "TppUiCommand.SetPopupText(\"ERROR: {}\")", error));
+
+            return true;
+        }
+        else if (new_fs_mod != var_fs_mod_path->latched.get_string())
+        {
+            match->error1 = 30;
+            match->error2 = 0x8800000D;
+
+            const auto post_load_cmd = std::format("connect_lobby {}", lobby_id.bits);
+            const auto arg = std::format("+{}", post_load_cmd);
+
+            if (new_fs_mod.empty())
+            {
+                mods::unload(arg);
+            }
+            else
+            {
+                mods::load(new_fs_mod, arg);
+            }
+
+            scheduler::once([=]
+            {
+                command::execute(post_load_cmd);
+            }, scheduler::main, 3s);
+
+            return true;
+        }
+
+        return false;
+    }
+
+    bool validate_file_name(const std::string& name)
+    {
+        static const char* invalid_str[] =
+        {
+            "..",
+            ":",
+            "\\",
+            "/",
+            "^",
+            "?",
+            "!",
+        };
+
+        if (name.empty())
+        {
+            return false;
+        }
+
+        for (auto i = 0; i < ARRAYSIZE(invalid_str); i++)
+        {
+            const auto pos = name.find(invalid_str[i]);
+            if (pos != std::string::npos)
+            {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     game::fox::fs::MountPoint* add_packfile(const std::string& path, const std::uint64_t type, const std::uint32_t flags)
@@ -845,6 +914,21 @@ namespace mods
         reload_assets();
     }
 
+    void add_hash_job(const std::string& path, const std::function<void(const std::uint32_t)>& callback)
+    {
+        auto hash_job = std::make_unique<hash_job_t>();
+        hash_job->path = path;
+        hash_job->done = false;
+        hash_job->callback = callback;
+
+        hash_jobs.access([&](hash_job_list_t& list)
+        {
+            console::debug("add hash job %s\n", hash_job->path.data());
+            hash_job_count++;
+            list.emplace_back(std::move(hash_job));
+        });
+    }
+
     class component final : public component_interface
     {
     public:
@@ -855,6 +939,7 @@ namespace mods
             if (game::environment::is_mgo())
             {
                 var_sv_base_url = vars::register_string("sv_base_url", "", vars::var_flag_saved, "base url for server mod downloading (sent to lobby members)");
+                utils::hook::call(SELECT_VALUE_LANG(0x140893BBF, 0x0), wait_for_hash_jobs_stub);
             }
 
             fs_module_init_hook.create(SELECT_VALUE(0x14003A960, 0x14003A830, 0x0, 0x0), fs_module_init_stub);
@@ -868,11 +953,12 @@ namespace mods
                 return;
             }
 
-            matchmaking::register_callback(matchmaking::event_join_lobby, on_lobby_join);
+            matchmaking::register_callback(matchmaking::event_join_lobby, try_download_mod);
             matchmaking::register_callback(matchmaking::event_create_lobby, on_lobby_create);
 
             scheduler::loop(mod_download_update, scheduler::main);
             scheduler::loop(mod_download_update_async, scheduler::async);
+            scheduler::loop(run_hash_jobs, scheduler::async);
 
             command::add("unloadmod", []()
             {
