@@ -30,7 +30,7 @@ namespace game
 
 		std::unordered_map<std::string, binary_t> hashes_sha1 =
 		{
-			{"D763B9B6CC1DB749B45B0FED2742F56571AE8FFA", binaries[mode_tpp_eng]},
+			{"4F643576C6F6ECF6C67A9AEF4D4F02285ADA43E3", binaries[mode_tpp_eng]},
 			{"C6F6108DB0A6FFF5BEACFAB6773B0CB192527CE7", binaries[mode_mgo_eng]},
 			{"54BC743D1D7D98678EF4CC8D5BC98439F92AA1F7", binaries[mode_tpp_jpn]},
 			{"505BBF337DED2DFDD4F86FAAA2F4A9DC3CE935B0", binaries[mode_mgo_jpn]},
@@ -38,7 +38,7 @@ namespace game
 
 		std::unordered_map<std::string, binary_t> hashes_md5 =
 		{
-			{"5362E39F6FC9CC330059379A9A602649", binaries[mode_tpp_eng]},
+			{"BB905B1FC5BC5AF60A9808B3088A1B32", binaries[mode_tpp_eng]},
 			{"8E13DE0EDA115A702AA096A8E85FD129", binaries[mode_mgo_eng]},
 			{"E6BB25CDDEE36849F5F53237746F68DE", binaries[mode_tpp_jpn]},
 			{"EB3EC459B1CF9199D01088A545433340", binaries[mode_mgo_jpn]},
