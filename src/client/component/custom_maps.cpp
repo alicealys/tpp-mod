@@ -23,7 +23,6 @@ namespace custom_maps
     {
         constexpr const auto map_cmd_id = 0xFF;
         constexpr const auto map_cmd_location_code = 0xFF;
-        constexpr const auto builtin_map_count = 8;
         constexpr const auto usermap_location_code_begin = 150;
 
         union usermap_id_t
@@ -156,6 +155,24 @@ namespace custom_maps
             game::fox::Array_::Path_PushBack(paths, &path);
         }
 
+        std::uint8_t get_builtin_map_count()
+        {
+            auto count = 0;
+            for (auto i = 0; i < map_list.size(); i++)
+            {
+                if (map_list[i].is_builtin)
+                {
+                    ++count;
+                }
+                else
+                {
+                    break;
+                }
+            }
+
+            return static_cast<std::uint8_t>(count);
+        }
+
         void register_builtin_map(const std::uint8_t index, const std::uint8_t location_code, const std::string& name, const std::string& location_pack)
         {
             map_info_t map_info{};
@@ -170,7 +187,7 @@ namespace custom_maps
 
         bool register_custom_map(const std::uint8_t index, const std::uint8_t location_code, const std::string& name, const std::uint32_t hash)
         {
-            if (index < builtin_map_count || index >= map_list.size() - 1)
+            if (index < get_builtin_map_count() || index >= map_list.size() - 1)
             {
                 return false;
             }
@@ -363,7 +380,7 @@ namespace custom_maps
         const std::string& base_url, std::vector<mods::mod_download_file_t>& files)
     {
         const auto map_id = utils::steam::get_lobby_data<std::uint32_t>(lobby_id, "map_id");
-        if (map_id < builtin_map_count)
+        if (map_id < get_builtin_map_count())
         {
             return false;
         }
@@ -415,11 +432,24 @@ namespace custom_maps
         return true;
     }
 
+    void register_builtin_maps()
+    {
+        register_builtin_map(0, 101, "afc0", "/Assets/mgo/pack/location/afc0/afc0.fpk");
+        register_builtin_map(1, 103, "afda", "/Assets/mgo/pack/location/afda/afda.fpk");
+        register_builtin_map(2, 102, "afn0", "/Assets/mgo/pack/location/afn0/afn0.fpk");
+        register_builtin_map(3, 105, "cuba", "/Assets/mgo/pack/location/cuba/cuba.fpk");
+        register_builtin_map(4, 104, "afc1", "/Assets/mgo/pack/location/afc1/afc1.fpk");
+        register_builtin_map(5, 111, "mba0", "/Assets/mgo/pack/location/mba0/mba0.fpk");
+        register_builtin_map(6, 112, "sva0", "/Assets/mgo/pack/location/sva0/sva0.fpk");
+        register_builtin_map(7, 113, "rma0", "/Assets/mgo/pack/location/rma0/rma0.fpk");
+        register_builtin_map(8, 114, "mba1", "/Assets/mgo/pack/location/mba1/mba1.fpk");
+    }
+
     void register_usermaps()
     {
         const auto maps = utils::io::list_files("usermaps");
 
-        auto cur_index = builtin_map_count;
+        auto cur_index = get_builtin_map_count();
         auto cur_location_code = usermap_location_code_begin;
 
         for (auto i = 0; i < map_list.size(); i++)
@@ -456,6 +486,12 @@ namespace custom_maps
 
             register_custom_map(static_cast<std::uint8_t>(index), static_cast<std::uint8_t>(location_code), name, {});
         }
+    }
+
+    void register_maps()
+    {
+        register_builtin_maps();
+        register_usermaps();
     }
 
     std::uint8_t get_map_id(const std::string& name)
@@ -553,15 +589,6 @@ namespace custom_maps
             matchmaking::register_callback(matchmaking::event_start_transition, on_start_transition);
             matchmaking::register_callback(matchmaking::event_leave_lobby, on_leave_lobby);
             matchmaking::register_callback(matchmaking::event_match_start, on_match_start);
-
-            register_builtin_map(0, 101, "afc0", "/Assets/mgo/pack/location/afc0/afc0.fpk");
-            register_builtin_map(1, 103, "afda", "/Assets/mgo/pack/location/afda/afda.fpk");
-            register_builtin_map(2, 102, "afn0", "/Assets/mgo/pack/location/afn0/afn0.fpk");
-            register_builtin_map(3, 105, "cuba", "/Assets/mgo/pack/location/cuba/cuba.fpk");
-            register_builtin_map(4, 104, "afc1", "/Assets/mgo/pack/location/afc1/afc1.fpk");
-            register_builtin_map(5, 111, "mba0", "/Assets/mgo/pack/location/mba0/mba0.fpk");
-            register_builtin_map(6, 112, "sva0", "/Assets/mgo/pack/location/sva0/sva0.fpk");
-            register_builtin_map(7, 113, "rma0", "/Assets/mgo/pack/location/rma0/rma0.fpk");
         }
     };
 }

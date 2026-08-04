@@ -578,7 +578,7 @@ namespace matchmaking
 				return;
 			}
 
-			custom_maps::register_usermaps();
+			custom_maps::register_maps();
 
 			var_match_enable_tweaks = vars::register_bool("match_enable_tweaks", false, vars::var_flag_saved, "enable match settings tweaks");
 			var_match_min_players = vars::register_int("match_min_players", 2, 0, 16, vars::var_flag_saved, "match minimum players override");
