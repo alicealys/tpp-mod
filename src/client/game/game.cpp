@@ -32,16 +32,16 @@ namespace game
 		{
 			{"4F643576C6F6ECF6C67A9AEF4D4F02285ADA43E3", binaries[mode_tpp_eng]},
 			{"1582B87C25CC989FE5457B9F1FD90ACACA9BCD89", binaries[mode_mgo_eng]},
-			{"", binaries[mode_tpp_jpn]},
-			{"", binaries[mode_mgo_jpn]},
+			{"72F63B2E3364A36C2FA0BE360AF17A787FCC14B0", binaries[mode_tpp_jpn]},
+			{"4F65C0DB3A136325D5C358D01680C4D7DE61E566", binaries[mode_mgo_jpn]},
 		};
 
 		std::unordered_map<std::string, binary_t> hashes_md5 =
 		{
 			{"BB905B1FC5BC5AF60A9808B3088A1B32", binaries[mode_tpp_eng]},
 			{"A9416BB0667B629E1A1FB9176EFE6A7E", binaries[mode_mgo_eng]},
-			{"", binaries[mode_tpp_jpn]},
-			{"", binaries[mode_mgo_jpn]},
+			{"1037B00015358AC99CDFDFFC9687188B", binaries[mode_tpp_jpn]},
+			{"A724D0757BE3A47D5626F6DB61569C50", binaries[mode_mgo_jpn]},
 		};
 
 		std::unordered_map<std::string, game_mode> gamemodes =
