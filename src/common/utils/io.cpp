@@ -113,6 +113,11 @@ namespace utils::io
 	{
 		std::vector<std::string> files;
 
+		if (!directory_exists(directory))
+		{
+			return files;
+		}
+
 		for (auto& file : std::filesystem::directory_iterator(directory))
 		{
 			files.push_back(file.path().generic_string());
