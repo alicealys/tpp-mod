@@ -1,6 +1,7 @@
 #include "string.hpp"
 #include "cryptography.hpp"
 #include "nt.hpp"
+
 #include <gsl/gsl>
 
 #undef max
@@ -584,9 +585,25 @@ namespace utils::cryptography
 		md5_done(&state, buffer);
 
 		std::string hash(cs(buffer), sizeof(buffer));
-		if (!hex) return hash;
+		if (!hex)
+		{
+			return hash;
+		}
 
 		return string::dump_hex(hash, "");
+	}
+
+
+	std::uint32_t crc32::compute(const std::string& data, const bool hex)
+	{
+		return compute(cs(data.data()), data.size(), hex);
+	}
+
+	std::uint32_t crc32::compute(const uint8_t* data, const size_t length, const bool hex)
+	{
+		auto crc_value = ::crc32(0L, Z_NULL, 0);
+		crc_value = ::crc32(crc_value, data, static_cast<std::uint32_t>(length));
+		return crc_value;
 	}
 
 	std::string base64::encode(const uint8_t* data, const size_t len)

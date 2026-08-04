@@ -2,6 +2,7 @@
 
 #include <string>
 #include <tomcrypt.h>
+#include <zlib.h>
 
 namespace utils::cryptography
 {
@@ -100,6 +101,12 @@ namespace utils::cryptography
 	{
 		std::string compute(const std::string& data, bool hex = false);
 		std::string compute(const uint8_t* data, size_t length, bool hex = false);
+	}
+
+	namespace crc32
+	{
+		std::uint32_t compute(const std::string& data, bool hex = false);
+		std::uint32_t compute(const uint8_t* data, size_t length, bool hex = false);
 	}
 
 	namespace base64
