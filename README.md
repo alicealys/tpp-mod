@@ -12,7 +12,7 @@ Any kind of modified or pirated version is **NOT** supported.
 
 For older builds go here:
 - [23 March 2021](https://github.com/alicealys/tpp-mod/tree/day1820)
-- [6 March 2026](https://github.com/alicealys/tpp-mod/tree/day3800)
+- [6 June 2026](https://github.com/alicealys/tpp-mod/tree/day3800)
 
 | version | sha1 | support |
 | --- | --- | --- |
