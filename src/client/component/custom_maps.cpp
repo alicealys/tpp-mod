@@ -241,7 +241,7 @@ namespace custom_maps
 
             a.mov(bl, al);
 
-            a.jmp(SELECT_VALUE_LANG(0x1408A21AC, 0x0));
+            a.jmp(SELECT_VALUE_LANG(0x1408A218C, 0x0));
         }
 
         void on_leave_lobby(game::mgo_match_t* match, game::steam_id lobby_id)
@@ -537,11 +537,11 @@ namespace custom_maps
                 return;
             }
 
-            utils::hook::call(SELECT_VALUE_LANG(0x140743177, 0x0), get_location_package_path_stub);
-            get_package_paths_hook.create(SELECT_VALUE_LANG(0x140743030, 0x0), get_package_paths_stub);
+            utils::hook::call(SELECT_VALUE_LANG(0x140743197, 0x0), get_location_package_path_stub);
+            get_package_paths_hook.create(SELECT_VALUE_LANG(0x140742DF0, 0x0), get_package_paths_stub);
 
-            utils::hook::jump(SELECT_VALUE_LANG(0x14089A7A0, 0x0), location_code_to_map_id_stub);
-            utils::hook::jump(SELECT_VALUE_LANG(0x1408A2169, 0x0), utils::hook::assemble(map_id_to_location_code_stub), true);
+            utils::hook::jump(SELECT_VALUE_LANG(0x14089A780, 0x0), location_code_to_map_id_stub);
+            utils::hook::jump(SELECT_VALUE_LANG(0x1408A2149, 0x0), utils::hook::assemble(map_id_to_location_code_stub), true);
 
             command::add("map", [](const command::params& params)
             {

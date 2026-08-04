@@ -430,35 +430,35 @@ namespace dedicated_server
 			SetConsoleTitle("MGO Dedicated Server");
 			scheduler::loop(update_console_title, scheduler::net, 1s);
 
-			utils::hook::set<std::uint8_t>(0x140A9EAC0, 0xC3); // dont build scene
-			utils::hook::set<std::uint8_t>(0x140A9CFFC, 0xEB); // ^
-			utils::hook::set<std::uint8_t>(0x140A9D062, 0xEB); // ^
+			utils::hook::set<std::uint8_t>(0x140A9EAE0, 0xC3); // dont build scene
+			utils::hook::set<std::uint8_t>(0x140A9D01C, 0xEB); // ^
+			utils::hook::set<std::uint8_t>(0x140A9D082, 0xEB); // ^
 
-			utils::hook::set<std::uint8_t>(0x140BDA010, 0xC3); // dont execute draw 2d
+			utils::hook::set<std::uint8_t>(0x140BDA030, 0xC3); // dont execute draw 2d
 
-			utils::hook::set<std::uint8_t>(0x140A9CA80, 0xC3); // dont add render plugins
-			utils::hook::set<std::uint8_t>(0x140C20220, 0xC3); // ^
-			utils::hook::jump(0x145B96A90, ret_0); // ^
+			utils::hook::set<std::uint8_t>(0x140A9CAA0, 0xC3); // dont add render plugins
+			utils::hook::set<std::uint8_t>(0x140C20240, 0xC3); // ^
+			utils::hook::jump(0x145CDDF30, ret_0); // ^
 
-			utils::hook::jump(0x140B23AC0, ret_n1);  // textures
-			utils::hook::jump(0x140B62FA0, ret_n1);  // ^
-			utils::hook::set(0x140AA8A00, 0xC301B0); // ^
-			utils::hook::set(0x140B237D0, 0xC301B0); // ^
-			utils::hook::set(0x140B237F0, 0xC300B0); // ^
+			utils::hook::jump(0x140B23AE0, ret_n1);  // textures
+			utils::hook::jump(0x140B62FC0, ret_n1);  // ^
+			utils::hook::set(0x140AA8A20, 0xC301B0); // ^
+			utils::hook::set(0x140B237F0, 0xC301B0); // ^
+			utils::hook::set(0x140B23810, 0xC300B0); // ^
 
-			utils::hook::set<std::uint8_t>(0x140D074E0, 0xC3); // sound
-			utils::hook::set<std::uint8_t>(0x140CF0EF0, 0xC3); // ^
-			utils::hook::set<std::uint8_t>(0x140CE4A60, 0xC3); // ^
-			utils::hook::set<std::uint8_t>(0x1406DF400, 0xC3); // ^
-			utils::hook::set<std::uint8_t>(0x140CF7380, 0xC3); // ^
+			utils::hook::set<std::uint8_t>(0x140D07550, 0xC3); // sound
+			utils::hook::set<std::uint8_t>(0x140CF0F60, 0xC3); // ^
+			utils::hook::set<std::uint8_t>(0x140CE4AD0, 0xC3); // ^
+			utils::hook::set<std::uint8_t>(0x1406DF410, 0xC3); // ^
+			utils::hook::set<std::uint8_t>(0x140CF73F0, 0xC3); // ^
 
 			// dont create window
 			utils::hook::nop(0x14007122D, 5);
 			utils::hook::set<std::uint8_t>(0x140070E00, 0xC3);
 			translate_messages_hook.create(0x140071900, translate_messages_stub);
 
-			on_player_connect_hook.create(0x140829CC0, on_player_connect_stub); // dont spawn host
-			on_init_frame_hook.create(0x1408271D0, on_init_frame_stub); // fix weather clock
+			on_player_connect_hook.create(0x140829CB0, on_player_connect_stub); // dont spawn host
+			on_init_frame_hook.create(0x1408271C0, on_init_frame_stub); // fix weather clock
 
 			utils::hook::jump(0x14057F560, 0x14057F5D0); // always go to next match
 

@@ -324,16 +324,16 @@ namespace custom_server
 
 			if (game::environment::is_tpp())
 			{
-				file_read_hook.create(SELECT_VALUE_LANG(0x14016FBD0, 0x14357A1A0), file_read_stub);
-				file_write_hook.create(SELECT_VALUE_LANG(0x1401703C0, 0x14357B660), file_write_stub);
+				file_read_hook.create(SELECT_VALUE_LANG(0x14016FBD0, 0x0), file_read_stub);
+				file_write_hook.create(SELECT_VALUE_LANG(0x1401703C0, 0x0), file_write_stub);
 
-				utils::hook::set(SELECT_VALUE_LANG(0x14208D260, 0x14E1300B8), create_file_stub);
+				utils::hook::set(SELECT_VALUE_LANG(0x14208D260, 0x0), create_file_stub);
 
-				utils::hook::jump(SELECT_VALUE_LANG(0x14016FC2B, 0x14357A1FB), utils::hook::assemble(steam_storage_read_file_stub), true);
+				utils::hook::jump(SELECT_VALUE_LANG(0x14016FC2B, 0x0), utils::hook::assemble(steam_storage_read_file_stub), true);
 			}
 
-			utils::hook::inject(SELECT_VALUE(0x1407D346C, 0x140572D76, 0x1407D23EC, 0x1405724C6) + 3, custom_url);
-			utils::hook::call(SELECT_VALUE(0x14052EF25, 0x1402DCE75, 0x0, 0x0), set_command_line_stub);
+			utils::hook::inject(SELECT_VALUE(0x1407D346C, 0x140572D66, 0x0, 0x0) + 3, custom_url);
+			utils::hook::call(SELECT_VALUE(0x14052EF25, 0x1402DCE55, 0x0, 0x0), set_command_line_stub);
 
 			scheduler::once(hook_steam_user, scheduler::net);
 		}
@@ -374,8 +374,8 @@ namespace custom_server
 
 		void patch_win_http()
 		{
-			utils::hook::nop(SELECT_VALUE(0x141A5C9F6, 0x1414AE416, 0x0, 0x0), 6);
-			utils::hook::call(SELECT_VALUE(0x141A5C9F6, 0x1414AE416, 0x0, 0x0), win_http_set_option_stub);
+			utils::hook::nop(SELECT_VALUE(0x141A5C9F6, 0x1414AE486, 0x0, 0x0), 6);
+			utils::hook::call(SELECT_VALUE(0x141A5C9F6, 0x1414AE486, 0x0, 0x0), win_http_set_option_stub);
 		}
 
 		std::uint8_t* get_static_key()

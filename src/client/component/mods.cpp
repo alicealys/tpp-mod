@@ -735,7 +735,7 @@ namespace mods
 
         bool wait_for_hash_jobs_stub(__int64 a1)
         {
-            const auto result = utils::hook::invoke<char>(SELECT_VALUE_LANG(0x140370920, 0x0), a1);
+            const auto result = utils::hook::invoke<char>(SELECT_VALUE_LANG(0x1403708E0, 0x0), a1);
             if (!matchmaking::is_host())
             {
                 return result;
@@ -939,7 +939,7 @@ namespace mods
             if (game::environment::is_mgo())
             {
                 var_sv_base_url = vars::register_string("sv_base_url", "", vars::var_flag_saved, "base url for server mod downloading (sent to lobby members)");
-                utils::hook::call(SELECT_VALUE_LANG(0x140893BBF, 0x0), wait_for_hash_jobs_stub);
+                utils::hook::call(SELECT_VALUE_LANG(0x140893B9F, 0x0), wait_for_hash_jobs_stub);
             }
 
             fs_module_init_hook.create(SELECT_VALUE(0x14003A960, 0x14003A830, 0x0, 0x0), fs_module_init_stub);

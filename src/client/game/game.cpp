@@ -23,25 +23,25 @@ namespace game
 		binary_t binaries[mode_count] =
 		{
 			{"mgsvtpp.exe (eng, 1.0.15.4)", mode_tpp_eng, true},
-			{"mgsvmgo.exe (eng, 1.1.2.8)", mode_mgo_eng, true},
+			{"mgsvmgo.exe (eng, 1.1.2.9)", mode_mgo_eng, true},
 			{"mgsvtpp.exe (jpn, 1.0.15.4)", mode_tpp_jpn, false},
-			{"mgsvmgo.exe (jpn, 1.1.2.8)", mode_mgo_jpn, false},
+			{"mgsvmgo.exe (jpn, 1.1.2.9)", mode_mgo_jpn, false},
 		};
 
 		std::unordered_map<std::string, binary_t> hashes_sha1 =
 		{
 			{"4F643576C6F6ECF6C67A9AEF4D4F02285ADA43E3", binaries[mode_tpp_eng]},
-			{"C6F6108DB0A6FFF5BEACFAB6773B0CB192527CE7", binaries[mode_mgo_eng]},
-			{"54BC743D1D7D98678EF4CC8D5BC98439F92AA1F7", binaries[mode_tpp_jpn]},
-			{"505BBF337DED2DFDD4F86FAAA2F4A9DC3CE935B0", binaries[mode_mgo_jpn]},
+			{"1582B87C25CC989FE5457B9F1FD90ACACA9BCD89", binaries[mode_mgo_eng]},
+			{"", binaries[mode_tpp_jpn]},
+			{"", binaries[mode_mgo_jpn]},
 		};
 
 		std::unordered_map<std::string, binary_t> hashes_md5 =
 		{
 			{"BB905B1FC5BC5AF60A9808B3088A1B32", binaries[mode_tpp_eng]},
-			{"8E13DE0EDA115A702AA096A8E85FD129", binaries[mode_mgo_eng]},
-			{"E6BB25CDDEE36849F5F53237746F68DE", binaries[mode_tpp_jpn]},
-			{"EB3EC459B1CF9199D01088A545433340", binaries[mode_mgo_jpn]},
+			{"A9416BB0667B629E1A1FB9176EFE6A7E", binaries[mode_mgo_eng]},
+			{"", binaries[mode_tpp_jpn]},
+			{"", binaries[mode_mgo_jpn]},
 		};
 
 		std::unordered_map<std::string, game_mode> gamemodes =

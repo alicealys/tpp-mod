@@ -60,7 +60,7 @@ namespace patches
 		{
 			unsigned int data{};
 			const char value[] = "99c85cdbf2c837d50d37c82af2c837d5c12d5e80fbc837d5f2c837d5f2c837d5f2";
-			utils::hook::invoke<unsigned int*>(SELECT_VALUE_LANG(0x1402DCF30, 0x1402DCB70), &data, unk + 288, value, sizeof(value) - 1);
+			utils::hook::invoke<unsigned int*>(SELECT_VALUE_LANG(0x1402DCF10, 0x0), &data, unk + 288, value, sizeof(value) - 1);
 			*res = 0;
 		}
 
@@ -102,21 +102,20 @@ namespace patches
 			
 			if (game::environment::is_mgo())
 			{
-				utils::hook::call(SELECT_VALUE_LANG(0x14002AA7B, 0x14002AFCB), get_processor_count_stub);
-				utils::hook::jump(SELECT_VALUE_LANG(0x14002AED0, 0x0), job_pool_configuration_stub);
+				utils::hook::call(SELECT_VALUE_LANG(0x14002AA2B, 0x0), get_processor_count_stub);
+				utils::hook::jump(SELECT_VALUE_LANG(0x14002AE80, 0x0), job_pool_configuration_stub);
 			}
 			else
 			{
-				utils::hook::jump(SELECT_VALUE_LANG(0x140034260, 0x142F1E260), get_processor_count_stub);
+				utils::hook::jump(SELECT_VALUE_LANG(0x140034260, 0x0), get_processor_count_stub);
 			}
 
-			utils::hook::call(SELECT_VALUE(0x140032C9C, 0x1400328CC, 0x142F18E1F, 0x1423F700F), thread_sleep);
+			utils::hook::call(SELECT_VALUE(0x140032C9C, 0x14003287C, 0x0, 0x0), thread_sleep);
 
 			// unlock framerate always
-			utils::hook::jump(SELECT_VALUE(0x1400810AA, 0x1400822CA, 0x14008142A, 0x14008181A),
-				SELECT_VALUE(0x140081278, 0x140082498, 0x1400815F8, 0x1400819E8));
+			utils::hook::jump(SELECT_VALUE(0x1400810AA, 0x1400822CA, 0x0, 0x0), SELECT_VALUE(0x140081278, 0x140082498, 0x0, 0x0));
 
-			leave_frame_hook.create(SELECT_VALUE(0x14007FDB0, 0x140081060, 0x14320E630, 0x1426DABC0), leave_frame_stub);
+			leave_frame_hook.create(SELECT_VALUE(0x14007FDB0, 0x140081060, 0x0, 0x0), leave_frame_stub);
 		}
 
 		HANDLE create_mutex_stub(LPSECURITY_ATTRIBUTES attributes, BOOL owner, LPCWSTR name)
@@ -200,7 +199,7 @@ namespace patches
 			constexpr const auto base_value = 0.016683333f;
 			static auto value = base_value;
 
-			utils::hook::inject(SELECT_VALUE(0x141206ECC, 0x1411B7C3B, 0x142ADAE18, 0x141EE0A14) + 4, &value);
+			utils::hook::inject(SELECT_VALUE(0x141206ECC, 0x1411B7CAB, 0x0, 0x0) + 4, &value);
 
 			var_sensitivity->set_callback = []()
 			{
@@ -209,7 +208,7 @@ namespace patches
 
 			var_sensitivity->set_callback->operator()();
 
-			utils::hook::jump(SELECT_VALUE(0x1409CCB60, 0x1407AFAA0, 0x147F4C990, 0x1476CD770), player_mouse_event_update_stub);
+			utils::hook::jump(SELECT_VALUE(0x1409CCB60, 0x1407AFAC0, 0x0, 0x0), player_mouse_event_update_stub);
 		}
 
 		void scale_fov(game::tpp::gm::player::impl::PlayerCameraImpl* camera, vars::var_ptr var)
@@ -288,10 +287,10 @@ namespace patches
 			a.jz(no_update);
 
 			a.bind(do_update);
-			a.jmp(SELECT_VALUE(0x14101DDA5, 0x141015943, 0x14101E5F5, 0x141015B43));
+			a.jmp(SELECT_VALUE(0x14101DDA5, 0x1410159B3, 0x0, 0x0));
 
 			a.bind(no_update);
-			a.jmp(SELECT_VALUE(0x14101DDCC, 0x14101596A, 0x14101E61C, 0x141015B6A));
+			a.jmp(SELECT_VALUE(0x14101DDCC, 0x1410159DA, 0x0, 0x0));
 		}
 
 		void tps_camera_update_parameter_stub(utils::hook::assembler& a)
@@ -314,7 +313,7 @@ namespace patches
 			a.or_(dl, al);
 			a.test(dl, dl);
 			a.jz(no_update);
-			a.jmp(SELECT_VALUE(0x1412BD4E6, 0x141222B16, 0x14A6AE6F6, 0x14BFD0A46));
+			a.jmp(SELECT_VALUE(0x1412BD4E6, 0x141222B86, 0x0, 0x0));
 
 			a.bind(no_update);
 			a.xor_(al, al);
@@ -343,13 +342,13 @@ namespace patches
 			a.test(bpl, bpl);
 			a.jz(no_update);
 
-			a.jmp(SELECT_VALUE(0x1412A06D3, 0x1412147F3, 0x14A602CF6, 0x14BFA5E66));
+			a.jmp(SELECT_VALUE(0x1412A06D3, 0x141214863, 0x0, 0x0));
 
 			a.bind(loop);
-			a.jmp(SELECT_VALUE(0x1412A0694, 0x1412147B4, 0x14A602CB7, 0x14BFA5E27));
+			a.jmp(SELECT_VALUE(0x1412A0694, 0x141214824, 0x0, 0x0));
 
 			a.bind(no_update);
-			a.jmp(SELECT_VALUE(0x1412A06DB, 0x1412147FB, 0x14A602CFE, 0x14BFA5E6E));
+			a.jmp(SELECT_VALUE(0x1412A06DB, 0x14121486B, 0x0, 0x0));
 		}
 
 		utils::hook::detour subjective_camera_set_default_hook;
@@ -365,14 +364,14 @@ namespace patches
 
 		void patch_fov()
 		{
-			subjective_camera_set_parameter_hook.create(SELECT_VALUE(0x14105AE20, 0x14104BB30, 0x14105B6B0, 0x14104BD20), subjective_camera_set_parameter_stub);
-			player_camera_set_tps_params_hook.create(SELECT_VALUE(0x14111B5D0, 0x141103390, 0x14A25F300, 0x14BD71D40), player_camera_set_tps_params_stub);
-			player_camera_set_around_params_hook.create(SELECT_VALUE(0x14111AAA0, 0x141102860, 0x14A25BB10, 0x14BD6C270), player_camera_set_around_params_stub);
-			subjective_camera_set_default_hook.create(SELECT_VALUE(0x14129F170, 0x141213420, 0x14A5EA060, 0x14BFA05F0), subjective_camera_set_default_stub);
+			subjective_camera_set_parameter_hook.create(SELECT_VALUE(0x14105AE20, 0x14104BBA0, 0x0, 0x0), subjective_camera_set_parameter_stub);
+			player_camera_set_tps_params_hook.create(SELECT_VALUE(0x14111B5D0, 0x141103400, 0x0, 0x0), player_camera_set_tps_params_stub);
+			player_camera_set_around_params_hook.create(SELECT_VALUE(0x14111AAA0, 0x1411028D0, 0x0, 0x0), player_camera_set_around_params_stub);
+			subjective_camera_set_default_hook.create(SELECT_VALUE(0x14129F170, 0x141213490, 0x0, 0x0), subjective_camera_set_default_stub);
 
-			utils::hook::jump(SELECT_VALUE(0x14101DD99, 0x141015935, 0x14101E5E9, 0x141015B35), utils::hook::assemble(around_camera_update_parameter_stub), true);
-			utils::hook::jump(SELECT_VALUE(0x1412BD4D0, 0x141222B00, 0x14A6AE6E0, 0x14BFD0A30), utils::hook::assemble(tps_camera_update_parameter_stub), true);
-			utils::hook::jump(SELECT_VALUE(0x1412A06C4, 0x1412147E4, 0x14A602CE7, 0x14BFA5E57), utils::hook::assemble(subjective_camera_update_parameter_stub), true);
+			utils::hook::jump(SELECT_VALUE(0x14101DD99, 0x1410159A5, 0x0, 0x0), utils::hook::assemble(around_camera_update_parameter_stub), true);
+			utils::hook::jump(SELECT_VALUE(0x1412BD4D0, 0x141222B70, 0x0, 0x0), utils::hook::assemble(tps_camera_update_parameter_stub), true);
+			utils::hook::jump(SELECT_VALUE(0x1412A06C4, 0x141214854, 0x0, 0x0), utils::hook::assemble(subjective_camera_update_parameter_stub), true);
 		}
 	}
 
@@ -446,24 +445,24 @@ namespace patches
 			if (game::environment::is_mgo())
 			{
 				// /AppData 99c85cdbf2c837d50d37c82af2c837d5c12d5e80fbc837d5f2c837d5f2c837d5f2 (command line arg)
-				utils::hook::jump(SELECT_VALUE_LANG(0x1402DD2F0, 0x143A76D50), sub_143AA8300_stub);
+				utils::hook::jump(SELECT_VALUE_LANG(0x1402DD2D0, 0x143A76D50), sub_143AA8300_stub);
 			}
 			else
 			{
 				if (var_skip_intro->current.enabled())
 				{
 					// disable intro splash screen
-					utils::hook::jump(SELECT_VALUE_LANG(0x14090F210, 0x147A635B0), SELECT_VALUE_LANG(0x14090F21B, 0x147A635BB));
+					utils::hook::jump(SELECT_VALUE_LANG(0x14090F210, 0x0), SELECT_VALUE_LANG(0x14090F21B, 0x0));
 				}
 
-				get_ramble_speed_hook.create(SELECT_VALUE_LANG(0x140AFD550, 0x1484C25F0), get_ramble_speed_stub);
+				get_ramble_speed_hook.create(SELECT_VALUE_LANG(0x140AFD550, 0x0), get_ramble_speed_stub);
 			}
 
-			utils::hook::nop(SELECT_VALUE(0x1400013F9, 0x1400014E9, 0x142E4F8E8, 0x142232258), 6);
-			utils::hook::call(SELECT_VALUE(0x1400013F9, 0x1400014E9, 0x142E4F8E8, 0x142232258), create_mutex_stub);
+			utils::hook::nop(SELECT_VALUE(0x1400013F9, 0x1400014E9, 0x0, 0x0), 6);
+			utils::hook::call(SELECT_VALUE(0x1400013F9, 0x1400014E9, 0x0, 0x0), create_mutex_stub);
 			
 			// disable _purecall error
-			utils::hook::set<std::uint8_t>(SELECT_VALUE(0x141A05976, 0x14146177A, 0x141A05CB6, 0x141461E0A), 0xC3);
+			utils::hook::set<std::uint8_t>(SELECT_VALUE(0x141A05976, 0x1414617EA, 0x0, 0x0), 0xC3);
 
 			if (var_unlock_fps->latched.enabled() || game::environment::is_dedi())
 			{

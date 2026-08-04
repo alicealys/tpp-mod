@@ -449,7 +449,7 @@ namespace session
 
 				command::add("session_close", [](const command::params& params)
 				{
-					utils::hook::invoke<void>(SELECT_VALUE_LANG(0x146457B20, 0x148087770));
+					utils::hook::invoke<void>(SELECT_VALUE_LANG(0x146457B20, 0x0));
 				});
 
 				command::add("session_connect", [](const command::params& params)
