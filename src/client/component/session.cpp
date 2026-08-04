@@ -50,10 +50,12 @@ namespace session
 			const auto is_host = main_session->sessionInterface.__vftable->IsHost(&main_session->sessionInterface);
 			const auto state = main_session->__vftable->tpp.GetState(main_session);
 			const auto all_members = &main_session->allMembers;
+			const auto ruleset = get_active_ruleset();
 
 			printf("is host: %i\n", is_host);
 			printf("state: %s (%i)\n", get_session_state_name(state), state);
 			printf("ping: %ims\n", get_rtt(main_session));
+			printf("ruleset state: %i %p\n", ruleset != nullptr ? ruleset->state : 0, ruleset);
 			if (game::environment::is_tpp())
 			{
 				printf("num flags ping  steam_id                         name                            \n");
@@ -64,8 +66,6 @@ namespace session
 				printf("num flags ping  steam_id                         name                             team\n");
 				printf("--- ----- ----- -------------------------------- -------------------------------- ----\n");
 			}
-
-			const auto ruleset = get_active_ruleset();
 
 			for (auto i = 0u; i < all_members->size; i++)
 			{
