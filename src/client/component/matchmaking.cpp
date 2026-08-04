@@ -15,7 +15,7 @@
 #include <utils/hook.hpp>
 #include <utils/string.hpp>
 
-#define MATCH_VERSION 160
+#define MATCH_VERSION 161
 
 namespace matchmaking
 {
