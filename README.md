@@ -12,13 +12,14 @@ Any kind of modified or pirated version is **NOT** supported.
 
 For older builds go here:
 - [23 March 2021](https://github.com/alicealys/tpp-mod/tree/day1820)
+- [6 March 2026](https://github.com/alicealys/tpp-mod/tree/day3800)
 
 | version | sha1 | support |
 | --- | --- | --- |
-| mgsvtpp.exe (eng, 1.0.15.4) | D763B9B6CC1DB749B45B0FED2742F56571AE8FFA | ✔️ |
-| mgsvmgo.exe (eng, 1.1.2.8) | C6F6108DB0A6FFF5BEACFAB6773B0CB192527CE7 | ✔️ |
-| mgsvtpp.exe (jpn, 1.0.15.4) | 54BC743D1D7D98678EF4CC8D5BC98439F92AA1F7 | ❌ |
-| mgsvmgo.exe (jpn, 1.1.2.8) | 505BBF337DED2DFDD4F86FAAA2F4A9DC3CE935B0 | ❌ |
+| mgsvtpp.exe (eng, 1.0.15.4) | 4F643576C6F6ECF6C67A9AEF4D4F02285ADA43E3 | ✔️ |
+| mgsvmgo.exe (eng, 1.1.2.9) | 1582B87C25CC989FE5457B9F1FD90ACACA9BCD89 | ✔️ |
+| mgsvtpp.exe (jpn, 1.0.15.4) | 72F63B2E3364A36C2FA0BE360AF17A787FCC14B0 | ❌ |
+| mgsvmgo.exe (jpn, 1.1.2.9) | 4F65C0DB3A136325D5C358D01680C4D7DE61E566 | ❌ |
 
 - Download [dinput8.dll](https://github.alicent.cat/tpp-mod/latest/dinput8.dll) and copy it to the game folder.  
 
