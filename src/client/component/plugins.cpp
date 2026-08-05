@@ -56,10 +56,13 @@ namespace plugins
 	class component final : public component_interface
 	{
 	public:
-		void post_load() override
+		void pre_load() override
 		{
 			delete_old_plugins();
+		}
 
+		void start() override
+		{
 			const auto paths = filesystem::get_search_paths();
 			for (const auto& path : paths)
 			{

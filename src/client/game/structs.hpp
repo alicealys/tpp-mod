@@ -523,6 +523,11 @@ namespace game
 			int a2;
 		};
 
+		struct LuaScopedGlobalPolicy
+		{
+			char __pad0[16];
+		};
+
 		struct HashMapBase
 		{
 			char __pad0[48];
