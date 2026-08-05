@@ -37,7 +37,7 @@ namespace filesystem
 		{
 			std::vector<std::filesystem::path> paths{};
 
-			paths.push_back(path);
+			paths.push_back(path.lexically_normal());
 
 			return paths;
 		}
@@ -83,7 +83,8 @@ namespace filesystem
 				}
 			};
 
-			for (const auto& search_path : get_search_paths_internal())
+			const auto& search_paths = get_search_paths_internal();
+			for (const auto& search_path : search_paths)
 			{
 				const auto full_path = (search_path / path).generic_string();
 				if (utils::io::file_exists(full_path))

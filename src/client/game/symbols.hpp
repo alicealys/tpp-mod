@@ -55,6 +55,12 @@ namespace game
 			WEAK symbol<void(LuaAutoPtr*)> LuaAutoPtr__destructor{0x14006A960, 0x14006B210, 0x0, 0x0};
 		}
 
+		namespace LuaScopedGlobalPolicy_
+		{
+			WEAK symbol<void(LuaScopedGlobalPolicy*, lua::lua_State*, int)> LuaScopedGlobalPolicy_{0x14006A850, 0x0, 0x0, 0x0};
+			WEAK symbol<void(LuaScopedGlobalPolicy*)> LuaScopedGlobalPolicy__destructor{0x14006AA40, 0x0, 0x0, 0x0};
+		}
+
 		namespace fs
 		{
 			namespace FileLocationManager_
