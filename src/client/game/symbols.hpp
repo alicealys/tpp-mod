@@ -35,7 +35,7 @@ namespace game
 
 		namespace KeyboardListener_
 		{
-			WEAK symbol<void(fox::RawKeyboardData*)> SetRawKeyData{0x140433E50, 0x142643FB0, 0x0, 0x0}; // 
+			WEAK symbol<void(fox::RawKeyboardData*)> SetRawKeyData{0x140433E50, 0x1426D3540, 0x0, 0x0};
 		}
 
 		namespace MouseListener_
@@ -98,7 +98,7 @@ namespace game
 			namespace NclDaemon_
 			{
 				WEAK symbol<NclDaemon*> s_instance{0x142C87A50, 0x14209B110, 0x0, 0x0};
-				WEAK symbol<SharedString* (NclDaemon*, StringId)> GetUrl{0x1491B2A30, 0x140C442E0, 0x0, 0x0};
+				WEAK symbol<SharedString* (NclDaemon*, StringId)> GetUrl{0x149240530, 0x140C442E0, 0x0, 0x0};
 			}
 		}
 
