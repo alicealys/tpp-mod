@@ -159,7 +159,7 @@ namespace discord
 
 				if (ruleset_id >= 100)
 				{
-					script_vars->rulesetId -= 100;
+					ruleset_id -= 100;
 				}
 
 				const auto gamemode = get_gamemode_name(script_vars->rulesetId);
@@ -372,7 +372,7 @@ namespace discord
 
 			Discord_Initialize(SELECT_VALUE_NOLANG("1104156817845665792", "1416421354365911124"), &handlers, 1, nullptr);
 
-			scheduler::loop(update_discord, scheduler::pipeline::net, 1s);
+			scheduler::loop(update_discord, scheduler::net, 1s);
 		}
 	};
 }
