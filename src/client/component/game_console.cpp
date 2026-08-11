@@ -186,53 +186,76 @@ namespace game_console
 
 			if (matches.size() > 24)
 			{
-				draw_hint_box(instance, 1, offset, 0.f, var_con_input_hint_box_color->current.get_color());
+				draw_hint_box(instance, 1, offset, 2.f, var_con_input_hint_box_color->current.get_color());
 				draw_hint_text(instance, 0, utils::string::va("%i matches (too many to show here)", matches.size()),
-					var_con_input_var_match_color->current.get_color(), offset);
+					var_con_input_var_match_color->current.get_color(), offset, 2.f);
 			}
 			else if (matches.size() == 1)
 			{
-				auto line_count = matches[0].is_var ? 3 : 1;
+				auto line_count = 1;
+				auto& match = matches[0];
 
-				draw_hint_box(instance, line_count, offset, 0.f, var_con_input_hint_box_color->current.get_color());
-				draw_hint_text(instance, 0, matches[0].name.data(), matches[0].is_var
+				if (match.is_var)
+				{
+					line_count += 2;
+					if ((match.var->flags & vars::var_flag_latched) != 0 && match.var->current != match.var->latched)
+					{
+						line_count += 1;
+					}
+				}
+
+				draw_hint_box(instance, line_count, offset, 2.f, var_con_input_hint_box_color->current.get_color());
+				draw_hint_text(instance, 0, match.name.data(), match.is_var
 					? var_con_input_var_match_color->current.get_color()
 					: var_con_input_cmd_match_color->current.get_color(),
-					offset);
+					offset, 2.f);
 
-				if (matches[0].is_var)
+				if (match.is_var)
 				{
-					const auto current = matches[0].var->current.to_string();
-					const auto reset = matches[0].var->reset.to_string();
-					const auto& description = matches[0].var->description;
-					const auto domain = vars::get_var_domain(matches[0].var);
+					const auto current = match.var->current.to_string();
+					const auto reset = match.var->reset.to_string();
+					const auto& description = match.var->description;
+					const auto domain = vars::get_var_domain(match.var);
 
-					draw_hint_text(instance, 0, current.data(), var_con_input_var_match_color->current.get_color(), offset + spacing);
-					draw_hint_text(instance, 1, "default", var_con_input_var_inactive_value_color->current.get_color(), offset + 25.f);
-					draw_hint_text(instance, 1, reset.data(), var_con_input_var_inactive_value_color->current.get_color(), offset + spacing);
-					draw_hint_text(instance, 2, description.data(), color_white, offset);
+					auto line = 0;
+					draw_hint_text(instance, line, current.data(), var_con_input_var_match_color->current.get_color(), offset + spacing, 2.f);
+					++line;
 
-					draw_hint_box(instance, 1, offset, line_count * line_height + 2.f, var_con_input_hint_box_color->current.get_color());
-					draw_hint_text(instance, 0, domain, var_con_input_cmd_match_color->current.get_color(), offset, line_count * line_height + 2.f, 0.f);
+					if ((match.var->flags & vars::var_flag_latched) != 0 && match.var->current != match.var->latched)
+					{
+						const auto latched = match.var->latched.to_string();
+						draw_hint_text(instance, line, "latched value", var_con_input_var_inactive_value_color->current.get_color(), offset + 25.f, 2.f);
+						draw_hint_text(instance, line, latched.data(), var_con_input_var_inactive_value_color->current.get_color(), offset + spacing, 2.f);
+						++line;
+					}
+
+					draw_hint_text(instance, line, "default", var_con_input_var_inactive_value_color->current.get_color(), offset + 25.f, 2.f);
+					draw_hint_text(instance, line, reset.data(), var_con_input_var_inactive_value_color->current.get_color(), offset + spacing, 2.f);
+					++line;
+
+					draw_hint_text(instance, line, description.data(), color_white, offset, 2.f);
+
+					draw_hint_box(instance, 1, offset, line_count * line_height + 6.f, var_con_input_hint_box_color->current.get_color());
+					draw_hint_text(instance, 0, domain, var_con_input_cmd_match_color->current.get_color(), offset, line_count * line_height + 6.f);
 				}
 			}
 			else if (matches.size() > 1)
 			{
-				draw_hint_box(instance, static_cast<int>(matches.size()), offset, 0.f, var_con_input_hint_box_color->current.get_color());
+				draw_hint_box(instance, static_cast<int>(matches.size()), offset, 2.f, var_con_input_hint_box_color->current.get_color());
 				for (auto i = 0u; i < matches.size(); i++)
 				{
 					draw_hint_text(instance, i, matches[i].name.data(), matches[i].is_var
 						? var_con_input_var_match_color->current.get_color()
 						: var_con_input_cmd_match_color->current.get_color(),
-						offset);
+						offset, 2.f);
 
 					if (matches[i].is_var)
 					{
 						const auto current = matches[i].var->current.to_string();
 						const auto& description = matches[i].var->description;
 
-						draw_hint_text(instance, i, current.data(), var_con_input_var_match_color->current.get_color(), offset + spacing);
-						draw_hint_text(instance, i, description.data(), var_con_input_var_match_color->current.get_color(), offset + spacing * 2.f);
+						draw_hint_text(instance, i, current.data(), var_con_input_var_match_color->current.get_color(), offset + spacing, 2.f);
+						draw_hint_text(instance, i, description.data(), var_con_input_var_match_color->current.get_color(), offset + spacing * 2.f, 2.f);
 					}
 				}
 			}
@@ -397,6 +420,7 @@ namespace game_console
 				return;
 			}
 
+			std::memset(con.input, 0, sizeof(con.input));
 			std::memcpy(con.input, name.data(), name.size());
 			con.cursor = static_cast<int>(name.size());
 			con.input[con.cursor++] = ' ';
