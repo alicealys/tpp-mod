@@ -56,7 +56,7 @@ namespace custom_server
 			return url_hash;
 		}
 
-		std::string get_legacy_custom_server_data_folder()
+		std::string get_legacy_data_folder()
 		{
 			const auto url_hash = get_url_hash();
 			const auto folder = std::format("tpp-mod\\steam_storage\\server-{}", url_hash);
@@ -78,7 +78,7 @@ namespace custom_server
 			return std::format("{}\\userdata\\{}", appdata.generic_string(), steam_id);
 		}
 
-		std::string get_custom_server_data_folder()
+		std::string get_data_folder()
 		{
 			const auto url_hash = get_url_hash();
 			return std::format("{}\\steam_storage\\server-{}", get_base_path(), url_hash);
@@ -92,8 +92,8 @@ namespace custom_server
 
 		void migrate_from_legacy_folder()
 		{
-			const auto legacy_folder = get_legacy_custom_server_data_folder();
-			const auto new_folder = get_custom_server_data_folder();
+			const auto legacy_folder = get_legacy_data_folder();
+			const auto new_folder = get_data_folder();
 			if (utils::io::directory_exists(legacy_folder) && !utils::io::directory_exists(new_folder))
 			{
 				utils::io::create_directory(new_folder);
@@ -109,9 +109,9 @@ namespace custom_server
 			}
 		}
 
-		std::string get_custom_server_data_file_path(const std::string& file_name)
+		std::string get_data_file_path(const std::string& file_name)
 		{
-			const auto folder = get_custom_server_data_folder();
+			const auto folder = get_data_folder();
 			return std::format("{}\\{}", folder, file_name);
 		}
 
@@ -126,7 +126,7 @@ namespace custom_server
 				return inst->vftbl->file_read(inst, name, buffer, size);
 			}
 
-			const auto path = get_custom_server_data_file_path(name);
+			const auto path = get_data_file_path(name);
 
 			std::string data;
 			if (utils::io::read_file(path, &data) && data.size() <= buffer_size)
@@ -172,7 +172,7 @@ namespace custom_server
 				return file_write_hook.invoke<int>(inst, name, buffer, size);
 			}
 
-			const auto path = get_custom_server_data_file_path(name);
+			const auto path = get_data_file_path(name);
 			if (utils::io::write_file(path, std::string{buffer, buffer + size}))
 			{
 				return 0;
@@ -197,7 +197,7 @@ namespace custom_server
 
 				console::info("[LocalStorage] Create file \"%s\"\n", base_name.data());
 
-				const auto path = get_custom_server_data_file_path(base_name);
+				const auto path = get_data_file_path(base_name);
 				return utils::string::convert(path);
 			};
 
@@ -275,7 +275,7 @@ namespace custom_server
 		{
 			migrate_from_legacy_folder();
 
-			const auto folder = get_custom_server_data_folder();
+			const auto folder = get_data_folder();
 			utils::io::write_file(std::format("{}\\server_url.txt", folder), custom_url);
 
 			const auto steam_user = (*game::SteamUser)();
