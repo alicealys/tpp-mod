@@ -68,7 +68,7 @@ namespace network
 
 		SOCKET get_socket()
 		{
-			static const auto socket = create_socket(var_net_port->latched.get_int());
+			static const auto socket = create_socket(var_net_port->current.get_int());
 			return socket;
 		}
 
@@ -211,13 +211,13 @@ namespace network
 				return;
 			}
 
-			if (!var_net_udp->latched.enabled())
+			if (!var_net_udp->current.enabled())
 			{
 				return;
 			}
 
-			utils::hook::set(SELECT_VALUE(0x1407D318C, 0x0) + 3, var_net_port->latched.get_int());
-			utils::hook::set(SELECT_VALUE(0x1407D3197, 0x0) + 3, var_net_port->latched.get_int());
+			utils::hook::set(SELECT_VALUE(0x1407D318C, 0x0) + 3, var_net_port->current.get_int());
+			utils::hook::set(SELECT_VALUE(0x1407D3197, 0x0) + 3, var_net_port->current.get_int());
 
 			nt_daemon_constructor_hook.create(SELECT_VALUE(0x1407DD710, 0x0), nt_daemon_constructor_stub);
 			cmd_get_fob_target_detail_result_unpack_hook.create(SELECT_VALUE(0x14081CB30, 0x0), cmd_get_fob_target_detail_result_unpack_stub);

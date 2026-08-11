@@ -47,7 +47,7 @@ namespace patches
 				return std::atoi(worker_count.data());
 			}
 
-			return var_worker_count->latched.get_int();
+			return var_worker_count->current.get_int();
 		}
 
 		unsigned int get_processor_count_stub()
@@ -125,7 +125,7 @@ namespace patches
 
 		float scale_ramble_speed(float speed)
 		{
-			if (var_unlock_fps->latched.enabled() && var_player_ramble_speed_patch->current.enabled())
+			if (var_unlock_fps->current.enabled() && var_player_ramble_speed_patch->current.enabled())
 			{
 				constexpr auto frame_time_60fps = 1000.0 / (60.0 * 1000.0);
 				const auto time_system = game::fox::GetTimeSystem();
@@ -464,7 +464,7 @@ namespace patches
 			// disable _purecall error
 			utils::hook::set<std::uint8_t>(SELECT_VALUE(0x141A05976, 0x1414617EA, 0x0, 0x0), 0xC3);
 
-			if (var_unlock_fps->latched.enabled() || game::environment::is_dedi())
+			if (var_unlock_fps->current.enabled() || game::environment::is_dedi())
 			{
 				unlock_fps();
 			}

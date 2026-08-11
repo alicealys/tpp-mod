@@ -270,7 +270,7 @@ namespace overlay
 
 		void draw_mod_name(game::fox::gr::dg::plugins::Draw2DRenderer* instance)
 		{
-			const auto& mod = mods::var_fs_mod_path->latched.get_string();
+			const auto& mod = mods::var_fs_mod_path->current.get_string();
 			if (mod.empty())
 			{
 				return;

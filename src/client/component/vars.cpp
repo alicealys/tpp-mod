@@ -191,7 +191,7 @@ namespace vars
 		switch (type)
 		{
 		case var_type_boolean:
-			return var_value(std::atoi(string_value.data()) == 1);
+			return var_value(std::atoi(string_value.data()) != 0);
 		case var_type_integer:
 			return var_value(std::atoi(string_value.data()));
 		case var_type_float:
@@ -359,7 +359,7 @@ namespace vars
 			return;
 		}
 
-		if ((var->flags & var_flag_readonly) != 0 && set_source != var_source_internal)
+		if ((var->flags & var_flag_readonly) != 0 && set_source != var_source_internal && post_initialization)
 		{
 			console::error("\"%s\" is read only", var->name.data());
 			return;
@@ -375,11 +375,12 @@ namespace vars
 			return;
 		}
 
-		var->current = value;
 		if ((var->flags & var_flag_latched) == 0 || set_source == var_source_internal || !post_initialization)
 		{
-			var->latched = value;
+			var->current = value;
 		}
+
+		var->latched = value;
 
 		if (set_source != var_source_internal)
 		{
@@ -727,7 +728,7 @@ namespace vars
 				continue;
 			}
 
-			const auto value = var->current.to_string();
+			const auto value = var->latched.to_string();
 			buffer.append(utils::string::va("set %s \"%s\"\r\n", var->name.data(), value.data()));
 		}
 
