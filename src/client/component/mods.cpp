@@ -207,7 +207,7 @@ namespace mods
 
             if (!utils::io::directory_exists(normal_path) || !normal_path.starts_with("mods"))
             {
-                console::error("[Mods] Invalid mod path %s\n", path.data());
+                console::error("[Mods] Invalid mod path \"%s\"\n", path.data());
                 return false;
             }
 
@@ -218,7 +218,7 @@ namespace mods
 
             clear_mod(needs_restart);
 
-            console::info("[Mods] Loading mod: %s\n", normal_path.data());
+            console::info("[Mods] Loading mod \"%s\"\n", normal_path.data());
 
             current_mod = {};
             current_mod.path.emplace(normal_path);
@@ -255,7 +255,7 @@ namespace mods
 
             fs_module_init_hook.invoke<void>();
 
-            const auto& mod_path = var_fs_mod_path->latched.get_string();
+            const auto& mod_path = var_fs_mod_path->current.get_string();
             if (!mod_path.empty())
             {
                 auto needs_restart = false;
@@ -286,10 +286,13 @@ namespace mods
                 return false;
             }
 
-            const auto match_container = game::s_mgoMatchMakingManager->match_container;
-            if (match_container != nullptr && match_container->match != nullptr && match_container->match->lobby_id.bits != 0)
+            if (game::environment::is_mgo())
             {
-                return false;
+                const auto match_container = game::s_mgoMatchMakingManager->match_container;
+                if (match_container != nullptr && match_container->match != nullptr && match_container->match->lobby_id.bits != 0)
+                {
+                    return false;
+                }
             }
 
             return true;
@@ -805,7 +808,7 @@ namespace mods
 
             return true;
         }
-        else if (new_fs_mod != var_fs_mod_path->latched.get_string())
+        else if (new_fs_mod != var_fs_mod_path->current.get_string())
         {
             match->error1 = 30;
             match->error2 = 0x8800000D;
@@ -946,7 +949,7 @@ namespace mods
     public:
         void pre_load() override
         {
-            var_fs_mod_path = vars::register_string("fs_mod", "", vars::var_flag_latched, "mod folder path");
+            var_fs_mod_path = vars::register_string("fs_mod", "", vars::var_flag_readonly, "mod folder path");
 
             if (game::environment::is_mgo())
             {
@@ -960,7 +963,7 @@ namespace mods
 
         void post_load() override
         {
-            const auto& fs_mod = var_fs_mod_path->latched.get_string();
+            const auto& fs_mod = var_fs_mod_path->current.get_string();
             if (!fs_mod.empty())
             {
                 register_mod_search_paths(fs_mod, true);
@@ -969,21 +972,9 @@ namespace mods
 
         void start() override
         {
-            if (!game::environment::is_mgo())
-            {
-                return;
-            }
-
-            matchmaking::register_callback(matchmaking::event_join_lobby, try_download_mod);
-            matchmaking::register_callback(matchmaking::event_create_lobby, on_lobby_create);
-
-            scheduler::loop(mod_download_update, scheduler::main);
-            scheduler::loop(mod_download_update_async, scheduler::async);
-            scheduler::loop(run_hash_jobs, scheduler::async);
-
             command::add("unloadmod", []()
             {
-                if (var_fs_mod_path->latched.get_string().empty())
+                if (var_fs_mod_path->current.get_string().empty())
                 {
                     console::warn("no mod loaded\n");
                     return;
@@ -1019,6 +1010,18 @@ namespace mods
 
                 load(path);
             });
+
+            if (!game::environment::is_mgo())
+            {
+                return;
+            }
+
+            matchmaking::register_callback(matchmaking::event_join_lobby, try_download_mod);
+            matchmaking::register_callback(matchmaking::event_create_lobby, on_lobby_create);
+
+            scheduler::loop(mod_download_update, scheduler::main);
+            scheduler::loop(mod_download_update_async, scheduler::async);
+            scheduler::loop(run_hash_jobs, scheduler::async);
         }
     };
 }
