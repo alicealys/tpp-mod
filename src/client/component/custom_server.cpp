@@ -145,19 +145,15 @@ namespace custom_server
 			a.mov(rcx, rsi);
 			a.mov(qword_ptr(rsp, 0x50), rdi);
 
-			a.mov(rax, rsp);
-
 			a.push(rax);
 			a.pushad64();
-			a.push(rax);
 			a.call_aligned(steam_storage_read_file_stub_internal);
-			a.pop(rax);
 			a.mov(qword_ptr(rsp, 0x80), rax);
 			a.popad64();
 			a.pop(rax);
 
 			a.test(eax, eax);
-			a.jmp(SELECT_VALUE_LANG(0x14016FC38, 0x14357A208));
+			a.jmp(SELECT_VALUE_LANG(0x14016FC38, 0x0));
 		}
 
 		void* file_read_stub(void* data, const char* file_name, size_t* result_file_size, void* buffer, 
@@ -183,22 +179,6 @@ namespace custom_server
 			}
 
 			return 7;
-		}
-
-		std::string get_command_line_args()
-		{
-			int num_args{};
-			const auto argv = CommandLineToArgvW(GetCommandLineW(), &num_args);
-
-			std::string buffer;
-			for (auto i = 0; i < num_args; i++)
-			{
-				buffer.append(utils::string::convert(argv[i]));
-				buffer.append(" ");
-			}
-
-			LocalFree(argv);
-			return buffer;
 		}
 
 		HANDLE create_file_stub(LPCWSTR file_name, DWORD desired_access, DWORD share_mode, 

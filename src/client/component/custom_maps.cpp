@@ -538,7 +538,7 @@ namespace custom_maps
             }
 
             utils::hook::call(SELECT_VALUE_LANG(0x140743197, 0x0), get_location_package_path_stub);
-            get_package_paths_hook.create(SELECT_VALUE_LANG(0x140742DF0, 0x0), get_package_paths_stub);
+            get_package_paths_hook.create(SELECT_VALUE_LANG(0x140743050, 0x0), get_package_paths_stub);
 
             utils::hook::jump(SELECT_VALUE_LANG(0x14089A780, 0x0), location_code_to_map_id_stub);
             utils::hook::jump(SELECT_VALUE_LANG(0x1408A2149, 0x0), utils::hook::assemble(map_id_to_location_code_stub), true);
