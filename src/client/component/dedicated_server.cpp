@@ -72,7 +72,7 @@ namespace dedicated_server
 		
 		int get_var_net_channel()
 		{
-			return var_net_channel->latched.get_int();
+			return var_net_channel->current.get_int();
 		}
 
 		void set_net_channel(const game::steam_id lobby_id)
