@@ -493,7 +493,6 @@ namespace vars
 		return "";
 	}
 
-
 	var_ptr register_var(
 		const std::string& name, const var_type_t& type, const var_value& value, const var_limits_t limits, const std::uint32_t flags, const std::string& description)
 	{

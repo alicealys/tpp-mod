@@ -252,28 +252,32 @@ namespace custom_maps
 
         void on_match_start(game::mgo_match_t* match, game::steam_id lobby_id)
         {
-            if (match->lobby_owner.bits == matchmaking::get_current_steam_id().bits)
+            if (!matchmaking::is_host())
             {
-                const auto map_id = match->match_rules.slots[match->match_rules.pl_current_match].m_map_id;
-                if (map_id >= 0 && map_id < map_list.size())
-                {
-                    utils::steam::set_lobby_data(lobby_id, "map_name", map_list[map_id].name);
-                }
-                else
-                {
-                    utils::steam::set_lobby_data(lobby_id, "map_name", "");
-                }
+                return;
+            }
+
+            const auto map_id = match->match_rules.slots[match->match_rules.pl_current_match].m_map_id;
+            if (map_id >= 0 && map_id < map_list.size())
+            {
+                utils::steam::set_lobby_data(lobby_id, "map_name", map_list[map_id].name);
+            }
+            else
+            {
+                utils::steam::set_lobby_data(lobby_id, "map_name", "");
             }
         }
 
         void on_start_transition(game::mgo_match_t* match, game::steam_id lobby_id)
         {
-            if (match->lobby_owner.bits != matchmaking::get_current_steam_id().bits)
+            if (matchmaking::is_host())
             {
-                if (mods::try_download_mod(match, lobby_id))
-                {
-                    command::execute("disconnect");
-                }
+                return;
+            }
+
+            if (mods::try_download_mod(match, lobby_id))
+            {
+                command::execute("disconnect");
             }
         }
     }
