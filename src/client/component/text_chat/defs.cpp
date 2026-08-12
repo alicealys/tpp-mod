@@ -80,13 +80,13 @@ namespace text_chat
 		auto index = 0;
 		for (auto i = 0; i < msg.size(); i++)
 		{
-			auto c = utils::string::normalize_ascii_extended(msg[i], '\0');
-			if (!utils::string::is_char_text(c))
+			const auto u_c = static_cast<unsigned char>(msg[i]);
+			if (u_c < 32 || u_c >= 255)
 			{
 				continue;
 			}
 
-			clean[index++] = c;
+			clean[index++] = msg[i];
 		}
 
 		return clean;
