@@ -547,7 +547,8 @@ namespace renderer
 			for (auto i = 0; i < length; i++)
 			{
 				game::fox::gr::dg::FontTextureMetrics font_metrics{};
-				game::fox::gr::dg::FontSystem_::CalculateMetrics(&font_metrics, &font_data.system_font_glyphs[text[i]], pixel_width, pixel_height, 1.f / 60.f);
+				const auto char_idx = static_cast<unsigned char>(text[i]);
+				game::fox::gr::dg::FontSystem_::CalculateMetrics(&font_metrics, &font_data.system_font_glyphs[char_idx], pixel_width, pixel_height, 1.f / 60.f);
 
 				if (word_wrapping && offset_x + font_metrics.f9 * width >= line_width)
 				{
@@ -1030,13 +1031,39 @@ namespace renderer
 			}
 
 			const auto font_type = get_font_type();
-			const auto chars = " !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~";
 
-			game::fox::gr::dg::FontSystem_::RegisterString(font_system, chars, font_type);
+			auto ascii_index = 0;
+			char ascii_chars[255]{};
+
+			for (auto i = 32; i < 255; i++)
+			{
+				ascii_chars[ascii_index++] = static_cast<char>(i);
+			}
+
+			auto utf8_index = 0;
+			char utf8_chars[255 * 4]{};
+
+			const auto ascii_count = std::strlen(ascii_chars);
+
+			for (auto i = 0; i < ascii_count; i++)
+			{
+				const auto c = static_cast<unsigned char>(ascii_chars[i]);
+				if (c < 128)
+				{
+					utf8_chars[utf8_index++] = static_cast<char>(c);
+				}
+				else
+				{
+					utf8_chars[utf8_index++] = static_cast<char>(0xC0 | (c >> 6));
+					utf8_chars[utf8_index++] = static_cast<char>(0x80 | (c & 0x3F));
+				}
+			}
+
+			game::fox::gr::dg::FontSystem_::RegisterString(font_system, utf8_chars, font_type);
 			game::fox::gr::dg::StringFontMetricsCache metrics{};
-			game::fox::gr::InitMetrics(&metrics, chars, 1, font_type);
+			game::fox::gr::InitMetrics(&metrics, utf8_chars, 1, font_type);
 
-			if (metrics.count < 0)
+			if (metrics.count <= 0)
 			{
 				return false;
 			}
@@ -1045,7 +1072,8 @@ namespace renderer
 
 			for (auto i = 0; i < metrics.count; i++)
 			{
-				std::memcpy(&font_data.system_font_glyphs[chars[i]], &glyph_data[metrics.glyphs[i]], sizeof(game::fox::gr::dg::_TextureGlyphData));
+				const auto idx = static_cast<unsigned char>(ascii_chars[i]);
+				std::memcpy(&font_data.system_font_glyphs[idx], &glyph_data[metrics.glyphs[i]], sizeof(game::fox::gr::dg::_TextureGlyphData));
 			}
 
 			const auto font_manager = *game::fox::ui::RawDaemon_::s_fontManager;
@@ -1076,7 +1104,7 @@ namespace renderer
 
 			font_data.artist_font_height = 50.f;
 
-			if (!game::fox::ui::Font_::CreateText(font_group->font, chars, font_data.artist_font_height, font_data.artist_font_height, font_group->spacing,
+			if (!game::fox::ui::Font_::CreateText(font_group->font, ascii_chars, font_data.artist_font_height, font_data.artist_font_height, font_group->spacing,
 				xy, uv, &res_width, &res_height))
 			{
 				return false;
@@ -1086,12 +1114,12 @@ namespace renderer
 			for (auto i = 0; i < 95; i++)
 			{
 				const auto x = xy[(i * 4) + 3].values[0];
-				const auto c = chars[i];
+				const auto c = ascii_chars[i];
 
 				const auto target_width = font_data.artist_font_height / 2.f;
 				const auto width = xy[(i * 4) + 3].values[0] - xy[(i * 4) + 0].values[0];
 				auto diff = (target_width - width) / 2.f;
-				if (!std::isalnum(chars[i]))
+				if (!std::isalnum(ascii_chars[i]))
 				{
 					diff = 0.f;
 				}
@@ -1116,7 +1144,7 @@ namespace renderer
 				font_data.artist_font_gylphs[c].uv[2][1] = uv[(i * 4) + 2].values[1];
 				font_data.artist_font_gylphs[c].uv[3][1] = uv[(i * 4) + 3].values[1];
 
-				font_data.artist_font_gylphs[chars[i]].width = target_width;
+				font_data.artist_font_gylphs[ascii_chars[i]].width = target_width;
 				previous_x = x;
 			}
 
@@ -1247,7 +1275,8 @@ namespace renderer
 		for (auto i = 0; i < std::min(max_len, count); i++)
 		{
 			game::fox::gr::dg::FontTextureMetrics font_metrics{};
-			game::fox::gr::dg::FontSystem_::CalculateMetrics(&font_metrics, &font_data.system_font_glyphs[text[i]], pixel_width, pixel_height, 1.f / 60.f);
+			const auto char_idx = static_cast<unsigned char>(text[i]);
+			game::fox::gr::dg::FontSystem_::CalculateMetrics(&font_metrics, &font_data.system_font_glyphs[char_idx], pixel_width, pixel_height, 1.f / 60.f);
 
 			if (formatted && text[i] == '^' && get_color_code(text[i + 1], nullptr))
 			{

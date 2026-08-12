@@ -450,8 +450,8 @@ namespace game_console
 					return;
 				}
 
-				c = utils::string::normalize_ascii_extended(c);
-				if (utils::string::is_char_text(c))
+				const auto u_c = static_cast<unsigned char>(c);
+				if (u_c >= 32 && u_c < 255)
 				{
 					handle_char(c);
 				}
@@ -651,8 +651,9 @@ namespace game_console
 			break;
 		default:
 		{
-			const auto c = utils::string::normalize_ascii_extended(static_cast<char>(key));
-			if (utils::string::is_char_text(c))
+			const auto c = static_cast<char>(key);
+			const auto u_c = static_cast<unsigned char>(key);
+			if (u_c >= 32 && u_c < 255)
 			{
 				handle_char(c);
 			}

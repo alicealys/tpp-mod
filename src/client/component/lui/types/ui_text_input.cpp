@@ -133,8 +133,8 @@ namespace lui
 
 	bool ui_text_input::add_char(char c)
 	{
-		c = utils::string::normalize_ascii_extended(c);
-		if (!utils::string::is_char_text(c))
+		const auto u_c = static_cast<unsigned char>(c);
+		if (u_c >= 32 && u_c < 255)
 		{
 			return false;
 		}
@@ -169,8 +169,8 @@ namespace lui
 				return result;
 			}
 
-			c = utils::string::normalize_ascii_extended(c);
-			if (utils::string::is_char_text(c))
+			const auto u_c = static_cast<unsigned char>(c);
+			if (u_c >= 32 && u_c < 255)
 			{
 				result |= this->add_char(c);
 			}

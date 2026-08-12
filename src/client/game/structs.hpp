@@ -674,7 +674,7 @@ namespace game
 					char __pad2[256];
 				};
 
-				struct FontSystem_unk1
+				struct FontTextureRenderer
 				{
 					char __pad0[10];
 					char c1;
@@ -689,11 +689,16 @@ namespace game
 					ImageGlyphManager* imageGlyphManager;
 				};
 
+				struct FontData
+				{
+
+				};
+
 				struct FontSystem
 				{
 					char __pad0[8];
-					void* ptr_array1[9];
-					fox::gr::dg::FontSystem_unk1* unk1;
+					FontData* fonts[9];
+					fox::gr::dg::FontTextureRenderer* fontTextureRenderer;
 					fox::gr::dg::FontSystem_unk2* unk2;
 				};
 
