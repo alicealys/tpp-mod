@@ -1104,7 +1104,8 @@ namespace renderer
 
 			font_data.artist_font_height = 50.f;
 
-			if (!game::fox::ui::Font_::CreateText(font_group->font, ascii_chars, font_data.artist_font_height, font_data.artist_font_height, font_group->spacing,
+			const auto chars = " !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~";
+			if (!game::fox::ui::Font_::CreateText(font_group->font, chars, font_data.artist_font_height, font_data.artist_font_height, font_group->spacing,
 				xy, uv, &res_width, &res_height))
 			{
 				return false;
@@ -1114,12 +1115,12 @@ namespace renderer
 			for (auto i = 0; i < 95; i++)
 			{
 				const auto x = xy[(i * 4) + 3].values[0];
-				const auto c = ascii_chars[i];
+				const auto c = chars[i];
 
 				const auto target_width = font_data.artist_font_height / 2.f;
 				const auto width = xy[(i * 4) + 3].values[0] - xy[(i * 4) + 0].values[0];
 				auto diff = (target_width - width) / 2.f;
-				if (!std::isalnum(ascii_chars[i]))
+				if (!std::isalnum(c))
 				{
 					diff = 0.f;
 				}
@@ -1144,7 +1145,7 @@ namespace renderer
 				font_data.artist_font_gylphs[c].uv[2][1] = uv[(i * 4) + 2].values[1];
 				font_data.artist_font_gylphs[c].uv[3][1] = uv[(i * 4) + 3].values[1];
 
-				font_data.artist_font_gylphs[ascii_chars[i]].width = target_width;
+				font_data.artist_font_gylphs[c].width = target_width;
 				previous_x = x;
 			}
 
