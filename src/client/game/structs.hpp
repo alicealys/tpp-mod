@@ -674,7 +674,7 @@ namespace game
 					char __pad2[256];
 				};
 
-				struct FontTextureRenderer
+				struct FontTextureRender
 				{
 					char __pad0[10];
 					char c1;
@@ -698,7 +698,7 @@ namespace game
 				{
 					char __pad0[8];
 					FontData* fonts[9];
-					fox::gr::dg::FontTextureRenderer* fontTextureRenderer;
+					fox::gr::dg::FontTextureRender* fontTextureRender;
 					fox::gr::dg::FontSystem_unk2* unk2;
 				};
 
