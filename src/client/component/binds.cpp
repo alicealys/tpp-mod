@@ -542,11 +542,6 @@ namespace binds
 
 		buffer.append("unbindall\r\n");
 
-		for (const auto& alias : command::get_aliases())
-		{
-			buffer.append(utils::string::va("alias \"%s\" \"%s\"\r\n", alias.first.data(), alias.second.data()));
-		}
-
 		for (const auto& [key, bind] : binds)
 		{
 			if (bind.mode == command)

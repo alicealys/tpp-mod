@@ -529,7 +529,7 @@ namespace command
 					const auto name = params.get(1);
 					const auto cmd = params.get(2);
 					aliases[name] = cmd;
-					binds::write_binds();
+					vars::write_config();
 				}
 			});
 		}
