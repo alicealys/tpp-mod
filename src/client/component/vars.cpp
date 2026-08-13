@@ -732,6 +732,11 @@ namespace vars
 			buffer.append(utils::string::va("set %s \"%s\"\r\n", var->name.data(), value.data()));
 		}
 
+		for (const auto& alias : command::get_aliases())
+		{
+			buffer.append(utils::string::va("alias \"%s\" \"%s\"\r\n", alias.first.data(), alias.second.data()));
+		}
+
 		for (auto& cb : write_callbacks)
 		{
 			cb(buffer);
