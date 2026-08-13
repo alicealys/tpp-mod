@@ -334,11 +334,23 @@ namespace text_chat::ui
 			});
 		}
 
+		const char* utf8_to_ascii(const char* text)
+		{
+			static char ascii_str[0x100]{};
+			WCHAR wide_str[0x100]{};
+
+			MultiByteToWideChar(CP_UTF8, 0, text, -1, wide_str, 0x100);
+			WideCharToMultiByte(CP_ACP, 0, wide_str, -1, ascii_str, 0x100, NULL, NULL);
+
+			return ascii_str;
+		}
+
 		char announce_log_view_stub(void* a1, const char* msg, char a3, unsigned __int8 a4, char a5)
 		{
 			if (is_chat_enabled() && *msg != 0)
 			{
-				ui::print(msg, false);
+				const auto converted_msg = utf8_to_ascii(msg);
+				ui::print(converted_msg, false);
 				return 0;
 			}
 
