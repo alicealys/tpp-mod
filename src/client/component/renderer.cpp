@@ -7,11 +7,8 @@
 #include "renderer.hpp"
 #include "scheduler.hpp"
 #include "vars.hpp"
-#include "hashes.hpp"
 
 #include <utils/hook.hpp>
-#include <utils/memory.hpp>
-#include <utils/io.hpp>
 
 namespace renderer
 {
@@ -53,6 +50,8 @@ namespace renderer
 			glyph_info_t wide_char_glyphs[0xFFFF]{};
 			float artist_font_height;
 		} font_data{};
+
+		vars::var_ptr r_custom_text_rendering;
 
 		unsigned short float_to_half(float value)
 		{
@@ -153,34 +152,34 @@ namespace renderer
 				color[2] = 0.f;
 				return true;
 			case '1': // red
-				color[0] = 0.85f;
-				color[1] = 0.34f;
-				color[2] = 0.3f;
+				color[0] = 0.94f;
+				color[1] = 0.43f;
+				color[2] = 0.43f;
 				return true;
 			case '2': // green
-				color[0] = 0.4f;
-				color[1] = 0.9f;
-				color[2] = 0.7f;
+				color[0] = 0.77f;
+				color[1] = 0.98f;
+				color[2] = 0.f;
 				return true;
 			case '3': // yellow
 				color[0] = 1.f;
-				color[1] = 0.8f;
-				color[2] = 0.2f;
+				color[1] = 0.91f;
+				color[2] = 0.06f;
 				return true;
 			case '4': // purple
-				color[0] = 0.55f;
-				color[1] = 0.35f;
-				color[2] = 0.79f;
+				color[0] = 0.72f;
+				color[1] = 0.64f;
+				color[2] = 0.88f;
 				return true;
 			case '5': // light blue
-				color[0] = 0.29f;
-				color[1] = 0.82f;
-				color[2] = 0.78f;				
+				color[0] = 0.57f;
+				color[1] = 0.86f;
+				color[2] = 0.91f;
 				return true;
 			case '6': // pink
-				color[0] = 0.88f;
-				color[1] = 0.51f;
-				color[2] = 0.69f;
+				color[0] = 0.89f;
+				color[1] = 0.59f;
+				color[2] = 0.81f;
 				return true;
 			case '7': // white
 				color[0] = 1.f;
@@ -717,6 +716,12 @@ namespace renderer
 					offset_y += height;
 				}
 
+				if (text[i] == '^' && get_color_code(text[i + 1], color_vec.values))
+				{
+					++i;
+					continue;
+				}
+
 				const auto x1 = glyph_info->metrics.f7 * width + offset_x + start_x;
 				const auto x2 = glyph_info->metrics.f5 * width + x1;
 				const auto y1 = -1.f * (glyph_info->metrics.f8 * height) + offset_y + start_y;
@@ -1189,8 +1194,7 @@ namespace renderer
 
 			if (len > 0)
 			{
-				add_wstring_custom(instance, text, len, height, string_color, offset_x, offset_y, start_x, start_y,
-					word_wrapping, display_width, caret_index);
+
 			}
 
 			if (has_stencil)
@@ -1611,6 +1615,198 @@ namespace renderer
 			change_language_hook.invoke<void>(a1);
 			font_data.loaded = init_font_data();
 		}
+
+		struct custom_font_metrics_t
+		{
+			game::fox::gr::dg::StringFontMetricsCache native;
+			wchar_t* string;
+			int str_len;
+		};
+
+		void* alloc_font_metrics_stub(int a1, int a2)
+		{
+			const auto buffer = game::fox::KernelAllocAligned(sizeof(custom_font_metrics_t), 4);
+			std::memset(buffer, 0, sizeof(custom_font_metrics_t));
+			return buffer;
+		}
+
+		void free_font_metrics_stub(custom_font_metrics_t* metrics)
+		{
+			if (metrics->string != nullptr)
+			{
+				game::fox::FreeAnnotated(metrics->string, 0x5000F);
+				metrics->string = nullptr;
+			}
+			
+			game::fox::FreeAnnotated(metrics, 0x5000F);
+		}
+
+		void init_metrics_stub(custom_font_metrics_t* string, const char* text, int a3, int a4)
+		{
+			game::fox::gr::InitMetrics(&string->native, text, a3, a4);
+
+			if (!r_custom_text_rendering->current.enabled())
+			{
+				return;
+			}
+
+			auto count = 0;
+			{
+				auto c = reinterpret_cast<unsigned char*>(reinterpret_cast<size_t>(text));
+				while (*c != 0)
+				{
+					game::fox::Utf8ToUtf32(&c);
+					++count;
+				};
+			}
+
+			auto buffer = game::fox::KernelAllocAligned(count * 2, 4);
+			string->string = reinterpret_cast<wchar_t*>(buffer);
+
+			auto c = reinterpret_cast<unsigned char*>(reinterpret_cast<size_t>(text));
+			auto idx = 0;
+			do
+			{
+				string->string[idx++] = static_cast<wchar_t>(game::fox::Utf8ToUtf32(&c));
+			} while (*c != 0);
+
+			string->str_len = count;
+		}
+
+		utils::hook::detour execute_packet2d_string_hook;
+		void execute_packet2d_string_stub(game::fox::gr::dg::plugins::Draw2DRenderer* instance, game::fox::gr::Packet2DString* string)
+		{
+			if (!r_custom_text_rendering->current.enabled())
+			{
+				return execute_packet2d_string_hook.invoke<void>(instance, string);
+			}
+
+			const auto custom_metrics = reinterpret_cast<custom_font_metrics_t*>(string->fontMetricsCache);
+
+			game::Vectormath::Aos::Vector4 color_vec{};
+			color_vec.values[0] = 1.f;
+			color_vec.values[1] = 1.f;
+			color_vec.values[2] = 1.f;
+			color_vec.values[3] = 0.f;
+
+			auto offset_x = 0.f;
+
+			const auto height = half_to_float(string->glyphHeight);
+			const auto unk = half_to_float(string->glyphUnk);
+			auto spacing = half_to_float(string->glyphSpacing);
+			auto width = half_to_float(string->glyphWidth) * height;
+
+			switch (get_language_code())
+			{
+			case 'npj':
+				spacing += 0.5f;
+				break;
+			case 'sur':
+				spacing += 0.f;
+				break;
+			default:
+				spacing += 1.f;
+				break;
+			}
+
+			if (unk > 0.f)
+			{
+				auto v1 = unk / height;
+				auto v2 = static_cast<float>(string->fontMetricsCache->stringWidth);
+				if (v1 < v2)
+				{
+					width *= v1 / v2;
+				}
+			}
+
+			float white_color[4]{};
+			white_color[0] = 1.f;
+			white_color[1] = 1.f;
+			white_color[2] = 1.f;
+			white_color[3] = 1.f;
+
+			for (auto i = 0; i < custom_metrics->str_len; i++)
+			{
+				auto vertices = reinterpret_cast<vertex_buffer*>(game::fox::gr::dg::DynamicVertexBuffer_::GetBuffer(
+					instance->parameters->vertexBuffer, &instance->buffer, &instance->size, 144));
+				std::memset(vertices, 0, sizeof(vertex_buffer));
+
+				const auto c = custom_metrics->string[i];
+				const auto c_next = custom_metrics->string[i + 1];
+				const auto glyph_info = &font_data.wide_char_glyphs[c];
+
+				float new_color[4]{};
+				if (c == '^' && get_color_code(static_cast<wchar_t>(c_next), new_color))
+				{
+					const auto current_color = instance->commandBuffer->shadowConstantRegister->unk1[3].buffers[1].vec;
+					const auto product = current_color[0] * current_color[1] * current_color[2];
+
+					if (product > 0.f)
+					{
+						current_color[0] = new_color[0];
+						current_color[1] = new_color[1];
+						current_color[2] = new_color[2];
+					}
+
+					++i;
+					continue;
+				}
+
+				const auto x1 = glyph_info->metrics.f7 * width + offset_x;
+				const auto x2 = glyph_info->metrics.f5 * width + x1;
+				const auto y1 = -1.f * (glyph_info->metrics.f8 * height);
+				const auto y2 = glyph_info->metrics.f6 * height + y1;
+
+				vertices->v[0][0] = x1;
+				vertices->v[0][1] = y1;
+				vertices->v[0][2] = 0.f;
+				*reinterpret_cast<int*>(&vertices->v[0][3]) = -1;
+				vertices->v[0][4] = glyph_info->metrics.f1;
+				vertices->v[0][5] = glyph_info->metrics.f2;
+
+				vertices->v[1][0] = x2;
+				vertices->v[1][1] = y1;
+				vertices->v[1][2] = 0.f;
+				*reinterpret_cast<int*>(&vertices->v[1][3]) = -1;
+				vertices->v[1][4] = glyph_info->metrics.f3;
+				vertices->v[1][5] = glyph_info->metrics.f2;
+
+				vertices->v[2][0] = x1;
+				vertices->v[2][1] = y2;
+				vertices->v[2][2] = 0.f;
+				*reinterpret_cast<int*>(&vertices->v[2][3]) = -1;
+				vertices->v[2][4] = glyph_info->metrics.f1;
+				vertices->v[2][5] = glyph_info->metrics.f4;
+
+				vertices->v[3][0] = x2;
+				vertices->v[3][1] = y2;
+				vertices->v[3][2] = 0.f;
+				*reinterpret_cast<int*>(&vertices->v[3][3]) = -1;
+				vertices->v[3][4] = glyph_info->metrics.f3;
+				vertices->v[3][5] = glyph_info->metrics.f4;
+
+				vertices->v[4][0] = vertices->v[2][0];
+				vertices->v[4][1] = vertices->v[2][1];
+				vertices->v[4][2] = 0.f;
+				vertices->v[4][3] = vertices->v[2][3];
+				vertices->v[4][4] = vertices->v[2][4];
+				vertices->v[4][5] = vertices->v[2][5];
+
+				vertices->v[5][0] = vertices->v[1][0];
+				vertices->v[5][1] = vertices->v[1][1];
+				vertices->v[5][2] = 0.f;
+				vertices->v[5][3] = vertices->v[1][3];
+				vertices->v[5][4] = vertices->v[1][4];
+				vertices->v[5][5] = vertices->v[1][5];
+				++vertices;
+
+				offset_x += (glyph_info->metrics.f9 * width) + spacing;
+
+				game::fox::gr::dg::CommandBuffer_::SetTexture(instance->commandBuffer, 8, glyph_info->texture_handle);
+				game::fox::gr::dg::CommandBuffer_::SetVector(instance->commandBuffer, 35, &color_vec, 0);
+				game::fox::gr::dg::plugins::Draw2DRenderer_::DrawVertices(instance, 2, 24, 6);
+			}
+		}
 	}
 
 	float calc_text_width_artist(const char* text, float height, bool formatted,
@@ -1869,16 +2065,12 @@ namespace renderer
 		float x, float y, float* color, float* outline_color, bool formatted, float display_width, float display_height,
 		float scroll_x, float scroll_y, bool word_wrapping, int caret_index, params_t* params)
 	{
-		const auto fn = formatted
-			? draw_wtext_internal_formatted
-			: draw_wtext_internal;
-
 		if (outline_color != nullptr)
 		{
-			fn(instance, text, height, x + 0.5f, y + 0.5f, outline_color, display_width, display_height, scroll_x, scroll_y, word_wrapping, caret_index, params);
+			draw_wtext_internal(instance, text, height, x + 0.5f, y + 0.5f, outline_color, display_width, display_height, scroll_x, scroll_y, word_wrapping, caret_index, params);
 		}
 
-		return fn(instance, text, height, x, y, color, display_width, display_height, scroll_x, scroll_y, word_wrapping, caret_index, params);
+		return draw_wtext_internal(instance, text, height, x, y, color, display_width, display_height, scroll_x, scroll_y, word_wrapping, caret_index, params);
 	}
 
 	float draw_text_with_cursor(game::fox::gr::dg::plugins::Draw2DRenderer* instance, const char* text, int cursor,
@@ -2024,6 +2216,12 @@ namespace renderer
 	class component final : public component_interface
 	{
 	public:
+		void pre_load() override
+		{
+			r_custom_text_rendering = vars::register_bool("r_custom_text_rendering", true, vars::var_flag_saved, 
+				"enable custom text rendering (fixes languages not displaying + color codes)");
+		}
+
 		void start() override
 		{
 			if (game::environment::is_dedi())
@@ -2033,6 +2231,11 @@ namespace renderer
 
 			scheduler::once(init_fonts, scheduler::main);
 
+			utils::hook::call(SELECT_VALUE(0x1402AF515, 0x140BA5CE5, 0x0, 0x0), alloc_font_metrics_stub);
+			utils::hook::call(SELECT_VALUE(0x1402AF3C8, 0x140BA5B98, 0x0, 0x0), free_font_metrics_stub);
+			utils::hook::call(SELECT_VALUE(0x1402AF52A, 0x140BA5CFA, 0x0, 0x0), init_metrics_stub);
+			execute_packet2d_string_hook.create(game::fox::gr::dg::plugins::Draw2DRenderer_::ExecuteOnly_Packet2DString.get(), execute_packet2d_string_stub);
+			
 			change_language_hook.create(SELECT_VALUE(0x14090FA70, 0x140681A80, 0x0, 0x0), change_language_stub);
 			execute_draw_hook.create(SELECT_VALUE(0x1402E7630, 0x140BD9EF0, 0x0, 0x0), execute_draw_stub);
 		}
