@@ -14,6 +14,9 @@ namespace renderer
 	float calc_text_width(const char* text, float height, bool formatted = false,
 		bool word_wrapping = false, float line_width = 0.f, int* line_count = nullptr, int caret_index = -1, int max_len = -1);
 
+	float calc_text_width(const wchar_t* text, float height, bool formatted = false,
+		bool word_wrapping = false, float line_width = 0.f, int* line_count = nullptr, int caret_index = -1, int max_len = -1);
+
 	float draw_text_artist(game::fox::gr::dg::plugins::Draw2DRenderer* instance, const char* text, float height,
 		float x, float y, float* color, bool formatted = false, float display_width = 0.f, 
 		float display_height = 0.f, float scroll_x = 0.f, float scroll_y = 0.f, bool word_wrapping = false, int caret_index = -1, params_t* params = nullptr);
@@ -23,7 +26,16 @@ namespace renderer
 		float display_width = 0.f, float display_height = 0.f, float scroll_x = 0.f, float scroll_y = 0.f, bool word_wrapping = false,
 		int caret_index = -1, params_t* params = nullptr);
 
+	float draw_text(game::fox::gr::dg::plugins::Draw2DRenderer* instance, const wchar_t* text, float height,
+		float x, float y, float* color, float* outline_color = nullptr, bool formatted = false,
+		float display_width = 0.f, float display_height = 0.f, float scroll_x = 0.f, float scroll_y = 0.f, bool word_wrapping = false,
+		int caret_index = -1, params_t* params = nullptr);
+
 	float draw_text_with_cursor(game::fox::gr::dg::plugins::Draw2DRenderer* instance, const char* text, int cursor,
+		float height, float x, float y, float* color, float* outline_color = nullptr, bool formatted = false,
+		float display_width = 0.f, params_t* params = nullptr);
+
+	float draw_text_with_cursor(game::fox::gr::dg::plugins::Draw2DRenderer* instance, const wchar_t* text, int cursor,
 		float height, float x, float y, float* color, float* outline_color = nullptr, bool formatted = false,
 		float display_width = 0.f, params_t* params = nullptr);
 
@@ -40,4 +52,6 @@ namespace renderer
 	void remove_stencil(game::fox::gr::dg::plugins::Draw2DRenderer* instance);
 
 	void on_frame(const std::function<void(game::fox::gr::dg::plugins::Draw2DRenderer*)>& cb);
+
+	bool is_char_printable(const wchar_t c);
 }

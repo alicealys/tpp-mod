@@ -91,6 +91,7 @@ namespace utils::string
 	std::string dump_hex(const std::string& data, const std::string& separator = " ");
 
 	std::string get_clipboard_data();
+	std::wstring get_clipboard_data_w();
 	void set_clipboard_data(const std::string& text);
 
 	void strip(const char* in, char* out, int max);
@@ -112,4 +113,7 @@ namespace utils::string
 
 	char normalize_ascii_extended(char c, char bad_char = '?');
 	bool is_char_text(char c);
+
+	std::wstring utf8_to_utf16(const std::string& text);
+	std::string utf16_to_ascii(const std::wstring& text);
 }

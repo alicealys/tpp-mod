@@ -30,7 +30,7 @@ namespace text_chat
 	constexpr auto chat_key_default = 'Y';
 	constexpr auto chat_message_max_len = 200;
 
-	using message_buffer_t = char[256];
+	using message_buffer_t = wchar_t[256];
 
 	struct chat_message_t
 	{
@@ -64,7 +64,7 @@ namespace text_chat
 		message_buffer_t input;
 		int cursor;
 		std::vector<sound_play_t> sounds;
-		std::deque<std::string> history;
+		std::deque<std::wstring> history;
 		std::int32_t history_index = -1;
 	};
 
@@ -73,7 +73,7 @@ namespace text_chat
 	bool is_chat_enabled();
 	bool can_use_chat();
 
-	std::string clean_message(const std::string& msg);
+	std::wstring clean_message(const std::wstring& msg);
 
 	void clear();
 

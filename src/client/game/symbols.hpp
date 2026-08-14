@@ -12,6 +12,7 @@ namespace game
 		
 		WEAK symbol<bool(fox::RawKeyboardData*, RAWKEYBOARD*)> GetRawKeyboardData{0x141A45650, 0x1414A16B0, 0x0, 0x0};
 
+		WEAK symbol<void*(unsigned __int64, unsigned int)> KernelAllocAligned{0x140015FC0, 0x1400160A0, 0x0, 0x0};
 		WEAK symbol<void(void*, unsigned int)> FreeAnnotated{0x140015F90, 0x1400160F0, 0x0, 0x0};
 
 		WEAK symbol<QuarkSystemTable*()> GetQuarkSystemTable{0x140BFF050, 0x1408F4800, 0x0, 0x0};
@@ -144,6 +145,17 @@ namespace game
 					WEAK symbol<char*(DynamicVertexBuffer*, gn::Buffer**, unsigned int*, int)> GetBuffer{0x1402B97E0, 0x140BB96B0, 0x0, 0x0};
 				}
 
+				namespace ImageGlyphManager_
+				{
+					WEAK symbol<_TextureGlyphData*(ImageGlyphManager*, unsigned int)> SearchGlyphData{0x140225C20, 0x140B2B8D0, 0x0, 0x0};
+					WEAK symbol<_TextureGlyphData*(ImageGlyphManager*, FontData*, _TextureAreaInfo*, unsigned int)> RegisterGlyphData{0x140224F00, 0x140B2ACF0, 0x0, 0x0};
+				}
+
+				namespace ImageAreaManager_
+				{
+					WEAK symbol<_TextureAreaInfo*(ImageAreaManager*, unsigned char, unsigned char, unsigned int)> AllocateAreaInfo{0x1402239C0, 0x140B297C0, 0x0, 0x0};
+				}
+
 				namespace FontSystem_
 				{
 					WEAK symbol<FontSystem*> m_instance{0x142B93BB8, 0x14208EFC8, 0x0, 0x0};
@@ -154,6 +166,19 @@ namespace game
 					WEAK symbol<unsigned int(FontSystem*)> GetFontTextureHandle{0x140224430, 0x140B2A230, 0x0, 0x0};
 					WEAK symbol<_TextureGlyphData*(FontSystem*)> GetFontTextureGlyphDataTop{0x140224380, 0x140B2A180, 0x0, 0x0};
 					WEAK symbol<void(FontTextureMetrics*, _TextureGlyphData*, float, float, float)> CalculateMetrics{0x140223C30, 0x140B29A30, 0x0, 0x0};
+				}
+
+				namespace FontData_
+				{
+					WEAK symbol<char(FontData*, const char*, const char*)> LoadFontData{0x140224820, 0x140B2A610, 0x0, 0x0};
+				}
+
+				namespace FontTextureRender_
+				{
+					WEAK symbol<void(FontTextureRender*, unsigned int, unsigned int)> FontTextureRender_{0x140222E40, 0x140B28C40, 0x0, 0x0};
+					WEAK symbol<void(FontTextureRender*)> UpdateRenderGlyphTexture{0x1402264B0, 0x140B2C160, 0x0, 0x0};
+					WEAK symbol<void(FontTextureRender*, FontData*, wchar_t*)> RegisterStringW{0x140225290, 0x140B2B080, 0x0, 0x0};
+					WEAK symbol<void(FontTextureRender*, FontData*, FontData_Glyph*, _TextureGlyphData*)> AddTextureRenderOrder{0x1402238D0, 0x140B296D0, 0x0, 0x0};
 				}
 
 				namespace plugins

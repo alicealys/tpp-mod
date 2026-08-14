@@ -7,6 +7,7 @@
 #include "ui.hpp"
 #include "lobby.hpp"
 #include "../session.hpp"
+#include "../renderer.hpp"
 
 #include <utils/hook.hpp>
 #include <utils/string.hpp>
@@ -15,9 +16,9 @@ namespace text_chat::input
 {
 	namespace
 	{
-		void handle_char(chat_state_t& state, char c)
+		void handle_char(chat_state_t& state, wchar_t c)
 		{
-			if (std::strlen(state.input) >= chat_message_max_len)
+			if (std::wcslen(state.input) >= chat_message_max_len)
 			{
 				return;
 			}
@@ -40,13 +41,13 @@ namespace text_chat::input
 			}
 
 			std::memmove(state.input + state.cursor - 1, state.input + state.cursor,
-				std::strlen(state.input) + 1 - state.cursor);
+				std::wcslen(state.input) + 1 - state.cursor);
 			state.cursor--;
 		}
 
 		void handle_tab(chat_state_t& state)
 		{
-			std::string input = state.input;
+			std::string input = utils::string::convert(state.input);
 			const auto space_index = input.find_last_of(' ');
 			if (space_index != std::string::npos)
 			{
@@ -65,25 +66,25 @@ namespace text_chat::input
 			{
 				return;
 			}
-
-			if (name.size() >= sizeof(state.input) - 1)
+			
+			const auto name_w = utils::string::utf8_to_utf16(name);
+			if (name_w.size() >= sizeof(state.input) - 1)
 			{
 				return;
 			}
 
 			state.cursor -= static_cast<int>(input.size());
 
-			for (auto c : name)
+			for (auto& c : name_w)
 			{
 				if (state.cursor >= chat_message_max_len)
 				{
 					return;
 				}
 
-				const auto u_c = static_cast<unsigned char>(c);
-				if (u_c >= 32 && u_c < 255)
+				if (renderer::is_char_printable(c))
 				{
-					state.input[state.cursor++] = c;
+					state.input[state.cursor++] = static_cast<wchar_t>(c);
 				}
 			}
 
@@ -102,7 +103,7 @@ namespace text_chat::input
 
 		void handle_paste(chat_state_t& state)
 		{
-			const auto clipboard = utils::string::get_clipboard_data();
+			const auto clipboard = utils::string::get_clipboard_data_w();
 
 			for (auto c : clipboard)
 			{
@@ -111,8 +112,7 @@ namespace text_chat::input
 					return;
 				}
 
-				const auto u_c = static_cast<unsigned char>(c);
-				if (u_c >= 32 && u_c < 255)
+				if (renderer::is_char_printable(c))
 				{
 					handle_char(state, c);
 				}
@@ -164,8 +164,8 @@ namespace text_chat::input
 
 			if (state.history_index != -1)
 			{
-				strncpy_s(state.input, state.history.at(state.history_index).data(), sizeof(state.input));
-				state.cursor = static_cast<int>(std::strlen(state.input));
+				wcsncpy_s(state.input, state.history.at(state.history_index).data(), sizeof(state.input));
+				state.cursor = static_cast<int>(std::wcslen(state.input));
 			}
 		}
 
@@ -181,8 +181,8 @@ namespace text_chat::input
 
 			if (state.history_index != -1)
 			{
-				strncpy_s(state.input, state.history.at(state.history_index).data(), sizeof(state.input));
-				state.cursor = static_cast<int>(strlen(state.input));
+				wcsncpy_s(state.input, state.history.at(state.history_index).data(), sizeof(state.input));
+				state.cursor = static_cast<int>(std::wcslen(state.input));
 			}
 		}
 
@@ -279,7 +279,7 @@ namespace text_chat::input
 				return false;
 			}
 
-			if (!is_down || key >= 0xFF)
+			if (!is_down)
 			{
 				return true;
 			}
@@ -297,10 +297,10 @@ namespace text_chat::input
 				break;
 			default:
 			{
-				const auto u_c = static_cast<unsigned char>(key);
-				if (u_c >= 32 && u_c < 255)
+				const auto c = static_cast<wchar_t>(key);
+				if (renderer::is_char_printable(c))
 				{
-					handle_char(state, static_cast<char>(key));
+					handle_char(state, c);
 				}
 				break;
 			}

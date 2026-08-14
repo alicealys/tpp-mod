@@ -11,6 +11,7 @@
 
 #include <utils/hook.hpp>
 #include <utils/memory.hpp>
+#include <utils/io.hpp>
 
 namespace renderer
 {
@@ -32,12 +33,21 @@ namespace renderer
 			float width;
 		};
 
+		struct glyph_info_t
+		{
+			game::fox::gr::dg::_TextureGlyphData data;
+			float pixel_width;
+			float pixel_height;
+			unsigned int texture_handle;
+		};
+
 		struct
 		{
 			bool loaded;
 			game::fox::gr::dg::_TextureGlyphData system_font_glyphs[255]{};
 			artist_font_glyph artist_font_gylphs[255]{};
 			game::fox::gr::Texture* artist_font_texture;
+			glyph_info_t wide_char_glyphs[0xFFFF]{};
 			float artist_font_height;
 		} font_data{};
 
@@ -195,6 +205,16 @@ namespace renderer
 			}
 
 			return false;
+		}
+
+		bool get_color_code(wchar_t c, float* color)
+		{
+			if (c > 255)
+			{
+				return false;
+			}
+
+			return get_color_code(static_cast<char>(c), color);
 		}
 
 		void execute_push(game::fox::gr::dg::plugins::Draw2DRenderer* instance, unsigned char flags)
@@ -548,7 +568,8 @@ namespace renderer
 			{
 				game::fox::gr::dg::FontTextureMetrics font_metrics{};
 				const auto char_idx = static_cast<unsigned char>(text[i]);
-				game::fox::gr::dg::FontSystem_::CalculateMetrics(&font_metrics, &font_data.system_font_glyphs[char_idx], pixel_width, pixel_height, 1.f / 60.f);
+				const auto glyph = &font_data.system_font_glyphs[char_idx];
+				game::fox::gr::dg::FontSystem_::CalculateMetrics(&font_metrics, glyph, pixel_width, pixel_height, 1.f / 60.f);
 
 				if (word_wrapping && offset_x + font_metrics.f9 * width >= line_width)
 				{
@@ -645,6 +666,151 @@ namespace renderer
 			game::fox::gr::dg::CommandBuffer_::SetVector(instance->commandBuffer, 181, &vec1, 0);
 
 			game::fox::gr::dg::plugins::Draw2DRenderer_::DrawVertices(instance, 2, 24, 6 * length);
+			return result_width;
+		}
+
+		float add_wstring_custom(game::fox::gr::dg::plugins::Draw2DRenderer* instance, const wchar_t* text, int length, float base_height, float* color,
+			float& offset_x, float& offset_y, float start_x, float start_y, bool word_wrapping = false, float line_width = 0.f, int caret_index = -1)
+		{
+			if (length < 0)
+			{
+				length = static_cast<int>(std::wcslen(text));
+			}
+
+			game::Vectormath::Aos::Vector4 color_vec{};
+			if (color != nullptr)
+			{
+				color_vec.values[0] = color[0];
+				color_vec.values[1] = color[1];
+				color_vec.values[2] = color[2];
+				color_vec.values[3] = 0.f;
+			}
+			else
+			{
+				color_vec.values[0] = 1.f;
+				color_vec.values[1] = 1.f;
+				color_vec.values[2] = 1.f;
+				color_vec.values[3] = 0.f;
+			}
+
+			struct vertex_buffer
+			{
+				float v[6][6];
+			};
+
+			auto result_width = 0.f;
+
+			auto texture_handle = 0u;
+			for (auto i = 0; i < length; i++)
+			{
+				auto vertices = reinterpret_cast<vertex_buffer*>(game::fox::gr::dg::DynamicVertexBuffer_::GetBuffer(
+					instance->parameters->vertexBuffer, &instance->buffer, &instance->size, 144));
+				std::memset(vertices, 0, sizeof(vertex_buffer));
+
+				const auto idx = static_cast<std::uint16_t>(text[i]);
+				const auto glyph_info = &font_data.wide_char_glyphs[idx];
+				game::fox::gr::dg::FontTextureMetrics font_metrics{};
+				game::fox::gr::dg::FontSystem_::CalculateMetrics(&font_metrics, &glyph_info->data, 
+					glyph_info->pixel_width, glyph_info->pixel_height, 1.f / 60.f);
+
+				if (glyph_info->texture_handle != 0)
+				{
+					texture_handle = glyph_info->texture_handle;
+				}
+
+				const auto height = base_height * 1.f;
+				const auto width = 1.f * height;
+
+				if (word_wrapping && offset_x + font_metrics.f9 * width >= line_width)
+				{
+					result_width = 0.f;
+					offset_x = 0.f;
+					offset_y += height;
+				}
+
+				const auto x1 = font_metrics.f7 * width + offset_x + start_x;
+				const auto x2 = font_metrics.f5 * width + x1;
+				const auto y1 = -1.f * (font_metrics.f8 * height) + offset_y + start_y;
+				const auto y2 = font_metrics.f6 * height + y1;
+
+				vertices->v[0][0] = x1;
+				vertices->v[0][1] = y1;
+				vertices->v[0][2] = 0.f;
+				*reinterpret_cast<int*>(&vertices->v[0][3]) = -1;
+				vertices->v[0][4] = font_metrics.f1;
+				vertices->v[0][5] = font_metrics.f2;
+
+				vertices->v[1][0] = x2;
+				vertices->v[1][1] = y1;
+				vertices->v[1][2] = 0.f;
+				*reinterpret_cast<int*>(&vertices->v[1][3]) = -1;
+				vertices->v[1][4] = font_metrics.f3;
+				vertices->v[1][5] = font_metrics.f2;
+
+				vertices->v[2][0] = x1;
+				vertices->v[2][1] = y2;
+				vertices->v[2][2] = 0.f;
+				*reinterpret_cast<int*>(&vertices->v[2][3]) = -1;
+				vertices->v[2][4] = font_metrics.f1;
+				vertices->v[2][5] = font_metrics.f4;
+
+				vertices->v[3][0] = x2;
+				vertices->v[3][1] = y2;
+				vertices->v[3][2] = 0.f;
+				*reinterpret_cast<int*>(&vertices->v[3][3]) = -1;
+				vertices->v[3][4] = font_metrics.f3;
+				vertices->v[3][5] = font_metrics.f4;
+
+				vertices->v[4][0] = vertices->v[2][0];
+				vertices->v[4][1] = vertices->v[2][1];
+				vertices->v[4][2] = 0.f;
+				vertices->v[4][3] = vertices->v[2][3];
+				vertices->v[4][4] = vertices->v[2][4];
+				vertices->v[4][5] = vertices->v[2][5];
+
+				vertices->v[5][0] = vertices->v[1][0];
+				vertices->v[5][1] = vertices->v[1][1];
+				vertices->v[5][2] = 0.f;
+				vertices->v[5][3] = vertices->v[1][3];
+				vertices->v[5][4] = vertices->v[1][4];
+				vertices->v[5][5] = vertices->v[1][5];
+				++vertices;
+
+				if (i != caret_index)
+				{
+					switch (text[i])
+					{
+					case '\t':
+						offset_x += width * 2.f;
+						result_width += width * 2.f;
+						break;
+					case '\n':
+						result_width = 0.f;
+						offset_x = 0.f;
+						offset_y += height;
+						break;
+					default:
+						offset_x += (font_metrics.f9 * width);
+						result_width += (font_metrics.f9 * width);
+						break;
+					}
+				}
+
+				game::fox::gr::dg::CommandBuffer_::SetTexture(instance->commandBuffer, 8, glyph_info->texture_handle);
+
+				game::Vectormath::Aos::Vector4 vec1{};
+
+				vec1.values[0] = 1.f * glyph_info->pixel_width;
+				vec1.values[1] = 1.f * glyph_info->pixel_height;
+				vec1.values[2] = 1.f;
+				vec1.values[3] = 0.f;
+
+				game::fox::gr::dg::CommandBuffer_::SetVector(instance->commandBuffer, 35, &color_vec, 0);
+				game::fox::gr::dg::CommandBuffer_::SetVector(instance->commandBuffer, 181, &vec1, 0);
+
+				game::fox::gr::dg::plugins::Draw2DRenderer_::DrawVertices(instance, 2, 24, 6);
+			}
+
 			return result_width;
 		}
 
@@ -971,6 +1137,90 @@ namespace renderer
 
 			return offset_x;
 		}
+		
+		float draw_wtext_internal_formatted(game::fox::gr::dg::plugins::Draw2DRenderer* instance, const wchar_t* text, float height, float x, float y, float* color,
+			float display_width, float display_height, float scroll_x, float scroll_y, bool word_wrapping, int caret_index, params_t* params)
+		{
+			set_position(instance, 0.f, 0.f);
+			set_other_params(instance, params);
+
+			auto start_x = x;
+			auto start_y = y + height;
+
+			const auto has_stencil = display_width != 0.f && display_height != 0.f;
+			if (has_stencil)
+			{
+				add_stencil(instance, x, y, display_width, display_height);
+				start_x -= scroll_x;
+				start_y -= scroll_y;
+			}
+
+			set_material(instance, nullptr);
+			set_cull_mode_alpha(instance, 2, 1);
+
+			float color_default[4]{};
+			color_default[0] = 1.f;
+			color_default[1] = 1.f;
+			color_default[2] = 1.f;
+			color_default[3] = 1.f;
+
+			if (color == nullptr)
+			{
+				set_color(instance, color_default);
+			}
+			else
+			{
+				set_color(instance, color);
+			}
+
+			float string_color[4]{};
+			string_color[0] = 1.f;
+			string_color[1] = 1.f;
+			string_color[2] = 1.f;
+			string_color[3] = 1.f;
+
+			auto c = text;
+			auto len = 0;
+
+			auto offset_x = 0.f;
+			auto offset_y = 0.f;
+
+			const auto draw_current = [&](int skip_count)
+			{
+				add_wstring_custom(instance, text, len, height, string_color, offset_x, offset_y, start_x, start_y,
+					word_wrapping, display_width, caret_index);
+				text += len + skip_count;
+				len = 0;
+				c += skip_count;
+			};
+
+			while (*c != '\0')
+			{
+				float next_color[3]{};
+				if (c[0] == '^' && get_color_code(c[1], next_color))
+				{
+					draw_current(2);
+					std::memcpy(string_color, next_color, sizeof(float[3]));
+					continue;
+				}
+
+				++len;
+				++c;
+			}
+
+			if (len > 0)
+			{
+				add_wstring_custom(instance, text, len, height, string_color, offset_x, offset_y, start_x, start_y,
+					word_wrapping, display_width, caret_index);
+			}
+
+			if (has_stencil)
+			{
+				remove_stencil(instance);
+			}
+
+			return offset_x;
+		}
 
 		float draw_text_internal(game::fox::gr::dg::plugins::Draw2DRenderer* instance, const char* text, float height, float x, float y, float* color, 
 			float display_width, float display_height, float scroll_x, float scroll_y, bool word_wrapping, int caret_index, params_t* params)
@@ -1020,6 +1270,183 @@ namespace renderer
 			}
 
 			return width;
+		}
+
+		float draw_wtext_internal(game::fox::gr::dg::plugins::Draw2DRenderer* instance, const wchar_t* text, float height, float x, float y, float* color,
+			float display_width, float display_height, float scroll_x, float scroll_y, bool word_wrapping, int caret_index, params_t* params)
+		{
+			set_position(instance, 0.f, 0.f);
+			set_other_params(instance, params);
+
+			auto start_x = x;
+			auto start_y = y + height;
+
+			const auto has_stencil = display_width != 0.f && display_height != 0.f;
+			if (has_stencil)
+			{
+				add_stencil(instance, x, y, display_width, display_height);
+				start_x -= scroll_x;
+				start_y -= scroll_y;
+			}
+
+			set_material(instance, nullptr);
+			set_cull_mode_alpha(instance, 2, 1);
+
+			float color_default[4]{};
+			color_default[0] = 1.f;
+			color_default[1] = 1.f;
+			color_default[2] = 1.f;
+			color_default[3] = 1.f;
+
+			if (color == nullptr)
+			{
+				set_color(instance, color_default);
+			}
+			else
+			{
+				set_color(instance, color);
+			}
+
+			auto offset_x = 0.f;
+			auto offset_y = 0.f;
+
+			const auto width = add_wstring_custom(instance, text, -1, height, nullptr, offset_x, offset_y,
+				start_x, start_y, word_wrapping, display_width, caret_index);
+			if (has_stencil)
+			{
+				remove_stencil(instance);
+			}
+
+			return width;
+		}
+
+		void init_memory_manager(game::fox::gr::dg::MemoryManager* manager, const size_t size)
+		{
+			const auto aligned_size = (size + 15) & 0xFFFFFFFull;
+			const auto buffer = game::fox::KernelAllocAligned(aligned_size, 0x10);
+
+			manager->unk1 = reinterpret_cast<game::fox::gr::dg::MemoryManager_unk1*>(buffer);
+			manager->size = aligned_size;
+
+			manager->unk1->unk1 = 0;
+			manager->unk1->unk2 = manager->unk1;
+			manager->unk1->unk3 = aligned_size;
+			manager->unk1->unk4 = 129;
+		}
+
+		void destroy_memory_manager(game::fox::gr::dg::MemoryManager* manager)
+		{
+			game::fox::FreeAnnotated(manager->unk1, 0x5000F);
+			std::memset(manager, 0, sizeof(game::fox::gr::dg::MemoryManager));
+		}
+
+		int load_font_internal(game::fox::gr::dg::FontData* font, int begin, int max_count,
+			float scale, char spacing,
+			char x_offset, char y_offset)
+		{
+			game::fox::gr::dg::FontTextureRender render{};
+
+			utils::hook::set<size_t>(SELECT_VALUE(0x1402034DE, 0x140AD359E, 0x0, 0x0) + 2, 0x3DA16AC4E5A3); // force new texture resource
+			game::fox::gr::dg::FontTextureRender_::FontTextureRender_(&render, 0x800u, 0x400u);
+			utils::hook::set<size_t>(SELECT_VALUE(0x1402034DE, 0x140AD359E, 0x0, 0x0) + 2, 0xB8A0BF169F98);
+
+			const auto _0 = gsl::finally([&]
+			{
+				render.imageGlyphManager->__vftable->__destructor(render.imageGlyphManager, 1);
+				render.imageAreaManager->__vftable->__destructor(render.imageAreaManager, 1);
+
+				if (render.unk1)
+				{
+					game::fox::FreeAnnotated(render.unk1, 0);
+				}
+
+				if (render.unk2)
+				{
+					game::fox::FreeAnnotated(render.unk2, 0);
+				}
+
+				std::memset(&render, 0, sizeof(game::fox::gr::dg::FontTextureRender));
+			});
+
+			const auto end = std::min(static_cast<short>(begin + max_count), font->glyphCount);
+
+			auto done_count = 0;
+			for (auto i = begin; i < end; i++)
+			{
+				const auto glyph = &font->glyphs[i];
+
+				unsigned char area_1 = glyph->width + 2 * (font->unk3_1 + 4);
+				unsigned char area_2 = font->unk1_3 + 2 * (font->unk3_1 + 4);
+				const auto area_info = game::fox::gr::dg::ImageAreaManager_::AllocateAreaInfo(
+					render.imageAreaManager, area_1, area_2, glyph->character);
+
+				if (area_info == nullptr)
+				{
+					return done_count;
+				}
+
+				const auto texture_glyph_data = game::fox::gr::dg::ImageGlyphManager_::RegisterGlyphData(
+					render.imageGlyphManager, font, area_info, glyph->character);
+
+				game::fox::gr::dg::FontTextureRender_::AddTextureRenderOrder(&render, font, glyph, texture_glyph_data);
+			
+				const auto glyph_info = &font_data.wide_char_glyphs[glyph->character];
+				std::memcpy(&glyph_info->data, texture_glyph_data, sizeof(game::fox::gr::dg::_TextureGlyphData));
+				glyph_info->data.width = static_cast<unsigned char>(static_cast<float>(glyph_info->data.width) * scale);
+				glyph_info->data.height = static_cast<unsigned char>(static_cast<float>(glyph_info->data.height) * scale);
+				glyph_info->data.horizontalSpace += spacing;
+				glyph_info->data.horizontalShift += x_offset;
+				glyph_info->data.verticalShift += y_offset;
+
+				glyph_info->texture_handle = render.fontTextureHandle;
+				glyph_info->pixel_width = 0.5f / static_cast<float>(render.pixel_width);
+				glyph_info->pixel_width = 0.5f / static_cast<float>(render.pixel_height);
+
+				++done_count;
+			}
+			
+			game::fox::gr::dg::FontTextureRender_::UpdateRenderGlyphTexture(&render);
+			return done_count;
+		}
+
+		void load_font(const char* font_name,
+			float scale, char spacing,
+			char x_offset, char y_offset)
+		{
+			game::fox::gr::dg::FontData font{};
+			game::fox::gr::dg::MemoryManager memory_manager{};
+
+			font.fontIndex = 0;
+			font.memoryManager = &memory_manager;
+			init_memory_manager(&memory_manager, 0x27D000);
+
+			const auto _0 = gsl::finally([&]
+			{
+				destroy_memory_manager(&memory_manager);
+			});
+
+			if (!game::fox::gr::dg::FontData_::LoadFontData(&font, font_name, nullptr))
+			{
+				return;
+			}
+
+			auto left_count = static_cast<int>(font.glyphCount);
+			auto begin = 0;
+			while (left_count > 0)
+			{
+				const auto max_count = std::min(256, left_count);
+				const auto count = load_font_internal(&font, begin, max_count, scale, spacing, x_offset, y_offset);
+				left_count -= count;
+				begin += count;
+			}
+		}
+
+		void init_fonts()
+		{
+			load_font("/Assets/tpp/font/KanjiFont.ffnt", 1.2f, -6, -8, 5);
+			load_font("/Assets/tpp/font/font_def_jp.ffnt", 1.3f, 2, 0, 5);
+			load_font("/Assets/tpp/font/russian.ffnt", 1.0f, -20, -8, 17);
+			load_font("/Assets/tpp/font/font_def_ltn.ffnt", 1.f, -3, 0, 0);
 		}
 
 		bool init_font_data()
@@ -1189,6 +1616,13 @@ namespace renderer
 			font_data.loaded = init_font_data();
 			return res;
 		}
+
+		utils::hook::detour change_language_hook;
+		void change_language_stub(void* a1)
+		{
+			change_language_hook.invoke<void>(a1);
+			font_data.loaded = init_font_data();
+		}
 	}
 
 	float calc_text_width_artist(const char* text, float height, bool formatted,
@@ -1319,6 +1753,71 @@ namespace renderer
 		return std::max(prev_offset, offset_x);
 	}
 
+	float calc_text_width(const wchar_t* text, float height, bool formatted, bool word_wrapping,
+		float line_width, int* line_count, int caret_index, int max_len)
+	{
+		if (text == nullptr)
+		{
+			return 0.f;
+		}
+
+		const auto count = static_cast<int>(std::wcslen(text));
+		if (max_len == -1)
+		{
+			max_len = count;
+		}
+
+		auto offset_x = 0.f;
+		auto prev_offset = 0.f;
+
+		for (auto i = 0; i < std::min(max_len, count); i++)
+		{
+			const auto width = 1.f * height;
+			game::fox::gr::dg::FontTextureMetrics font_metrics{};
+			const auto char_idx = static_cast<std::uint16_t>(text[i]);
+			const auto glyph = &font_data.wide_char_glyphs[char_idx];
+			game::fox::gr::dg::FontSystem_::CalculateMetrics(&font_metrics, &glyph->data, glyph->pixel_width, glyph->pixel_height, 1.f / 60.f);
+
+			if (formatted && text[i] == '^' && get_color_code(text[i + 1], nullptr))
+			{
+				++i;
+				continue;
+			}
+
+			if (i == caret_index)
+			{
+				continue;
+			}
+
+			if (word_wrapping && offset_x + font_metrics.f9 * width >= line_width)
+			{
+				prev_offset = std::max(prev_offset, offset_x);
+				offset_x = 0.f;
+
+				if (line_count != nullptr)
+				{
+					(*line_count)++;
+				}
+			}
+
+			switch (text[i])
+			{
+			case '\t':
+				offset_x += width * 2.f;
+				break;
+			case '\n':
+				prev_offset = std::max(prev_offset, offset_x);
+				offset_x = 0.f;
+				break;
+			default:
+				offset_x += (font_metrics.f9 * width);
+				break;
+			}
+		}
+
+		return std::max(prev_offset, offset_x);
+	}
+
 	float draw_text_artist(game::fox::gr::dg::plugins::Draw2DRenderer* instance, const char* text, float height,
 		float x, float y, float* color, bool formatted, float display_width, float display_height,
 		float scroll_x, float scroll_y, bool word_wrapping, int caret_index, params_t* params)
@@ -1380,6 +1879,22 @@ namespace renderer
 		return fn(instance, text, height, x, y, color, display_width, display_height, scroll_x, scroll_y, word_wrapping, caret_index, params);
 	}
 
+	float draw_text(game::fox::gr::dg::plugins::Draw2DRenderer* instance, const wchar_t* text, float height,
+		float x, float y, float* color, float* outline_color, bool formatted, float display_width, float display_height,
+		float scroll_x, float scroll_y, bool word_wrapping, int caret_index, params_t* params)
+	{
+		const auto fn = formatted
+			? draw_wtext_internal_formatted
+			: draw_wtext_internal;
+
+		if (outline_color != nullptr)
+		{
+			fn(instance, text, height, x + 0.5f, y + 0.5f, outline_color, display_width, display_height, scroll_x, scroll_y, word_wrapping, caret_index, params);
+		}
+
+		return fn(instance, text, height, x, y, color, display_width, display_height, scroll_x, scroll_y, word_wrapping, caret_index, params);
+	}
+
 	float draw_text_with_cursor(game::fox::gr::dg::plugins::Draw2DRenderer* instance, const char* text, int cursor,
 		float height, float x, float y, float* color, float* outline_color, bool formatted, float display_width, params_t* params)
 	{
@@ -1393,6 +1908,52 @@ namespace renderer
 
 		std::memcpy(buffer, text, cursor);
 		std::memcpy(&buffer[cursor + 1], &text[cursor], len - cursor);
+
+		auto scroll_x = 0.f;
+
+		buffer[cursor] = show_cursor ? '_' : ' ';
+
+		auto caret_index = cursor;
+		if (cursor == len)
+		{
+			caret_index = -1;
+		}
+
+		auto max_cursor = cursor - 1;
+		if (max_cursor < 0)
+		{
+			max_cursor = 0;
+		}
+
+		const auto text_width = calc_text_width(buffer, height, formatted, false, 0.f, nullptr, caret_index, -1);
+		const auto text_width_to_cursor = calc_text_width(buffer, height, formatted, false, 0.f, nullptr, caret_index, max_cursor);
+
+		if (text_width > display_width)
+		{
+			scroll_x = text_width - display_width;
+
+			if (text_width - text_width_to_cursor > display_width)
+			{
+				scroll_x -= text_width - text_width_to_cursor - display_width;
+			}
+		}
+
+		return draw_text(instance, buffer, height, x, y, color, outline_color, formatted, display_width, display_width, scroll_x, 0.f, false, caret_index, params);
+	}
+
+	float draw_text_with_cursor(game::fox::gr::dg::plugins::Draw2DRenderer* instance, const wchar_t* text, int cursor,
+		float height, float x, float y, float* color, float* outline_color, bool formatted, float display_width, params_t* params)
+	{
+		static wchar_t buffer[0x2000]{};
+		std::memset(buffer, 0, sizeof(buffer));
+
+		const auto show_cursor = ((get_milliseconds() % 500) > 500 / 2);
+		const auto len = std::wcslen(text);
+
+		cursor = std::min(cursor, static_cast<int>(len));
+
+		std::memcpy(buffer, text, cursor * sizeof(wchar_t));
+		std::memcpy(&buffer[cursor + 1], &text[cursor], (len - cursor) * sizeof(wchar_t));
 
 		auto scroll_x = 0.f;
 
@@ -1469,6 +2030,11 @@ namespace renderer
 		render_callbacks.emplace_back(cb);
 	}
 
+	bool is_char_printable(const wchar_t c)
+	{
+		return iswprint(c) && font_data.wide_char_glyphs[c].texture_handle != 0;
+	}
+
 	class component final : public component_interface
 	{
 	public:
@@ -1479,7 +2045,9 @@ namespace renderer
 				return;
 			}
 
-			load_font_data_hook.create(SELECT_VALUE(0x140224820, 0x140B2A610, 0x0, 0x0), load_font_data_stub);
+			scheduler::once(init_fonts, scheduler::main);
+
+			change_language_hook.create(SELECT_VALUE(0x14090FA70, 0x140681A80, 0x0, 0x0), change_language_stub);
 			execute_draw_hook.create(SELECT_VALUE(0x1402E7630, 0x140BD9EF0, 0x0, 0x0), execute_draw_stub);
 		}
 	};
