@@ -35,10 +35,13 @@ namespace renderer
 
 		struct glyph_info_t
 		{
-			game::fox::gr::dg::_TextureGlyphData data;
-			float pixel_width;
-			float pixel_height;
+			game::fox::gr::dg::FontTextureMetrics metrics;
 			unsigned int texture_handle;
+		};
+
+		struct vertex_buffer
+		{
+			float v[6][6];
 		};
 
 		struct
@@ -553,11 +556,6 @@ namespace renderer
 				color_vec.values[3] = 0.f;
 			}
 
-			struct vertex_buffer
-			{
-				float v[6][6];
-			};
-
 			auto vertices = reinterpret_cast<vertex_buffer*>(game::fox::gr::dg::DynamicVertexBuffer_::GetBuffer(
 				instance->parameters->vertexBuffer, &instance->buffer, &instance->size, 144 * length));
 			std::memset(vertices, 0, sizeof(vertex_buffer) * length);
@@ -674,7 +672,7 @@ namespace renderer
 		{
 			if (length < 0)
 			{
-				length = static_cast<int>(std::wcslen(text));
+				length = 0xFFFF;
 			}
 
 			game::Vectormath::Aos::Vector4 color_vec{};
@@ -693,73 +691,64 @@ namespace renderer
 				color_vec.values[3] = 0.f;
 			}
 
-			struct vertex_buffer
-			{
-				float v[6][6];
-			};
-
 			auto result_width = 0.f;
 
-			auto texture_handle = 0u;
 			for (auto i = 0; i < length; i++)
 			{
+				if (text[i] == 0)
+				{
+					break;
+				}
+
 				auto vertices = reinterpret_cast<vertex_buffer*>(game::fox::gr::dg::DynamicVertexBuffer_::GetBuffer(
 					instance->parameters->vertexBuffer, &instance->buffer, &instance->size, 144));
 				std::memset(vertices, 0, sizeof(vertex_buffer));
 
 				const auto idx = static_cast<std::uint16_t>(text[i]);
 				const auto glyph_info = &font_data.wide_char_glyphs[idx];
-				game::fox::gr::dg::FontTextureMetrics font_metrics{};
-				game::fox::gr::dg::FontSystem_::CalculateMetrics(&font_metrics, &glyph_info->data, 
-					glyph_info->pixel_width, glyph_info->pixel_height, 1.f / 60.f);
-
-				if (glyph_info->texture_handle != 0)
-				{
-					texture_handle = glyph_info->texture_handle;
-				}
 
 				const auto height = base_height * 1.f;
 				const auto width = 1.f * height;
 
-				if (word_wrapping && offset_x + font_metrics.f9 * width >= line_width)
+				if (word_wrapping && offset_x + glyph_info->metrics.f9 * width >= line_width)
 				{
 					result_width = 0.f;
 					offset_x = 0.f;
 					offset_y += height;
 				}
 
-				const auto x1 = font_metrics.f7 * width + offset_x + start_x;
-				const auto x2 = font_metrics.f5 * width + x1;
-				const auto y1 = -1.f * (font_metrics.f8 * height) + offset_y + start_y;
-				const auto y2 = font_metrics.f6 * height + y1;
+				const auto x1 = glyph_info->metrics.f7 * width + offset_x + start_x;
+				const auto x2 = glyph_info->metrics.f5 * width + x1;
+				const auto y1 = -1.f * (glyph_info->metrics.f8 * height) + offset_y + start_y;
+				const auto y2 = glyph_info->metrics.f6 * height + y1;
 
 				vertices->v[0][0] = x1;
 				vertices->v[0][1] = y1;
 				vertices->v[0][2] = 0.f;
 				*reinterpret_cast<int*>(&vertices->v[0][3]) = -1;
-				vertices->v[0][4] = font_metrics.f1;
-				vertices->v[0][5] = font_metrics.f2;
+				vertices->v[0][4] = glyph_info->metrics.f1;
+				vertices->v[0][5] = glyph_info->metrics.f2;
 
 				vertices->v[1][0] = x2;
 				vertices->v[1][1] = y1;
 				vertices->v[1][2] = 0.f;
 				*reinterpret_cast<int*>(&vertices->v[1][3]) = -1;
-				vertices->v[1][4] = font_metrics.f3;
-				vertices->v[1][5] = font_metrics.f2;
+				vertices->v[1][4] = glyph_info->metrics.f3;
+				vertices->v[1][5] = glyph_info->metrics.f2;
 
 				vertices->v[2][0] = x1;
 				vertices->v[2][1] = y2;
 				vertices->v[2][2] = 0.f;
 				*reinterpret_cast<int*>(&vertices->v[2][3]) = -1;
-				vertices->v[2][4] = font_metrics.f1;
-				vertices->v[2][5] = font_metrics.f4;
+				vertices->v[2][4] = glyph_info->metrics.f1;
+				vertices->v[2][5] = glyph_info->metrics.f4;
 
 				vertices->v[3][0] = x2;
 				vertices->v[3][1] = y2;
 				vertices->v[3][2] = 0.f;
 				*reinterpret_cast<int*>(&vertices->v[3][3]) = -1;
-				vertices->v[3][4] = font_metrics.f3;
-				vertices->v[3][5] = font_metrics.f4;
+				vertices->v[3][4] = glyph_info->metrics.f3;
+				vertices->v[3][5] = glyph_info->metrics.f4;
 
 				vertices->v[4][0] = vertices->v[2][0];
 				vertices->v[4][1] = vertices->v[2][1];
@@ -790,24 +779,14 @@ namespace renderer
 						offset_y += height;
 						break;
 					default:
-						offset_x += (font_metrics.f9 * width);
-						result_width += (font_metrics.f9 * width);
+						offset_x += (glyph_info->metrics.f9 * width);
+						result_width += (glyph_info->metrics.f9 * width);
 						break;
 					}
 				}
 
 				game::fox::gr::dg::CommandBuffer_::SetTexture(instance->commandBuffer, 8, glyph_info->texture_handle);
-
-				game::Vectormath::Aos::Vector4 vec1{};
-
-				vec1.values[0] = 1.f * glyph_info->pixel_width;
-				vec1.values[1] = 1.f * glyph_info->pixel_height;
-				vec1.values[2] = 1.f;
-				vec1.values[3] = 0.f;
-
 				game::fox::gr::dg::CommandBuffer_::SetVector(instance->commandBuffer, 35, &color_vec, 0);
-				game::fox::gr::dg::CommandBuffer_::SetVector(instance->commandBuffer, 181, &vec1, 0);
-
 				game::fox::gr::dg::plugins::Draw2DRenderer_::DrawVertices(instance, 2, 24, 6);
 			}
 
@@ -1340,32 +1319,40 @@ namespace renderer
 			std::memset(manager, 0, sizeof(game::fox::gr::dg::MemoryManager));
 		}
 
+		void initialize_font_texture_render(game::fox::gr::dg::FontTextureRender* render)
+		{
+			utils::hook::set<size_t>(SELECT_VALUE(0x1402034DE, 0x140AD359E, 0x0, 0x0) + 2, 0x3DA16AC4E5A3); // force new texture resource
+			game::fox::gr::dg::FontTextureRender_::FontTextureRender_(render, 0x800u, 0x400u);
+			utils::hook::set<size_t>(SELECT_VALUE(0x1402034DE, 0x140AD359E, 0x0, 0x0) + 2, 0xB8A0BF169F98);
+		}
+
+		void destroy_font_texture_render(game::fox::gr::dg::FontTextureRender* render)
+		{
+			render->imageGlyphManager->__vftable->__destructor(render->imageGlyphManager, 1);
+			render->imageAreaManager->__vftable->__destructor(render->imageAreaManager, 1);
+
+			if (render->unk1)
+			{
+				game::fox::FreeAnnotated(render->unk1, 0);
+			}
+
+			if (render->unk2)
+			{
+				game::fox::FreeAnnotated(render->unk2, 0);
+			}
+
+			std::memset(render, 0, sizeof(game::fox::gr::dg::FontTextureRender));
+		}
+
 		int load_font_internal(game::fox::gr::dg::FontData* font, int begin, int max_count,
 			float scale, char spacing,
 			char x_offset, char y_offset)
 		{
 			game::fox::gr::dg::FontTextureRender render{};
-
-			utils::hook::set<size_t>(SELECT_VALUE(0x1402034DE, 0x140AD359E, 0x0, 0x0) + 2, 0x3DA16AC4E5A3); // force new texture resource
-			game::fox::gr::dg::FontTextureRender_::FontTextureRender_(&render, 0x800u, 0x400u);
-			utils::hook::set<size_t>(SELECT_VALUE(0x1402034DE, 0x140AD359E, 0x0, 0x0) + 2, 0xB8A0BF169F98);
-
+			initialize_font_texture_render(&render);
 			const auto _0 = gsl::finally([&]
 			{
-				render.imageGlyphManager->__vftable->__destructor(render.imageGlyphManager, 1);
-				render.imageAreaManager->__vftable->__destructor(render.imageAreaManager, 1);
-
-				if (render.unk1)
-				{
-					game::fox::FreeAnnotated(render.unk1, 0);
-				}
-
-				if (render.unk2)
-				{
-					game::fox::FreeAnnotated(render.unk2, 0);
-				}
-
-				std::memset(&render, 0, sizeof(game::fox::gr::dg::FontTextureRender));
+				destroy_font_texture_render(&render);
 			});
 
 			const auto end = std::min(static_cast<short>(begin + max_count), font->glyphCount);
@@ -1374,6 +1361,7 @@ namespace renderer
 			for (auto i = begin; i < end; i++)
 			{
 				const auto glyph = &font->glyphs[i];
+				const auto glyph_info = &font_data.wide_char_glyphs[glyph->character];
 
 				unsigned char area_1 = glyph->width + 2 * (font->unk3_1 + 4);
 				unsigned char area_2 = font->unk1_3 + 2 * (font->unk3_1 + 4);
@@ -1388,19 +1376,19 @@ namespace renderer
 				const auto texture_glyph_data = game::fox::gr::dg::ImageGlyphManager_::RegisterGlyphData(
 					render.imageGlyphManager, font, area_info, glyph->character);
 
-				game::fox::gr::dg::FontTextureRender_::AddTextureRenderOrder(&render, font, glyph, texture_glyph_data);
-			
-				const auto glyph_info = &font_data.wide_char_glyphs[glyph->character];
-				std::memcpy(&glyph_info->data, texture_glyph_data, sizeof(game::fox::gr::dg::_TextureGlyphData));
-				glyph_info->data.width = static_cast<unsigned char>(static_cast<float>(glyph_info->data.width) * scale);
-				glyph_info->data.height = static_cast<unsigned char>(static_cast<float>(glyph_info->data.height) * scale);
-				glyph_info->data.horizontalSpace += spacing;
-				glyph_info->data.horizontalShift += x_offset;
-				glyph_info->data.verticalShift += y_offset;
-
 				glyph_info->texture_handle = render.fontTextureHandle;
-				glyph_info->pixel_width = 0.5f / static_cast<float>(render.pixel_width);
-				glyph_info->pixel_width = 0.5f / static_cast<float>(render.pixel_height);
+				game::fox::gr::dg::FontTextureRender_::AddTextureRenderOrder(&render, font, glyph, texture_glyph_data);
+
+				texture_glyph_data->width = static_cast<unsigned char>(static_cast<float>(texture_glyph_data->width) * scale);
+				texture_glyph_data->height = static_cast<unsigned char>(static_cast<float>(texture_glyph_data->height) * scale);
+				texture_glyph_data->horizontalSpace += spacing;
+				texture_glyph_data->horizontalShift += x_offset;
+				texture_glyph_data->verticalShift += y_offset;
+
+				const auto half_pixel_width = 0.5f / static_cast<float>(render.pixel_width);
+				const auto half_pixel_height = 0.5f / static_cast<float>(render.pixel_height);
+				game::fox::gr::dg::FontSystem_::CalculateMetrics(&glyph_info->metrics, texture_glyph_data, 
+					half_pixel_width, half_pixel_height, 1.f / 60.f);
 
 				++done_count;
 			}
@@ -1773,10 +1761,8 @@ namespace renderer
 		for (auto i = 0; i < std::min(max_len, count); i++)
 		{
 			const auto width = 1.f * height;
-			game::fox::gr::dg::FontTextureMetrics font_metrics{};
 			const auto char_idx = static_cast<std::uint16_t>(text[i]);
 			const auto glyph = &font_data.wide_char_glyphs[char_idx];
-			game::fox::gr::dg::FontSystem_::CalculateMetrics(&font_metrics, &glyph->data, glyph->pixel_width, glyph->pixel_height, 1.f / 60.f);
 
 			if (formatted && text[i] == '^' && get_color_code(text[i + 1], nullptr))
 			{
@@ -1789,7 +1775,7 @@ namespace renderer
 				continue;
 			}
 
-			if (word_wrapping && offset_x + font_metrics.f9 * width >= line_width)
+			if (word_wrapping && offset_x + glyph->metrics.f9 * width >= line_width)
 			{
 				prev_offset = std::max(prev_offset, offset_x);
 				offset_x = 0.f;
@@ -1810,7 +1796,7 @@ namespace renderer
 				offset_x = 0.f;
 				break;
 			default:
-				offset_x += (font_metrics.f9 * width);
+				offset_x += (glyph->metrics.f9 * width);
 				break;
 			}
 		}
