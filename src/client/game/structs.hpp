@@ -647,25 +647,37 @@ namespace game
 
 				struct _TextureGlyphData
 				{
-					float a1;
-					float a2;
-					char a3_1;
-					char a3_2;
-					char a3_3;
-					char a3_4;
-					char a4_1;
-					char a4_2;
-					char a4_3;
-					char a4_4;
+					unsigned short character;
+					unsigned short a1_2;
+					unsigned short a2_1;
+					unsigned short a2_2;
+					unsigned char a3_1;
+					unsigned char a3_2;
+					unsigned char a3_3;
+					unsigned char horizontalSpace;
+					unsigned char width;
+					unsigned char height;
+					char horizontalShift;
+					char verticalShift;
 					float a5;
 					float a6;
 					float a7;
 					float a8;
 				};
 
+				struct _TextureAreaInfo
+				{
+
+				};
+
 				struct ImageGlyphManager
 				{
-					char __pad0[8];
+					struct vtable
+					{
+						void(__fastcall* __destructor)(ImageGlyphManager*, char);
+					};
+
+					vtable* __vftable;
 					_TextureGlyphData* imageGlyphs;
 					fox::HashMapBase hashMap;
 					char __pad1[24];
@@ -674,7 +686,38 @@ namespace game
 					char __pad2[256];
 				};
 
+				struct ImageAreaManager
+				{
+					struct vtable
+					{
+						void(__fastcall* __destructor)(ImageAreaManager*, char);
+					};
+
+					vtable* __vftable;
+				};
+
 				struct FontTextureRender
+				{
+					struct vtable
+					{
+						void(__fastcall* __destructor)(FontTextureRender*);
+					};
+
+					vtable* __vftable;
+					unsigned int pixel_width;
+					unsigned int pixel_height;
+					unsigned int fontTextureHandle;
+					char __pad1[4];
+					void* unk1;
+					char __pad2[16];
+					void* unk2;
+					char __pad3[16];
+					ImageGlyphManager* imageGlyphManager;
+					ImageAreaManager* imageAreaManager;
+					char __pad4[1072];
+				};
+
+				struct FontSystem_unk2
 				{
 					char __pad0[10];
 					char c1;
@@ -683,23 +726,88 @@ namespace game
 					char c2;
 				};
 
-				struct FontSystem_unk2
+				struct MemoryManager_unk1
 				{
-					char __pad0[72];
-					ImageGlyphManager* imageGlyphManager;
+					size_t unk1;
+					void* unk2;
+					size_t unk3;
+					size_t unk4;
+				};
+
+				struct MemoryManager
+				{
+					MemoryManager_unk1* unk1;
+					size_t size;
+				};
+
+				struct FontData_Glyph
+				{
+					unsigned int character;
+					unsigned short xOffset;
+					unsigned short yOffset;
+					unsigned char width;
+					unsigned char height;
+					unsigned char layer;
+					unsigned char horizontalSpace;
+					unsigned char horizontalShift;
+					char verticalShift;
+					unsigned short unk1;
+					unsigned int unk2;
 				};
 
 				struct FontData
 				{
+					struct vtable
+					{
 
+					};
+
+					vtable* __vftable;
+					unsigned char unk1_1;
+					unsigned char unk1_2;
+					unsigned char unk1_3;
+					unsigned char unk1_4;
+					short unk2;
+					short glyphCount;
+					int glyphDataSize;
+					unsigned char unk3_1;
+					unsigned char unk3_2;
+					unsigned char unk3_3;
+					unsigned char unk3_4;
+					FontData_Glyph* glyphs;
+					char unk4;
+					char widthExp;
+					char heightExp;
+					char unk5;
+					int fontDataSize;
+					void* fontDataBuffer;
+					MemoryManager* memoryManager;
+					float width;
+					float height;
+					short defaultCharacter;
+					unsigned char fontIndex;
+					unsigned char unk7;
 				};
 
 				struct FontSystem
 				{
+					/*
+					0: default
+					1: FontSystem_LatinFont
+					2: FontSystem_KanjiFont
+					3: FontSystem_Slot3
+					4: FontSystem_Slot4
+					5: FontSystem_Slot5
+					6: FontSystem_Slot6
+					7: FontSystem_Slot7
+					8: 
+					*/
+
 					char __pad0[8];
-					FontData* fonts[9];
-					fox::gr::dg::FontTextureRender* fontTextureRender;
-					fox::gr::dg::FontSystem_unk2* unk2;
+					FontData* fonts[8];
+					MemoryManager* memoryManager;
+					FontTextureRender* fontTextureRender;
+					FontSystem_unk2* unk2;
 				};
 
 				struct DynamicVertexBuffer_unk1

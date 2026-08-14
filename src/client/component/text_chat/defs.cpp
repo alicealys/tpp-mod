@@ -6,6 +6,7 @@
 #include "defs.hpp"
 #include "ui.hpp"
 #include "input.hpp"
+#include "../renderer.hpp"
 
 #include <utils/string.hpp>
 
@@ -24,7 +25,7 @@ namespace text_chat
 	vars::var_ptr var_chat_width;
 	vars::var_ptr var_chat_direction;
 
-	char chat_input_prefix[] = "say: ";
+	wchar_t chat_input_prefix[] = L"say: ";
 
 	bool initialized;
 
@@ -72,16 +73,15 @@ namespace text_chat
 		return true;
 	}
 
-	std::string clean_message(const std::string& msg)
+	std::wstring clean_message(const std::wstring& msg)
 	{
-		std::string clean;
+		std::wstring clean;
 		clean.resize(msg.size());
 		
 		auto index = 0;
 		for (auto i = 0; i < msg.size(); i++)
 		{
-			const auto u_c = static_cast<unsigned char>(msg[i]);
-			if (u_c < 32 || u_c >= 255)
+			if (!renderer::is_char_printable(msg[i]))
 			{
 				continue;
 			}

@@ -334,22 +334,11 @@ namespace text_chat::ui
 			});
 		}
 
-		const char* utf8_to_ascii(const char* text)
-		{
-			static char ascii_str[0x100]{};
-			WCHAR wide_str[0x100]{};
-
-			MultiByteToWideChar(CP_UTF8, 0, text, -1, wide_str, 0x100);
-			WideCharToMultiByte(CP_ACP, 0, wide_str, -1, ascii_str, 0x100, NULL, NULL);
-
-			return ascii_str;
-		}
-
 		char announce_log_view_stub(void* a1, const char* msg, char a3, unsigned __int8 a4, char a5)
 		{
 			if (is_chat_enabled() && *msg != 0)
 			{
-				const auto converted_msg = utf8_to_ascii(msg);
+				const auto converted_msg = utils::string::utf8_to_utf16(msg);
 				ui::print(converted_msg, false);
 				return 0;
 			}
@@ -358,7 +347,7 @@ namespace text_chat::ui
 		}
 	}
 
-	void print(const std::string& msg, bool play_sound)
+	void print(const std::wstring& msg, bool play_sound)
 	{
 		if (!is_initialized() || !is_chat_enabled())
 		{
@@ -370,7 +359,7 @@ namespace text_chat::ui
 		chat_state.access([&](chat_state_t& state)
 		{
 			chat_message_t message{};
-			strncpy_s(message.buffer, sizeof(message.buffer), cleaned_msg.data(), _TRUNCATE);
+			wcsncpy_s(message.buffer, ARRAYSIZE(message.buffer), cleaned_msg.data(), _TRUNCATE);
 			message.time = std::chrono::high_resolution_clock::now();
 
 			message.buffer[chat_message_max_len] = 0;

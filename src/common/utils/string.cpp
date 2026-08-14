@@ -124,6 +124,29 @@ namespace utils::string
 		return {};
 	}
 
+	std::wstring get_clipboard_data_w()
+	{
+		if (OpenClipboard(nullptr))
+		{
+			std::wstring data;
+
+			auto* const clipboard_data = GetClipboardData(CF_UNICODETEXT);
+			if (clipboard_data)
+			{
+				auto* const cliptext = static_cast<wchar_t*>(GlobalLock(clipboard_data));
+				if (cliptext)
+				{
+					data.append(cliptext);
+					GlobalUnlock(clipboard_data);
+				}
+			}
+			CloseClipboard();
+
+			return data;
+		}
+		return {};
+	}
+
 	void set_clipboard_data(const std::string& text)
 	{
 		const auto len = text.size() + 1;
@@ -283,5 +306,23 @@ namespace utils::string
 	bool is_char_text(char c)
 	{
 		return c >= 32 && c <= 126;
+	}
+
+	std::wstring utf8_to_utf16(const std::string& text)
+	{
+		std::wstring wide_str;
+		const auto len = MultiByteToWideChar(CP_UTF8, 0, text.data(), static_cast<int>(text.size()), nullptr, 0);
+		wide_str.resize(len);
+		MultiByteToWideChar(CP_UTF8, 0, text.data(), static_cast<int>(text.size()), wide_str.data(), static_cast<int>(wide_str.size()));
+		return wide_str;
+	}
+
+	std::string utf16_to_ascii(const std::wstring& text)
+	{
+		std::string str;
+		const auto len = WideCharToMultiByte(CP_ACP, 0, text.data(), static_cast<int>(text.size()), nullptr, 0, 0, 0);
+		str.resize(len);
+		WideCharToMultiByte(CP_ACP, 0, text.data(), static_cast<int>(text.size()), str.data(), static_cast<int>(str.size()), 0, 0);
+		return str;
 	}
 }
