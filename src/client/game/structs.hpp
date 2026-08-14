@@ -868,9 +868,21 @@ namespace game
 
 				};
 
+				struct ShadowConstantRegister_buffer
+				{
+					float vec[4];
+				};
+
+				struct ShadowConstantRegister_unk1
+				{
+					ShadowConstantRegister_buffer* buffers;
+					char __pad0[24];
+				};
+
 				struct ShadowConstantRegister
 				{
-
+					char __pad0[8];
+					ShadowConstantRegister_unk1 unk1[1];
 				};
 
 				struct CommandBuffer

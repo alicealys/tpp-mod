@@ -19,6 +19,8 @@ namespace game
 
 		WEAK symbol<game::fox::StringId(const char*, size_t)> FoxStrHash32{0x1400234E0, 0x140022F00, 0x0, 0x0};
 
+		WEAK symbol<unsigned int(unsigned __int8**)> Utf8ToUtf32{0x140023910, 0x140023330, 0x0, 0x0};
+
 		namespace Array_
 		{
 			WEAK symbol<bool(Array<Path>*, Path*)> Path_PushBack{0x0, 0x1400AC8E0, 0x0, 0x0};
