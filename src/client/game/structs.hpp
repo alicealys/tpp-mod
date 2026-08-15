@@ -770,7 +770,7 @@ namespace game
 					short unk2;
 					short glyphCount;
 					int glyphDataSize;
-					unsigned char unk3_1;
+					unsigned char spacing;
 					unsigned char unk3_2;
 					unsigned char unk3_3;
 					unsigned char unk3_4;
