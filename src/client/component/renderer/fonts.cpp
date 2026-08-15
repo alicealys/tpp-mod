@@ -367,7 +367,7 @@ namespace renderer
 				scaling = 1.f;
 				break;
 			case 'sur':
-				scaling = 1.2f;
+				scaling = 1.1f;
 				spacing = 0.f;
 				break;
 			default:

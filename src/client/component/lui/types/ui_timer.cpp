@@ -3,7 +3,6 @@
 
 #include "ui_timer.hpp"
 #include "../main.hpp"
-#include "../../renderer.hpp"
 
 namespace lui
 {
