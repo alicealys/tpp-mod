@@ -4,7 +4,7 @@
 
 #include "game/game.hpp"
 
-#include "renderer.hpp"
+#include "renderer/draw.hpp"
 #include "game_console.hpp"
 #include "vars.hpp"
 

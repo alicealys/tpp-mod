@@ -7,7 +7,7 @@
 #include "ui.hpp"
 #include "lobby.hpp"
 #include "../session.hpp"
-#include "../renderer.hpp"
+#include "../renderer/fonts.hpp"
 
 #include <utils/hook.hpp>
 #include <utils/string.hpp>

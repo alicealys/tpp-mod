@@ -6,7 +6,7 @@
 #include "defs.hpp"
 #include "ui.hpp"
 #include "input.hpp"
-#include "../renderer.hpp"
+#include "../renderer/draw.hpp"
 #include "../session.hpp"
 
 #include <utils/hook.hpp>
