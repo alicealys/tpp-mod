@@ -9,6 +9,7 @@
 
 #include <utils/thread.hpp>
 #include <utils/string.hpp>
+#include <utils/flags.hpp>
 
 #define OUTPUT_HANDLE GetStdHandle(STD_OUTPUT_HANDLE)
 
@@ -362,6 +363,11 @@ namespace console
 	public:
 		void pre_load() override
 		{
+			if (!game::environment::is_dedi() && utils::flags::has_flag("noconsole"))
+			{
+				return;
+			}
+
 			printf_hook.create(printf, printf_stub);
 
 			create_console();
