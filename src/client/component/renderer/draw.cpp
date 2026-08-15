@@ -154,7 +154,7 @@ namespace renderer
 			scaling[0] = (4.f * pixel_height) * 2.f;
 			scaling[1] = (4.f * pixel_width) * 2.f;
 
-			offset_y += get_font_y_offset();
+			const auto font_offset = get_font_y_offset();
 
 			game::Vectormath::Aos::Vector4 color_vec{};
 			if (color != nullptr)
@@ -194,7 +194,7 @@ namespace renderer
 
 				const auto x1 = font_metrics.f7 * width + offset_x + start_x;
 				const auto x2 = font_metrics.f5 * width + x1;
-				const auto y1 = -1.f * (font_metrics.f8 * height) + offset_y + start_y;
+				const auto y1 = -1.f * (font_metrics.f8 * height) + offset_y + font_offset + start_y;
 				const auto y2 = font_metrics.f6 * height + y1;
 
 				vertices->v[0][0] = x1;

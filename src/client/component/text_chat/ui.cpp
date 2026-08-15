@@ -259,7 +259,7 @@ namespace text_chat::ui
 			const auto ms_epoch = static_cast<std::uint64_t>(std::chrono::duration_cast<std::chrono::milliseconds>(now.time_since_epoch()).count());
 			const auto pulse_alpha = 1.f - (static_cast<float>(ms_epoch % 1500) / 1500.f) * 0.7f;
 
-			auto prefix = "say to all";
+			auto prefix = L"say to all";
 
 			float box_outline_color[4]{};
 			box_outline_color[0] = 1.f;
@@ -268,7 +268,7 @@ namespace text_chat::ui
 
 			if (state.mode == mode_chat_team)
 			{
-				prefix = "say to team";
+				prefix = L"say to team";
 				box_outline_color[0] = 0.7f;
 				box_outline_color[1] = 0.89f;
 				box_outline_color[2] = 0.99f;
