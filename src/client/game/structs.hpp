@@ -329,7 +329,17 @@ namespace game
 	{
 		struct Value
 		{
-			char __pad0[24];
+			union u_t
+			{
+				int integer;
+				double value;
+				char byte;
+				void* ptr;
+			};
+
+			u_t u;
+			char type;
+			char __pad0[8];
 		};
 	}
 
@@ -528,9 +538,31 @@ namespace game
 			char __pad0[16];
 		};
 
+		struct HashMapBase_unk1
+		{
+			void** ptr_array1;
+			void* ptr1;
+		};
+
 		struct HashMapBase
 		{
-			char __pad0[48];
+			struct vtable
+			{
+
+			};
+			vtable* __vftable;
+			HashMapBase_unk1* unk1;
+			HashMapBase_unk1* unk2;
+			int a1;
+			short a2_1;
+			short a2_2;
+			void* end;
+			void* ptr6;
+			void* unk3;
+			void* unk4;
+			int unk5_1;
+			int unk5_2;
+			void* unk6;
 		};
 
 		namespace fs
@@ -667,7 +699,13 @@ namespace game
 
 				struct _TextureAreaInfo
 				{
-
+					int a1;
+					short width;
+					short height;
+					short a3_1;
+					short a3_2;
+					short a4_1;
+					short a4_2;
 				};
 
 				struct ImageGlyphManager
@@ -679,8 +717,7 @@ namespace game
 
 					vtable* __vftable;
 					_TextureGlyphData* imageGlyphs;
-					fox::HashMapBase hashMap;
-					char __pad1[24];
+					HashMapBase hashMap;
 					int numGlyphs;
 					int numUnk;
 					char __pad2[256];
@@ -694,6 +731,11 @@ namespace game
 					};
 
 					vtable* __vftable;
+					_TextureAreaInfo areas[2048];
+					char states[2048];
+					int count;
+					int a2;
+					HashMapBase hashMap;
 				};
 
 				struct FontTextureRender
