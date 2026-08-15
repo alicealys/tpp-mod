@@ -680,6 +680,7 @@ namespace renderer
 			auto scaling_x = 1.f;
 			auto scaling_y = 1.f;
 			auto offset_x = 0.f;
+			auto offset_y = 0.f;
 
 			switch (get_language_code())
 			{
@@ -687,9 +688,8 @@ namespace renderer
 				spacing += 1.f;
 				break;
 			case 'sur':
-				scaling_x = 1.2f;
-				scaling_y = 1.1f;
-				spacing = 0.f;
+				scaling_x = 1.1f;
+				offset_y = 1.f;
 				break;
 			default:
 				spacing += 1.f;
@@ -748,7 +748,7 @@ namespace renderer
 
 				const auto x1 = glyph_info->metrics.f7 * width + offset_x;
 				const auto x2 = glyph_info->metrics.f5 * width + x1;
-				const auto y1 = -1.f * (glyph_info->metrics.f8 * height);
+				const auto y1 = -1.f * (glyph_info->metrics.f8 * height) + offset_y;
 				const auto y2 = glyph_info->metrics.f6 * height + y1;
 
 				vertices->v[0][0] = x1;
