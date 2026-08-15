@@ -7,8 +7,6 @@
 #include <utils/io.hpp>
 #include <utils/string.hpp>
 
-#define HASH_MD5
-
 namespace game
 {
 	namespace environment
@@ -28,20 +26,12 @@ namespace game
 			{"mgsvmgo.exe (jpn, 1.1.2.9)", mode_mgo_jpn, false},
 		};
 
-		std::unordered_map<std::string, binary_t> hashes_sha1 =
+		std::unordered_map<std::uint32_t, binary_t> hashes_crc =
 		{
-			{"4F643576C6F6ECF6C67A9AEF4D4F02285ADA43E3", binaries[mode_tpp_eng]},
-			{"1582B87C25CC989FE5457B9F1FD90ACACA9BCD89", binaries[mode_mgo_eng]},
-			{"72F63B2E3364A36C2FA0BE360AF17A787FCC14B0", binaries[mode_tpp_jpn]},
-			{"4F65C0DB3A136325D5C358D01680C4D7DE61E566", binaries[mode_mgo_jpn]},
-		};
-
-		std::unordered_map<std::string, binary_t> hashes_md5 =
-		{
-			{"BB905B1FC5BC5AF60A9808B3088A1B32", binaries[mode_tpp_eng]},
-			{"A9416BB0667B629E1A1FB9176EFE6A7E", binaries[mode_mgo_eng]},
-			{"1037B00015358AC99CDFDFFC9687188B", binaries[mode_tpp_jpn]},
-			{"A724D0757BE3A47D5626F6DB61569C50", binaries[mode_mgo_jpn]},
+			{0x9666C4C1, binaries[mode_tpp_eng]},
+			{0x6B4A1707, binaries[mode_mgo_eng]},
+			{0x6AF85790, binaries[mode_tpp_jpn]},
+			{0x0104AB41, binaries[mode_mgo_jpn]},
 		};
 
 		std::unordered_map<std::string, game_mode> gamemodes =
@@ -114,31 +104,36 @@ namespace game
 				return;
 			}
 
-			if (!utils::io::read_file(path, &data))
-			{
-				throw std::runtime_error("Failed to get MGSV version");
-			}
-
 #ifdef DEBUG
 			const auto start = std::chrono::high_resolution_clock::now();
 #endif
 
-#ifdef HASH_MD5
-			const auto& hashes = hashes_md5;
-			const auto hash = utils::cryptography::md5::compute(data, true);
-#elifdef HASH_SHA1
-			const auto& hashes = hashes_sha1;
-			const auto hash = utils::cryptography::sha1::compute(data, true);
-#endif
+			std::ifstream stream;
+			stream.open(path, std::ios::binary);
+			if (!stream.is_open())
+			{
+				throw std::runtime_error("Failed to get MGSV version");
+			}
+
+			std::string buffer;
+			buffer.resize(0x10000);
+
+			auto crc_value = crc32(0L, Z_NULL, 0);
+			while (stream.is_open() && !stream.eof())
+			{
+				stream.read(buffer.data(), buffer.size());
+				crc_value = crc32(crc_value, reinterpret_cast<std::uint8_t*>(buffer.data()), static_cast<std::uint32_t>(stream.gcount()));
+				std::memset(buffer.data(), 0, buffer.size());
+			}
 
 #ifdef DEBUG
 			const auto end = std::chrono::high_resolution_clock::now();
 			const auto time = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
-			OutputDebugString(utils::string::va("hash: %s, time: %llimsec", hash.data(), time));
+			OutputDebugString(utils::string::va("hash: 0x%X, time: %llimsec", crc_value, time));
 #endif
 
-			const auto iter = hashes.find(hash);
-			if (iter == hashes.end())
+			const auto iter = hashes_crc.find(crc_value);
+			if (iter == hashes_crc.end())
 			{
 				throw std::runtime_error("Unknown MGSV version, use -mode <gamemode> to manually specify it (tppeng, mgoeng, tppjpn, mgojpn)");
 			}
