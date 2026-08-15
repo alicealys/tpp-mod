@@ -1,6 +1,7 @@
 #pragma once
 
-#include "../renderer.hpp"
+#include "../renderer/utils.hpp"
+#include "../renderer/draw.hpp"
 
 namespace lui::renderer
 {

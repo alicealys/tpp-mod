@@ -4,7 +4,6 @@
 #include "ui_text.hpp"
 #include "../main.hpp"
 #include "../renderer.hpp"
-#include "../../renderer.hpp"
 #include "../../session.hpp"
 
 namespace lui

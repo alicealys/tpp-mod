@@ -1,12 +1,12 @@
 #pragma once
 
+#include "../vars.hpp"
+#include "utils.hpp"
+#include "game/game.hpp"
+
 namespace renderer
 {
-	struct params_t
-	{
-		float rotation;
-		float perspective[5];
-	};
+	extern vars::var_ptr r_custom_text_rendering;
 
 	float calc_text_width_artist(const char* text, float height, bool formatted = false,
 		bool word_wrapping = false, float line_width = 0.f, int* line_count = nullptr, int caret_index = -1, int max_len = -1);
@@ -52,6 +52,4 @@ namespace renderer
 	void remove_stencil(game::fox::gr::dg::plugins::Draw2DRenderer* instance);
 
 	void on_frame(const std::function<void(game::fox::gr::dg::plugins::Draw2DRenderer*)>& cb);
-
-	bool is_char_printable(const wchar_t c);
 }
