@@ -1367,8 +1367,8 @@ namespace renderer
 				const auto glyph = &font->glyphs[i];
 				const auto glyph_info = &font_data.wide_char_glyphs[glyph->character];
 
-				unsigned char area_1 = glyph->width + 2 * (font->unk3_1 + 4);
-				unsigned char area_2 = font->unk1_3 + 2 * (font->unk3_1 + 4);
+				unsigned char area_1 = glyph->width + 2 * (font->spacing + 4);
+				unsigned char area_2 = font->unk1_3 + 2 * (font->spacing + 4);
 				const auto area_info = game::fox::gr::dg::ImageAreaManager_::AllocateAreaInfo(
 					render.imageAreaManager, area_1, area_2, glyph->character);
 
@@ -1436,8 +1436,8 @@ namespace renderer
 		void init_fonts()
 		{
 			load_font("/Assets/tpp/font/KanjiFont.ffnt", 1.2f, -6, -8, 5);
-			load_font("/Assets/tpp/font/font_def_jp.ffnt", 1.3f, 2, 0, 5);
-			load_font("/Assets/tpp/font/russian.ffnt", 1.0f, -20, -8, 17);
+			load_font("/Assets/tpp/font/font_def_jp.ffnt", 1.3f, 4, 0, 5);
+			load_font("/Assets/tpp/font/russian.ffnt", 1.0f, -20, -8, 16);
 			load_font("/Assets/tpp/font/font_def_ltn.ffnt", 1.f, -3, 0, 0);
 		}
 
@@ -1601,14 +1601,6 @@ namespace renderer
 			instance->parameters = nullptr;
 		}
 
-		utils::hook::detour load_font_data_hook;
-		int load_font_data_stub(void* a1, void* a2, void* a3)
-		{
-			const auto res = load_font_data_hook.invoke<int>(a1, a2, a3);
-			font_data.loaded = init_font_data();
-			return res;
-		}
-
 		utils::hook::detour change_language_hook;
 		void change_language_stub(void* a1)
 		{
@@ -1673,6 +1665,90 @@ namespace renderer
 			string->str_len = count;
 		}
 
+		utils::hook::detour get_string_width_hook;
+		int get_string_width_stub(void* a1, game::fox::gr::dg::FontData* a2, unsigned char* text, float* length, char a5)
+		{
+			if (!r_custom_text_rendering->current.enabled())
+			{
+				return get_string_width_hook.invoke<int>(a1, a2, text, length, a5);
+			}
+
+			float og_width{};
+			get_string_width_hook.invoke<int>(a1, a2, text, &og_width, a5);
+
+			auto c = text;
+			auto idx = 0;
+			*length = 0.f;
+
+			auto spacing = 0.f;
+			auto scaling = 1.f;
+			switch (get_language_code())
+			{
+			case 'npj':
+				spacing = 3.f;
+				scaling = 1.f;
+				break;
+			case 'sur':
+				scaling = 1.2f;
+				spacing = 0.f;
+				break;
+			default:
+				spacing = 3.f;
+				scaling = 1.f;
+				break;
+			}
+
+			while (*c != 0)
+			{
+				if (c[0] == '^' && get_color_code(static_cast<char>(c[1]), nullptr))
+				{
+					c += 2;
+					continue;
+				}
+
+				const auto char_idx = game::fox::Utf8ToUtf32(&c);
+				if (char_idx >= 0xFFFF)
+				{
+					continue;
+				}
+
+				*length += font_data.wide_char_glyphs[char_idx].metrics.f9 * scaling + spacing * (1.f / 60.f);
+				++idx;
+			}
+
+			return idx;
+		}
+
+		utils::hook::detour get_utf8_count_hook;
+		int get_utf8_count_stub(unsigned char* text)
+		{
+			if (!r_custom_text_rendering->current.enabled())
+			{
+				return get_utf8_count_hook.invoke<int>(text);
+			}
+
+			auto c = text;
+			auto idx = 0;
+			while (*c != 0)
+			{
+				if (c[0] == '^' && get_color_code(static_cast<char>(c[1]), nullptr))
+				{
+					c += 2;
+					continue;
+				}
+
+				const auto char_idx = game::fox::Utf8ToUtf32(&c);
+				if (char_idx >= 0xFFFF)
+				{
+					continue;
+				}
+
+				++idx;
+			}
+
+			return idx;
+		}
+
 		utils::hook::detour execute_packet2d_string_hook;
 		void execute_packet2d_string_stub(game::fox::gr::dg::plugins::Draw2DRenderer* instance, game::fox::gr::Packet2DString* string)
 		{
@@ -1689,25 +1765,32 @@ namespace renderer
 			color_vec.values[2] = 1.f;
 			color_vec.values[3] = 0.f;
 
-			auto offset_x = 0.f;
-
-			const auto height = half_to_float(string->glyphHeight);
-			const auto unk = half_to_float(string->glyphUnk);
 			auto spacing = half_to_float(string->glyphSpacing);
-			auto width = half_to_float(string->glyphWidth) * height;
+			auto scaling_x = 1.f;
+			auto scaling_y = 1.f;
+			auto offset_x = 0.f;
 
 			switch (get_language_code())
 			{
 			case 'npj':
-				spacing += 0.5f;
+				spacing += 1.f;
 				break;
 			case 'sur':
-				spacing += 0.f;
+				scaling_x = 1.2f;
+				scaling_y = 1.1f;
+				spacing = 0.f;
 				break;
 			default:
 				spacing += 1.f;
 				break;
 			}
+
+			auto height = half_to_float(string->glyphHeight);
+			auto unk = half_to_float(string->glyphUnk);
+			auto width = half_to_float(string->glyphWidth) * height;
+
+			width *= scaling_x;
+			height *= scaling_y;
 
 			if (unk > 0.f)
 			{
@@ -2234,6 +2317,8 @@ namespace renderer
 			utils::hook::call(SELECT_VALUE(0x1402AF515, 0x140BA5CE5, 0x0, 0x0), alloc_font_metrics_stub);
 			utils::hook::call(SELECT_VALUE(0x1402AF3C8, 0x140BA5B98, 0x0, 0x0), free_font_metrics_stub);
 			utils::hook::call(SELECT_VALUE(0x1402AF52A, 0x140BA5CFA, 0x0, 0x0), init_metrics_stub);
+			get_utf8_count_hook.create(SELECT_VALUE(0x140914AA0, 0x140686B60, 0x0, 0x0), get_utf8_count_stub);
+			get_string_width_hook.create(SELECT_VALUE(0x140224650, 0x140B2A440, 0x0, 0x0), get_string_width_stub);
 			execute_packet2d_string_hook.create(game::fox::gr::dg::plugins::Draw2DRenderer_::ExecuteOnly_Packet2DString.get(), execute_packet2d_string_stub);
 			
 			change_language_hook.create(SELECT_VALUE(0x14090FA70, 0x140681A80, 0x0, 0x0), change_language_stub);
