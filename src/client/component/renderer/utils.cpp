@@ -103,19 +103,19 @@ namespace renderer
 			color[2] = 0.f;
 			return true;
 		case '1': // red
-			color[0] = 0.94f;
-			color[1] = 0.43f;
-			color[2] = 0.43f;
+			color[0] = 1.f;
+			color[1] = 0.3f;
+			color[2] = 0.2f;
 			return true;
 		case '2': // green
-			color[0] = 0.77f;
-			color[1] = 0.98f;
-			color[2] = 0.f;
+			color[0] = 0.4f;
+			color[1] = 0.9f;
+			color[2] = 0.7f;
 			return true;
 		case '3': // yellow
 			color[0] = 1.f;
-			color[1] = 0.91f;
-			color[2] = 0.06f;
+			color[1] = 0.8f;
+			color[2] = 0.2f;
 			return true;
 		case '4': // purple
 			color[0] = 0.72f;
