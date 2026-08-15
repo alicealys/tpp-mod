@@ -162,19 +162,27 @@ namespace discord
 					ruleset_id -= 100;
 				}
 
-				const auto gamemode = get_gamemode_name(script_vars->rulesetId);
+				const auto gamemode = get_gamemode_name(ruleset_id);
 				const auto mapname = custom_maps::get_current_map_name();
+				const auto localized_mapname = get_map_name(mapname);
 				const auto steam_matchmaking = (*game::SteamMatchmaking)();
 
 				if (script_vars->rulesetId != 4)
 				{
 					discord_strings.state = "In a Match";
-					discord_strings.details = std::format("{} - {}", gamemode, get_map_name(mapname));
+					if (gamemode.empty())
+					{
+						discord_strings.details = localized_mapname;
+					}
+					else
+					{
+						discord_strings.details = std::format("{} - {}", gamemode, localized_mapname);
+					}
 				}
 				else
 				{
 					discord_strings.state = gamemode;
-					discord_strings.details = get_map_name(mapname);
+					discord_strings.details = localized_mapname;
 				}
 
 				if (match_container != nullptr && match_container->match != nullptr && match_container->match->lobby_id.bits != 0)
@@ -201,7 +209,7 @@ namespace discord
 				const auto team = ruleset->playerTeams[ruleset->localPlayerSessionIndex];
 
 				discord_strings.large_image_key = std::format("{}_{}", mapname, script_vars->isNight ? 1 : 0);
-				discord_strings.large_image_text = get_map_name(mapname);
+				discord_strings.large_image_text = localized_mapname;
 
 				if (script_vars->rulesetId != 4 && (team == 0 || team == 1))
 				{
