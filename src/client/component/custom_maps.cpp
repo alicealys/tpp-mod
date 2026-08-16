@@ -51,6 +51,8 @@ namespace custom_maps
         std::mutex map_list_mutex;
         std::array<map_info_t, 0x100> map_list;
 
+        vars::var_ptr var_mapname;
+
         std::optional<std::string> get_pack_base_name(const std::string& pack)
         {
             const auto start = pack.find_last_of('/');
@@ -88,11 +90,15 @@ namespace custom_maps
         {
             current_pack = name;
 
+            vars::set_var(var_mapname, "", vars::var_source_internal);
+
             const auto map_name = get_pack_base_name(name);
             if (!map_name.has_value())
             {
                 return;
             }
+
+            vars::set_var(var_mapname, map_name.value(), vars::var_source_internal);
 
             const auto usermap_path = format_usermap_path(map_name.value());
             if (!utils::io::file_exists(usermap_path))
@@ -540,6 +546,8 @@ namespace custom_maps
             {
                 return;
             }
+
+            var_mapname = vars::register_string("mapname", "", vars::var_flag_readonly, "current mapname");
 
             utils::hook::call(SELECT_VALUE_LANG(0x140743197, 0x0), get_location_package_path_stub);
             get_package_paths_hook.create(SELECT_VALUE_LANG(0x140743050, 0x0), get_package_paths_stub);
