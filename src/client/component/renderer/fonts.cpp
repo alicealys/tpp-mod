@@ -311,11 +311,11 @@ namespace renderer
 			game::fox::FreeAnnotated(metrics, 0x5000F);
 		}
 
-		void init_metrics_stub(custom_font_metrics_t* string, const char* text, int a3, int a4)
+		void init_metrics_stub(custom_font_metrics_t* string, const char* text, int a3, int font_type)
 		{
-			game::fox::gr::InitMetrics(&string->native, text, a3, a4);
+			game::fox::gr::InitMetrics(&string->native, text, a3, font_type);
 
-			if (!r_custom_text_rendering->current.enabled())
+			if (!r_custom_text_rendering->current.enabled() || (font_type != 1 && font_type != 2))
 			{
 				return;
 			}
@@ -344,15 +344,12 @@ namespace renderer
 		}
 
 		utils::hook::detour get_string_width_hook;
-		int get_string_width_stub(void* a1, game::fox::gr::dg::FontData* a2, unsigned char* text, float* length, char a5)
+		int get_string_width_stub(void* a1, game::fox::gr::dg::FontData* a2, unsigned char* text, float* length, char font_type)
 		{
-			if (!r_custom_text_rendering->current.enabled())
+			if (!r_custom_text_rendering->current.enabled() || (font_type != 1 && font_type != 2))
 			{
-				return get_string_width_hook.invoke<int>(a1, a2, text, length, a5);
+				return get_string_width_hook.invoke<int>(a1, a2, text, length, font_type);
 			}
-
-			float og_width{};
-			get_string_width_hook.invoke<int>(a1, a2, text, &og_width, a5);
 
 			auto c = text;
 			auto idx = 0;
