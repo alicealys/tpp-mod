@@ -663,7 +663,7 @@ namespace renderer
 		utils::hook::detour execute_packet2d_string_hook;
 		void execute_packet2d_string_stub(game::fox::gr::dg::plugins::Draw2DRenderer* instance, game::fox::gr::Packet2DString* string)
 		{
-			if (!r_custom_text_rendering->current.enabled())
+			if (!r_custom_text_rendering->current.enabled() || (string->fontType != 1 && string->fontType != 2))
 			{
 				return execute_packet2d_string_hook.invoke<void>(instance, string);
 			}
