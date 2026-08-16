@@ -315,7 +315,7 @@ namespace renderer
 		{
 			game::fox::gr::InitMetrics(&string->native, text, a3, font_type);
 
-			if (!r_custom_text_rendering->current.enabled() || (font_type != 1 && font_type != 2))
+			if (!r_custom_text_rendering->current.enabled() || !is_system_font(font_type))
 			{
 				return;
 			}
@@ -346,7 +346,7 @@ namespace renderer
 		utils::hook::detour get_string_width_hook;
 		int get_string_width_stub(void* a1, game::fox::gr::dg::FontData* a2, unsigned char* text, float* length, char font_type)
 		{
-			if (!r_custom_text_rendering->current.enabled() || (font_type != 1 && font_type != 2))
+			if (!r_custom_text_rendering->current.enabled() || !is_system_font(a2->fontIndex))
 			{
 				return get_string_width_hook.invoke<int>(a1, a2, text, length, font_type);
 			}
@@ -428,6 +428,11 @@ namespace renderer
 	bool is_char_printable(const wchar_t c)
 	{
 		return iswprint(c) && font_data.wide_char_glyphs[c].texture_handle != 0;
+	}
+
+	bool is_system_font(int font_type)
+	{
+		return font_type == 1 || font_type == 2;
 	}
 
 	namespace fonts

@@ -663,12 +663,16 @@ namespace renderer
 		utils::hook::detour execute_packet2d_string_hook;
 		void execute_packet2d_string_stub(game::fox::gr::dg::plugins::Draw2DRenderer* instance, game::fox::gr::Packet2DString* string)
 		{
-			if (!r_custom_text_rendering->current.enabled() || (string->fontType != 1 && string->fontType != 2))
+			if (!r_custom_text_rendering->current.enabled() || !is_system_font(string->fontType))
 			{
 				return execute_packet2d_string_hook.invoke<void>(instance, string);
 			}
 
 			const auto custom_metrics = reinterpret_cast<custom_font_metrics_t*>(string->fontMetricsCache);
+			if (custom_metrics->string == nullptr)
+			{
+				return execute_packet2d_string_hook.invoke<void>(instance, string);
+			}
 
 			game::Vectormath::Aos::Vector4 color_vec{};
 			color_vec.values[0] = 1.f;
