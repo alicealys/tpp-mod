@@ -178,6 +178,11 @@ namespace command
 			for (auto i = 0; i < cmds.size(); i++)
 			{
 				const auto args = tokenize_string(cmds[i]);
+				if (args.empty())
+				{
+					continue;
+				}
+
 				if (args[0] == "wait")
 				{
 					auto wait_time = 0;
@@ -442,6 +447,7 @@ namespace command
 			}
 		};
 
+		auto was_space = false;
 		for (auto i = 0; i < str.size(); i++)
 		{
 			const auto c = str[i];
@@ -454,10 +460,11 @@ namespace command
 					add_token(true);
 				}
 
+				was_space = false;
 				is_in_quotes = !is_in_quotes;
 				continue;
 			}
-			else if (c == ' ')
+			else if (c == ' ' || c == '\t')
 			{
 				if (is_in_quotes)
 				{
@@ -465,6 +472,12 @@ namespace command
 				}
 				else
 				{
+					if (was_space)
+					{
+						continue;
+					}
+
+					was_space = true;
 					is_in_word = false;
 					add_token();
 					continue;
@@ -477,6 +490,7 @@ namespace command
 					is_in_word = true;
 				}
 
+				was_space = false;
 				current_token.push_back(c);
 			}
 		}

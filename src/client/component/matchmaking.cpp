@@ -192,7 +192,6 @@ namespace matchmaking
 			if (field == "m_map_name")
 			{
 				match_settings.rules.slots[slot_number].m_map_id = custom_maps::get_map_id(value);
-				printf("set map id %s %i\n", value.data(), match_settings.rules.slots[slot_number].m_map_id);
 			}
 			else
 			{

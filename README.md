@@ -43,6 +43,17 @@ Various crash/DoS exploits and other vulnerabilities have been patched.
 
 The performance and FPS drop issues (notably the avatar edit menu, but also extends to the rest of the game) that have been introduced in the June 6 2026 update have been fixed.
 
+### MGO3 Dedicated Server
+
+To start a MGO3 dedicated server run the game with the following command:
+
+```
+./mgsvmgo.exe -dedicated +exec server.cfg
+```
+
+The config file can be downloaded [here](src/client/resources/server.cfg).  
+Copy it to `tpp-mod/config/` and edit it to your preference.  
+
 ### Misc
 - discord rich presence
 - unlock fps and custom fps capping
