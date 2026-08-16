@@ -39,10 +39,6 @@ Configuration files are stored in `%localappdata%\tpp-mod`
 
 Various crash/DoS exploits and other vulnerabilities have been patched. 
 
-### Performance
-
-The performance and FPS drop issues (notably the avatar edit menu, but also extends to the rest of the game) that have been introduced in the June 6 2026 update have been fixed.
-
 ### MGO3 Dedicated Server
 
 To start a MGO3 dedicated server run the game with the following command:
@@ -189,3 +185,4 @@ similar to cod dvars, can be set through the console or through the config files
 - `-dedicated`: start mgo headless as dedicated server
 - `-var-cheat`: allow to modify cheat only vars
 - `-dump-hashes`: stores computed hashes, can be dumped with `dumpstrings` command
+- `-noconsole`: disable external console
