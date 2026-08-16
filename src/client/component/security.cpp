@@ -83,29 +83,31 @@ namespace security
 			a.jmp(SELECT_VALUE_LANG(0x141112E8D, 0x0));
 		}
 
+		void sub_14082CA70_stub(utils::hook::assembler& a)
+		{
+			const auto null = a.new_label();
+			a.test(rdx, rdx);
+			a.jz(null);
+
+			a.mov(qword_ptr(rbp, -0x48), rdx);
+			a.mov(rax, qword_ptr(rdx, 0x70));
+			a.movzx(eax, word_ptr(rax, rbx, 1));
+			a.jmp(SELECT_VALUE_LANG(0x14082D50B, 0x0));
+
+			a.bind(null);
+			a.jmp(SELECT_VALUE_LANG(0x14082D149, 0x0));
+		}
+
 		void patch_mgo_crashes()
 		{
 			utils::hook::jump(SELECT_VALUE_LANG(0x14125EC31, 0x0), utils::hook::assemble(shell_impl_active_shell_at_empty_work_stub), true);
 			utils::hook::jump(SELECT_VALUE_LANG(0x1407A7C30, 0x0), utils::hook::assemble(sub_1407A7F70_stub), true);
 			utils::hook::jump(SELECT_VALUE_LANG(0x141112E7C, 0x0), utils::hook::assemble(sub_1411126C0_stub), true);
+			utils::hook::jump(SELECT_VALUE_LANG(0x14082D4FF, 0x0), utils::hook::assemble(sub_14082CA70_stub), true);
 			fv2_resource_manager_get_model_hook.create(SELECT_VALUE_LANG(0x14029FE60, 0x0), fv2_resource_manager_get_model_stub);
 		}
 
 		utils::hook::detour json_get_hook;
-
-		struct json_value
-		{
-			union u_t
-			{
-				int integer;
-				double value;
-				char byte;
-				void* ptr;
-			};
-
-			u_t u;
-			char type;
-		};
 
 		union fob_construct_param_t
 		{
@@ -167,11 +169,11 @@ namespace security
 			}
 		}
 
-		void validate_common_security(json_value* j)
+		void validate_common_security(game::Json::Value* j)
 		{
 			const auto do_value = [&](const char* key, int max)
 			{
-				const auto value = json_get_hook.invoke<json_value*>(j, key);
+				const auto value = json_get_hook.invoke<game::Json::Value*>(j, key);
 				if (value != nullptr && (value->type == 1 || value->type == 2))
 				{
 					value->u.integer = std::clamp(value->u.integer, 0, max);
@@ -187,11 +189,11 @@ namespace security
 			do_value("ir_sensor", 5);
 		}
 
-		void validate_unique_security(json_value* j)
+		void validate_unique_security(game::Json::Value* j)
 		{
 			const auto do_value = [&](const char* key, int max)
 			{
-				const auto value = json_get_hook.invoke<json_value*>(j, key);
+				const auto value = json_get_hook.invoke<game::Json::Value*>(j, key);
 				if (value != nullptr && (value->type == 1 || value->type == 2))
 				{
 					value->u.integer = std::clamp(value->u.integer, 0, max);
@@ -207,9 +209,9 @@ namespace security
 			do_value("ir_sensor", 5);
 		}
 
-		json_value* json_get_stub(json_value* j, const char* key)
+		game::Json::Value* json_get_stub(game::Json::Value* j, const char* key)
 		{
-			const auto value = json_get_hook.invoke<json_value*>(j, key);
+			const auto value = json_get_hook.invoke<game::Json::Value*>(j, key);
 			if (value == nullptr)
 			{
 				return value;
