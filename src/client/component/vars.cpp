@@ -673,8 +673,17 @@ namespace vars
 			const auto latched_str = var->latched.to_string();
 			const auto reset_str = var->reset.to_string();
 
-			console::info("\"%s\" is: \"%s\" latched: \"%s\" default: \"%s\" type: \"%s\" flags: %i\n",
-				var->name.data(), current_str.data(), latched_str.data(), reset_str.data(), var->current.type_name(), var->flags);
+			if (var->latched != var->current)
+			{
+				console::info("\"%s\" is: \"%s\" latched: \"%s\" default: \"%s\" type: \"%s\" flags: %i\n",
+					var->name.data(), current_str.data(), latched_str.data(), reset_str.data(), var->current.type_name(), var->flags);
+			}
+			else
+			{
+				console::info("\"%s\" is: \"%s\" default: \"%s\" type: \"%s\" flags: %i\n",
+					var->name.data(), current_str.data(), reset_str.data(), var->current.type_name(), var->flags);
+			}
+
 			console::info("%s\n", var->description.data());
 			console::info("   %s\n", get_var_domain(var));
 			return true;
