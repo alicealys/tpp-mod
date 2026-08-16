@@ -8441,6 +8441,28 @@ namespace game
 	};
 
 #pragma pack(push, 1)
+	struct mgo_match_data_member_t
+	{
+		char unk[8];
+		char name[32];
+		char __pad0[5];
+		steam_id id;
+		char __pad1[9];
+	};
+#pragma pack(pop)
+
+#pragma pack(push, 1)
+	struct mgo_match_data_t
+	{
+		match_slot_t slot;
+		match_rules_t rules;
+		mgo_match_data_member_t members[16];
+		char member_num;
+		char member_limit;
+	};
+#pragma pack(pop)
+
+#pragma pack(push, 1)
 	struct mgo_match_t
 	{
 		int error1;
@@ -8463,7 +8485,8 @@ namespace game
 		char __pad6[2];
 		match_rules_t match_rules;
 		steam_id lobby_id2;
-		char __pad7[420];
+		char __pad7[412];
+		mgo_match_data_t* data;
 		steam_id kicked_ids[16];
 		int kick_num;
 		char __pad8[852];

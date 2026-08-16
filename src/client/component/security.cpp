@@ -287,6 +287,12 @@ namespace security
 			console::error("[Security] a script tried to call 'system' (%s)\n", arg);
 			return 0;
 		}
+
+		int get_num_lobby_members_stub(game::ISteamMatchmaking* steam_matchmaking, game::steam_id lobby_id)
+		{
+			const auto num = steam_matchmaking->__vftable->GetNumLobbyMembers(steam_matchmaking, lobby_id);
+			return std::clamp(num, 0, 16);
+		}
 	}
 
 	class component final : public component_interface
@@ -303,6 +309,12 @@ namespace security
 				utils::hook::call(SELECT_VALUE_LANG(0x1405A29CE, 0x0), atoi_stub);
 				utils::hook::nop(SELECT_VALUE_LANG(0x1405D4AEE, 0x0), 6);
 				utils::hook::call(SELECT_VALUE_LANG(0x1405D4AEE, 0x0), atoi_stub);
+
+				// cap lobby member num to 16
+				utils::hook::nop(SELECT_VALUE_LANG(0x1405D6BCE, 0x0), 7);
+				utils::hook::call(SELECT_VALUE_LANG(0x1405D6BCE, 0x0), get_num_lobby_members_stub);
+				utils::hook::nop(SELECT_VALUE_LANG(0x1405A633B, 0x0), 7);
+				utils::hook::call(SELECT_VALUE_LANG(0x1405A633B, 0x0), get_num_lobby_members_stub);
 			}
 			else
 			{
