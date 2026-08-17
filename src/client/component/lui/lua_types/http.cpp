@@ -3,7 +3,7 @@
 #include "http.hpp"
 #include "json.hpp"
 #include "../../console.hpp"
-#include "../../custom_server.hpp"
+#include "../../backend_server.hpp"
 
 #include <utils/http.hpp>
 #include <utils/string.hpp>
@@ -49,7 +49,7 @@ namespace lui::scripting::http
 
 				request.result = std::async(std::launch::async, [endpoint, data_j, use_session]()
 				{
-					return custom_server::send_command(endpoint, data_j, use_session);
+					return backend_server::send_command(endpoint, data_j, use_session);
 				});
 
 				server_requests.emplace_back(std::move(request));
@@ -63,7 +63,7 @@ namespace lui::scripting::http
 
 				request.result = std::async(std::launch::async, [endpoint, data_j, use_session]()
 				{
-					return custom_server::send_command(endpoint, data_j, use_session);
+					return backend_server::send_command(endpoint, data_j, use_session);
 				});
 
 				server_requests.emplace_back(std::move(request));
