@@ -401,6 +401,11 @@ namespace command
 		});
 	}
 
+	void remove(const std::string& name)
+	{
+		commands.erase(name);
+	}
+
 	std::optional<std::string> find_command_name(const std::string& input)
 	{
 		if (input.size() < 2)

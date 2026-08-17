@@ -31,6 +31,7 @@ namespace command
 	void execute(const std::string& cmd, bool sync = false);
 	void add(const std::string& name, const callback& cb);
 	void add(const std::string& name, const callback_narg& cb);
+	void remove(const std::string& name);
 
 	std::optional<std::string> find_command_name(const std::string& input);
 
