@@ -8,6 +8,7 @@
 #include "console.hpp"
 #include "matchmaking.hpp"
 #include "custom_maps.hpp"
+#include "map_rotation.hpp"
 
 #include "text_chat/defs.hpp"
 #include "text_chat/ui.hpp"
@@ -110,6 +111,7 @@ namespace matchmaking
 		void create_lobby(game::mgo_match_t* match, game::match_settings_t* settings)
 		{
 			std::memcpy(&match->match_settings, settings, sizeof(game::match_settings_t));
+			map_rotation::start_rotation(match);
 			create_lobby_hook.invoke<void>(match, &match->match_settings);
 		}
 
@@ -267,11 +269,8 @@ namespace matchmaking
 			if (request_match_rotate && (game::s_mgoMatchMakingManager->state == 20 || game::s_mgoMatchMakingManager->state == 19))
 			{
 				console::info("[MgoMatchmakingManager] Rotating match...\n");
-
-				game::s_mgoMatchMakingManager->__pad3[20] = 1;
-				game::s_mgoMatchMakingManager->__pad4[4] = 1;
-				game::s_mgoMatchMakingManager->__pad5[2] = 1;
-				game::s_mgoMatchMakingManager->unk3 = 1;
+				game::s_mgoMatchMakingManager->state = 21;
+				request_match_rotate = false;
 			}
 
 			if (request_disconnect)
@@ -279,7 +278,6 @@ namespace matchmaking
 				utils::hook::invoke<void>(SELECT_VALUE_LANG(0x140892850, 0x0), game::s_mgoMatchMakingManager.get(), 1);
 			}
 
-			request_match_rotate = false;
 			request_disconnect = false;
 		}
 
@@ -700,26 +698,7 @@ namespace matchmaking
 
 			command::add("matchrotate", [](const command::params& params)
 			{
-				auto match = game::s_mgoMatchMakingManager->match_container;
-				if (match == nullptr)
-				{
-					return;
-				}
-
-				const auto steam_matchmaking = (*game::SteamMatchmaking)();
-				steam_matchmaking->__vftable->SetLobbyData(steam_matchmaking, 
-					match->match->lobby_id2, "st_is_transition", "1");
-
-				scheduler::once([&]
-				{
-					match = game::s_mgoMatchMakingManager->match_container;
-					if (match == nullptr)
-					{
-						return;
-					}
-
-					request_match_rotate = true;
-				}, scheduler::session, 500ms);
+				request_match_rotate = true;
 			});
 
 			command::add("matchsetstate", [](const command::params& params)
