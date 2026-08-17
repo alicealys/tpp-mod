@@ -1,6 +1,6 @@
 #pragma once
 
-namespace custom_server
+namespace backend_server
 {
 	bool is_using_custom_server();
 
