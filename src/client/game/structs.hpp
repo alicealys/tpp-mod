@@ -112,6 +112,11 @@ namespace game
 		int chatroom;
 	};
 
+	struct P2PSessionRequest_t
+	{
+		steam_id remote;
+	};
+
 	struct /*VFT*/ ISteamUser_vtbl
 	{
 		int(__fastcall* GetHSteamUser)(ISteamUser* this_);
@@ -1732,6 +1737,20 @@ namespace game
 			struct MpSocket
 			{
 
+			};
+
+			struct SteamUdpSocket
+			{
+				struct SteamUdpAddress
+				{
+					struct vtable
+					{
+
+					};
+
+					vtable* __vftable;
+					steam_id remote;
+				};
 			};
 
 			namespace impl

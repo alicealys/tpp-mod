@@ -19,20 +19,7 @@ namespace dedicated_server
 {
 	namespace
 	{
-		constexpr auto net_channel_max = 0xFFFF;
-
 		utils::hook::detour translate_messages_hook;
-
-		vars::var_ptr var_net_channel;
-		vars::var_ptr var_whitelist;
-
-		game::ISteamNetworking_vtbl steam_networking_vtbl{};
-
-		int current_host_channel{};
-
-		std::unordered_set<std::uint64_t> banned_players;
-		std::unordered_set<std::uint64_t> whitelist;
-
 
 		__int64 gn_execute_stub()
 		{
@@ -55,178 +42,6 @@ namespace dedicated_server
 
 				std::this_thread::sleep_for(1ms);
 			}
-		}
-
-		game::steam_id get_lobby_id()
-		{
-			game::steam_id lobby_id{};
-
-			const auto match_container = game::s_mgoMatchMakingManager->match_container;
-			if (match_container == nullptr)
-			{
-				return lobby_id;
-			}
-
-			return match_container->match->lobby_id;
-		}
-		
-		int get_var_net_channel()
-		{
-			return var_net_channel->current.get_int();
-		}
-
-		void set_net_channel(const game::steam_id lobby_id)
-		{
-			const auto steam_matchmaking = (*game::SteamMatchmaking)();
-			const auto value = utils::string::va("%i", get_var_net_channel());
-			steam_matchmaking->__vftable->SetLobbyMemberData(steam_matchmaking, lobby_id, "net_channel", value);
-		}
-
-		int get_client_net_channel(const game::steam_id lobby_id, const game::steam_id user)
-		{
-			const auto steam_matchmaking = (*game::SteamMatchmaking)();
-			const auto net_channel_value = steam_matchmaking->__vftable->GetLobbyMemberData(steam_matchmaking, lobby_id, user, "net_channel");
-			if (net_channel_value == nullptr)
-			{
-				return 0;
-			}
-
-			return std::atoi(net_channel_value);
-		}
-
-		bool is_host()
-		{
-			const auto session = *game::s_pSession;
-			if (session != nullptr)
-			{
-				return session->sessionInterface.__vftable->IsHost(&session->sessionInterface);
-			}
-
-			return false;
-		}
-
-		bool is_player_blocked(game::steam_id remote)
-		{
-			if (banned_players.contains(remote.bits))
-			{
-				return true;
-			}
-
-			if (var_whitelist->current.enabled() && !whitelist.contains(remote.bits))
-			{
-				return true;
-			}
-
-			return false;
-		}
-
-		bool read_p2p_packet_stub(game::ISteamNetworking* this_, void* pub_dest, unsigned int cub_dest, 
-			unsigned int* msg_size, game::steam_id* remote, int /*channel*/)
-		{
-			return steam_networking_vtbl.ReadP2PPacket(this_, pub_dest, cub_dest, msg_size, remote, get_var_net_channel());
-		}
-
-		bool send_p2p_packet_stub(game::ISteamNetworking* this_, game::steam_id remote, 
-			void* pub_data, unsigned int cub_data, int type, int /*channel*/)
-		{
-			if (is_host() && is_player_blocked(remote))
-			{
-				return true;
-			}
-
-			const auto channel = get_client_net_channel(get_lobby_id(), remote);
-			return steam_networking_vtbl.SendP2PPacket(this_, remote, pub_data, cub_data, type, channel);
-		}
-
-		bool accept_p2p_session_with_user_stub(game::ISteamNetworking* this_, game::steam_id remote)
-		{
-			if (is_host() && is_player_blocked(remote))
-			{
-				return true;
-			}
-
-			return steam_networking_vtbl.AcceptP2PSessionWithUser(this_, remote);
-		}
-
-		bool is_p2p_packet_available(game::ISteamNetworking* this_, unsigned int* msg_size, int /*channel*/)
-		{
-			return steam_networking_vtbl.IsP2PPacketAvailable(this_, msg_size, get_var_net_channel());
-		}
-
-		void hook_steam_networking()
-		{
-			const auto steam_networking = (*game::SteamNetworking)();
-
-			steam_networking_vtbl.ReadP2PPacket = steam_networking->__vftable->ReadP2PPacket;
-			steam_networking_vtbl.SendP2PPacket = steam_networking->__vftable->SendP2PPacket;
-			steam_networking_vtbl.IsP2PPacketAvailable = steam_networking->__vftable->IsP2PPacketAvailable;
-			steam_networking_vtbl.AcceptP2PSessionWithUser = steam_networking->__vftable->AcceptP2PSessionWithUser;
-
-			utils::hook::set(&steam_networking->__vftable->ReadP2PPacket, read_p2p_packet_stub);
-			utils::hook::set(&steam_networking->__vftable->SendP2PPacket, send_p2p_packet_stub);
-			utils::hook::set(&steam_networking->__vftable->IsP2PPacketAvailable, is_p2p_packet_available);
-			utils::hook::set(&steam_networking->__vftable->AcceptP2PSessionWithUser, accept_p2p_session_with_user_stub);
-		}
-
-		void set_lobby_data()
-		{
-			const auto lobby_id = get_lobby_id();
-			if (lobby_id.bits == 0)
-			{
-				return;
-			}
-
-			set_net_channel(lobby_id);
-		}
-
-		int create_channel_mutex(const int start)
-		{
-			static HANDLE mutex = NULL;
-			atexit([]
-			{
-				if (mutex == NULL)
-				{
-					return;
-				}
-
-				ReleaseMutex(mutex);
-				CloseHandle(mutex);
-			});
-
-			for (auto i = start; i < net_channel_max; i++)
-			{
-				const auto name = utils::string::va("mgo_net_channel_%i", i);
-				mutex = CreateMutex(NULL, FALSE, name);
-				
-				if (mutex == NULL)
-				{
-					continue;
-				}
-
-				if (GetLastError() == ERROR_ALREADY_EXISTS)
-				{
-					ReleaseMutex(mutex);
-					CloseHandle(mutex);
-					continue;
-				}
-
-				return i;
-			}
-
-			return -1;
-		}
-
-		void set_net_channel()
-		{
-			const auto net_channel = create_channel_mutex(get_var_net_channel());
-			if (net_channel == -1)
-			{
-				console::error("failed to set net channel (all channels in use)\n");
-				exit(0);
-			}
-
-			console::info("[SteamNetworking] Using channel %i\n", net_channel);
-			vars::set_var(var_net_channel, net_channel, vars::var_source_internal);
 		}
 
 		void update_console_title()
@@ -351,76 +166,14 @@ namespace dedicated_server
 		}
 	}
 
-	void unban_player_from_session(const game::steam_id steam_id)
-	{
-		banned_players.erase(steam_id.bits);
-	}
-
-	void ban_player_from_session(const game::steam_id steam_id)
-	{
-		const auto lobby_id = get_lobby_id();
-
-		if (lobby_id.bits != 0)
-		{
-			const auto steam_networking = (*game::SteamNetworking)();
-			const auto channel = get_client_net_channel(lobby_id, steam_id);
-			steam_networking->__vftable->CloseP2PChannelWithUser(steam_networking, steam_id, channel);
-		}
-
-		banned_players.insert(steam_id.bits);
-	}
-
 	class component final : public component_interface
 	{
 	public:
 		void pre_load() override
 		{
-			if (!game::environment::is_mgo())
-			{
-				return;
-			}
-
-			var_net_channel = vars::register_int("net_channel", 0, 0, 0xFFFF, vars::var_flag_latched, "steam networking channel");
-			var_whitelist = vars::register_bool("whitelist_enable", false, vars::var_flag_saved, "enable whitelist");
-
-			command::add("whitelist_add", [](const command::params& params)
-			{
-				if (params.size() < 2)
-				{
-					return;
-				}
-				
-				const auto steam_id = params.get_uint64(1);
-				whitelist.insert(steam_id);
-			});
-
-			command::add("whitelist_remove", [](const command::params& params)
-			{
-				if (params.size() < 2)
-				{
-					return;
-				}
-
-				const auto steam_id = params.get_uint64(1);
-				whitelist.erase(steam_id);
-			});
-		}
-
-		void start() override
-		{
 			filesystem::register_resource_file("config\\server.cfg", RESOURCE_SERVER_CFG);
 
-			if (!game::environment::is_mgo())
-			{
-				return;
-			}
-
-			set_net_channel();
-
-			scheduler::once(hook_steam_networking, scheduler::net);
-			scheduler::loop(set_lobby_data, scheduler::net, 1s);
-
-			if (!game::environment::is_dedi())
+			if (!game::environment::is_mgo() || !game::environment::is_dedi())
 			{
 				return;
 			}
