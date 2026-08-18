@@ -543,6 +543,11 @@ namespace game
 			char __pad0[16];
 		};
 
+		struct Script
+		{
+
+		};
+
 		struct HashMapBase_unk1
 		{
 			void** ptr_array1;
@@ -1802,6 +1807,11 @@ namespace game
 			std::uint32_t size;
 			std::uint32_t capacity;
 			T** array;
+		};
+
+		struct Entity
+		{
+
 		};
 
 		namespace nt
@@ -8341,24 +8351,40 @@ namespace game
 			char __pad0[32];
 		};
 
+		struct Ruleset_Player
+		{
+
+		};
+
+		struct Ruleset_unk2
+		{
+			char __pad0[24];
+			void* rulesetData;
+		};
+
 		struct Ruleset
 		{
-			char __pad0[88];
+			char __pad0[56];
+			Ruleset_unk2* unk2;
+			char __pad9[24];
 			Ruleset_unk1 unk1;
 			char __pad1[64];
 			int numTeams;
 			TeamInfo** teams;
 			char __pad2[20];
 			int numPlayers;
-			char __pad3[136];
+			tpp::mp::Ruleset_Player** players;
+			char __pad3[128];
 			int a1;
-			char __pad4[88];
+			char __pad4[68];
+			fox::Script* script;
+			char __pad5[12];
 			int state;
-			char __pad5[60];
+			char __pad6[60];
 			unsigned char currentRound;
-			char __pad6[9];
+			char __pad7[9];
 			unsigned char localPlayerSessionIndex;
-			char __pad7[961];
+			char __pad8[961];
 			char playerTeams[16];
 		};
 

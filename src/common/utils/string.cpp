@@ -308,13 +308,23 @@ namespace utils::string
 		return c >= 32 && c <= 126;
 	}
 
-	std::wstring utf8_to_utf16(const std::string& text)
+	std::wstring utf8_to_utf16(const std::string& text, const std::size_t max_len)
 	{
 		std::wstring wide_str;
-		const auto len = MultiByteToWideChar(CP_UTF8, 0, text.data(), static_cast<int>(text.size()), nullptr, 0);
+		const auto text_len = std::min(text.size(), max_len);
+		const auto len = MultiByteToWideChar(CP_UTF8, 0, text.data(), static_cast<int>(text_len), nullptr, 0);
 		wide_str.resize(len);
 		MultiByteToWideChar(CP_UTF8, 0, text.data(), static_cast<int>(text.size()), wide_str.data(), static_cast<int>(wide_str.size()));
 		return wide_str;
+	}
+
+	std::string utf16_to_utf8(const std::wstring& text)
+	{
+		std::string str;
+		const auto len = WideCharToMultiByte(CP_UTF8, 0, text.data(), static_cast<int>(text.size()), nullptr, 0, 0, 0);
+		str.resize(len);
+		WideCharToMultiByte(CP_UTF8, 0, text.data(), static_cast<int>(text.size()), str.data(), static_cast<int>(str.size()), 0, 0);
+		return str;
 	}
 
 	std::string utf16_to_ascii(const std::wstring& text)

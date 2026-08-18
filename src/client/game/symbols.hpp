@@ -21,6 +21,10 @@ namespace game
 
 		WEAK symbol<unsigned int(unsigned __int8**)> Utf8ToUtf32{0x140023910, 0x140023330, 0x0, 0x0};
 
+		WEAK symbol<__int64(const char*)> GetBinaryStringHandle{0x0, 0x14001D960, 0x0, 0x0};
+
+		WEAK symbol<void(lua::lua_State*, void*)> LuaPushEntity{0x0, 0x1400F91E0, 0x0, 0x0};
+
 		namespace Array_
 		{
 			WEAK symbol<bool(Array<Path>*, Path*)> Path_PushBack{0x0, 0x1400AC8E0, 0x0, 0x0};
@@ -62,6 +66,11 @@ namespace game
 		{
 			WEAK symbol<void(LuaScopedGlobalPolicy*, lua::lua_State*, int)> LuaScopedGlobalPolicy_{0x14006A850, 0x0, 0x0, 0x0};
 			WEAK symbol<void(LuaScopedGlobalPolicy*)> LuaScopedGlobalPolicy__destructor{0x14006AA40, 0x0, 0x0, 0x0};
+		}
+
+		namespace Script_
+		{
+			WEAK symbol<int*(Script*, int*, __int64*, Lua*, int, int)> CallScriptFunc{0x0, 0x1400EA290, 0x0, 0x0};
 		}
 
 		namespace fs

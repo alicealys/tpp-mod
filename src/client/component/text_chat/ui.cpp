@@ -338,7 +338,7 @@ namespace text_chat::ui
 		{
 			if (is_chat_enabled() && *msg != 0)
 			{
-				const auto converted_msg = utils::string::utf8_to_utf16(msg);
+				const auto converted_msg = utils::string::utf8_to_utf16(msg, chat_message_max_len);
 				ui::print(converted_msg, false);
 				return 0;
 			}
