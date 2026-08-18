@@ -8,6 +8,8 @@
 #include "ui.hpp"
 #include "defs.hpp"
 #include "../session.hpp"
+#include "../scripting.hpp"
+#include "../matchmaking.hpp"
 
 #include <utils/io.hpp>
 #include <utils/hook.hpp>
@@ -18,6 +20,8 @@ namespace text_chat::lobby
 	namespace
 	{
 		utils::hook::detour on_lobby_chat_msg_hook;
+
+		vars::var_ptr var_scr_chat_callback;
 
 		constexpr auto max_chat_msg_len = 128;
 		constexpr auto chat_message_msg_id_ascii = 20;
@@ -46,6 +50,29 @@ namespace text_chat::lobby
 			}
 
 			return other == self ? '8' : '9';
+		}
+
+		void script_chat_notify(const int player_index, const std::string& message)
+		{
+			const auto ruleset = session::get_active_ruleset();
+			if (ruleset == nullptr || player_index >= 16)
+			{
+				return;
+			}
+
+			const auto lock = scripting::acquire_lock();
+			static auto func_name = game::fox::GetBinaryStringHandle("OnPlayerSay");
+			auto a2 = 0;
+
+			const auto ruleset_data = ruleset->unk2 != nullptr ? ruleset->unk2->rulesetData : nullptr;
+			const auto player = ruleset->players[player_index];
+
+			game::fox::LuaPushEntity(lock->get_lua_state(), ruleset_data);
+			game::fox::LuaPushEntity(lock->get_lua_state(), ruleset);
+			game::fox::LuaPushEntity(lock->get_lua_state(), player);
+			game::lua::lua_pushstring(lock->get_lua_state(), message.data());
+
+			game::fox::Script_::CallScriptFunc(ruleset->script, &a2, &func_name, lock->get_lua(), 4, 0);
 		}
 
 		void process_chat_msg(game::LobbyChatMsg_t* msg)
@@ -127,7 +154,8 @@ namespace text_chat::lobby
 			std::wstring formatted_msg;
 			formatted_msg.resize(0x400);
 
-			const auto send_msg = [](const std::wstring& message)
+			auto has_sent = false;
+			const auto send_msg = [&](const std::wstring& message)
 			{
 				if (!game::environment::is_dedi())
 				{
@@ -136,6 +164,7 @@ namespace text_chat::lobby
 
 				const auto message_a = utils::string::utf16_to_ascii(message);
 				console::info("%s\n", message_a.data());
+				has_sent = true;
 			};
 
 			const auto name_w = utils::string::utf8_to_utf16(name);
@@ -149,6 +178,12 @@ namespace text_chat::lobby
 			{
 				swprintf_s(formatted_msg.data(), formatted_msg.size(), L"^%c%s^7: %s", get_team_color(self_team, other_team), name_w.data(), text.data());
 				send_msg(formatted_msg);
+			}
+
+			if (matchmaking::is_host() && var_scr_chat_callback->current.enabled() && has_sent)
+			{
+				const auto utf8_text = utils::string::utf16_to_utf8(text);
+				script_chat_notify(index, utf8_text);
 			}
 		}
 
@@ -184,7 +219,7 @@ namespace text_chat::lobby
 	public:
 		void pre_load() override
 		{
-
+			var_scr_chat_callback = vars::register_bool("scr_chat_callback", false, 0, "enable OnPlayerSay ruleset callback");
 		}
 
 		void start() override
