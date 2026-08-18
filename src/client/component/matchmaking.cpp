@@ -13,6 +13,8 @@
 #include "text_chat/defs.hpp"
 #include "text_chat/ui.hpp"
 
+#include "utils/steam.hpp"
+
 #include <utils/hook.hpp>
 #include <utils/string.hpp>
 
@@ -54,7 +56,7 @@ namespace matchmaking
 			std::uint64_t steam_id;
 		};
 
-		std::unordered_set<std::uint64_t> kicked_steam_ids;
+		std::array<game::steam_id, 16> kicked_steam_ids;
 
 		struct callback_t
 		{
@@ -300,18 +302,27 @@ namespace matchmaking
 
 		void update_kick_list()
 		{
-			const auto kick_num = std::min(16ull, kicked_steam_ids.size());
-			set_lobby_data("kick_num", kick_num);
-			
-			auto index = 0;
-			for (const auto& id : kicked_steam_ids)
+			const auto match = get_match();
+			if (match == nullptr)
 			{
-				set_lobby_data(utils::string::va("kicked_id_%d", index++), id);
-				if (index >= 16)
-				{
-					break;
-				}
+				return;
 			}
+
+			std::memcpy(match->kicked_ids, kicked_steam_ids.data(), sizeof(game::steam_id) * kicked_steam_ids.size());
+
+			auto count = 0;
+			for (auto i = 0ull; i < kicked_steam_ids.size(); i++)
+			{
+				if (kicked_steam_ids[i].bits != 0)
+				{
+					++count;
+				}
+
+				utils::steam::set_lobby_data(match->lobby_id, "kicked_id", kicked_steam_ids[i].bits, static_cast<int>(i));
+			}
+
+			utils::steam::set_lobby_data(match->lobby_id, "kick_num", count);
+			match->kick_num = count;
 		}
 
 		void update_match_password()
@@ -440,13 +451,36 @@ namespace matchmaking
 
 	void ban_player_from_lobby(const game::steam_id steam_id)
 	{
-		kicked_steam_ids.insert(steam_id.bits);
+		for (auto i = 0; i < kicked_steam_ids.size(); i++)
+		{
+			if (kicked_steam_ids[i].bits == steam_id.bits)
+			{
+				return;
+			}
+		}
+
+		for (auto i = 0; i < kicked_steam_ids.size(); i++)
+		{
+			if (kicked_steam_ids[i].bits == 0)
+			{
+				kicked_steam_ids[i].bits = steam_id.bits;
+				break;
+			}
+		}
+
 		update_kick_list();
 	}
 
 	void unban_player_from_lobby(const game::steam_id steam_id)
 	{
-		kicked_steam_ids.erase(steam_id.bits);
+		for (auto i = 0; i < kicked_steam_ids.size(); i++)
+		{
+			if (kicked_steam_ids[i].bits == steam_id.bits)
+			{
+				kicked_steam_ids[i].bits = 0;
+			}
+		}
+
 		update_kick_list();
 	}
 
@@ -663,11 +697,8 @@ namespace matchmaking
 
 			command::add("clearkicks", []()
 			{
-				scheduler::once([]
-				{
-					kicked_steam_ids.clear();
-					set_lobby_data("kick_num", 0);
-				}, scheduler::session);
+				std::memset(kicked_steam_ids.data(), 0, kicked_steam_ids.size() * sizeof(game::steam_id));
+				update_kick_list();
 			});
 
 			command::add("connect_lobby", [](const command::params& params)
