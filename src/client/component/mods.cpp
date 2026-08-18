@@ -756,7 +756,6 @@ namespace mods
                 return result;
             }
 
-            console::debug("hashes left: %i\n", hash_job_count.load());
             return result || hash_job_count > 0;
         }
     }

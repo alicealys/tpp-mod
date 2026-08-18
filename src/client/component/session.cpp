@@ -7,7 +7,7 @@
 #include "scheduler.hpp"
 #include "console.hpp"
 #include "session.hpp"
-#include "dedicated_server.hpp"
+#include "network.hpp"
 #include "matchmaking.hpp"
 
 #include <utils/hook.hpp>
@@ -379,12 +379,11 @@ namespace session
 					}
 
 					const auto id = params.get_uint64(1);
-					scheduler::once([id]
-					{
-						game::steam_id steam_id{.bits = id};
-						matchmaking::ban_player_from_lobby(id);
-						dedicated_server::ban_player_from_session(steam_id);
-					}, scheduler::session);
+					game::steam_id steam_id{};
+					steam_id.bits = id;
+
+					matchmaking::ban_player_from_lobby(steam_id);
+					network::ban_player(steam_id);
 				});
 
 				command::add("unban", [](const command::params& params)
@@ -396,12 +395,11 @@ namespace session
 					}
 
 					const auto id = params.get_uint64(1);
-					scheduler::once([id]
-					{
-						game::steam_id steam_id{.bits = id};
-						matchmaking::unban_player_from_lobby(id);
-						dedicated_server::unban_player_from_session(steam_id);
-					}, scheduler::session);
+					game::steam_id steam_id{};
+					steam_id.bits = id;
+
+					matchmaking::unban_player_from_lobby(steam_id);
+					network::unban_player(steam_id);
 				});
 			}
 		}
@@ -507,9 +505,9 @@ namespace session
 
 						console::info(utils::string::va("%s has been kicked", name), false);
 
-						matchmaking::kick_player_from_lobby(client->sessionUserId->userId);
-						matchmaking::ban_player_from_lobby(client->sessionUserId->userId);
-						dedicated_server::ban_player_from_session(steam_id);
+						matchmaking::kick_player_from_lobby(steam_id);
+						matchmaking::ban_player_from_lobby(steam_id);
+						network::ban_player(steam_id);
 						game::fox::nt::Member_::Reset(client);
 					}, scheduler::session);
 				});

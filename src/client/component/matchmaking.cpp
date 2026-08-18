@@ -438,19 +438,19 @@ namespace matchmaking
 		}
 	}
 
-	void ban_player_from_lobby(const std::uint64_t steam_id)
+	void ban_player_from_lobby(const game::steam_id steam_id)
 	{
-		kicked_steam_ids.insert(steam_id);
+		kicked_steam_ids.insert(steam_id.bits);
 		update_kick_list();
 	}
 
-	void unban_player_from_lobby(const std::uint64_t steam_id)
+	void unban_player_from_lobby(const game::steam_id steam_id)
 	{
-		kicked_steam_ids.erase(steam_id);
+		kicked_steam_ids.erase(steam_id.bits);
 		update_kick_list();
 	}
 
-	void kick_player_from_lobby(const std::uint64_t steam_id)
+	void kick_player_from_lobby(const game::steam_id steam_id)
 	{
 		const auto match_container = game::s_mgoMatchMakingManager->match_container;
 		if (match_container == nullptr)
@@ -461,7 +461,7 @@ namespace matchmaking
 		kick_msg_t kick_msg{};
 		kick_msg.type = 1;
 		kick_msg.unk = 0xFFFFFFFF;
-		kick_msg.steam_id = steam_id;
+		kick_msg.steam_id = steam_id.bits;
 
 		const auto steam_matchmaking = (*game::SteamMatchmaking)();
 		steam_matchmaking->__vftable->SendLobbyChatMsg(steam_matchmaking, match_container->match->lobby_id, &kick_msg, sizeof(kick_msg));
@@ -551,6 +551,17 @@ namespace matchmaking
 		}
 
 		return match_container->match;
+	}
+
+	game::steam_id get_lobby_id()
+	{
+		const auto match = get_match();
+		if (match == nullptr)
+		{
+			return {};
+		}
+
+		return match->lobby_id;
 	}
 
 	bool is_host()
