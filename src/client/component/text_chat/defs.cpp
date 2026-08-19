@@ -73,23 +73,22 @@ namespace text_chat
 		return true;
 	}
 
-	std::wstring clean_message(const std::wstring& msg)
+	std::size_t clean_message(const std::wstring& msg, wchar_t* out, const std::size_t max_len)
 	{
-		std::wstring clean;
-		clean.resize(msg.size());
-		
-		auto index = 0;
-		for (auto i = 0; i < msg.size(); i++)
+		std::size_t index = 0;
+		const auto count = std::min(msg.size(), max_len);
+
+		for (auto i = 0; i < count; i++)
 		{
 			if (!renderer::is_char_printable(msg[i]))
 			{
 				continue;
 			}
 
-			clean[index++] = msg[i];
+			out[index++] = msg[i];
 		}
 
-		return clean;
+		return index;
 	}
 
 	void clear()

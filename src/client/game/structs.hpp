@@ -1850,17 +1850,17 @@ namespace game
 
 			struct Member_SessionInterface;
 
-			struct Member_SessionInterface_vtbl
-			{
-				int(__fastcall* GetIndex)(Member* this_);
-				void* (__fastcall* GetIntAnimationController)(Member* this_);
-				void(__fastcall* GetSessionIdString)(Member* this_, char*, void*);
-				void(__fastcall* __destructor)(Member* this_);
-			};
-
 			struct Member_SessionInterface
 			{
-				Member_SessionInterface_vtbl* __vftable;
+				struct vtable
+				{
+					int(__fastcall* GetIndex)(Member_SessionInterface* this_);
+					void* (__fastcall* GetIntAnimationController)(Member_SessionInterface* this_);
+					void(__fastcall* GetSessionIdString)(Member_SessionInterface* this_, char*, void*);
+					void(__fastcall* __destructor)(Member_SessionInterface* this_);
+				};
+
+				vtable* __vftable;
 			};
 
 			struct Member
@@ -2024,9 +2024,9 @@ namespace game
 
 				struct SessionImpl2_SessionInterface_vtbl
 				{
-					void* (__fastcall* GetLocalMemberInterface)(SessionImpl2_SessionInterface* this_);
-					void* (__fastcall* GetHostMemberInterface)(SessionImpl2_SessionInterface* this_);
-					void* (__fastcall* GetMemberInterfaceAtIndex)(SessionImpl2_SessionInterface* this_, void*);
+					Member_SessionInterface* (__fastcall* GetLocalMemberInterface)(SessionImpl2_SessionInterface* this_);
+					Member_SessionInterface* (__fastcall* GetHostMemberInterface)(SessionImpl2_SessionInterface* this_);
+					Member_SessionInterface* (__fastcall* GetMemberInterfaceAtIndex)(SessionImpl2_SessionInterface* this_, int);
 					int(__fastcall* GetMemberCount)(SessionImpl2_SessionInterface* this_);
 					unsigned int(__fastcall* GetOriginalValueCount)(SessionImpl2_SessionInterface* this_);
 					bool(__fastcall* IsHost)(SessionImpl2_SessionInterface* this_);
@@ -2091,9 +2091,89 @@ namespace game
 				};
 
 				static_assert(sizeof(SessionImpl2) == 232);
+
+				struct GameSocketImpl;
+				struct GameSocketImpl
+				{
+					struct Peer
+					{
+
+					};
+
+					struct vtable
+					{
+						void(__fastcall* RequestToSend)(GameSocketImpl*, int, const void*, unsigned int);
+						void(__fastcall* RequestToSendToMember)(GameSocketImpl*, char, int, const void*, unsigned int);
+						void(__fastcall* RequestToSendToMembers)(GameSocketImpl*, int, int, const void*, unsigned int);
+						unsigned int(__fastcall* GetPacketCount)(GameSocketImpl*, unsigned int);
+						unsigned int(__fastcall* GetPacketSize)(GameSocketImpl*, unsigned int, unsigned int);
+						void* (__fastcall* GetPacket)(GameSocketImpl*, unsigned int, unsigned int);
+						unsigned char(__fastcall* GetPacketSender)(GameSocketImpl*, unsigned int, unsigned int);
+						void(__fastcall* SetInterval)(GameSocketImpl*, int, unsigned char, float);
+						void(__fastcall* __destructor)(GameSocketImpl*, char);
+					};
+
+					vtable* __vftable;
+					short a1;
+					short a2;
+					char a3_1;
+					char a3_2;
+					short a4;
+					int a5;
+					int a6;
+					void* buf1;
+					void* buf2;
+				};
 			}
 		}
 	
+		namespace gm
+		{
+			enum PeerType
+			{
+				PEER_LOCAL = 0,
+				PEER_HOST = 1,
+				PEER_AUTHORITY = 2,
+				PEER_ALL = 3,
+				PEER_DIRECT = 4,
+			};
+
+			enum NetType
+			{
+
+			};
+
+			struct GameObjectMessageSystem
+			{
+				struct vtable
+				{
+					void(__fastcall* __destructor)(GameObjectMessageSystem*);
+					void(__fastcall* SendSignal)(GameObjectMessageSystem*, int* result, __int64 objectId, int peerType, const void* buffer, unsigned __int16 size, int a7, char memberIndex);
+					void(__fastcall* SendToSession)(GameObjectMessageSystem*);
+					void(__fastcall* SerialProcessSignals)(GameObjectMessageSystem*);
+				};
+
+				vtable* __vftable;
+			};
+
+			namespace impl
+			{
+				struct GameObjectMessageSystemImpl
+				{
+					struct vtable
+					{
+
+					};
+
+					vtable* __vftable;
+					char __pad0[16];
+					GameObjectMessageSystem messageSystem;
+					fox::nt::impl::GameSocketImpl* sockets[3];
+					char __pad1[304];
+				};
+			}
+		}
+
 		namespace ncl
 		{
 #pragma pack(push, 8)

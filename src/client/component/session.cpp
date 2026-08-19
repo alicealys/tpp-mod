@@ -233,7 +233,11 @@ namespace session
 					*index = i;
 				}
 
-				*is_self = local_member->sessionUserId->userId == member->sessionUserId->userId;
+				if (is_self != nullptr)
+				{
+					*is_self = local_member->sessionUserId->userId == member->sessionUserId->userId;
+				}
+
 				return member;
 			}
 		}

@@ -28,13 +28,16 @@ namespace text_chat
 	constexpr auto chat_message_fade_time = 1000;
 	constexpr auto chat_scroll_sound_id = 152;
 	constexpr auto chat_key_default = 'Y';
-	constexpr auto chat_message_max_len = 200;
+	constexpr auto chat_message_max_len = 128ull;
+	constexpr auto chat_message_buffer_len = 255ull;
 
-	using message_buffer_t = wchar_t[256];
+	using message_buffer_t = wchar_t[chat_message_buffer_len + 1];
 
 	struct chat_message_t
 	{
 		message_buffer_t buffer;
+		float width;
+		int lines;
 		std::chrono::high_resolution_clock::time_point time;
 	};
 
@@ -73,7 +76,7 @@ namespace text_chat
 	bool is_chat_enabled();
 	bool can_use_chat();
 
-	std::wstring clean_message(const std::wstring& msg);
+	std::size_t clean_message(const std::wstring& msg, wchar_t* out, const std::size_t max_len);
 
 	void clear();
 

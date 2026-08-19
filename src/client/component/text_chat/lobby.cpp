@@ -10,10 +10,13 @@
 #include "../session.hpp"
 #include "../scripting.hpp"
 #include "../matchmaking.hpp"
+#include "../game_socket.hpp"
 
 #include <utils/io.hpp>
 #include <utils/hook.hpp>
 #include <utils/string.hpp>
+
+//#define USE_GAME_SOCKET
 
 namespace text_chat::lobby
 {
@@ -23,11 +26,8 @@ namespace text_chat::lobby
 
 		vars::var_ptr var_scr_chat_callback;
 
-		constexpr auto max_chat_msg_len = 128;
-		constexpr auto chat_message_msg_id_ascii = 20;
-		constexpr auto chat_message_msg_id_utf16 = 30;
-		constexpr auto chat_team_message_msg_id_ascii = 21;
-		constexpr auto chat_team_message_msg_id_utf16 = 31;
+		constexpr auto chat_message_msg_id = 30;
+		constexpr auto chat_team_message_msg_id = 31;
 
 		const wchar_t* get_team_name(char team)
 		{
@@ -75,54 +75,28 @@ namespace text_chat::lobby
 			game::fox::Script_::CallScriptFunc(ruleset->script, &a2, &func_name, lock->get_lua(), 4, 0);
 		}
 
-		void process_chat_msg(game::LobbyChatMsg_t* msg)
+		void process_chat_msg_internal(game::fox::nt::Member* client, const char* buffer, const std::size_t size)
 		{
-			if (!game::environment::is_dedi() && !text_chat::is_chat_enabled())
+			if (size < 6)
 			{
 				return;
 			}
-
-			const auto steam_matchmaking = (*game::SteamMatchmaking)();
-			const auto steam_friends = (*game::SteamFriends)();
 
 			game::steam_id user{};
-			char buffer[4096]{};
-			int chat_entry_type{};
-			const auto size = steam_matchmaking->__vftable->GetLobbyChatEntry(steam_matchmaking, msg->lobby_id, msg->chat_id,
-				&user, buffer, sizeof(buffer), &chat_entry_type);
+			user.bits = client->sessionUserId->userId;
 
-			const auto match_container = game::s_mgoMatchMakingManager->match_container;
-			if (match_container == nullptr || match_container->match->lobby_id.bits != msg->lobby_id.bits)
-			{
-				return;
-			}
-
-			if (size < 5)
-			{
-				return;
-			}
-
-			const auto msg_id = *reinterpret_cast<int*>(buffer);
-
-			if ((msg_id != chat_message_msg_id_ascii && 
-				msg_id != chat_team_message_msg_id_ascii &&
-				msg_id != chat_message_msg_id_utf16 &&
-				msg_id != chat_team_message_msg_id_utf16) ||
+			const auto msg_id = *reinterpret_cast<const int*>(buffer);
+			if ((msg_id != chat_message_msg_id && msg_id != chat_team_message_msg_id) || 
 				mutes::is_muted(user.bits))
 			{
 				return;
 			}
 
-			auto is_self = false;
-			auto index = 0;
-			const auto client = session::get_client_by_steam_id(user.bits, &is_self, &index);
-			if (client == nullptr)
-			{
-				return;
-			}
+			const auto steam_friends = (*game::SteamFriends)();
+			const auto index = client->sessionInterface.__vftable->GetIndex(&client->sessionInterface);
 
 			auto name = session::get_player_name(static_cast<unsigned char>(index));
-			if (name == nullptr)
+			if (name == nullptr || name[0] == 0)
 			{
 				name = steam_friends->__vftable->GetFriendPersonaName(steam_friends, user);
 				if (name == nullptr)
@@ -131,60 +105,80 @@ namespace text_chat::lobby
 				}
 			}
 
-			const auto is_team_message = msg_id == chat_message_msg_id_ascii || msg_id == chat_team_message_msg_id_utf16;
-
+			const auto name_w = utils::string::utf8_to_utf16(name);
+			const auto is_team_message = msg_id == chat_team_message_msg_id;
 			const auto self_team = session::get_self_team();
 			const auto other_team = session::get_player_team(user.bits);
 
-			std::wstring text;
-
-			if (msg_id == chat_message_msg_id_ascii || msg_id == chat_team_message_msg_id_ascii)
+			const auto text = reinterpret_cast<const wchar_t*>(&buffer[sizeof(chat_message_msg_id)]);
+			auto text_len = (size - sizeof(chat_message_msg_id)) / sizeof(wchar_t);
+			if (text_len > chat_message_max_len)
 			{
-				auto text_buffer = &buffer[sizeof(chat_message_msg_id_ascii)];
-				text_buffer[max_chat_msg_len * sizeof(char)] = 0;
-				text = utils::string::convert(text_buffer);
-			}
-			else
-			{
-				auto text_buffer = reinterpret_cast<wchar_t*>(&buffer[sizeof(chat_message_msg_id_ascii)]);
-				text_buffer[max_chat_msg_len * sizeof(wchar_t)] = 0;
-				text = text_buffer;
+				text_len = chat_message_max_len;
 			}
 
 			std::wstring formatted_msg;
-			formatted_msg.resize(0x400);
-
-			auto has_sent = false;
-			const auto send_msg = [&](const std::wstring& message)
-			{
-				if (!game::environment::is_dedi())
-				{
-					text_chat::ui::print(message, true);
-				}
-
-				const auto message_a = utils::string::utf16_to_ascii(message);
-				console::info("%s\n", message_a.data());
-				has_sent = true;
-			};
-
-			const auto name_w = utils::string::utf8_to_utf16(name);
+			formatted_msg.resize(chat_message_buffer_len);
 
 			if (is_team_message && (other_team == self_team) && other_team != -1 && self_team != -1)
 			{
-				swprintf_s(formatted_msg.data(), formatted_msg.size(), L"^8(%s) %s^7: ^2%s", get_team_name(other_team), name_w.data(), text.data());
-				send_msg(formatted_msg);
+				_snwprintf_s(formatted_msg.data(), formatted_msg.size(), _TRUNCATE, 
+					L"^8(%s) %s^7: ^2%.*s", get_team_name(other_team), name_w.data(), static_cast<int>(text_len), text);
 			}
 			else if ((is_team_message && other_team == -1) || !is_team_message)
 			{
-				swprintf_s(formatted_msg.data(), formatted_msg.size(), L"^%c%s^7: %s", get_team_color(self_team, other_team), name_w.data(), text.data());
-				send_msg(formatted_msg);
+				_snwprintf_s(formatted_msg.data(), formatted_msg.size(), _TRUNCATE,
+					L"^%c%s^7: %.*s", get_team_color(self_team, other_team), name_w.data(), static_cast<int>(text_len), text);
 			}
 
-			if (matchmaking::is_host() && var_scr_chat_callback->current.enabled() && has_sent)
+			if (formatted_msg[0] == 0)
+			{
+				return;
+			}
+
+			if (!game::environment::is_dedi())
+			{
+				text_chat::ui::print(formatted_msg, true);
+			}
+
+			const auto message_a = utils::string::utf16_to_ascii(formatted_msg);
+			console::info("%s\n", message_a.data());
+
+			if (matchmaking::is_host() && var_scr_chat_callback->current.enabled())
 			{
 				const auto utf8_text = utils::string::utf16_to_utf8(text);
 				script_chat_notify(index, utf8_text);
 			}
+		}
+
+		void process_chat_msg(game::LobbyChatMsg_t* msg)
+		{
+			if (!game::environment::is_dedi() && !text_chat::is_chat_enabled())
+			{
+				return;
+			}
+
+			const auto steam_matchmaking = (*game::SteamMatchmaking)();
+
+			game::steam_id user{};
+			char buffer[0x500]{};
+			int chat_entry_type{};
+			const auto size = steam_matchmaking->__vftable->GetLobbyChatEntry(steam_matchmaking, msg->lobby_id, msg->chat_id,
+				&user, buffer, sizeof(buffer), &chat_entry_type);
+
+			const auto match = matchmaking::get_match();
+			if (match->lobby_id.bits != msg->lobby_id.bits)
+			{
+				return;
+			}
+
+			const auto client = session::get_client_by_steam_id(user.bits);
+			if (client == nullptr)
+			{
+				return;
+			}
+
+			process_chat_msg_internal(client, buffer, size);
 		}
 
 		int on_lobby_chat_msg_stub(void* a1, game::LobbyChatMsg_t* msg)
@@ -196,22 +190,29 @@ namespace text_chat::lobby
 
 	void send_chat_message(const std::wstring& text, bool team)
 	{
-		const auto match_container = game::s_mgoMatchMakingManager->match_container;
-		if (match_container == nullptr)
+		const auto match = matchmaking::get_match();
+		if (match == nullptr)
 		{
 			return;
 		}
 
 		const auto id = team
-			? chat_team_message_msg_id_utf16
-			: chat_message_msg_id_utf16;
+			? chat_team_message_msg_id
+			: chat_message_msg_id;
 
 		std::string buffer;
-		buffer.append(reinterpret_cast<const char*>(&id), sizeof(id));
-		buffer.append(reinterpret_cast<const char*>(text.data()), text.size() * 2);
+		buffer.reserve(sizeof(id) + text.size() * sizeof(wchar_t));
 
+		buffer.append(reinterpret_cast<const char*>(&id), sizeof(id));
+		buffer.append(reinterpret_cast<const char*>(text.data()), text.size() * sizeof(wchar_t));
+
+#ifdef USE_GAME_SOCKET
+		game_socket::send("chat_message", buffer, -1);
+#else
 		const auto steam_matchmaking = (*game::SteamMatchmaking)();
-		steam_matchmaking->__vftable->SendLobbyChatMsg(steam_matchmaking, match_container->match->lobby_id, buffer.data(), static_cast<int>(buffer.size()));
+		steam_matchmaking->__vftable->SendLobbyChatMsg(steam_matchmaking,
+			match->lobby_id, buffer.data(), static_cast<int>(buffer.size()));
+#endif
 	}
 
 	class component final : public component_interface
@@ -230,6 +231,55 @@ namespace text_chat::lobby
 			}
 
 			on_lobby_chat_msg_hook.create(SELECT_VALUE_LANG(0x1405A4000, 0x0), on_lobby_chat_msg_stub);
+
+#ifdef USE_GAME_SOCKET
+			game_socket::on("chat_message", [](game::fox::nt::impl::SessionImpl2* session,
+				const game_socket::message_info_t& info, const std::string_view& buffer)
+			{
+				if (info.game_object_id >= 16)
+				{
+					return;
+				}
+
+				const auto sender = session->allMembers.members[info.game_object_id];
+				if (sender == nullptr)
+				{
+					return;
+				}
+
+				process_chat_msg_internal(sender, buffer.data(), buffer.size());
+			});
+
+			game_socket::on("ui_print", [](game::fox::nt::impl::SessionImpl2* session,
+				const game_socket::message_info_t& info, const std::string_view& buffer)
+			{
+				if (game::environment::is_dedi() || info.peer_type != 5 || info.sender != 0)
+				{
+					return;
+				}
+
+				const auto len = std::min(chat_message_max_len, buffer.size() / sizeof(wchar_t));
+				std::wstring text{reinterpret_cast<const wchar_t*>(buffer.data()), len};
+				const auto ascii = utils::string::utf16_to_ascii(text);
+
+				ui::print(text, false);
+				console::info("%s\n", ascii.data());
+			});
+
+			command::add("tell", [](const command::params& params)
+			{
+				if (params.size() < 3)
+				{
+					return;
+				}
+
+				const auto client = params.get_int(1);
+				const auto msg = utils::string::utf8_to_utf16(params.join(2));
+				const auto buffer_view = std::string_view{reinterpret_cast<const char*>(msg.data()), msg.size() * sizeof(wchar_t)};
+
+				game_socket::send("ui_print", buffer_view, static_cast<std::int8_t>(client), 5);
+			});
+#endif
 
 			command::add("say", [](const command::params& params)
 			{
