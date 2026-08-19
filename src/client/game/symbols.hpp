@@ -50,6 +50,12 @@ namespace game
 			WEAK symbol<void(fox::RawMouseData*)> SetRawData{0x140031AF0, 0x1402827E0, 0x0, 0x0};
 		}
 
+		namespace Mutex_
+		{
+			WEAK symbol<void(Mutex*, int*)> SpinLock{0x141A4CD70, 0x1414A8E50, 0x0, 0x0};
+			WEAK symbol<void(Mutex*, int*)> Unlock{0x141A4CD90, 0x140036110, 0x0, 0x0};
+		}
+
 		namespace Buffer_
 		{
 			WEAK symbol<size_t(fox::Buffer* buffer)> GetSize{0x141C6C960, 0x140529B00, 0x0, 0x0};

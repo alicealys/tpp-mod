@@ -441,6 +441,11 @@ namespace game
 			pfimpl pf;
 		};
 
+		struct Mutex
+		{
+			char __pad0[16];
+		};
+
 		struct Quark
 		{
 			struct vtable
@@ -2169,7 +2174,9 @@ namespace game
 					char __pad0[16];
 					GameObjectMessageSystem messageSystem;
 					fox::nt::impl::GameSocketImpl* sockets[3];
-					char __pad1[304];
+					char __pad1[104];
+					Mutex mutex;
+					char __pad2[184];
 				};
 			}
 		}
