@@ -130,11 +130,7 @@ namespace text_chat::ui
 					break;
 				}
 
-				const auto display_width = chat_settings.width - chat_settings.margin * 2.f - chat_settings.scrollbar_width - chat_settings.font_height;
-				auto lines = 1;
-				renderer::calc_text_width(message.buffer, chat_settings.font_height, true, true, display_width, &lines);
-
-				messages_height += lines * chat_settings.font_height + chat_settings.margin;
+				messages_height += message.lines * chat_settings.font_height + chat_settings.margin;
 			}
 
 			const auto max_scroll = messages_height - stencil_size;
@@ -147,9 +143,9 @@ namespace text_chat::ui
 				state.view_text_offset_y = 0.f;
 			}
 
+			const auto box_height = std::min(messages_height, chat_settings.height);
 			if ((state.is_typing || game::tpp::ui::menu::impl::MotherBaseDeviceSystemImpl_::IsDeviceOpend()) && messages_height > 0.f)
 			{
-				const auto box_height = std::min(messages_height, chat_settings.height);
 				if (chat_settings.chat_direction < 0.f)
 				{
 					renderer::draw_box(r, x, y + chat_settings.line_height + chat_settings.margin + 1.f, chat_settings.width, box_height, bg_color, bg_color, 1.f);
@@ -215,14 +211,27 @@ namespace text_chat::ui
 				color_outline[3] = alpha;
 
 				const auto display_width = chat_settings.width - chat_settings.margin * 2.f - chat_settings.scrollbar_width;
-				auto lines = 1;
-				renderer::calc_text_width(message.buffer, chat_settings.font_height, true, true, display_width, &lines);
+				const auto height = chat_settings.chat_direction * (message.lines * chat_settings.font_height + chat_settings.margin);
+				
+				y_offset -= height;
 
-				y_offset -= chat_settings.chat_direction * (lines * chat_settings.font_height + chat_settings.margin);
+				auto pos_y = y_offset + chat_settings.chat_direction * state.view_text_offset_y;
+				if (chat_settings.chat_direction < 0.f)
+				{
+					pos_y -= (message.lines - 1) * chat_settings.font_height;
+				}
+				
+				const auto upper_bound = y - (box_height + chat_settings.font_height * 2.f) * chat_settings.chat_direction;
+				if (pos_y * chat_settings.chat_direction < upper_bound * chat_settings.chat_direction)
+				{
+					break;
+				}
 
-				renderer::draw_text(r, message.buffer, chat_settings.font_height, x + chat_settings.margin, y_offset + 
-					chat_settings.chat_direction * state.view_text_offset_y,
-					color, color_outline, true, display_width, 0.f, 0.f, 0.f, true);
+				if (pos_y * chat_settings.chat_direction <= y * chat_settings.chat_direction)
+				{
+					renderer::draw_text(r, message.buffer, chat_settings.font_height, x + chat_settings.margin, pos_y,
+						color, color_outline, true, display_width, 0.f, 0.f, 0.f, true);
+				}
 			}
 			
 			renderer::remove_stencil(r);
@@ -354,17 +363,15 @@ namespace text_chat::ui
 			return;
 		}
 
-		const auto cleaned_msg = clean_message(msg);
-
 		chat_state.access([&](chat_state_t& state)
 		{
-			chat_message_t message{};
-			wcsncpy_s(message.buffer, ARRAYSIZE(message.buffer), cleaned_msg.data(), _TRUNCATE);
+			auto& message = state.messages.emplace_front();
+			clean_message(msg, message.buffer, chat_message_buffer_len);
 			message.time = std::chrono::high_resolution_clock::now();
 
-			message.buffer[chat_message_max_len] = 0;
-
-			state.messages.push_front(message);
+			const auto display_width = chat_settings.width - chat_settings.margin * 2.f - chat_settings.scrollbar_width;
+			message.lines = 1;
+			message.width = renderer::calc_text_width(message.buffer, chat_settings.font_height, true, true, display_width, &message.lines);
 
 			if (play_sound)
 			{
