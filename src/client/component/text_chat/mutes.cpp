@@ -6,6 +6,7 @@
 #include "../command.hpp"
 #include "../console.hpp"
 #include "../vars.hpp"
+#include "../session.hpp"
 #include "mutes.hpp"
 
 #include <utils/io.hpp>
@@ -107,9 +108,14 @@ namespace text_chat::mutes
 			{
 				game::steam_id steam_id{};
 				steam_matchmaking->__vftable->GetLobbyMemberByIndex(steam_matchmaking, &steam_id, match_container->match->lobby_id, i);
-				const std::string name = steam_friends->__vftable->GetFriendPersonaName(steam_friends, steam_id);
-				const auto target_name_lower = utils::string::to_lower(name);
 
+				auto name = session::get_player_name(static_cast<unsigned char>(i));
+				if (name == nullptr || name[0] == 0)
+				{
+					name = steam_friends->__vftable->GetFriendPersonaName(steam_friends, steam_id);
+				}
+
+				const auto target_name_lower = utils::string::to_lower(name);
 				if (target_name_lower.starts_with(lower))
 				{
 					res_name = name;

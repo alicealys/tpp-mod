@@ -77,7 +77,12 @@ namespace session
 
 				game::steam_id steam_id{};
 				steam_id.bits = member->sessionUserId->userId;
-				const auto name = steam_friends->__vftable->GetFriendPersonaName(steam_friends, steam_id);
+
+				auto name = get_player_name(static_cast<unsigned char>(i));
+				if (name == nullptr || name[0] == 0)
+				{
+					name = steam_friends->__vftable->GetFriendPersonaName(steam_friends, steam_id);
+				};
 
 				if (game::environment::is_tpp())
 				{
@@ -269,9 +274,13 @@ namespace session
 			game::steam_id steam_id{};
 			steam_id.bits = member->sessionUserId->userId;
 
-			const std::string member_name = steam_friends->__vftable->GetFriendPersonaName(steam_friends, steam_id);
-			const auto member_name_lower = utils::string::to_lower(member_name);
+			auto member_name = get_player_name(static_cast<unsigned char>(i));
+			if (member_name == nullptr || member_name[0] == 0)
+			{
+				member_name = steam_friends->__vftable->GetFriendPersonaName(steam_friends, steam_id);
+			}
 
+			const auto member_name_lower = utils::string::to_lower(member_name);
 			if (member_name_lower.starts_with(lower))
 			{
 				*is_self = local_member->sessionUserId->userId == member->sessionUserId->userId;
