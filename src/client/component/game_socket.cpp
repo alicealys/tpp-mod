@@ -188,14 +188,13 @@ namespace game_socket
 		}
 	}
 
+	void send(const std::uint64_t message_type, const std::string_view& buffer, const std::int8_t client, const std::uint8_t peer_type)
+	{
+		send_raw(message_type, buffer.data(), buffer.size(), client, peer_type);
+	}
+
 	void send(const std::string& message_type, const std::string_view& buffer, const std::int8_t client, const std::uint8_t peer_type)
 	{
-		const auto message_system = *game::fox::gm::impl::g_messagesystem;
-		if (message_system == nullptr)
-		{
-			return;
-		}
-
 		const auto hash = game::fox::FoxStrHash32(message_type.data(), message_type.size());
 		send_raw(hash.id, buffer.data(), buffer.size(), client, peer_type);
 	}
@@ -211,12 +210,13 @@ namespace game_socket
 	public:
 		void pre_load() override
 		{
+			game_message_system_forward_signal_hook.create(SELECT_VALUE(0x140BFCAE0, 0x1408E9F20, 0x0, 0x0), game_message_system_forward_signal_stub);
+
 			if (!game::environment::is_mgo())
 			{
 				return;
 			}
 
-			game_message_system_forward_signal_hook.create(SELECT_VALUE(0x140BFCAE0, 0x1408E9F20, 0x0, 0x0), game_message_system_forward_signal_stub);
 		}
 	};
 }
