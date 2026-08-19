@@ -382,7 +382,7 @@ namespace renderer
 				}
 
 				const auto char_idx = game::fox::Utf8ToUtf32(&c);
-				if (char_idx >= 0xFFFF)
+				if (char_idx >= 0xFFFF || !is_char_printable(static_cast<wchar_t>(char_idx)))
 				{
 					continue;
 				}
@@ -413,7 +413,7 @@ namespace renderer
 				}
 
 				const auto char_idx = game::fox::Utf8ToUtf32(&c);
-				if (char_idx >= 0xFFFF)
+				if (char_idx >= 0xFFFF || !is_char_printable(static_cast<wchar_t>(char_idx)))
 				{
 					continue;
 				}
