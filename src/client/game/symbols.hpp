@@ -92,6 +92,14 @@ namespace game
 			}
 		}
 
+		namespace gm
+		{
+			namespace impl
+			{
+				WEAK symbol<GameObjectMessageSystemImpl*> g_messagesystem{0x142C3A5D0, 0x142057548, 0x0, 0x0};
+			}
+		}
+
 		namespace nt
 		{
 			namespace Session
