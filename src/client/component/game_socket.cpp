@@ -211,12 +211,6 @@ namespace game_socket
 		void pre_load() override
 		{
 			game_message_system_forward_signal_hook.create(SELECT_VALUE(0x140BFCAE0, 0x1408E9F20, 0x0, 0x0), game_message_system_forward_signal_stub);
-
-			if (!game::environment::is_mgo())
-			{
-				return;
-			}
-
 		}
 	};
 }
