@@ -16,7 +16,7 @@
 #include <utils/hook.hpp>
 #include <utils/string.hpp>
 
-//#define USE_GAME_SOCKET
+#define USE_GAME_SOCKET
 
 namespace text_chat::lobby
 {
@@ -220,6 +220,11 @@ namespace text_chat::lobby
 	public:
 		void pre_load() override
 		{
+			if (!game::environment::is_mgo())
+			{
+				return;
+			}
+
 			var_scr_chat_callback = vars::register_bool("scr_chat_callback", false, 0, "enable OnPlayerSay ruleset callback");
 		}
 
