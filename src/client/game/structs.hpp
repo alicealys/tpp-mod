@@ -2149,7 +2149,7 @@ namespace game
 				{
 					void(__fastcall* __destructor)(GameObjectMessageSystem*);
 					void(__fastcall* SendSignal)(GameObjectMessageSystem*, int* result, __int64 objectId, int peerType, const void* buffer, unsigned __int16 size, int a7, char memberIndex);
-					void(__fastcall* SendToSession)(GameObjectMessageSystem*);
+					void(__fastcall* SendToSessionId)(GameObjectMessageSystem*);
 					void(__fastcall* SerialProcessSignals)(GameObjectMessageSystem*);
 				};
 
