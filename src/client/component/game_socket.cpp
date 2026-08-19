@@ -78,6 +78,15 @@ namespace game_socket
 		}
 
 		const auto socket = message_system->sockets[0];
+		auto lock = 0;
+		game::fox::Mutex_::SpinLock(&message_system->mutex, &lock);
+		const auto _0 = gsl::finally([&]
+		{
+			if (lock >= 0)
+			{
+				game::fox::Mutex_::Unlock(&message_system->mutex, &lock);
+			}
+		});
 
 		std::string message;
 		constexpr const auto header_size = sizeof(message_header_t);
