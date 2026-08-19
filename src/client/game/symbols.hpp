@@ -306,6 +306,13 @@ namespace game
 		}
 	}
 
+	namespace luaext
+	{
+		WEAK symbol<void*(lua::lua_State*, const char*, __int64, __int64, __int64)> lua_bind_start{0x141A158E0, 0x141472990, 0x0, 0x0};
+		WEAK symbol<void*(void*, const char*, void*, __int64, __int64, __int64)> lua_bind_closure{0x141A15690, 0x141472740, 0x0, 0x0};
+		WEAK symbol<void* (void*, __int64, __int64, __int64)> lua_bind_end{0x141A15760, 0x141472810, 0x0, 0x0};
+	}
+
 	namespace tpp
 	{
 		namespace sys
