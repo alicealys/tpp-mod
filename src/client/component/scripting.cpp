@@ -588,6 +588,12 @@ namespace scripting
 				return 0;
 			}
 
+			if (var->type != vars::var_type_string)
+			{
+				game::lua::lua_pushstring(state, "");
+				return 1;
+			}
+
 			const auto& value = var->current.get_string();
 			game::lua::lua_pushstring(state, value.data());
 			return 1;

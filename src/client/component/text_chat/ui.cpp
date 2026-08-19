@@ -312,6 +312,20 @@ namespace text_chat::ui
 				x + chat_settings.margin, y, color, color_outline, true, chat_settings.width - chat_settings.margin * 2.f);
 		}
 
+		void set_chat_settings()
+		{
+			const auto width = var_chat_width->current.get_float();
+			const auto scale = var_chat_scale->current.get_float();
+
+			chat_settings.width = width * scale;
+			chat_settings.margin = 4.f;
+			chat_settings.scrollbar_width = 5.f * scale;
+			chat_settings.font_height = chat_settings.base_font_height * scale;
+			chat_settings.line_height = chat_settings.base_line_height * scale;
+			chat_settings.height = var_chat_height->current.get_int() * chat_settings.line_height;
+			chat_settings.chat_direction = var_chat_direction->current.get_int() == 0 ? 1.f : -1.f;
+		}
+
 		void draw_chat(game::fox::gr::dg::plugins::Draw2DRenderer* r)
 		{
 			if (!is_chat_enabled() || !can_use_chat())
@@ -321,19 +335,10 @@ namespace text_chat::ui
 
 			chat_state.access([&](chat_state_t& state)
 			{
-				const auto pos = var_chat_offset->current.get_vec2();
-				const auto width = var_chat_width->current.get_float();
-				const auto scale = var_chat_scale->current.get_float();
-
-				chat_settings.width = width * scale;
-				chat_settings.margin = 4.f;
-				chat_settings.scrollbar_width = 5.f * scale;
-				chat_settings.font_height = chat_settings.base_font_height * scale;
-				chat_settings.line_height = chat_settings.base_line_height * scale;
-				chat_settings.height = var_chat_height->current.get_int() * chat_settings.line_height;
-				chat_settings.chat_direction = var_chat_direction->current.get_int() == 0 ? 1.f : -1.f;
-
 				update_chat_sounds(state);
+				set_chat_settings();
+
+				const auto pos = var_chat_offset->current.get_vec2();
 				draw_messages(r, state, pos.x, pos.y);
 
 				if (state.is_typing)
@@ -362,6 +367,8 @@ namespace text_chat::ui
 		{
 			return;
 		}
+		
+		set_chat_settings();
 
 		chat_state.access([&](chat_state_t& state)
 		{
