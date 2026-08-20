@@ -9,12 +9,15 @@
 #include "session.hpp"
 #include "network.hpp"
 #include "matchmaking.hpp"
+#include "text_chat/defs.hpp"
 
 #include <utils/hook.hpp>
 #include <utils/string.hpp>
 
 namespace session
 {
+	session_info_t session_info{};
+
 	namespace
 	{
 		const char* get_session_state_name(const int state)
@@ -103,17 +106,6 @@ namespace session
 			}
 		}
 
-		void print_rtt()
-		{
-			const auto main_session = *game::s_pSession;
-			if (!main_session)
-			{
-				return;
-			}
-
-			printf("rtt: %ims\n", get_rtt(main_session));
-		}
-
 		void run_frame()
 		{
 			static auto prev_state = 0u;
@@ -121,13 +113,32 @@ namespace session
 			const auto main_session = *game::s_pSession;
 			if (main_session == nullptr)
 			{
+				session_info = {};
 				return;
 			}
 
-			const auto state = main_session->__vftable->tpp.GetState(main_session);
+			const auto state = get_state(main_session);
 			if (state != prev_state)
 			{
+				text_chat::clear();
 				console::debug("[session] state updated: %i\n", state);
+			}
+
+			session_info.active = true;
+			session_info.state = state;
+			session_info.is_host = main_session->sessionInterface.__vftable->IsHost(&main_session->sessionInterface);
+			const auto host = main_session->sessionInterface.__vftable->GetMemberInterfaceAtIndex(&main_session->sessionInterface, 0);
+
+			switch (state)
+			{
+			case 2:
+			case 3:
+			case 7:
+				session_info.is_connected = host != nullptr;
+				break;
+			default:
+				session_info.is_connected = false;
+				break;
 			}
 
 			prev_state = state;
@@ -161,7 +172,7 @@ namespace session
 		return session->sessionInterface.__vftable->IsHost(&session->sessionInterface);
 	}
 
-	int get_state(game::fox::nt::impl::SessionImpl2* session)
+	unsigned int get_state(game::fox::nt::impl::SessionImpl2* session)
 	{
 		if (session == nullptr)
 		{
@@ -425,8 +436,6 @@ namespace session
 			{
 				scheduler::once(print_status, scheduler::session);
 			});
-
-			command::add("rtt", print_rtt);
 
 			if (game::environment::is_tpp())
 			{

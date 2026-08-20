@@ -527,7 +527,12 @@ namespace matchmaking
 
 	game::steam_id get_current_steam_id()
 	{
-		game::steam_id result{};
+		static game::steam_id result{};
+		if (result.bits != 0)
+		{
+			return result;
+		}
+
 		const auto steam_user = (*game::SteamUser)();
 		if (steam_user == nullptr)
 		{

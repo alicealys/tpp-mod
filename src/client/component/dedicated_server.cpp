@@ -181,7 +181,7 @@ namespace dedicated_server
 			directx::disable_d3d11();
 
 			SetConsoleTitle("MGO Dedicated Server");
-			scheduler::loop(update_console_title, scheduler::net, 1s);
+			scheduler::loop(update_console_title, scheduler::session, 1s);
 
 			utils::hook::set<std::uint8_t>(0x140A9EAE0, 0xC3); // dont build scene
 			utils::hook::set<std::uint8_t>(0x140A9D01C, 0xEB); // ^

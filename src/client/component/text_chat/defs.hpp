@@ -33,6 +33,16 @@ namespace text_chat
 
 	using message_buffer_t = wchar_t[chat_message_buffer_len + 1];
 
+	enum chat_input_mode_t
+	{
+		mode_none = 0,
+		mode_chat = 1,
+		mode_chat_team = 2,
+		mode_count = 3,
+	};
+
+	extern const wchar_t* chat_prefixes[mode_count];
+
 	struct chat_message_t
 	{
 		message_buffer_t buffer;
@@ -47,13 +57,6 @@ namespace text_chat
 		bool started;
 		std::chrono::high_resolution_clock::time_point start;
 		std::chrono::milliseconds duration;
-	};
-
-	enum chat_input_mode_t
-	{
-		mode_none = 0,
-		mode_chat = 1,
-		mode_chat_team = 2,
 	};
 
 	struct chat_state_t

@@ -2075,7 +2075,7 @@ namespace game
 					fox::nt::Member* hostMember;
 					fox::nt::Group allMembers;
 					fox::nt::Group peerMembers;
-					unsigned int flags;
+					unsigned int state;
 					char sessionIndex;
 					void* a4;
 					int a5;
