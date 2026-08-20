@@ -7,6 +7,7 @@
 #include "ui.hpp"
 #include "lobby.hpp"
 #include "../session.hpp"
+#include "../binds.hpp"
 #include "../renderer/fonts.hpp"
 
 #include <utils/hook.hpp>
@@ -375,6 +376,7 @@ namespace text_chat::input
 					return;
 				}
 
+				binds::release_all_keys();
 				chat_state.access([](chat_state_t& state)
 				{
 					stop_typing(state);
@@ -392,6 +394,7 @@ namespace text_chat::input
 						return;
 					}
 
+					binds::release_all_keys();
 					chat_state.access([](chat_state_t& state)
 					{
 						stop_typing(state);
