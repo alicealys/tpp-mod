@@ -600,6 +600,18 @@ namespace binds
 		return false;
 	}
 
+	void release_all_keys()
+	{
+		for (auto i = ' '; i < 'Z'; i++)
+		{
+			game::fox::RawKeyboardData data{};
+			data.isUp = true;
+			data.key = game::fox::g_vkKeyTable[i];
+			data.keyAscii = -1;
+			data.keyUnicode = 0;
+			game::fox::KeyboardListener_::SetRawKeyData(&data);
+		}
+	}
 
 	class component final : public component_interface
 	{
