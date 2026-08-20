@@ -224,6 +224,4 @@ namespace game_socket
 	};
 }
 
-#ifdef DEBUG
 REGISTER_COMPONENT(game_socket::component)
-#endif
