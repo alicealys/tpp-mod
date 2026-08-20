@@ -356,11 +356,6 @@ namespace game
 		};
 	}
 
-	namespace tpp::ui::menu
-	{
-		struct UiCommonDataManager;
-	}
-
 	namespace gn
 	{
 		struct Buffer
@@ -2323,6 +2318,27 @@ namespace game
 		{
 			namespace impl
 			{
+				struct MbDvcSoundControllerImpl;
+
+				struct MbDvcSoundControllerImpl
+				{
+					struct vtable
+					{
+						void(__fastcall* __destructor)(tpp::ui::menu::impl::MbDvcSoundControllerImpl*);
+						void(__fastcall* Update)(tpp::ui::menu::impl::MbDvcSoundControllerImpl*);
+						void(__fastcall* Stop)(tpp::ui::menu::impl::MbDvcSoundControllerImpl*);
+						void(__fastcall* RequestVoice)(tpp::ui::menu::impl::MbDvcSoundControllerImpl*, unsigned __int8 a2);
+						void(__fastcall* CancelRequestVoice)(tpp::ui::menu::impl::MbDvcSoundControllerImpl*);
+						void(__fastcall* SetDelayTime)(tpp::ui::menu::impl::MbDvcSoundControllerImpl*);
+						void(__fastcall* SetMbDvcOpen)(tpp::ui::menu::impl::MbDvcSoundControllerImpl*);
+						void(__fastcall* SetVoiceInvalid)(tpp::ui::menu::impl::MbDvcSoundControllerImpl*);
+						void(__fastcall* SetAllVoiceInvalid)(tpp::ui::menu::impl::MbDvcSoundControllerImpl*);
+						void(__fastcall* GetVoiceTypeByName)(tpp::ui::menu::impl::MbDvcSoundControllerImpl*);
+					};
+
+					vtable* __vftable;
+				};
+
 				struct MenuSystemImpl
 				{
 					struct vtable
@@ -2433,6 +2449,19 @@ namespace game
 					vtable* __vftable;
 				};
 			}
+
+			struct UiCommonDataManager
+			{
+				struct vtable
+				{
+
+				};
+
+				vtable* __vftable;
+				char __pad0[128];
+				impl::MbDvcSoundControllerImpl* soundController;
+
+			};
 
 			namespace mbm
 			{

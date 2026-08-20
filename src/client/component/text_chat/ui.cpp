@@ -347,16 +347,33 @@ namespace text_chat::ui
 			});
 		}
 
+		void play_voice(unsigned char se_id)
+		{
+			const auto ui_inst = game::tpp::ui::menu::UiCommonDataManager_::GetInstance();
+			if (se_id < 0x97 || ui_inst == nullptr || ui_inst->soundController == nullptr)
+			{
+				return;
+			}
+
+			ui_inst->soundController->__vftable->RequestVoice(ui_inst->soundController, se_id - 151);
+		}
+
 		char announce_log_view_stub(void* a1, const char* msg, char a3, unsigned __int8 a4, char a5)
 		{
-			if (is_chat_enabled() && *msg != 0)
+			if (!is_chat_enabled())
+			{
+				return announce_log_view_hook.invoke<char>(a1, msg, a3, a4, a5);
+			}
+
+			play_voice(a4);
+
+			if (*msg != 0)
 			{
 				const auto converted_msg = utils::string::utf8_to_utf16(msg, chat_message_max_len);
 				ui::print(converted_msg, false);
-				return 0;
 			}
 
-			return announce_log_view_hook.invoke<char>(a1, msg, a3, a4, a5);
+			return 1;
 		}
 	}
 
