@@ -133,6 +133,7 @@ namespace session
 			{
 			case 2:
 			case 3:
+			case 6:
 			case 7:
 				session_info.is_connected = host != nullptr;
 				break;
@@ -467,10 +468,7 @@ namespace session
 					session->acceptEnabled = 1;
 				});
 
-				command::add("session_close", [](const command::params& params)
-				{
-					utils::hook::invoke<void>(SELECT_VALUE_LANG(0x146457B20, 0x0));
-				});
+				command::add("session_close", game::tpp::gm::tool::CloseSession);
 
 				command::add("session_connect", [](const command::params& params)
 				{

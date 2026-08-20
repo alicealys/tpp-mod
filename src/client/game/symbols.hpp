@@ -343,6 +343,11 @@ namespace game
 					}
 				}
 			}
+
+			namespace tool
+			{
+				WEAK symbol<void()> CloseSession{0x140A1A710, 0x0, 0x0, 0x0};
+			}
 		}
 
 		namespace ui
