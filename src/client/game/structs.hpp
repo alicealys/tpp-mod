@@ -4089,8 +4089,9 @@ namespace game
 			mbm::PlayerBasicInfo* playerInfos;
 			char __pad2[8];
 			short maxPlayers;
-			char __pad3[10];
+			char __pad3[6];
 			SessionConnectInfo* sessionConnectInfo;
+			char __pad4[4];
 			DisplayName* displayName1;
 			DisplayName* displayName2;
 		};
