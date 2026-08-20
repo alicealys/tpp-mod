@@ -268,7 +268,7 @@ namespace text_chat::ui
 			const auto ms_epoch = static_cast<std::uint64_t>(std::chrono::duration_cast<std::chrono::milliseconds>(now.time_since_epoch()).count());
 			const auto pulse_alpha = 1.f - (static_cast<float>(ms_epoch % 1500) / 1500.f) * 0.7f;
 
-			auto prefix = L"say to all";
+			const auto prefix = chat_prefixes[state.mode];
 
 			float box_outline_color[4]{};
 			box_outline_color[0] = 1.f;
@@ -277,7 +277,6 @@ namespace text_chat::ui
 
 			if (state.mode == mode_chat_team)
 			{
-				prefix = L"say to team";
 				box_outline_color[0] = 0.7f;
 				box_outline_color[1] = 0.89f;
 				box_outline_color[2] = 0.99f;
@@ -408,22 +407,17 @@ namespace text_chat::ui
 	public:
 		void pre_load() override
 		{
-			if (!game::environment::is_mgo() || game::environment::is_dedi())
+			if (game::environment::is_dedi())
 			{
 				return;
 			}
 
 			renderer::on_frame(draw_chat);
-		}
 
-		void start() override
-		{
-			if (!game::environment::is_mgo() || game::environment::is_dedi())
+			if (game::environment::is_mgo())
 			{
-				return;
+				announce_log_view_hook.create(SELECT_VALUE(0x140863C60, 0x1405E7280, 0x0, 0x0), announce_log_view_stub);
 			}
-
-			announce_log_view_hook.create(SELECT_VALUE(0x140863C60, 0x1405E7280, 0x0, 0x0), announce_log_view_stub);
 		}
 	};
 }

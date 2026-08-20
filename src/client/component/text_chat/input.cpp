@@ -353,7 +353,7 @@ namespace text_chat::input
 
 		void start() override
 		{
-			if (!game::environment::is_mgo() || game::environment::is_dedi())
+			if (game::environment::is_dedi())
 			{
 				return;
 			}
@@ -383,20 +383,23 @@ namespace text_chat::input
 				});
 			});
 
-			command::add("chatteam", []
+			if (game::environment::is_mgo())
 			{
-				if (!is_chat_enabled() || !can_use_chat())
+				command::add("chatteam", []
 				{
-					return;
-				}
+					if (!is_chat_enabled() || !can_use_chat())
+					{
+						return;
+					}
 
-				chat_state.access([](chat_state_t& state)
-				{
-					stop_typing(state);
-					state.is_typing = true;
-					state.mode = mode_chat_team;
+					chat_state.access([](chat_state_t& state)
+					{
+						stop_typing(state);
+						state.is_typing = true;
+						state.mode = mode_chat_team;
+					});
 				});
-			});
+			}
 		}
 	};
 }

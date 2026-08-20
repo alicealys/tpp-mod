@@ -29,6 +29,9 @@ namespace text_chat::lobby
 		constexpr auto chat_message_msg_id = 30;
 		constexpr auto chat_team_message_msg_id = 31;
 
+		using process_msg_fn_t = void (__fastcall*)(game::fox::nt::Member*, const char*, const std::size_t);
+		process_msg_fn_t process_chat_msg_fn = nullptr;
+
 		const wchar_t* get_team_name(char team)
 		{
 			switch (team)
@@ -75,7 +78,55 @@ namespace text_chat::lobby
 			game::fox::Script_::CallScriptFunc(ruleset->script, &a2, &func_name, lock->get_lua(), 4, 0);
 		}
 
-		void process_chat_msg_internal(game::fox::nt::Member* client, const char* buffer, const std::size_t size)
+		void process_chat_msg_tpp(game::fox::nt::Member* client, const char* buffer, const std::size_t size)
+		{
+			if (size < 6)
+			{
+				return;
+			}
+
+			game::steam_id user{};
+			user.bits = client->sessionUserId->userId;
+
+			const auto msg_id = *reinterpret_cast<const int*>(buffer);
+			if (msg_id != chat_message_msg_id)
+			{
+				return;
+			}
+
+			const auto steam_friends = (*game::SteamFriends)();
+			const auto name = steam_friends->__vftable->GetFriendPersonaName(steam_friends, user);
+			const auto name_w = utils::string::utf8_to_utf16(name);
+
+			const auto text = reinterpret_cast<const wchar_t*>(&buffer[sizeof(chat_message_msg_id)]);
+			auto text_len = (size - sizeof(chat_message_msg_id)) / sizeof(wchar_t);
+			if (text_len > chat_message_max_len)
+			{
+				text_len = chat_message_max_len;
+			}
+
+			std::wstring formatted_msg;
+			formatted_msg.resize(chat_message_buffer_len);
+
+			const auto self = matchmaking::get_current_steam_id();
+			if (user.bits == self.bits)
+			{
+				_snwprintf_s(formatted_msg.data(), formatted_msg.size(), _TRUNCATE,
+					L"^7%s^7: %.*s", name_w.data(), static_cast<int>(text_len), text);
+			}
+			else
+			{
+				_snwprintf_s(formatted_msg.data(), formatted_msg.size(), _TRUNCATE,
+					L"^1%s^7: %.*s", name_w.data(), static_cast<int>(text_len), text);
+			}
+
+			text_chat::ui::print(formatted_msg, true);
+
+			const auto message_a = utils::string::utf16_to_ascii(formatted_msg);
+			console::info("%s\n", message_a.data());
+		}
+
+		void process_chat_msg_mgo(game::fox::nt::Member* client, const char* buffer, const std::size_t size)
 		{
 			if (size < 6)
 			{
@@ -178,7 +229,7 @@ namespace text_chat::lobby
 				return;
 			}
 
-			process_chat_msg_internal(client, buffer, size);
+			process_chat_msg_fn(client, buffer, size);
 		}
 
 		int on_lobby_chat_msg_stub(void* a1, game::LobbyChatMsg_t* msg)
@@ -190,12 +241,6 @@ namespace text_chat::lobby
 
 	void send_chat_message(const std::wstring& text, bool team)
 	{
-		const auto match = matchmaking::get_match();
-		if (match == nullptr)
-		{
-			return;
-		}
-
 		const auto id = team
 			? chat_team_message_msg_id
 			: chat_message_msg_id;
@@ -209,6 +254,17 @@ namespace text_chat::lobby
 #ifdef USE_GAME_SOCKET
 		game_socket::send("chat_message", buffer, -1);
 #else
+		if (!game::environment::is_mgo())
+		{
+			return;
+		}
+
+		const auto match = matchmaking::get_match();
+		if (match == nullptr)
+		{
+			return;
+		}
+
 		const auto steam_matchmaking = (*game::SteamMatchmaking)();
 		steam_matchmaking->__vftable->SendLobbyChatMsg(steam_matchmaking,
 			match->lobby_id, buffer.data(), static_cast<int>(buffer.size()));
@@ -230,12 +286,15 @@ namespace text_chat::lobby
 
 		void start() override
 		{
-			if (!game::environment::is_mgo())
+			if (game::environment::is_mgo())
 			{
-				return;
+				on_lobby_chat_msg_hook.create(SELECT_VALUE_LANG(0x1405A4000, 0x0), on_lobby_chat_msg_stub);
+				process_chat_msg_fn = process_chat_msg_mgo;
 			}
-
-			on_lobby_chat_msg_hook.create(SELECT_VALUE_LANG(0x1405A4000, 0x0), on_lobby_chat_msg_stub);
+			else
+			{
+				process_chat_msg_fn = process_chat_msg_tpp;
+			}
 
 #ifdef USE_GAME_SOCKET
 			game_socket::on("chat_message", [](game::fox::nt::impl::SessionImpl2* session,
@@ -252,37 +311,7 @@ namespace text_chat::lobby
 					return;
 				}
 
-				process_chat_msg_internal(sender, buffer.data(), buffer.size());
-			});
-
-			game_socket::on("ui_print", [](game::fox::nt::impl::SessionImpl2* session,
-				const game_socket::message_info_t& info, const std::string_view& buffer)
-			{
-				if (game::environment::is_dedi() || info.peer_type != 5 || info.sender != 0)
-				{
-					return;
-				}
-
-				const auto len = std::min(chat_message_max_len, buffer.size() / sizeof(wchar_t));
-				std::wstring text{reinterpret_cast<const wchar_t*>(buffer.data()), len};
-				const auto ascii = utils::string::utf16_to_ascii(text);
-
-				ui::print(text, false);
-				console::info("%s\n", ascii.data());
-			});
-
-			command::add("tell", [](const command::params& params)
-			{
-				if (params.size() < 3)
-				{
-					return;
-				}
-
-				const auto client = params.get_int(1);
-				const auto msg = utils::string::utf8_to_utf16(params.join(2));
-				const auto buffer_view = std::string_view{reinterpret_cast<const char*>(msg.data()), msg.size() * sizeof(wchar_t)};
-
-				game_socket::send("ui_print", buffer_view, static_cast<std::int8_t>(client), 5);
+				process_chat_msg_fn(sender, buffer.data(), buffer.size());
 			});
 #endif
 
@@ -297,16 +326,51 @@ namespace text_chat::lobby
 				send_chat_message(msg, false);
 			});
 
-			command::add("say_team", [](const command::params& params)
+			if (game::environment::is_mgo())
 			{
-				if (params.size() < 2)
+#ifdef USE_GAME_SOCKET
+				game_socket::on("ui_print", [](game::fox::nt::impl::SessionImpl2* session,
+					const game_socket::message_info_t& info, const std::string_view& buffer)
 				{
-					return;
-				}
+					if (game::environment::is_dedi() || info.peer_type != 5 || info.sender != 0)
+					{
+						return;
+					}
 
-				const auto msg = utils::string::convert(params.join(1));
-				send_chat_message(msg, true);
-			});
+					const auto len = std::min(chat_message_max_len, buffer.size() / sizeof(wchar_t));
+					std::wstring text{reinterpret_cast<const wchar_t*>(buffer.data()), len};
+					const auto ascii = utils::string::utf16_to_ascii(text);
+
+					ui::print(text, false);
+					console::info("%s\n", ascii.data());
+				});
+
+				command::add("tell", [](const command::params& params)
+				{
+					if (params.size() < 3)
+					{
+						return;
+					}
+
+					const auto client = params.get_int(1);
+					const auto msg = utils::string::utf8_to_utf16(params.join(2));
+					const auto buffer_view = std::string_view{reinterpret_cast<const char*>(msg.data()), msg.size() * sizeof(wchar_t)};
+
+					game_socket::send("ui_print", buffer_view, static_cast<std::int8_t>(client), 5);
+				});
+#endif
+
+				command::add("say_team", [](const command::params& params)
+				{
+					if (params.size() < 2)
+					{
+						return;
+					}
+
+					const auto msg = utils::string::convert(params.join(1));
+					send_chat_message(msg, true);
+				});
+			}
 		}
 	};
 }

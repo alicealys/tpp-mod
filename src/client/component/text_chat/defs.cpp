@@ -7,6 +7,8 @@
 #include "ui.hpp"
 #include "input.hpp"
 #include "../renderer/fonts.hpp"
+#include "../matchmaking.hpp"
+#include "../session.hpp"
 
 #include <utils/string.hpp>
 
@@ -25,33 +27,25 @@ namespace text_chat
 	vars::var_ptr var_chat_width;
 	vars::var_ptr var_chat_direction;
 
-	wchar_t chat_input_prefix[] = L"say: ";
-
 	bool initialized;
 
 	utils::concurrency::container<chat_state_t, std::recursive_mutex> chat_state;
 
+	const wchar_t* chat_prefixes[mode_count]{};
+
 	bool is_chat_enabled()
 	{
-		if (!game::environment::is_mgo())
-		{
-			return false;
-		}
-
 		return var_chat_enable->current.enabled();
 	}
 
 	bool can_use_chat()
 	{
-		if (!game::environment::is_mgo())
+		if (!session::session_info.is_connected)
 		{
 			return false;
 		}
 
-		const auto match_container = game::s_mgoMatchMakingManager->match_container;
-		const auto session = *game::s_pSession;
-		if (match_container == nullptr || session == nullptr || match_container->match->lobby_id.bits == 0 || 
-			session->sessionInterface.__vftable->IsConnecting(&session->sessionInterface))
+		if (game::environment::is_mgo() && matchmaking::get_match() == nullptr)
 		{
 			return false;
 		}
@@ -109,7 +103,7 @@ namespace text_chat
 	public:
 		void pre_load() override
 		{
-			if (!game::environment::is_mgo() || game::environment::is_dedi())
+			if (game::environment::is_dedi())
 			{
 				return;
 			}
@@ -142,9 +136,6 @@ namespace text_chat
 			var_chat_input_pulse = vars::register_bool("chat_input_pulse", 
 				true, vars::var_flag_saved, "enable chat input box outline pulse");
 
-			var_chat_offset = vars::register_vec2("chat_offset",
-				{100.f, 600.f}, 0.f, 1500.f, vars::var_flag_saved, "chat offset");
-
 			var_chat_height = vars::register_int("chat_height", 
 				6, 1, 10, vars::var_flag_saved, "chat height");
 
@@ -153,9 +144,31 @@ namespace text_chat
 
 			var_chat_scale = vars::register_float("chat_scale",
 				1.f, 0.1f, 2.f, vars::var_flag_saved, "chat scale");
+		
+			if (game::environment::is_mgo())
+			{
+				chat_prefixes[mode_none] = L"";
+				chat_prefixes[mode_chat] = L"say to all";
+				chat_prefixes[mode_chat_team] = L"say to team";
 
-			var_chat_direction = vars::register_int("chat_direction", 
-				0, 0, 1, vars::var_flag_saved, "chat direction (0: up (default), 1: down)");
+				var_chat_offset = vars::register_vec2("chat_offset",
+					{100.f, 600.f}, 0.f, 1500.f, vars::var_flag_saved, "chat offset");
+
+				var_chat_direction = vars::register_int("chat_direction",
+					0, 0, 1, vars::var_flag_saved, "chat direction (0: up (default), 1: down)");
+			}
+			else
+			{
+				chat_prefixes[mode_none] = L"";
+				chat_prefixes[mode_chat] = L"say";
+				chat_prefixes[mode_chat_team] = L"say";
+
+				var_chat_offset = vars::register_vec2("chat_offset",
+					{850.f, 100.f}, 0.f, 1500.f, vars::var_flag_saved, "chat offset");
+
+				var_chat_direction = vars::register_int("chat_direction",
+					1, 0, 1, vars::var_flag_saved, "chat direction (0: up (default), 1: down)");
+			}
 		}
 
 		void start() override
