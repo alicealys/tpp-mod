@@ -211,7 +211,7 @@ namespace binds
 
 		bool is_action_command(const std::string& cmd)
 		{
-			return action_commands.contains(cmd) || cmd.starts_with("+");
+			return action_commands.contains(cmd);
 		}
 
 		bool execute_command(const std::string& cmd, bool is_down, bool was_down)

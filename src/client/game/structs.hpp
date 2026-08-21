@@ -2480,11 +2480,53 @@ namespace game
 			}
 		}
 
+		namespace hud
+		{
+			namespace impl
+			{
+				struct HudSystemImpl_mgo_unk1
+				{
+					char __pad0[0x28BD];
+					char showScores;
+				};
+
+				struct HudSystemImpl_mgo
+				{
+					struct vtable
+					{
+
+					};
+
+					vtable* __vftable;
+					char __pad0[0x92B0];
+					HudSystemImpl_mgo_unk1 unk1;
+				};
+
+				struct HudSystemImpl_tpp
+				{
+					struct vtable
+					{
+
+					};
+
+					vtable* __vftable;
+				};
+
+				union HudSystemImpl
+				{
+					HudSystemImpl_tpp tpp;
+					HudSystemImpl_mgo mgo;
+				};
+			}
+		}
+
 		namespace impl
 		{
 			struct UiSystemImpl
 			{
-				char __pad0[80];
+				char __pad0[24];
+				tpp::ui::hud::impl::HudSystemImpl* hudSystem;
+				char __pad1[48];
 				tpp::ui::menu::impl::MenuSystemImpl* menuSystem;
 			};
 		}
