@@ -191,11 +191,27 @@ namespace ui
 			{
 				utils::hook::set<std::uint8_t>(SELECT_VALUE_LANG(0x1413EE04F, 0x0), 0xEB);
 			}
-		}
 
-		void start() override
-		{
+			if (game::environment::is_mgo())
+			{
+				command::add("togglescores", []()
+				{
+					const auto hud_system = game::fox::GetQuarkSystemTable()->applicationSystem->mgo.uiSystem->hudSystem;
+					hud_system->mgo.unk1.showScores ^= 1;
+				});
 
+				command::add("+showscores", []()
+				{
+					const auto hud_system = game::fox::GetQuarkSystemTable()->applicationSystem->mgo.uiSystem->hudSystem;
+					hud_system->mgo.unk1.showScores |= 1;
+				});
+
+				command::add("-showscores", []()
+				{
+					const auto hud_system = game::fox::GetQuarkSystemTable()->applicationSystem->mgo.uiSystem->hudSystem;
+					hud_system->mgo.unk1.showScores &= ~1;
+				});
+			}
 		}
 	};
 }
