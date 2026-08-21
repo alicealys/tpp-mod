@@ -288,8 +288,10 @@ namespace binds
 		{
 			BYTE key_state[256]{};
 			WCHAR buffer_utf[32]{};
+			WORD buffer_ascii[8]{};
 
 			int character = -1;
+			int character_ascii = -1;
 			int key = raw_input->data.keyboard.VKey;
 
 			if (!GetKeyboardState(key_state))
@@ -300,6 +302,11 @@ namespace binds
 			if (ToUnicode(raw_input->data.keyboard.VKey, raw_input->data.keyboard.MakeCode, key_state, buffer_utf, 32, 0) > 0)
 			{
 				character = buffer_utf[0];
+			}
+
+			if (ToAscii(raw_input->data.keyboard.VKey, raw_input->data.keyboard.MakeCode, key_state, buffer_ascii, 0) > 0)
+			{
+				character_ascii = buffer_ascii[0];
 
 				if (character >= 'a' && character <= 'z')
 				{
@@ -325,7 +332,7 @@ namespace binds
 
 			if (game_console::handle_key(key, is_down, is_game_console_bind(key)))
 			{
-				game_console::handle_char(character, is_down);
+				game_console::handle_char(character_ascii, is_down);
 				return true;
 			}
 

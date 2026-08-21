@@ -183,6 +183,11 @@ namespace renderer
 				game::fox::gr::dg::FontTextureMetrics font_metrics{};
 				const auto char_idx = static_cast<unsigned char>(text[i]);
 				const auto glyph = &font_data.system_font_glyphs[char_idx];
+				if (glyph->character == 0)
+				{
+					continue;
+				}
+
 				game::fox::gr::dg::FontSystem_::CalculateMetrics(&font_metrics, glyph, pixel_width, pixel_height, 1.f / 60.f);
 
 				if (word_wrapping && offset_x + font_metrics.f9 * width >= line_width)

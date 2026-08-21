@@ -5,6 +5,7 @@
 #include "game/game.hpp"
 
 #include "renderer/draw.hpp"
+#include "renderer/fonts.hpp"
 #include "game_console.hpp"
 #include "vars.hpp"
 
@@ -652,8 +653,7 @@ namespace game_console
 		default:
 		{
 			const auto c = static_cast<char>(key);
-			const auto u_c = static_cast<unsigned char>(key);
-			if (u_c >= 32 && u_c < 255)
+			if (renderer::is_char_printable(c))
 			{
 				handle_char(c);
 			}
