@@ -142,7 +142,7 @@ namespace scripting
 
 	namespace
 	{
-		utils::hook::detour lua_init_hook;
+		utils::hook::detour tpp_game_core_init_hook;
 		utils::hook::detour lua_new_state_hook;
 
 		bool loading_custom_script = false;
@@ -171,14 +171,14 @@ namespace scripting
 
 			print_loading_script(path);
 
-			const auto state = (*game::s_instances)->state;
-			if (game::lua::luaL_loadbuffer(state, data.data(), data.size(), path.data()) != 0 ||
-				game::lua::lua_pcall(state, 0, 0, 0) != 0)
+			const auto lock = acquire_lock();
+			if (game::lua::luaL_loadbuffer(lock->get_lua_state(), data.data(), data.size(), path.data()) != 0 ||
+				game::lua::lua_pcall(lock->get_lua_state(), 0, 0, 0) != 0)
 			{
 				size_t size{};
-				const auto error = game::lua::lua_tolstring(state, -1, &size);
+				const auto error = game::lua::lua_tolstring(lock->get_lua_state(), -1, &size);
 				console::error("Error loading script \"%s\": %s\n", path.data(), error);
-				game_lua_pop(state, 1);
+				game_lua_pop(lock->get_lua_state(), 1);
 			}
 		}
 
@@ -192,22 +192,18 @@ namespace scripting
 			const auto scripts = utils::io::list_files(script_dir);
 			for (const auto& script : scripts)
 			{
-				std::string data{};
-				if (std::filesystem::is_directory(script))
+				if (!script.ends_with(".lua"))
 				{
-					load_script(script + "/__init__.lua");
+					continue;
 				}
+
+				load_script(script);
 			}
 		}
 
-		void lua_init_stub(void* a1)
+		void tpp_game_core_init_stub()
 		{
-			if (var_lua_logging->current.get_int() >= 1)
-			{
-				console::info("[lua]: initializing\n");
-			}
-
-			lua_init_hook.invoke<void>(a1);
+			tpp_game_core_init_hook.invoke<void>();
 			load_scripts("tpp-mod/scripts");
 
 			if (game::environment::is_tpp())
@@ -759,7 +755,7 @@ namespace scripting
 			utils::hook::inject(SELECT_VALUE(0x14017A39D, 0x14017CDCD, 0x0, 0x0) + 3, lua_print<console::con_type_warning>);
 			utils::hook::inject(SELECT_VALUE(0x14017A3C0, 0x14017CDF0, 0x0, 0x0) + 3, lua_print<console::con_type_error>);
 
-			lua_init_hook.create(SELECT_VALUE(0x140084E70, 0x140086310, 0x0, 0x0), lua_init_stub);
+			tpp_game_core_init_hook.create(SELECT_VALUE(0x140991BF0, 0x140701050, 0x0, 0x0), tpp_game_core_init_stub);
 			lual_load_buffer_hook.create(game::lua::luaL_loadbuffer, lual_load_buffer_stub);
 
 			lua_func_register_functions_hook.create(SELECT_VALUE(0x14017A0A0, 0x14017CAD0, 0x0, 0x0), lua_func_register_functions_stub);
