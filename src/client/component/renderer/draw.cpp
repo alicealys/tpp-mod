@@ -7,6 +7,7 @@
 #include "draw.hpp"
 #include "fonts.hpp"
 #include "../scheduler.hpp"
+#include "../console.hpp"
 
 #include <utils/hook.hpp>
 
@@ -16,7 +17,14 @@ namespace renderer
 
 	namespace
 	{
-		std::vector<std::function<void(game::fox::gr::dg::plugins::Draw2DRenderer*)>> render_callbacks;
+		vars::var_ptr r_draw_priority_test;
+
+		constexpr const auto custom_draw2d_flag = (1 << 8);
+		struct draw2d_t
+		{
+			game::fox::gr::Draw2D instance;
+			draw_cb_t callback;
+		};
 
 		void set_other_params(game::fox::gr::dg::plugins::Draw2DRenderer* instance, params_t* params)
 		{
@@ -635,34 +643,18 @@ namespace renderer
 			game::fox::gr::dg::plugins::Draw2DRenderer_::SetDepthMode(instance, 2);
 		}
 
-		utils::hook::detour execute_draw_hook;
-		void execute_draw_stub(game::fox::gr::dg::plugins::Draw2DRenderer* instance, game::fox::gr::dg::BuildDraw2DParameters* parameters)
+		utils::hook::detour draw_object_hook;
+		void draw_object_stub(game::fox::gr::dg::plugins::Draw2DRenderer* instance, game::fox::gr::Draw2D* draw)
 		{
-			execute_draw_hook.invoke<void>(instance, parameters);
-
-			// shitty check to draw after ui stuff
-			auto draw = false;
-			for (auto i = *parameters->drawList; i != nullptr; i = i->next)
+			if ((draw->flags & custom_draw2d_flag) != 0)
 			{
-				if (i->priority > 100 && i->priority < 250)
-				{
-					draw = true;
-					break;
-				}
+				const auto custom = reinterpret_cast<draw2d_t*>(draw);
+				prepare_view(instance);
+				custom->callback(instance);
+				return;
 			}
 
-			instance->parameters = parameters;
-
-			if (draw && font_data.loaded)
-			{
-				for (const auto& cb : render_callbacks)
-				{
-					prepare_view(instance);
-					cb(instance);
-				}
-			}
-
-			instance->parameters = nullptr;
+			draw_object_hook.invoke<void>(instance, draw);
 		}
 
 		utils::hook::detour execute_packet2d_string_hook;
@@ -809,6 +801,23 @@ namespace renderer
 				game::fox::gr::dg::CommandBuffer_::SetVector(instance->commandBuffer, 35, &color_vec, 0);
 				game::fox::gr::dg::plugins::Draw2DRenderer_::DrawVertices(instance, 2, 24, 6);
 			}
+		}
+
+		template <int Priority, int Index>
+		void add_priority_test()
+		{
+			static wchar_t text[0x200]{};
+			_snwprintf_s(text, 0x200, _TRUNCATE, L"PRIORITY %i", Priority);
+			register_draw([](game::fox::gr::dg::plugins::Draw2DRenderer* instance)
+			{
+				float color[4]{};
+				color[0] = 1.f;
+				color[1] = 1.f;
+				color[2] = 1.f;
+				color[3] = 1.f;
+
+				draw_text(instance, text, 15.f, 100.f, static_cast<float>(Index) * 20.f + 100.f, color);
+			}, Priority);
 		}
 	}
 
@@ -1206,9 +1215,26 @@ namespace renderer
 		set_stencil(instance, 0, 7, 1, 255, 0, 0, 0, -1);
 	}
 
-	void on_frame(const std::function<void(game::fox::gr::dg::plugins::Draw2DRenderer*)>& cb)
+	game::fox::gr::Draw2D* register_draw(const draw_cb_t cb, const std::int32_t priority)
 	{
-		render_callbacks.emplace_back(cb);
+		const auto default_scene = game::fox::gr::Scene_::GetDefaultScene();
+		if (default_scene == nullptr)
+		{
+			console::error("could not register draw, no scene\n");
+			return nullptr;
+		}
+
+		const auto draw_2d = utils::memory::allocate<draw2d_t>();
+		const auto draw_2d_base = reinterpret_cast<game::fox::gr::Draw2D*>(draw_2d);
+
+		game::fox::gr::Draw2D_::Draw2D_(draw_2d_base);
+		draw_2d->callback = cb;
+		draw_2d_base->priority = priority;
+		draw_2d_base->flags |= custom_draw2d_flag;
+
+		game::fox::gr::Scene_::Queue(default_scene, draw_2d_base);
+
+		return draw_2d_base;
 	}
 
 	namespace draw
@@ -1220,6 +1246,9 @@ namespace renderer
 			{
 				r_custom_text_rendering = vars::register_bool("r_custom_text_rendering", true, vars::var_flag_saved,
 					"enable custom text rendering (fixes languages not displaying + color codes)");
+
+				r_draw_priority_test = vars::register_bool("r_draw_priority_test", false, vars::var_flag_saved | vars::var_flag_latched,
+					"enable draw priority test overlay");
 			}
 
 			void start() override
@@ -1229,8 +1258,46 @@ namespace renderer
 					return;
 				}
 
-				execute_packet2d_string_hook.create(game::fox::gr::dg::plugins::Draw2DRenderer_::ExecuteOnly_Packet2DString.get(), execute_packet2d_string_stub);
-				execute_draw_hook.create(SELECT_VALUE(0x1402E7630, 0x140BD9EF0, 0x0, 0x0), execute_draw_stub);
+				execute_packet2d_string_hook.create(
+					game::fox::gr::dg::plugins::Draw2DRenderer_::ExecuteOnly_Packet2DString.get(), execute_packet2d_string_stub);
+
+				draw_object_hook.create(SELECT_VALUE(0x1402E6BE0, 0x140BD94A0, 0x0, 0x0), draw_object_stub);
+			}
+
+			void on_game_initialized() override
+			{
+				if (!r_draw_priority_test->current.enabled())
+				{
+					return;
+				}
+
+				add_priority_test<0, 0>();
+				add_priority_test<10, 1>();
+				add_priority_test<20, 2>();
+				add_priority_test<30, 3>();
+				add_priority_test<40, 4>();
+				add_priority_test<50, 5>();
+				add_priority_test<60, 6>();
+				add_priority_test<70, 7>();
+				add_priority_test<80, 8>();
+				add_priority_test<90, 9>();
+				add_priority_test<100, 10>();
+				add_priority_test<110, 11>();
+				add_priority_test<120, 12>();
+				add_priority_test<130, 13>();
+				add_priority_test<140, 14>();
+				add_priority_test<150, 15>();
+				add_priority_test<160, 16>();
+				add_priority_test<170, 17>();
+				add_priority_test<180, 18>();
+				add_priority_test<190, 19>();
+				add_priority_test<200, 20>();
+				add_priority_test<210, 21>();
+				add_priority_test<220, 22>();
+				add_priority_test<230, 23>();
+				add_priority_test<240, 24>();
+				add_priority_test<250, 25>();
+				add_priority_test<255, 26>();
 			}
 		};
 	}

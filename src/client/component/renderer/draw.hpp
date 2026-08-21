@@ -8,6 +8,34 @@ namespace renderer
 {
 	extern vars::var_ptr r_custom_text_rendering;
 
+	using draw_cb_t = void(__fastcall*)(game::fox::gr::dg::plugins::Draw2DRenderer*);
+
+	enum draw_priority_t : std::int32_t
+	{
+		// affected by idroid
+		priority_game_begin = 0,
+		priority_game_end = 79,
+		priority_game = 79,
+
+		// only ingame
+		priority_hud_begin = 80,
+		priority_hud_end = 170,
+		priority_hud = 170,
+
+		// mixed
+		priority_3_begin = 199,
+		priority_3_end = 209,
+		priority_3 = 209,
+
+		// menus
+		priority_menu_begin = 210,
+		priority_menu_end = 254,
+		priority_menu = 254,
+
+		// always
+		priority_topmost = 255,
+	};
+
 	float calc_text_width_artist(const char* text, float height, bool formatted = false,
 		bool word_wrapping = false, float line_width = 0.f, int* line_count = nullptr, int caret_index = -1, int max_len = -1);
 
@@ -51,5 +79,5 @@ namespace renderer
 
 	void remove_stencil(game::fox::gr::dg::plugins::Draw2DRenderer* instance);
 
-	void on_frame(const std::function<void(game::fox::gr::dg::plugins::Draw2DRenderer*)>& cb);
+	game::fox::gr::Draw2D* register_draw(const draw_cb_t cb, const std::int32_t priority = priority_topmost);
 }

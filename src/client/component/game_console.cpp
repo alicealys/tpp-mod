@@ -792,15 +792,28 @@ namespace game_console
 			);
 		}
 
-		void start() override
+		void on_game_initialized()
 		{
 			if (game::environment::is_dedi())
 			{
 				return;
 			}
 
-			renderer::on_frame(draw_console);
+			component::draw_instance = renderer::register_draw(draw_console, renderer::priority_topmost + 2);
 		}
+
+		void end()
+		{
+			if (component::draw_instance != nullptr)
+			{
+				utils::memory::free(component::draw_instance);
+				component::draw_instance = nullptr;
+			}
+		}
+
+	private:
+		game::fox::gr::Draw2D* draw_instance = nullptr;
+
 	};
 }
 

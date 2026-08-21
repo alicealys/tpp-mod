@@ -42,7 +42,7 @@ namespace game
 
 		namespace KeyboardListener_
 		{
-			WEAK symbol<void(fox::RawKeyboardData*)> SetRawKeyData{0x140433E50, 0x1426D3540, 0x0, 0x0};
+			WEAK symbol<void(fox::RawKeyboardData*)> SetRawKeyData{0x1432C0A60, 0x1426D3540, 0x0, 0x0};
 		}
 
 		namespace MouseListener_
@@ -157,6 +157,43 @@ namespace game
 
 		namespace gr
 		{
+			WEAK symbol<void*(dg::StringFontMetricsCache*, const char*, int, int)> InitMetrics{0x1402AF1E0, 0x140BA59B0, 0x0, 0x0};
+
+			WEAK symbol<void(_fp16*, Vectormath::Aos::Vector4*)> ConvertFloat4toHalf4{0x140302B40, 0x140BF53A0, 0x0, 0x0};
+			WEAK symbol<void(Vectormath::Aos::Vector4*, _fp16*)> ConvertHalf4toFloat4{0x140302D40, 0x140BF55A0, 0x0, 0x0};
+
+			WEAK symbol<unsigned char> g_packetSize{0x1429E5130, 0x141E96100, 0x0, 0x0};
+
+			namespace Draw2D_
+			{
+				WEAK symbol<void(Draw2D*)> Draw2D_{0x1401BFCA0, 0x140AAFC80, 0x0, 0x0};
+			}
+
+			namespace Material_
+			{
+				WEAK symbol<Material**(Material**, StringId*)> Create{0x140276FF0, 0x140AB3070, 0x0, 0x0};
+				WEAK symbol<void(Material*, StringId*)> BindShaderTechnique{0x140276E00, 0x140AB2E80, 0x0, 0x0};
+				WEAK symbol<void(Material*, unsigned int, Texture*)> BindTexture{0x140276EE0, 0x140AB2F60, 0x0, 0x0};
+				WEAK symbol<void(Material*, unsigned int, Vectormath::Aos::Vector4*)> BindParameter{0x140276B70, 0x140AB2BF0, 0x0, 0x0};
+				WEAK symbol<void(Material*, StringId*)> Material_{0x140276A70, 0x140AB2960, 0x0, 0x0};
+			}
+
+			namespace Scene_
+			{
+				WEAK symbol<Scene*()> GetDefaultScene{0x1401B5920, 0x140AAA730, 0x0, 0x0};
+				WEAK symbol<void(Scene*, Draw2D*)> Queue{0x1401B5AE0, 0x140AAA8D0, 0x0, 0x0};
+			}
+
+			namespace Texture_
+			{
+				WEAK symbol<Texture**(Texture**, StringId*)> Create{0x1401B6F50, 0x140AA7600, 0x0, 0x0};
+			}
+
+			namespace Font_
+			{
+				WEAK symbol<int(const char*, float*, bool, unsigned int)> GetStringWidth{0x141C32A20, 0x140AFF660, 0x0, 0x0};
+			}
+
 			namespace dg
 			{
 				namespace CommandBuffer_
@@ -204,6 +241,27 @@ namespace game
 					WEAK symbol<void(FontTextureRender*)> UpdateRenderGlyphTexture{0x1402264B0, 0x140B2C160, 0x0, 0x0};
 					WEAK symbol<void(FontTextureRender*, FontData*, wchar_t*)> RegisterStringW{0x140225290, 0x140B2B080, 0x0, 0x0};
 					WEAK symbol<void(FontTextureRender*, FontData*, FontData_Glyph*, _TextureGlyphData*)> AddTextureRenderOrder{0x1402238D0, 0x140B296D0, 0x0, 0x0};
+				}
+
+				namespace TextureManager_
+				{
+					WEAK symbol<ResourceId(Path*)> CreateResourceFromFile{0x1402036A0, 0x140AD3770, 0x0, 0x0};
+				}
+
+				namespace DgTextureStreamer_
+				{
+					WEAK symbol<DgTextureStreamer* ()> Instance{0x14021D890, 0x140B23720, 0x0, 0x0};
+					WEAK symbol<bool(DgTextureStreamer*)> IsEnable{0x14021D980, 0x140B23810, 0x0, 0x0};
+					WEAK symbol<bool(DgTextureStreamer*, ResourceId, char)> RequestTextureDetailByDgTexture{0x14021E720, 0x140B24560, 0x0, 0x0};
+					WEAK symbol<bool(DgTextureStreamer*, ResourceId, char)> UnRequestTextureDetailByDgTexture{0x14021F940, 0x140B25740, 0x0, 0x0};
+				}
+
+				namespace ResourceManagerBase_
+				{
+					namespace TextureResource_
+					{
+						WEAK symbol<void(ResourceId)> DeleteResource{0x1401B73F0, 0x1402F67B0, 0x0, 0x0};
+					}
 				}
 
 				namespace plugins
@@ -261,54 +319,7 @@ namespace game
 						/* 49 */ WEAK symbol<void*(Draw2DRenderer*, Packet2DSetTemporaryTexture*)> Execute_Packet2DSetTemporaryTexture{0x1402E3850, 0x140BD6440, 0x0, 0x0};
 					}
 				}
-
-				namespace TextureManager_
-				{
-					WEAK symbol<ResourceId(Path*)> CreateResourceFromFile{0x1402036A0, 0x140AD3770, 0x0, 0x0};
-				}
-
-				namespace DgTextureStreamer_
-				{
-					WEAK symbol<DgTextureStreamer*()> Instance{0x14021D890, 0x140B23720, 0x0, 0x0};
-					WEAK symbol<bool(DgTextureStreamer*)> IsEnable{0x14021D980, 0x140B23810, 0x0, 0x0};
-					WEAK symbol<bool(DgTextureStreamer*, ResourceId, char)> RequestTextureDetailByDgTexture{0x14021E720, 0x140B24560, 0x0, 0x0};
-					WEAK symbol<bool(DgTextureStreamer*, ResourceId, char)> UnRequestTextureDetailByDgTexture{0x14021F940, 0x140B25740, 0x0, 0x0};
-				}
-
-				namespace ResourceManagerBase_
-				{
-					namespace TextureResource_
-					{
-						WEAK symbol<void(ResourceId)> DeleteResource{0x1401B73F0, 0x1402F67B0, 0x0, 0x0};
-					}
-				}
 			}
-
-			namespace Material_
-			{
-				WEAK symbol<Material**(Material**, StringId*)> Create{0x140276FF0, 0x140AB3070, 0x0, 0x0};
-				WEAK symbol<void(Material*, StringId*)> BindShaderTechnique{0x140276E00, 0x140AB2E80, 0x0, 0x0};
-				WEAK symbol<void(Material*, unsigned int, Texture*)> BindTexture{0x140276EE0, 0x140AB2F60, 0x0, 0x0};
-				WEAK symbol<void(Material*, unsigned int, Vectormath::Aos::Vector4*)> BindParameter{0x140276B70, 0x140AB2BF0, 0x0, 0x0};
-				WEAK symbol<void(Material*, StringId*)> Material_{0x140276A70, 0x140AB2960, 0x0, 0x0};
-			}
-
-			namespace Texture_
-			{
-				WEAK symbol<Texture**(Texture**, StringId*)> Create{0x1401B6F50, 0x140AA7600, 0x0, 0x0};
-			}
-
-			namespace Font_
-			{
-				WEAK symbol<int(const char*, float*, bool, unsigned int)> GetStringWidth{0x141C32A20, 0x140AFF660, 0x0, 0x0};
-			}
-
-			WEAK symbol<void*(dg::StringFontMetricsCache*, const char*, int, int)> InitMetrics{0x1402AF1E0, 0x140BA59B0, 0x0, 0x0};
-
-			WEAK symbol<void(_fp16*, Vectormath::Aos::Vector4*)> ConvertFloat4toHalf4{0x140302B40, 0x140BF53A0, 0x0, 0x0};
-			WEAK symbol<void(Vectormath::Aos::Vector4*, _fp16*)> ConvertHalf4toFloat4{0x140302D40, 0x140BF55A0, 0x0, 0x0};
-
-			WEAK symbol<unsigned char> g_packetSize{0x1429E5130, 0x141E96100, 0x0, 0x0};
 		}
 	}
 

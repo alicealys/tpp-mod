@@ -162,6 +162,10 @@ namespace lui
 
 			scheduler::loop(update_ui, scheduler::main);
 			flow_manager::load();
+		}
+
+		void on_game_initialized()
+		{
 			renderer::load();
 		}
 

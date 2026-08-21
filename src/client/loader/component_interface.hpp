@@ -27,6 +27,10 @@ public:
 	{
 	}
 
+	virtual void on_game_initialized()
+	{
+	}
+
 	virtual bool is_supported()
 	{
 		return true;

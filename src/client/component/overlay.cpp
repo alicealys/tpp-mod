@@ -315,8 +315,6 @@ namespace overlay
 			var_ui_draw_fps = vars::register_bool("ui_draw_fps", 0, vars::var_flag_saved, "draw fps counter");
 			var_ui_draw_ping = vars::register_bool("ui_draw_ping", 0, vars::var_flag_saved, "draw ping counter");
 			var_ui_draw_mod = vars::register_bool("ui_draw_mod", 1, vars::var_flag_saved, "draw mod name");
-
-			renderer::on_frame(draw_overlay);
 		}
 
 		void start() override
@@ -329,6 +327,29 @@ namespace overlay
 			scheduler::loop(perf_update, scheduler::main);
 			scheduler::loop(update_ping_text, scheduler::session);
 		}
+
+		void on_game_initialized()
+		{
+			if (game::environment::is_dedi())
+			{
+				return;
+			}
+
+			component::draw_instance = renderer::register_draw(draw_overlay, renderer::priority_topmost + 1);
+		}
+
+		void end()
+		{
+			if (component::draw_instance != nullptr)
+			{
+				utils::memory::free(component::draw_instance);
+				component::draw_instance = nullptr;
+			}
+		}
+
+	private:
+		game::fox::gr::Draw2D* draw_instance = nullptr;
+
 	};
 }
 
