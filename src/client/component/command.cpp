@@ -9,6 +9,7 @@
 #include "vars.hpp"
 #include "filesystem.hpp"
 #include "binds.hpp"
+#include "scripting.hpp"
 
 #include <utils/io.hpp>
 #include <utils/string.hpp>
@@ -659,6 +660,20 @@ namespace command
 				{
 					utils::nt::start_process("mgsvtpp.exe");
 					utils::nt::terminate();
+				});
+			}
+
+			if (game::environment::is_mgo())
+			{
+				command::add("editavatar", []()
+				{
+					const auto script_vars = game::fox::GetQuarkSystemTable()->applicationSystem->mgo.scriptVars;
+					if (script_vars->mgo.rulesetId != 4)
+					{
+						return;
+					}
+
+					scripting::script_exec("if (svars.seq_sequence == 3) then svars.seq_sequence = 4 end");
 				});
 			}
 		}
