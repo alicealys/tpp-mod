@@ -166,22 +166,25 @@ namespace renderer
 
 			const auto font_type = get_font_type();
 
-			auto ascii_index = 0;
-			char ascii_chars[255]{};
+			auto ascii_count = 0;
+			unsigned char ascii_chars[255]{};
 
-			for (auto i = 32; i < 255; i++)
+			for (auto i = 32; i < 127; i++)
 			{
-				ascii_chars[ascii_index++] = static_cast<char>(i);
+				ascii_chars[ascii_count++] = static_cast<unsigned char>(i);
+			}
+
+			for (auto i = 160; i < 254; i++)
+			{
+				ascii_chars[ascii_count++] = static_cast<unsigned char>(i);
 			}
 
 			auto utf8_index = 0;
 			char utf8_chars[255 * 4]{};
 
-			const auto ascii_count = std::strlen(ascii_chars);
-
 			for (auto i = 0; i < ascii_count; i++)
 			{
-				const auto c = static_cast<unsigned char>(ascii_chars[i]);
+				const auto c = ascii_chars[i];
 				if (c < 128)
 				{
 					utf8_chars[utf8_index++] = static_cast<char>(c);
@@ -423,6 +426,12 @@ namespace renderer
 
 			return idx;
 		}
+	}
+
+	bool is_char_printable(const char c)
+	{
+		auto idx = static_cast<unsigned char>(c);
+		return font_data.system_font_glyphs[idx].character != 0;
 	}
 
 	bool is_char_printable(const wchar_t c)

@@ -43,6 +43,7 @@ namespace renderer
 
 	extern font_data_t font_data;
 
+	bool is_char_printable(const char c);
 	bool is_char_printable(const wchar_t c);
 	bool is_system_font(int font_type);
 }
