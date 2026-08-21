@@ -45,6 +45,8 @@ public:
 
 	static void start();
 	static void post_start();
+	static void on_game_initialized();
+
 	static void end();
 
 	static void clean();

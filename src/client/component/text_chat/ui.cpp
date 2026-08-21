@@ -18,6 +18,8 @@ namespace text_chat::ui
 	{
 		utils::hook::detour announce_log_view_hook;
 
+		float color_white[4] = {1.f, 1.f, 1.f, 1.f};
+
 		void update_chat_sounds(chat_state_t& state)
 		{
 			const auto now = std::chrono::high_resolution_clock::now();
@@ -199,9 +201,9 @@ namespace text_chat::ui
 				}
 
 				float color[4]{};
-				color[0] = 1.f;
-				color[1] = 1.f;
-				color[2] = 1.f;
+				color[0] = color_white[0];
+				color[1] = color_white[1];
+				color[2] = color_white[2];
 				color[3] = alpha;
 
 				float color_outline[4]{};
@@ -240,15 +242,15 @@ namespace text_chat::ui
 		void draw_input_text(game::fox::gr::dg::plugins::Draw2DRenderer* r, chat_state_t& state, float x, float y)
 		{
 			float color[4]{};
-			color[0] = 1.f;
-			color[1] = 1.f;
-			color[2] = 1.f;
-			color[3] = 1.f;
+			color[0] = color_white[0];
+			color[1] = color_white[1];
+			color[2] = color_white[2];
+			color[3] = color_white[3];
 
 			float color_hint[4]{};
-			color_hint[0] = color[0];
-			color_hint[1] = color[1];
-			color_hint[2] = color[2];
+			color_hint[0] = color_white[0];
+			color_hint[1] = color_white[1];
+			color_hint[2] = color_white[2];
 			color_hint[3] = 0.5f;
 
 			float color_outline[4]{};
@@ -424,18 +426,34 @@ namespace text_chat::ui
 	public:
 		void pre_load() override
 		{
+			if (!game::environment::is_dedi() && game::environment::is_mgo())
+			{
+				announce_log_view_hook.create(SELECT_VALUE(0x140863C60, 0x1405E7280, 0x0, 0x0), announce_log_view_stub);
+			}
+		}
+
+		void on_game_initialized()
+		{
 			if (game::environment::is_dedi())
 			{
 				return;
 			}
 
-			renderer::on_frame(draw_chat);
+			component::draw_instance = renderer::register_draw(draw_chat, 175);
+		}
 
-			if (game::environment::is_mgo())
+		void end()
+		{
+			if (component::draw_instance != nullptr)
 			{
-				announce_log_view_hook.create(SELECT_VALUE(0x140863C60, 0x1405E7280, 0x0, 0x0), announce_log_view_stub);
+				utils::memory::free(component::draw_instance);
+				component::draw_instance = nullptr;
 			}
 		}
+
+	private:
+		game::fox::gr::Draw2D* draw_instance = nullptr;
+
 	};
 }
 

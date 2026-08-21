@@ -90,6 +90,22 @@ void component_loader::post_start()
 	}
 }
 
+void component_loader::on_game_initialized()
+{
+	static auto handled = false;
+	if (handled)
+	{
+		return;
+	}
+
+	handled = true;
+
+	for (const auto& component_ : get_components())
+	{
+		component_->on_game_initialized();
+	}
+}
+
 void component_loader::end()
 {
 	static auto handled = false;

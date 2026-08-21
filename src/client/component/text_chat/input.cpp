@@ -217,6 +217,15 @@ namespace text_chat::input
 			state.cursor = 0;
 			std::memset(state.input, 0, sizeof(state.input));
 		}
+
+		void close_menus()
+		{
+			if (game::environment::is_mgo())
+			{
+				const auto hud_system = game::fox::GetQuarkSystemTable()->applicationSystem->mgo.uiSystem->hudSystem;
+				hud_system->mgo.unk1.showScores &= ~1;
+			}
+		}
 	}
 
 	bool handle_key(const int key, const bool is_down, const bool is_game_console_bind)
@@ -377,6 +386,7 @@ namespace text_chat::input
 				}
 
 				binds::release_all_keys();
+				close_menus();
 				chat_state.access([](chat_state_t& state)
 				{
 					stop_typing(state);
@@ -395,6 +405,7 @@ namespace text_chat::input
 					}
 
 					binds::release_all_keys();
+					close_menus();
 					chat_state.access([](chat_state_t& state)
 					{
 						stop_typing(state);

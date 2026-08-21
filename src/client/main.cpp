@@ -1,6 +1,7 @@
 #include <std_include.hpp>
 
 #include "loader/component_loader.hpp"
+#include "component/scheduler.hpp"
 #include "game/game.hpp"
 
 #include <utils/nt.hpp>
@@ -48,6 +49,8 @@ namespace
 
 		component_loader::start();
 		component_loader::post_start();
+
+		scheduler::once(component_loader::on_game_initialized, scheduler::main);
 	}
 
 	void destroy()
