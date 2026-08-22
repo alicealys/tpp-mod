@@ -16,8 +16,6 @@
 #include <utils/hook.hpp>
 #include <utils/string.hpp>
 
-#define USE_GAME_SOCKET
-
 namespace text_chat::lobby
 {
 	namespace
@@ -78,6 +76,14 @@ namespace text_chat::lobby
 			game::fox::Script_::CallScriptFunc(ruleset->script, &a2, &func_name, lock->get_lua(), 4, 0);
 		}
 
+		std::wstring get_steam_player_name(game::steam_id user)
+		{
+			const auto steam_friends = (*game::SteamFriends)();
+			const auto name = steam_friends->__vftable->GetFriendPersonaName(steam_friends, user);
+			const auto name_w = utils::string::utf8_to_utf16(name);
+			return name_w;
+		}
+
 		void process_chat_msg_tpp(game::fox::nt::Member* client, const char* buffer, const std::size_t size)
 		{
 			if (size < 6)
@@ -94,12 +100,10 @@ namespace text_chat::lobby
 				return;
 			}
 
-			const auto steam_friends = (*game::SteamFriends)();
-			const auto name = steam_friends->__vftable->GetFriendPersonaName(steam_friends, user);
-			const auto name_w = utils::string::utf8_to_utf16(name);
-
+			const auto name_w = get_steam_player_name(user);
 			const auto text = reinterpret_cast<const wchar_t*>(&buffer[sizeof(chat_message_msg_id)]);
 			auto text_len = (size - sizeof(chat_message_msg_id)) / sizeof(wchar_t);
+
 			if (text_len > chat_message_max_len)
 			{
 				text_len = chat_message_max_len;
@@ -189,7 +193,7 @@ namespace text_chat::lobby
 
 			if (!game::environment::is_dedi())
 			{
-				text_chat::ui::print(formatted_msg, true);
+				ui::print(formatted_msg, true);
 			}
 
 			const auto message_a = utils::string::utf16_to_ascii(formatted_msg);
@@ -237,6 +241,41 @@ namespace text_chat::lobby
 			process_chat_msg(msg);
 			return on_lobby_chat_msg_hook.invoke<int>(a1, msg);
 		}
+
+		template <bool Join>
+		void member_event_handler(game::fox::nt::impl::SessionImpl2* session, std::uint8_t* arg)
+		{
+			const auto self = session->sessionInterface.__vftable->GetLocalMemberInterface(&session->sessionInterface);
+			const auto index = self->__vftable->GetIndex(self);
+			if (arg == nullptr || *arg == static_cast<std::uint8_t>(index))
+			{
+				return;
+			}
+
+			const auto member_interface = session->sessionInterface.__vftable->GetMemberInterfaceAtIndex(&session->sessionInterface, *arg);
+			const auto member_index = member_interface->__vftable->GetIndex(member_interface);
+			const auto member = session->allMembers.members[member_index];
+
+			if (member == nullptr)
+			{
+				return;
+			}
+
+			game::steam_id user{};
+			user.bits = member->sessionUserId->userId;
+			const auto name_w = get_steam_player_name(user);
+
+			if constexpr (Join)
+			{
+				const auto msg = std::format(L"^3{} connected", name_w);
+				ui::print(msg, false);
+			}
+			else
+			{
+				const auto msg = std::format(L"^3{} disconnected", name_w);
+				ui::print(msg, false);
+			}
+		}
 	}
 
 	void send_chat_message(const std::wstring& text, bool team)
@@ -251,24 +290,7 @@ namespace text_chat::lobby
 		buffer.append(reinterpret_cast<const char*>(&id), sizeof(id));
 		buffer.append(reinterpret_cast<const char*>(text.data()), text.size() * sizeof(wchar_t));
 
-#ifdef USE_GAME_SOCKET
 		game_socket::send("chat_message", buffer, -1);
-#else
-		if (!game::environment::is_mgo())
-		{
-			return;
-		}
-
-		const auto match = matchmaking::get_match();
-		if (match == nullptr)
-		{
-			return;
-		}
-
-		const auto steam_matchmaking = (*game::SteamMatchmaking)();
-		steam_matchmaking->__vftable->SendLobbyChatMsg(steam_matchmaking,
-			match->lobby_id, buffer.data(), static_cast<int>(buffer.size()));
-#endif
 	}
 
 	class component final : public component_interface
@@ -296,7 +318,6 @@ namespace text_chat::lobby
 				process_chat_msg_fn = process_chat_msg_tpp;
 			}
 
-#ifdef USE_GAME_SOCKET
 			game_socket::on("chat_message", [](game::fox::nt::impl::SessionImpl2* session,
 				const game_socket::message_info_t& info, const std::string_view& buffer)
 			{
@@ -313,7 +334,6 @@ namespace text_chat::lobby
 
 				process_chat_msg_fn(sender, buffer.data(), buffer.size());
 			});
-#endif
 
 			command::add("say", [](const command::params& params)
 			{
@@ -328,7 +348,6 @@ namespace text_chat::lobby
 
 			if (game::environment::is_mgo())
 			{
-#ifdef USE_GAME_SOCKET
 				game_socket::on("ui_print", [](game::fox::nt::impl::SessionImpl2* session,
 					const game_socket::message_info_t& info, const std::string_view& buffer)
 				{
@@ -358,7 +377,6 @@ namespace text_chat::lobby
 
 					game_socket::send("ui_print", buffer_view, static_cast<std::int8_t>(client), 5);
 				});
-#endif
 
 				command::add("say_team", [](const command::params& params)
 				{
@@ -370,6 +388,11 @@ namespace text_chat::lobby
 					const auto msg = utils::string::convert(params.join(1));
 					send_chat_message(msg, true);
 				});
+			}
+			else
+			{
+				game_socket::on_session_notify(game::fox::nt::NOTIFY_JOIN_MEMBER, member_event_handler<true>);
+				game_socket::on_session_notify(game::fox::nt::NOTIFY_DELETE_MEMBER, member_event_handler<false>);
 			}
 		}
 	};
