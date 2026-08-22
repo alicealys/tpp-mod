@@ -108,7 +108,7 @@ namespace game
 
 		namespace nt
 		{
-			namespace Session
+			namespace Session_
 			{
 				WEAK symbol<::game::Session*()> GetMainSession{0x140313780, 0x140C4E650, 0x0, 0x0};
 			}

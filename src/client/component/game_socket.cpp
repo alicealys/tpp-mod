@@ -21,7 +21,8 @@ namespace game_socket
 		};
 #pragma pack(pop)
 
-		std::unordered_map<std::uint64_t, handler_t> handlers;
+		std::unordered_map<std::uint64_t, message_callback_t> handlers;
+		std::vector<session_observer_t> session_observers;
 
 		void handle_message(game::fox::nt::impl::SessionImpl2* session, const message_info_t& info, const std::string_view& buffer)
 		{
@@ -65,6 +66,21 @@ namespace game_socket
 		{
 			handle_message(object_id, peer_type, sender, target, buffer, buffer_size);
 			return game_message_system_forward_signal_hook.invoke<int*>(inst, result, object_id, peer_type, buffer, buffer_size, a7, sender, target);
+		}
+
+		utils::hook::detour session_observer_notify_hook;
+		void session_observer_notify_stub(game::fox::nt::ObserverBase<game::fox::nt::Session>* this_, game::fox::nt::impl::SessionImpl2* session, 
+			int event, unsigned char* arg)
+		{
+			session_observer_notify_hook.invoke<void>(this_, session, event, arg);
+
+			for (auto& observer : session_observers)
+			{
+				if (observer.event == event)
+				{
+					observer.callback(session, arg);
+				}
+			}
 		}
 	}
 
@@ -208,10 +224,17 @@ namespace game_socket
 		send_raw(hash.id, buffer.data(), buffer.size(), client, peer_type);
 	}
 
-	void on(const std::string& message_type, const handler_t& handler)
+	void on(const std::string& message_type, const message_callback_t& handler)
 	{
 		const auto hash = game::fox::FoxStrHash32(message_type.data(), message_type.size());
 		handlers.insert(std::make_pair(hash.id, handler));
+	}
+
+	void on_session_notify(const std::int32_t event, const session_callback_t callback)
+	{
+		auto& observer = session_observers.emplace_back();
+		observer.event = event;
+		observer.callback = callback;
 	}
 
 	class component final : public component_interface
@@ -220,6 +243,17 @@ namespace game_socket
 		void pre_load() override
 		{
 			game_message_system_forward_signal_hook.create(SELECT_VALUE(0x140BFCAE0, 0x1408E9F20, 0x0, 0x0), game_message_system_forward_signal_stub);
+		}
+
+		void on_game_initialized() override
+		{
+			const auto message_system = *game::fox::gm::impl::g_messagesystem;
+			if (message_system == nullptr)
+			{
+				return;
+			}
+
+			session_observer_notify_hook.create(message_system->sessionObserver.__vftable->NotifyImpl, session_observer_notify_stub);
 		}
 	};
 }

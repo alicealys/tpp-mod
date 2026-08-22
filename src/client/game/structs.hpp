@@ -1891,6 +1891,17 @@ namespace game
 				unsigned int size;
 			};
 
+			enum SessionNotify_t
+			{
+				NOTIFY_SESSION_CREATE = 0,
+				NOTIFY_SESSION_CLOSE = 1,
+				NOTIFY_SESSION_DELETE = 2,
+				NOTIFY_UNK3 = 3, // error?/update
+				NOTIFY_JOIN_MEMBER = 4,
+				NOTIFY_DELETE_MEMBER = 5,
+				NOTIFY_COUNT = 6,
+			};
+
 			namespace impl
 			{
 				struct SessionIdle;
@@ -2125,6 +2136,28 @@ namespace game
 					void* buf2;
 				};
 			}
+
+			struct Session : impl::SessionImpl2
+			{
+			};
+
+			template <typename T>
+			struct ObserverContainer
+			{
+
+			};
+
+			template <typename T>
+			struct ObserverBase
+			{
+				struct vtable
+				{
+					void(__fastcall* NotifyImpl)(ObserverBase<T>*, fox::nt::impl::SessionImpl2*, int, unsigned __int8* a4);
+					void(__fastcall* __destructor)(ObserverBase<T>*);
+				};
+				vtable* __vftable;
+				ObserverContainer<T>* container;
+			};
 		}
 	
 		namespace gm
@@ -2166,7 +2199,7 @@ namespace game
 					};
 
 					vtable* __vftable;
-					char __pad0[16];
+					fox::nt::ObserverBase<fox::nt::Session> sessionObserver;
 					GameObjectMessageSystem messageSystem;
 					fox::nt::impl::GameSocketImpl* sockets[3];
 					char __pad1[104];
