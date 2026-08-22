@@ -1091,7 +1091,7 @@ namespace renderer
 		static char buffer[0x2000]{};
 		std::memset(buffer, 0, sizeof(buffer));
 
-		const auto show_cursor = ((get_milliseconds() % 500) > 500 / 2);
+		const auto show_cursor = ((get_milliseconds() % 500) > 250);
 		const auto len = std::strlen(text);
 
 		cursor = std::min(cursor, static_cast<int>(len));

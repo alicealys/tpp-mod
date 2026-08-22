@@ -80,11 +80,10 @@ namespace renderer
 #undef SET_RESULT
 	}
 
-	int get_milliseconds()
+	std::uint64_t get_milliseconds()
 	{
 		const auto now = std::chrono::high_resolution_clock::now();
-		const auto ms_epoch = static_cast<std::uint64_t>(std::chrono::duration_cast<std::chrono::milliseconds>(now.time_since_epoch()).count());
-		return static_cast<int>(ms_epoch);
+		return std::chrono::duration_cast<std::chrono::milliseconds>(now.time_since_epoch()).count();
 	}
 
 	bool get_color_code(char c, float* color)
