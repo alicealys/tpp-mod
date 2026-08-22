@@ -802,17 +802,8 @@ namespace game_console
 			component::draw_instance = renderer::register_draw(draw_console, renderer::priority_topmost + 2);
 		}
 
-		void end()
-		{
-			if (component::draw_instance != nullptr)
-			{
-				utils::memory::free(component::draw_instance);
-				component::draw_instance = nullptr;
-			}
-		}
-
 	private:
-		game::fox::gr::Draw2D* draw_instance = nullptr;
+		std::unique_ptr<renderer::draw2d_t> draw_instance;
 
 	};
 }

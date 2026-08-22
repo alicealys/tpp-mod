@@ -36,6 +36,12 @@ namespace renderer
 		priority_topmost = 255,
 	};
 
+	struct draw2d_t
+	{
+		game::fox::gr::Draw2D instance;
+		draw_cb_t callback;
+	};
+
 	float calc_text_width_artist(const char* text, float height, bool formatted = false,
 		bool word_wrapping = false, float line_width = 0.f, int* line_count = nullptr, int caret_index = -1, int max_len = -1);
 
@@ -79,5 +85,5 @@ namespace renderer
 
 	void remove_stencil(game::fox::gr::dg::plugins::Draw2DRenderer* instance);
 
-	game::fox::gr::Draw2D* register_draw(const draw_cb_t cb, const std::int32_t priority = priority_topmost);
+	std::unique_ptr<draw2d_t> register_draw(const draw_cb_t cb, const std::int32_t priority = priority_topmost);
 }

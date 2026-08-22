@@ -442,17 +442,8 @@ namespace text_chat::ui
 			component::draw_instance = renderer::register_draw(draw_chat, 175);
 		}
 
-		void end()
-		{
-			if (component::draw_instance != nullptr)
-			{
-				utils::memory::free(component::draw_instance);
-				component::draw_instance = nullptr;
-			}
-		}
-
 	private:
-		game::fox::gr::Draw2D* draw_instance = nullptr;
+		std::unique_ptr<renderer::draw2d_t> draw_instance;
 
 	};
 }
