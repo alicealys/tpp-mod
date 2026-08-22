@@ -20,11 +20,6 @@ namespace renderer
 		vars::var_ptr r_draw_priority_test;
 
 		constexpr const auto custom_draw2d_flag = (1 << 8);
-		struct draw2d_t
-		{
-			game::fox::gr::Draw2D instance;
-			draw_cb_t callback;
-		};
 
 		void set_other_params(game::fox::gr::dg::plugins::Draw2DRenderer* instance, params_t* params)
 		{
@@ -1215,7 +1210,7 @@ namespace renderer
 		set_stencil(instance, 0, 7, 1, 255, 0, 0, 0, -1);
 	}
 
-	game::fox::gr::Draw2D* register_draw(const draw_cb_t cb, const std::int32_t priority)
+	std::unique_ptr<draw2d_t> register_draw(const draw_cb_t cb, const std::int32_t priority)
 	{
 		const auto default_scene = game::fox::gr::Scene_::GetDefaultScene();
 		if (default_scene == nullptr)
@@ -1224,8 +1219,8 @@ namespace renderer
 			return nullptr;
 		}
 
-		const auto draw_2d = utils::memory::allocate<draw2d_t>();
-		const auto draw_2d_base = reinterpret_cast<game::fox::gr::Draw2D*>(draw_2d);
+		auto draw_2d = std::make_unique<draw2d_t>();
+		auto draw_2d_base = reinterpret_cast<game::fox::gr::Draw2D*>(draw_2d.get());
 
 		game::fox::gr::Draw2D_::Draw2D_(draw_2d_base);
 		draw_2d->callback = cb;
@@ -1234,7 +1229,7 @@ namespace renderer
 
 		game::fox::gr::Scene_::Queue(default_scene, draw_2d_base);
 
-		return draw_2d_base;
+		return std::move(draw_2d);
 	}
 
 	namespace draw

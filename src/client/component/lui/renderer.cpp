@@ -23,7 +23,7 @@ namespace lui::renderer
 			std::size_t count;
 		} draw_list{};
 
-		game::fox::gr::Draw2D* draw_instance;
+		std::unique_ptr<::renderer::draw2d_t> draw_instance;
 
 		template <typename T>
 		T* allocate_draw_command()
@@ -195,8 +195,6 @@ namespace lui::renderer
 	
 	void end()
 	{
-		utils::memory::free(draw_instance);
-		draw_instance = nullptr;
 		free_command_buffer();
 	}
 }
