@@ -139,9 +139,6 @@ namespace text_chat
 			var_chat_height = vars::register_int("chat_height", 
 				6, 1, 10, vars::var_flag_saved, "chat height");
 
-			var_chat_width = vars::register_float("chat_width", 
-				350.f, 0.f, 10000.f, vars::var_flag_saved, "chat width");
-
 			var_chat_scale = vars::register_float("chat_scale",
 				1.f, 0.1f, 2.f, vars::var_flag_saved, "chat scale");
 		
@@ -156,6 +153,9 @@ namespace text_chat
 
 				var_chat_direction = vars::register_int("chat_direction",
 					0, 0, 1, vars::var_flag_saved, "chat direction (0: up (default), 1: down)");
+
+				var_chat_width = vars::register_float("chat_width",
+					350.f, 0.f, 10000.f, vars::var_flag_saved, "chat width");
 			}
 			else
 			{
@@ -164,10 +164,13 @@ namespace text_chat
 				chat_prefixes[mode_chat_team] = L"say";
 
 				var_chat_offset = vars::register_vec2("chat_offset",
-					{850.f, 100.f}, 0.f, 1500.f, vars::var_flag_saved, "chat offset");
+					{900.f, 350.f}, 0.f, 1500.f, vars::var_flag_saved, "chat offset");
 
 				var_chat_direction = vars::register_int("chat_direction",
-					1, 0, 1, vars::var_flag_saved, "chat direction (0: up (default), 1: down)");
+					0, 0, 1, vars::var_flag_saved, "chat direction (0: up (default), 1: down)");
+
+				var_chat_width = vars::register_float("chat_width",
+					300.f, 0.f, 10000.f, vars::var_flag_saved, "chat width");
 			}
 		}
 
