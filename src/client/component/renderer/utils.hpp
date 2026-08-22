@@ -27,7 +27,7 @@ namespace renderer
 	float half_to_float(unsigned short value);
 
 	void hsv_to_rgb(const hsv_color hsv, float* color);
-	int get_milliseconds();
+	std::uint64_t get_milliseconds();
 
 	bool get_color_code(char c, float* color);
 	bool get_color_code(wchar_t c, float* color);
