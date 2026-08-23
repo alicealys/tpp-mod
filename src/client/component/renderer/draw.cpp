@@ -1259,7 +1259,7 @@ namespace renderer
 				draw_object_hook.create(SELECT_VALUE(0x1402E6BE0, 0x140BD94A0, 0x0, 0x0), draw_object_stub);
 			}
 
-			void on_game_initialized() override
+			void game_initialized() override
 			{
 				if (!r_draw_priority_test->current.enabled())
 				{

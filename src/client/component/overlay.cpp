@@ -329,7 +329,7 @@ namespace overlay
 			scheduler::loop(update_ping_text, scheduler::session, 500ms);
 		}
 
-		void on_game_initialized()
+		void game_initialized() override
 		{
 			if (game::environment::is_dedi())
 			{

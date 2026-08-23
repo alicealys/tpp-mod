@@ -245,7 +245,7 @@ namespace game_socket
 			game_message_system_forward_signal_hook.create(SELECT_VALUE(0x140BFCAE0, 0x1408E9F20, 0x0, 0x0), game_message_system_forward_signal_stub);
 		}
 
-		void on_game_initialized() override
+		void game_initialized() override
 		{
 			const auto message_system = *game::fox::gm::impl::g_messagesystem;
 			if (message_system == nullptr)

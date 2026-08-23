@@ -174,12 +174,9 @@ namespace text_chat
 			}
 		}
 
-		void start() override
+		void game_initialized() override
 		{
-			scheduler::once([]
-			{
-				initialized = true;
-			}, scheduler::main);
+			initialized = true;
 		}
 	};
 }

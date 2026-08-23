@@ -792,7 +792,7 @@ namespace game_console
 			);
 		}
 
-		void on_game_initialized()
+		void game_initialized() override
 		{
 			if (game::environment::is_dedi())
 			{

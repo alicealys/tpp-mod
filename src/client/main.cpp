@@ -42,15 +42,13 @@ namespace
 		enable_dpi_awareness();
 		game::environment::detect_version();
 
-		if (!component_loader::pre_load() || !component_loader::post_load())
-		{
-			throw std::runtime_error("premature shutdown");
-		}
+		component_loader::pre_load();
+		component_loader::post_load();
 
 		component_loader::start();
 		component_loader::post_start();
 
-		scheduler::once(component_loader::on_game_initialized, scheduler::main);
+		scheduler::once(component_loader::game_initialized, scheduler::main);
 	}
 
 	void destroy()
