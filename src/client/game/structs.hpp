@@ -1,5 +1,6 @@
 #pragma once
 #include <d3d11.h>
+#include <d3d11_1.h>
 
 namespace game
 {
@@ -358,7 +359,66 @@ namespace game
 
 	namespace gn
 	{
-		struct Buffer
+		struct swapchain
+		{
+			char __pad0[24];
+			IDXGISwapChain* swapChain;
+		};
+
+		struct CommandList
+		{
+			char __pad0[4];
+			unsigned int resourceId;
+			void* unk;
+			volatile __int32 lock;
+		};
+
+		namespace internal
+		{
+			namespace dx11
+			{
+				struct DeviceContext
+				{
+					char __pad0[4];
+					unsigned int resourceId;
+					ID3D11DeviceContext* deviceContext;
+					ID3DUserDefinedAnnotation* annotation;
+					gn::CommandList* commandList;
+				};
+
+				struct resource
+				{
+					volatile __int32 refCount;
+					unsigned int resourceId;
+					unsigned int a2;
+					ID3D11Resource* resource;
+				};
+			}
+		}
+
+		namespace dx11
+		{
+			struct buffer
+			{
+				char __pad0[4];
+				unsigned int resourceId;
+				unsigned int byteWidth;
+				unsigned int bindFlags;
+				ID3D11Buffer* buffer;
+			};
+		}
+
+		struct DeviceContext : gn::internal::dx11::DeviceContext
+		{
+
+		};
+
+		struct Resource : gn::internal::dx11::resource
+		{
+
+		};
+
+		struct Buffer : gn::dx11::buffer
 		{
 			char* data;
 			unsigned int size;
@@ -480,6 +540,65 @@ namespace game
 		static_assert(offsetof(Buffer, capacity) == 32);
 		static_assert(offsetof(Buffer, flags) == 40);
 		static_assert(sizeof(Buffer) == 0x30);
+
+		struct StringId_fields
+		{
+			std::uint32_t l;
+			std::uint32_t h;
+		};
+
+		struct StringId
+		{
+			union
+			{
+				StringId_fields f;
+				std::uint64_t id;
+			};
+		};
+
+		struct Path
+		{
+			__int64 id;
+		};
+
+		struct KernelString
+		{
+			const char* buffer;
+			__int64 unk1;
+			__int64 unk2;
+			__int64 unk3;
+		};
+
+		struct PathId
+		{
+			std::uint64_t id;
+		};
+
+		typedef std::uint32_t KeyCode;
+
+		template <typename T>
+		struct EntityPtrBase
+		{
+			T* ptr;
+		};
+
+		struct EntityHandle
+		{
+			void* a1;
+		};
+
+		template <typename T>
+		struct Array
+		{
+			std::uint32_t size;
+			std::uint32_t capacity;
+			T** array;
+		};
+
+		struct Entity
+		{
+
+		};
 
 		struct RawKeyboardData
 		{
@@ -676,6 +795,33 @@ namespace game
 				ResourceId id;
 			};
 
+			struct RenderParameter
+			{
+				void* unk1;
+				void* unk2;
+				void* unk3;
+				void* unk4;
+				void* unk5;
+				unsigned int a1;
+				unsigned int a2;
+				unsigned int a3;
+				unsigned int a4;
+				unsigned int a5;
+				unsigned int a6;
+				unsigned int a7;
+				unsigned int a8;
+				void* unk6;
+				void* unk7;
+				void* unk8;
+				unsigned int a9;
+				char a10;
+				char a11;
+				char a12;
+				char a13;
+				char a14;
+				char a15;
+			};
+
 			namespace dg
 			{
 				struct StringFontMetricsCache
@@ -864,20 +1010,35 @@ namespace game
 
 				struct DynamicVertexBuffer_unk1
 				{
-					char __pad0[20];
-					int count;
+					Array<gn::Buffer> bufferArray;
+					unsigned int a2;
+					unsigned int count;
 				};
 
 				struct DynamicVertexBuffer
 				{
-					char __pad0[64];
+					struct Cluster
+					{
+						unsigned int count;
+						gn::Resource** resources;
+						char __pad0[8];
+					};
+
+					char __pad0[16];
+					Cluster clusters[2];
 					DynamicVertexBuffer_unk1* unk1;
-					char __pad1[8];
+					unsigned int count;
+					unsigned int a4;
 					gn::Buffer* buffer;
-					char __pad2[16];
+					Array<void*> unkArray;
 					void* ptr1;
 					unsigned int a1;
 					unsigned int a2;
+				};
+				
+				struct DynamicIndexBuffer
+				{
+					char __pad0[0x78];
 				};
 
 				struct SubCommandContext
@@ -920,30 +1081,42 @@ namespace game
 
 				};
 
-				struct ShadowConstantRegister_buffer
-				{
-					float vec[4];
-				};
-
-				struct ShadowConstantRegister_unk1
-				{
-					ShadowConstantRegister_buffer* buffers;
-					char __pad0[24];
-				};
-
+#pragma pack(push, 1)
 				struct ShadowConstantRegister
 				{
-					char __pad0[8];
-					ShadowConstantRegister_unk1 unk1[1];
-				};
+					struct Buffer
+					{
+						struct vector
+						{
+							float vec[4];
+						};
 
-				struct CommandBuffer
+						gn::Buffer* bufferInstance;
+						vector* vectors;
+						void* unk2;
+						int count;
+						int a2;
+					};
+
+					Buffer buffers[8];
+					void* data;
+					unsigned int bufferCount;
+					unsigned int vectorCount;
+					unsigned int flags;
+					unsigned int unkCount;
+					unsigned int a1;
+					void* unk1;
+					unsigned int a2;
+				};
+#pragma pack(pop)
+
+				struct CommandListNode;
+				struct CommandListNode
 				{
-					char __pad0[40];
-					fox::gr::dg::ShadowConstantRegister* shadowConstantRegister;
-					char __pad1[16];
-					fox::gr::ResourceId material;
-					char __pad2[556];
+					fox::gr::dg::CommandListNode* node1;
+					fox::gr::dg::CommandListNode* node2;
+					gn::CommandList* commandList;
+					unsigned int flags;
 				};
 
 				struct MaterialResource_unk1
@@ -997,16 +1170,273 @@ namespace game
 					ShaderTechnique* shaderTechniques;
 				};
 
-				namespace plugins
+				struct RenderResourceContext
 				{
-					struct Draw2DRenderer_unk
+					char __pad0[0x398];
+				};
+
+				struct MacroPacketBuffer
+				{
+					char __pad0[0x80];
+				};
+
+				struct RenderStateContext
+				{
+					unsigned char flags1[8];
+					short w1;
+					short w2;
+					short w3;
+					short w4;
+					unsigned int flags4;
+					char __pad0[4];
+					void* unk1;
+					void* unk2;
+					float f1;
+					char __pad1[20];
+					float f2;
+					float f3;
+					float f4;
+					float f5;
+					unsigned int a1;
+					char __pad2[36];
+					unsigned int flags2;
+					unsigned int flags3;
+					unsigned int a5;
+				};
+
+				static_assert(offsetof(RenderStateContext, flags2) == 0x78);
+
+				struct CommandBuffer
+				{
+					char __pad0[8];
+					gn::DeviceContext* deviceContext;
+					char flags;
+					char __pad1[7];
+					fox::gr::dg::CommandListNode* commandList;
+					char __pad2[8];
+					fox::gr::dg::ShadowConstantRegister* shadowConstantRegister;
+					fox::gr::dg::RenderStateContext* renderStateContext;
+					char __pad3[8];
+					fox::gr::ResourceId material;
+					char __pad4[556];
+				};
+
+				static_assert(offsetof(CommandBuffer, shadowConstantRegister) == 40);
+				static_assert(offsetof(CommandBuffer, material) == 64);
+
+				struct DgDx11;
+				struct DgDx11
+				{
+					struct vtable
 					{
-						unsigned char flags1[8];
-						char __pad0[112];
-						unsigned int flags2;
-						unsigned int flags3;
+						void(__fastcall* meth_001)(fox::gr::dg::DgDx11*);
+						void(__fastcall* EndInstance)(fox::gr::dg::DgDx11*);
+						void(__fastcall* SetupShaderResources)(fox::gr::dg::DgDx11*);
+						void(__fastcall* meth_004)(fox::gr::dg::DgDx11*);
+						void(__fastcall* Wait)(fox::gr::dg::DgDx11*);
+						void(__fastcall* Kick)(fox::gr::dg::DgDx11*);
+						void(__fastcall* Start)(fox::gr::dg::DgDx11*);
+						void(__fastcall* End)(fox::gr::dg::DgDx11*);
+						void(__fastcall* SkipRendering)(fox::gr::dg::DgDx11*);
+						void(__fastcall* DestroyRenderInfo)(fox::gr::dg::DgDx11*);
+						void(__fastcall* meth_011)(fox::gr::dg::DgDx11*);
+						void(__fastcall* EndRender)(fox::gr::dg::DgDx11*);
+						void(__fastcall* InitViewport)(fox::gr::dg::DgDx11*);
+						void(__fastcall* EndViewport)(fox::gr::dg::DgDx11*);
+						void(__fastcall* RestoreViewport)(fox::gr::dg::DgDx11*);
+						void(__fastcall* SetViewportDirect)(fox::gr::dg::DgDx11*);
+						void(__fastcall* SetGamma)(fox::gr::dg::DgDx11*);
+						void(__fastcall* meth_018)(fox::gr::dg::DgDx11*);
+						void(__fastcall* ValidateVideoOutSettings)(fox::gr::dg::DgDx11*);
+						void(__fastcall* SetVideoOutSettings)(fox::gr::dg::DgDx11*);
+						void(__fastcall* meth_021)(fox::gr::dg::DgDx11*);
+						void(__fastcall* meth_022)(fox::gr::dg::DgDx11*);
+						void(__fastcall* CreateRenderTarget)(fox::gr::dg::DgDx11*);
+						void(__fastcall* RestoreRenderTarget)(fox::gr::dg::DgDx11*);
+						void(__fastcall* CreateRenderBuffer)(fox::gr::dg::DgDx11*);
+						void(__fastcall* SetViewportScissor)(fox::gr::dg::DgDx11*);
+						void(__fastcall* BeginRenderBuffer)(fox::gr::dg::DgDx11*);
+						void(__fastcall* EndRenderBuffer)(fox::gr::dg::DgDx11*);
+						void(__fastcall* GetCurrentRenderBuffer)(fox::gr::dg::DgDx11*);
+						void(__fastcall* ResolveRenderTexture)(fox::gr::dg::DgDx11*);
+						void(__fastcall* GetPrimaryDepthTarget)(fox::gr::dg::DgDx11*);
+						void(__fastcall* meth_032)(fox::gr::dg::DgDx11*);
+						void(__fastcall* meth_033)(fox::gr::dg::DgDx11*);
+						void(__fastcall* meth_034)(fox::gr::dg::DgDx11*);
+						void(__fastcall* SetShader)(fox::gr::dg::DgDx11*);
+						void(__fastcall* SetMatrix)(fox::gr::dg::DgDx11*);
+						void(__fastcall* SetVector)(fox::gr::dg::DgDx11*);
+						void(__fastcall* SetVectors)(fox::gr::dg::DgDx11*);
+						void(__fastcall* SetSkinningParam)(fox::gr::dg::DgDx11*);
+						void(__fastcall* CreateShaderFileResource)(fox::gr::dg::DgDx11*);
+						void(__fastcall* meth_041)(fox::gr::dg::DgDx11*);
+						void(__fastcall* SetShaderObject)(fox::gr::dg::DgDx11*);
+						void(__fastcall* CreateInputLayoutResource)(fox::gr::dg::DgDx11*);
+						void(__fastcall* SetInputLayout)(fox::gr::dg::DgDx11*);
+						void(__fastcall* meth_045)(fox::gr::dg::DgDx11*);
+						void(__fastcall* CreateRenderStateResource)(fox::gr::dg::DgDx11*);
+						void(__fastcall* meth_047)(fox::gr::dg::DgDx11*);
+						void(__fastcall* UpdateStatus)(fox::gr::dg::DgDx11*);
+						void(__fastcall* SetupRenderStateByFrame)(fox::gr::dg::DgDx11*);
+						void(__fastcall* CreateVertexBufferResource)(fox::gr::dg::DgDx11*);
+						void(__fastcall* CreateIndexBufferResource)(fox::gr::dg::DgDx11*);
+						void(__fastcall* SetVertexBuffer)(fox::gr::dg::DgDx11*);
+						void(__fastcall* SetIndexBuffer)(fox::gr::dg::DgDx11*);
+						void(__fastcall* CreateVertexStreamResource)(fox::gr::dg::DgDx11*);
+						void(__fastcall* SetVertexStream)(fox::gr::dg::DgDx11*);
+						void(__fastcall* DummyCreateTexture)(fox::gr::dg::DgDx11*);
+						void(__fastcall* CreateTexture2D)(fox::gr::dg::DgDx11*);
+						void(__fastcall* CreateTexture3D)(fox::gr::dg::DgDx11*);
+						void(__fastcall* CreateTextureCube)(fox::gr::dg::DgDx11*);
+						void(__fastcall* meth_060)(fox::gr::dg::DgDx11*);
+						void(__fastcall* meth_061)(fox::gr::dg::DgDx11*);
+						void(__fastcall* SetTexture)(fox::gr::dg::DgDx11*);
+						void(__fastcall* SetVertexTexture)(fox::gr::dg::DgDx11*);
+						void(__fastcall* meth_064)(fox::gr::dg::DgDx11*);
+						void(__fastcall* SetMaterial)(fox::gr::dg::DgDx11*);
+						void(__fastcall* meth_066)(fox::gr::dg::DgDx11*);
+						void(__fastcall* CreateModelResource)(fox::gr::dg::DgDx11*);
+						void(__fastcall* CreateCloneResource)(fox::gr::dg::DgDx11*);
+						void(__fastcall* CreateModel)(fox::gr::dg::DgDx11*);
+						void(__fastcall* DestroyModel)(fox::gr::dg::DgDx11*);
+						void(__fastcall* StartModelObject)(fox::gr::dg::DgDx11*);
+						void(__fastcall* EndModelObject)(fox::gr::dg::DgDx11*);
+						void(__fastcall* meth_073)(fox::gr::dg::DgDx11*);
+						void(__fastcall* meth_074)(fox::gr::dg::DgDx11*);
+						void(__fastcall* EndModelDebug)(fox::gr::dg::DgDx11*);
+						void(__fastcall* GetModelDebugInfo)(fox::gr::dg::DgDx11*);
+						void(__fastcall* CreateClone)(fox::gr::dg::DgDx11*);
+						void(__fastcall* DestroyClone)(fox::gr::dg::DgDx11*);
+						void(__fastcall* GetCloneMaterials)(fox::gr::dg::DgDx11*);
+						void(__fastcall* ValidateClone)(fox::gr::dg::DgDx11*);
+						void(__fastcall* GetCloneModelMaxSize)(fox::gr::dg::DgDx11*);
+						void(__fastcall* PerformanceEventBegin)(fox::gr::dg::DgDx11*);
+						void(__fastcall* meth_083)(fox::gr::dg::DgDx11*);
+						void(__fastcall* meth_084)(fox::gr::dg::DgDx11*);
+						void(__fastcall* meth_085)(fox::gr::dg::DgDx11*);
+						void(__fastcall* meth_086)(fox::gr::dg::DgDx11*);
+						void(__fastcall* meth_087)(fox::gr::dg::DgDx11*);
+						void(__fastcall* meth_088)(fox::gr::dg::DgDx11*);
+						void(__fastcall* InitShadow)(fox::gr::dg::DgDx11*);
+						void(__fastcall* QuitShadow)(fox::gr::dg::DgDx11*);
+						void(__fastcall* StartShadow)(fox::gr::dg::DgDx11*);
+						void(__fastcall* meth_092)(fox::gr::dg::DgDx11*);
+						void(__fastcall* EndShadow)(fox::gr::dg::DgDx11*);
+						void(__fastcall* InitGBuffer)(fox::gr::dg::DgDx11*);
+						void(__fastcall* QuitGBuffer)(fox::gr::dg::DgDx11*);
+						void(__fastcall* StartGeometryPass)(fox::gr::dg::DgDx11*);
+						void(__fastcall* EndGeometryPass)(fox::gr::dg::DgDx11*);
+						void(__fastcall* StartGeometryMaskPass)(fox::gr::dg::DgDx11*);
+						void(__fastcall* meth_099)(fox::gr::dg::DgDx11*);
+						void(__fastcall* StartGeometryMaskPass1)(fox::gr::dg::DgDx11*);
+						void(__fastcall* meth_101)(fox::gr::dg::DgDx11*);
+						void(__fastcall* StartGeometryDecalPass)(fox::gr::dg::DgDx11*);
+						void(__fastcall* EndGeometryDecalPass)(fox::gr::dg::DgDx11*);
+						void(__fastcall* SetupDeferredShading)(fox::gr::dg::DgDx11*);
+						void(__fastcall* SetupDeferredShadingTexture)(fox::gr::dg::DgDx11*);
+						void(__fastcall* StartDeferredShading)(fox::gr::dg::DgDx11*);
+						void(__fastcall* meth_107)(fox::gr::dg::DgDx11*);
+						void(__fastcall* DrawDeferredShading)(fox::gr::dg::DgDx11*);
+						void(__fastcall* StartDeferredRendering)(fox::gr::dg::DgDx11*);
+						void(__fastcall* meth_110)(fox::gr::dg::DgDx11*);
+						void(__fastcall* StartGeometryVelocityPass)(fox::gr::dg::DgDx11*);
+						void(__fastcall* EndGeometryVelocityPass)(fox::gr::dg::DgDx11*);
+						void(__fastcall* StartGeometryMaskedVelocityPass)(fox::gr::dg::DgDx11*);
+						void(__fastcall* meth_114)(fox::gr::dg::DgDx11*);
+						void(__fastcall* meth_115)(fox::gr::dg::DgDx11*);
+						void(__fastcall* meth_116)(fox::gr::dg::DgDx11*);
+						void(__fastcall* meth_117)(fox::gr::dg::DgDx11*);
+						void(__fastcall* StartShrinkBuffer)(fox::gr::dg::DgDx11*);
+						void(__fastcall* EndShrinkBuffer)(fox::gr::dg::DgDx11*);
+						void(__fastcall* meth_120)(fox::gr::dg::DgDx11*);
+						void(__fastcall* meth_121)(fox::gr::dg::DgDx11*);
+						void(__fastcall* meth_122)(fox::gr::dg::DgDx11*);
+						void(__fastcall* meth_123)(fox::gr::dg::DgDx11*);
+						void(__fastcall* meth_124)(fox::gr::dg::DgDx11*);
+						void(__fastcall* meth_125)(fox::gr::dg::DgDx11*);
+						void(__fastcall* meth_126)(fox::gr::dg::DgDx11*);
+						void(__fastcall* meth_127)(fox::gr::dg::DgDx11*);
+						void(__fastcall* InitLineIntegralSSAO)(fox::gr::dg::DgDx11*);
+						void(__fastcall* QuitLineIntegralSSAO)(fox::gr::dg::DgDx11*);
+						void(__fastcall* ResetLineIntegralSSAO)(fox::gr::dg::DgDx11*);
+						void(__fastcall* StartLineIntegralSSAO)(fox::gr::dg::DgDx11*);
+						void(__fastcall* meth_132)(fox::gr::dg::DgDx11*);
+						void(__fastcall* meth_133)(fox::gr::dg::DgDx11*);
+						void(__fastcall* InitPostFilter)(fox::gr::dg::DgDx11*);
+						void(__fastcall* QuitPostFilter)(fox::gr::dg::DgDx11*);
+						void(__fastcall* StartPostFilter)(fox::gr::dg::DgDx11*);
+						void(__fastcall* EndPostFilter)(fox::gr::dg::DgDx11*);
+						void(__fastcall* InitMotionBlur)(fox::gr::dg::DgDx11*);
+						void(__fastcall* QuitMotionBlur)(fox::gr::dg::DgDx11*);
+						void(__fastcall* ResetMotionBlur)(fox::gr::dg::DgDx11*);
+						void(__fastcall* StartMotionBlur)(fox::gr::dg::DgDx11*);
+						void(__fastcall* DrawMotionBlur)(fox::gr::dg::DgDx11*);
+						void(__fastcall* EndMotionBlur)(fox::gr::dg::DgDx11*);
+						void(__fastcall* InitScreenSpaceVelocity)(fox::gr::dg::DgDx11*);
+						void(__fastcall* QuitScreenSpaceVelocity)(fox::gr::dg::DgDx11*);
+						void(__fastcall* meth_146)(fox::gr::dg::DgDx11*);
+						void(__fastcall* StartScreenSpaceVelocity)(fox::gr::dg::DgDx11*);
+						void(__fastcall* DrawScreenSpaceVelocity)(fox::gr::dg::DgDx11*);
+						void(__fastcall* EndScreenSpaceVelocity)(fox::gr::dg::DgDx11*);
+						void(__fastcall* meth_150)(fox::gr::dg::DgDx11*);
+						void(__fastcall* meth_151)(fox::gr::dg::DgDx11*);
+						void(__fastcall* meth_152)(fox::gr::dg::DgDx11*);
+						void(__fastcall* meth_153)(fox::gr::dg::DgDx11*);
+						void(__fastcall* meth_154)(fox::gr::dg::DgDx11*);
+						void(__fastcall* meth_155)(fox::gr::dg::DgDx11*);
+						void(__fastcall* meth_156)(fox::gr::dg::DgDx11*);
+						void(__fastcall* meth_157)(fox::gr::dg::DgDx11*);
+						void(__fastcall* meth_158)(fox::gr::dg::DgDx11*);
+						void(__fastcall* GetBackBufferWidth)(fox::gr::dg::DgDx11*);
+						void(__fastcall* GetBackBufferHeight)(fox::gr::dg::DgDx11*);
+						void(__fastcall* DrawFullScreenTriangle)(fox::gr::dg::DgDx11*);
+						void(__fastcall* meth_162)(fox::gr::dg::DgDx11*);
+						void(__fastcall* ResolvePrimaryBufferReplica)(fox::gr::dg::DgDx11*);
+						void(__fastcall* GetPrimaryBufferReplicaAsTexture)(fox::gr::dg::DgDx11*);
+						void(__fastcall* GetPrimaryBufferAsTexture)(fox::gr::dg::DgDx11*);
+						void(__fastcall* GetMacroPacketBuffer)(fox::gr::dg::DgDx11*);
+						void(__fastcall* BuildCommandFromOverlayModelMacroPackets)(fox::gr::dg::DgDx11*);
+						void(__fastcall* GetRenderCondition)(fox::gr::dg::DgDx11*);
+						void(__fastcall* SetRenderCondition)(fox::gr::dg::DgDx11*);
+						void(__fastcall* meth_170)(fox::gr::dg::DgDx11*);
+						void(__fastcall* meth_171)(fox::gr::dg::DgDx11*);
+						void(__fastcall* CreateSubCommandContext)(fox::gr::dg::DgDx11*);
+						void(__fastcall* meth_173)(fox::gr::dg::DgDx11*);
+						void(__fastcall* meth_174)(fox::gr::dg::DgDx11*);
+						void(__fastcall* meth_175)(fox::gr::dg::DgDx11*);
+						void(__fastcall* meth_176)(fox::gr::dg::DgDx11*);
+						void(__fastcall* InitTemporaryOutput)(fox::gr::dg::DgDx11*);
+						void(__fastcall* meth_178)(fox::gr::dg::DgDx11*);
 					};
 
+					vtable* __vftable;
+					char __pad0[216];
+					fox::gr::dg::DynamicVertexBuffer* dynamicVertexBuffer;
+					fox::gr::dg::DynamicIndexBuffer* dynamicIndexBuffer;
+					fox::gr::RenderParameter* renderParameter;
+					unsigned int a6;
+					unsigned int a7;
+					void* unk4;
+					char __pad1[32];
+					fox::gr::dg::MacroPacketBuffer* macroPacketBuffer;
+					fox::gr::dg::ShadowConstantRegister* shadowConstantRegister;
+					fox::gr::dg::RenderStateContext* renderStateContext;
+					fox::gr::dg::RenderResourceContext* renderResourceContext;
+					void* unk2;
+					gn::DeviceContext* deviceContext;
+					void* unk3;
+					void* commandListCluster;
+					char __pad3[32];
+					unsigned int a1;
+					unsigned int a2;
+					unsigned int a3;
+					unsigned int a4;
+					unsigned int a5;
+					char __pad4[116];
+				};
+
+				namespace plugins
+				{
 					struct Draw2DRenderer
 					{
 						char __pad0[720];
@@ -1014,7 +1444,7 @@ namespace game
 						Vectormath::Aos::Vector4 viewVec2;
 						BuildDraw2DParameters* parameters;
 						CommandBuffer* commandBuffer;
-						Draw2DRenderer_unk* unk;
+						RenderStateContext* renderStateContext;
 						char __pad1[16];
 						fox::gr::ResourceId shader;
 						gn::Buffer* buffer;
@@ -1024,8 +1454,12 @@ namespace game
 						char __pad3[5];
 						DynamicVertexBuffer* vertexBuffer;
 						void* ptr1;
-						char __pad4[92];
+						fox::gr::ResourceId unkResource;
+						char __pad4[36];
+						char unk2;
+						char __pad5[51];
 						_TextureGlyphData* glyphData;
+						char __pad6[8];
 					};
 
 					static_assert(offsetof(Draw2DRenderer, glyphData) == 0x3B0);
@@ -1371,7 +1805,6 @@ namespace game
 				Packet2DSetTemporaryTexture() : Packet2D(49, 8) {}
 				char __pad0[4]{};
 			};
-
 		}
 
 		namespace impl
@@ -1404,43 +1837,7 @@ namespace game
 			static_assert(offsetof(TimeSystemImpl, frameTime) == 40);
 			static_assert(offsetof(TimeSystemImpl, elapsedTimeSinceStartup) == 48);
 			static_assert(offsetof(TimeSystemImpl, frameIndex) == 56);
-
 		}
-
-		struct StringId_fields
-		{
-			std::uint32_t l;
-			std::uint32_t h;
-		};
-
-		struct StringId
-		{
-			union
-			{
-				StringId_fields f;
-				std::uint64_t id;
-			};
-		};
-
-		struct Path
-		{
-			__int64 id;
-		};
-
-		struct KernelString
-		{
-			const char* buffer;
-			__int64 unk1;
-			__int64 unk2;
-			__int64 unk3;
-		};
-
-		struct PathId
-		{
-			std::uint64_t id;
-		};
-
-		typedef std::uint32_t KeyCode;
 
 		namespace uix
 		{
@@ -1788,30 +2185,6 @@ namespace game
 					SppSocketImpl_mgo mgo;
 				};
 			}
-		};
-
-		template <typename T>
-		struct EntityPtrBase
-		{
-			T* ptr;
-		};
-
-		struct EntityHandle
-		{
-			void* a1;
-		};
-
-		template <typename T>
-		struct Array
-		{
-			std::uint32_t size;
-			std::uint32_t capacity;
-			T** array;
-		};
-
-		struct Entity
-		{
-
 		};
 
 		namespace nt
@@ -8288,16 +8661,6 @@ namespace game
 			WeatherManager_unk1* clock;
 			char __pad1[418];
 		};
-	}
-
-	namespace gn
-	{
-		struct swapchain
-		{
-			char __pad0[24];
-			IDXGISwapChain* swapChain;
-		};
-
 	}
 
 	namespace fox

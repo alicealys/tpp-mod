@@ -475,26 +475,26 @@ namespace renderer
 	void set_cmd_31(game::fox::gr::dg::plugins::Draw2DRenderer* instance, unsigned char flags)
 	{
 		const auto flag = 16 * (flags & 0xF);
-		instance->unk->flags1[0] &= 0xF;
-		instance->unk->flags1[1] &= 0xF;
-		instance->unk->flags1[2] &= 0xF;
-		instance->unk->flags1[3] &= 0xF;
-		instance->unk->flags1[4] &= 0xF;
-		instance->unk->flags1[5] &= 0xF;
-		instance->unk->flags1[6] &= 0xF;
-		instance->unk->flags1[7] &= 0xF;
+		instance->renderStateContext->flags1[0] &= 0xF;
+		instance->renderStateContext->flags1[1] &= 0xF;
+		instance->renderStateContext->flags1[2] &= 0xF;
+		instance->renderStateContext->flags1[3] &= 0xF;
+		instance->renderStateContext->flags1[4] &= 0xF;
+		instance->renderStateContext->flags1[5] &= 0xF;
+		instance->renderStateContext->flags1[6] &= 0xF;
+		instance->renderStateContext->flags1[7] &= 0xF;
 
-		instance->unk->flags1[0] |= flag;
-		instance->unk->flags1[1] |= flag;
-		instance->unk->flags1[2] |= flag;
-		instance->unk->flags1[3] |= flag;
-		instance->unk->flags1[4] |= flag;
-		instance->unk->flags1[5] |= flag;
-		instance->unk->flags1[6] |= flag;
-		instance->unk->flags1[7] |= flag;
+		instance->renderStateContext->flags1[0] |= flag;
+		instance->renderStateContext->flags1[1] |= flag;
+		instance->renderStateContext->flags1[2] |= flag;
+		instance->renderStateContext->flags1[3] |= flag;
+		instance->renderStateContext->flags1[4] |= flag;
+		instance->renderStateContext->flags1[5] |= flag;
+		instance->renderStateContext->flags1[6] |= flag;
+		instance->renderStateContext->flags1[7] |= flag;
 
-		instance->unk->flags3 &= 0xFFFFFF7F;
-		instance->unk->flags2 |= 0x80;
+		instance->renderStateContext->flags3 &= 0xFFFFFF7F;
+		instance->renderStateContext->flags2 |= 0x80;
 	}
 
 	void set_rotation(game::fox::gr::dg::plugins::Draw2DRenderer* instance, float angle)
