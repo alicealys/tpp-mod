@@ -2,6 +2,7 @@
 
 #include "loader/component_loader.hpp"
 #include "component/scheduler.hpp"
+#include "component/console.hpp"
 #include "game/game.hpp"
 
 #include <utils/nt.hpp>
@@ -42,6 +43,8 @@ namespace
 
 		enable_dpi_awareness();
 		game::environment::detect_version();
+
+		console::initialize();
 
 		utils::hook::detour::enable_queue();
 

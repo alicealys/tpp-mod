@@ -358,75 +358,83 @@ namespace console
 		dispatch_message(type, result);
 	}
 
+	void initialize()
+	{
+		static auto handled = false;
+		if (handled)
+		{
+			return;
+		}
+
+		handled = true;
+
+		if (!game::environment::is_dedi() && utils::flags::has_flag("noconsole"))
+		{
+			return;
+		}
+
+		printf_hook.create(printf, printf_stub);
+
+		create_console();
+		ShowWindow(GetConsoleWindow(), SW_SHOW);
+		SetConsoleTitle("TPP-Mod");
+
+		con.kill_event = CreateEvent(NULL, TRUE, FALSE, NULL);
+
+		con.thread = utils::thread::create_named_thread("Console", []()
+		{
+			const auto handle = GetStdHandle(STD_INPUT_HANDLE);
+			HANDLE handles[2] = {handle, con.kill_event};
+			MSG msg{};
+
+			INPUT_RECORD record{};
+			DWORD num_events{};
+
+			while (!con.kill)
+			{
+				const auto result = MsgWaitForMultipleObjects(2, handles, FALSE, INFINITE, QS_ALLINPUT);
+				if (con.kill)
+				{
+					return;
+				}
+
+				switch (result)
+				{
+				case WAIT_OBJECT_0:
+				{
+					if (!ReadConsoleInput(handle, &record, 1, &num_events) || num_events == 0)
+					{
+						break;
+					}
+
+					handle_input(record);
+					break;
+				}
+				case WAIT_OBJECT_0 + 1:
+				{
+					if (!PeekMessageA(&msg, GetConsoleWindow(), NULL, NULL, PM_REMOVE))
+					{
+						break;
+					}
+
+					if (msg.message == WM_QUIT)
+					{
+						//command::execute("quit", false);
+						break;
+					}
+
+					TranslateMessage(&msg);
+					DispatchMessage(&msg);
+					break;
+				}
+				}
+			}
+		});
+	}
+
 	class component final : public component_interface
 	{
 	public:
-		void pre_load() override
-		{
-			if (!game::environment::is_dedi() && utils::flags::has_flag("noconsole"))
-			{
-				return;
-			}
-
-			printf_hook.create(printf, printf_stub);
-
-			create_console();
-			ShowWindow(GetConsoleWindow(), SW_SHOW);
-			SetConsoleTitle("TPP-Mod");
-
-			con.kill_event = CreateEvent(NULL, TRUE, FALSE, NULL);
-
-			con.thread = utils::thread::create_named_thread("Console", []()
-			{
-				const auto handle = GetStdHandle(STD_INPUT_HANDLE);
-				HANDLE handles[2] = {handle, con.kill_event};
-				MSG msg{};
-
-				INPUT_RECORD record{};
-				DWORD num_events{};
-
-				while (!con.kill)
-				{
-					const auto result = MsgWaitForMultipleObjects(2, handles, FALSE, INFINITE, QS_ALLINPUT);
-					if (con.kill)
-					{
-						return;
-					}
-
-					switch (result)
-					{
-					case WAIT_OBJECT_0:
-					{
-						if (!ReadConsoleInput(handle, &record, 1, &num_events) || num_events == 0)
-						{
-							break;
-						}
-
-						handle_input(record);
-						break;
-					}
-					case WAIT_OBJECT_0 + 1:
-					{
-						if (!PeekMessageA(&msg, GetConsoleWindow(), NULL, NULL, PM_REMOVE))
-						{
-							break;
-						}
-
-						if (msg.message == WM_QUIT)
-						{
-							//command::execute("quit", false);
-							break;
-						}
-
-						TranslateMessage(&msg);
-						DispatchMessage(&msg);
-						break;
-					}
-					}
-				}
-			});
-		}
-
 		void end() override
 		{
 			con.kill = true;
