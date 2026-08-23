@@ -697,6 +697,9 @@ namespace matchmaking
 			start_transition_hook.create(SELECT_VALUE_LANG(0x1408A23D0, 0x0), start_transition_stub);
 			match_start_hook.create(SELECT_VALUE_LANG(0x1408A1F10, 0x0), match_start_stub);
 
+			// dont filter dlc lobbies
+			utils::hook::nop(SELECT_VALUE_LANG(0x1405A51B2, 0x0), 4);
+
 			scheduler::once(hook_steam_matchmaking, scheduler::net);
 			scheduler::loop(run_frame, scheduler::session);
 
