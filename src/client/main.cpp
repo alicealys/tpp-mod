@@ -7,6 +7,7 @@
 #include <utils/nt.hpp>
 #include <utils/io.hpp>
 #include <utils/string.hpp>
+#include <utils/hook.hpp>
 
 namespace
 {
@@ -42,11 +43,16 @@ namespace
 		enable_dpi_awareness();
 		game::environment::detect_version();
 
+		utils::hook::detour::enable_queue();
+
 		component_loader::pre_load();
 		component_loader::post_load();
 
 		component_loader::start();
 		component_loader::post_start();
+
+		utils::hook::detour::apply_queued();
+		utils::hook::detour::disable_queue();
 
 		scheduler::once(component_loader::game_initialized, scheduler::main);
 	}

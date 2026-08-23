@@ -7,22 +7,26 @@ namespace utils::hook
 {
 	namespace
 	{
-		[[maybe_unused]] class _
+		void* initialize_min_hook()
 		{
-		public:
-			_()
+			static class min_hook_init
 			{
-				if (MH_Initialize() != MH_OK)
+			public:
+				min_hook_init()
 				{
-					throw std::runtime_error("Failed to initialize MinHook");
+					if (MH_Initialize() != MH_OK)
+					{
+						throw std::runtime_error("Failed to initialize MinHook");
+					}
 				}
-			}
 
-			~_()
-			{
-				MH_Uninitialize();
-			}
-		} __;
+				~min_hook_init()
+				{
+					MH_Uninitialize();
+				}
+			} min_hook_init;
+			return &min_hook_init;
+		}
 	}
 
 	void assembler::pushad64()
@@ -95,11 +99,20 @@ namespace utils::hook
 		return Assembler::jmp(size_t(target));
 	}
 
-	detour::detour(const size_t place, void* target) : detour(reinterpret_cast<void*>(place), target)
+	std::atomic_bool detour::queue_enabled_{};
+
+	detour::detour()
+	{
+		(void)initialize_min_hook();
+	}
+
+	detour::detour(const size_t place, void* target)
+		: detour(reinterpret_cast<void*>(place), target)
 	{
 	}
 
 	detour::detour(void* place, void* target)
+		: detour()
 	{
 		this->create(place, target);
 	}
@@ -109,14 +122,30 @@ namespace utils::hook
 		this->clear();
 	}
 
-	void detour::enable() const
+	void detour::enable()
 	{
 		MH_EnableHook(this->place_);
+
+		if (!this->moved_data_.empty())
+		{
+			this->move();
+		}
 	}
 
-	void detour::disable() const
+	void detour::disable()
 	{
+		this->un_move();
 		MH_DisableHook(this->place_);
+	}
+
+	void detour::queue_enable()
+	{
+		MH_QueueEnableHook(this->place_);
+	}
+
+	void detour::queue_disable()
+	{
+		MH_QueueDisableHook(this->place_);
 	}
 
 	void detour::create(void* place, void* target)
@@ -129,7 +158,14 @@ namespace utils::hook
 			throw std::runtime_error(string::va("Unable to create hook at location: %p", this->place_));
 		}
 
-		this->enable();
+		if (detour::queue_enabled_)
+		{
+			this->queue_enable();
+		}
+		else
+		{
+			this->enable();
+		}
 	}
 
 	void detour::create(const size_t place, void* target)
@@ -141,16 +177,51 @@ namespace utils::hook
 	{
 		if (this->place_)
 		{
+			this->un_move();
 			MH_RemoveHook(this->place_);
 		}
 
 		this->place_ = nullptr;
 		this->original_ = nullptr;
+		this->moved_data_ = {};
+	}
+
+	void detour::move()
+	{
+		this->moved_data_ = move_hook(this->place_);
+	}
+
+	void* detour::get_place() const
+	{
+		return this->place_;
 	}
 
 	void* detour::get_original() const
 	{
 		return this->original_;
+	}
+
+	void detour::un_move()
+	{
+		if (!this->moved_data_.empty())
+		{
+			copy(this->place_, this->moved_data_.data(), this->moved_data_.size());
+		}
+	}
+
+	void detour::enable_queue()
+	{
+		detour::queue_enabled_ = true;
+	}
+
+	void detour::disable_queue()
+	{
+		detour::queue_enabled_ = false;
+	}
+
+	void detour::apply_queued()
+	{
+		MH_ApplyQueued();
 	}
 
 	bool iat(const nt::library& library, const std::string& target_library, const std::string& process, void* stub)
@@ -321,6 +392,41 @@ namespace utils::hook
 	void inject(const size_t pointer, const void* data)
 	{
 		return inject(reinterpret_cast<void*>(pointer), data);
+	}
+
+	std::vector<uint8_t> move_hook(void* pointer)
+	{
+		std::vector<uint8_t> original_data{};
+
+		auto* data_ptr = static_cast<uint8_t*>(pointer);
+		if (data_ptr[0] == 0xE9)
+		{
+			original_data.resize(6);
+			memmove(original_data.data(), pointer, original_data.size());
+
+			auto* target = follow_branch(data_ptr);
+			nop(data_ptr, 1);
+			jump(data_ptr + 1, target);
+		}
+		else if (data_ptr[0] == 0xFF && data_ptr[1] == 0x25)
+		{
+			original_data.resize(15);
+			memmove(original_data.data(), pointer, original_data.size());
+
+			copy(data_ptr + 1, data_ptr, 14);
+			nop(data_ptr, 1);
+		}
+		else
+		{
+			throw std::runtime_error("No branch instruction found");
+		}
+
+		return original_data;
+	}
+
+	std::vector<uint8_t> move_hook(const size_t pointer)
+	{
+		return move_hook(reinterpret_cast<void*>(pointer));
 	}
 
 	void* follow_branch(void* address)
