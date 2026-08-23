@@ -1,144 +1,67 @@
 #include <std_include.hpp>
+
 #include "component_loader.hpp"
+#include "component/console.hpp"
 
-void component_loader::register_component(std::unique_ptr<component_interface>&& component_)
+void component_loader::register_component(std::unique_ptr<component_interface>&& component)
 {
-	get_components().push_back(std::move(component_));
+	get_components().push_back(std::move(component));
 }
 
-bool component_loader::pre_load()
-{
-	static auto handled = false;
-	if (handled)
-	{
-		return true;
-	}
-
-	handled = true;
-
-	try
-	{
-		for (const auto& component_ : get_components())
-		{
-			component_->pre_load();
-		}
-	}
-	catch (premature_shutdown_trigger&)
-	{
-		return false;
-	}
-
-	return true;
+#ifdef DEBUG
+#define REGISTER_PHASE(__name__) \
+void component_loader::__name__() \
+{ \
+	static auto handled = false; \
+	if (handled) \
+	{ \
+		return; \
+	} \
+	handled = true; \
+	for (const auto& component : get_components()) \
+	{ \
+		if (!component->is_supported()) \
+		{ \
+			continue; \
+		} \
+		const auto start = std::chrono::high_resolution_clock::now(); \
+		component->__name__(); \
+		const auto& name = component->get_name(); \
+		const auto end = std::chrono::high_resolution_clock::now(); \
+		const auto duration_ms = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count(); \
+		if (duration_ms > 0ull) \
+		{ \
+			console::debug("%s::%s took %llims\n", name.data(), #__name__, duration_ms); \
+		} \
+	} \
 }
-
-bool component_loader::post_load()
-{
-	static auto handled = false;
-	if (handled)
-	{
-		return true;
-	}
-
-	handled = true;
-
-	clean();
-
-	try
-	{
-		for (const auto& component_ : get_components())
-		{
-			component_->post_load();
-		}
-	}
-	catch (premature_shutdown_trigger&)
-	{
-		return false;
-	}
-
-	return true;
+#else
+#define REGISTER_PHASE(__name__) \
+void component_loader::__name__() \
+{ \
+	static auto handled = false; \
+	if (handled) \
+	{ \
+		return; \
+	} \
+	handled = true; \
+	for (const auto& component : get_components()) \
+	{ \
+		if (!component->is_supported()) \
+		{ \
+			continue; \
+		} \
+		component->__name__(); \
+	} \
 }
+#endif
 
-void component_loader::start()
-{
-	static auto handled = false;
-	if (handled)
-	{
-		return;
-	}
-
-	handled = true;
-
-	for (const auto& component_ : get_components())
-	{
-		component_->start();
-	}
-}
-
-void component_loader::post_start()
-{
-	static auto handled = false;
-	if (handled)
-	{
-		return;
-	}
-
-	handled = true;
-
-	for (const auto& component_ : get_components())
-	{
-		component_->post_start();
-	}
-}
-
-void component_loader::on_game_initialized()
-{
-	static auto handled = false;
-	if (handled)
-	{
-		return;
-	}
-
-	handled = true;
-
-	for (const auto& component_ : get_components())
-	{
-		component_->on_game_initialized();
-	}
-}
-
-void component_loader::end()
-{
-	static auto handled = false;
-	if (handled) return;
-	handled = true;
-
-	for (const auto& component_ : get_components())
-	{
-		component_->end();
-	}
-}
-
-void component_loader::clean()
-{
-	auto& components = get_components();
-	for (auto i = components.begin(); i != components.end();)
-	{
-		if (!(*i)->is_supported())
-		{
-			(*i)->end();
-			i = components.erase(i);
-		}
-		else
-		{
-			++i;
-		}
-	}
-}
-
-void component_loader::trigger_premature_shutdown()
-{
-	throw premature_shutdown_trigger();
-}
+REGISTER_PHASE(pre_load);
+REGISTER_PHASE(post_load);
+REGISTER_PHASE(start);
+REGISTER_PHASE(post_start);
+REGISTER_PHASE(game_initialized);
+REGISTER_PHASE(end);
 
 std::vector<std::unique_ptr<component_interface>>& component_loader::get_components()
 {

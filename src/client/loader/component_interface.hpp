@@ -3,6 +3,10 @@
 class component_interface
 {
 public:
+	component_interface()
+	{
+	}
+
 	virtual ~component_interface()
 	{
 	}
@@ -27,7 +31,7 @@ public:
 	{
 	}
 
-	virtual void on_game_initialized()
+	virtual void game_initialized()
 	{
 	}
 
@@ -35,4 +39,20 @@ public:
 	{
 		return true;
 	}
+
+#ifdef DEBUG
+	void set_name(const std::string_view& name)
+	{
+		this->name_ = name;
+	}
+
+	std::string_view& get_name()
+	{
+		return this->name_;
+	}
+
+private:
+	std::string_view name_;
+#endif
+
 };
