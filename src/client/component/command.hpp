@@ -35,7 +35,7 @@ namespace command
 
 	std::optional<std::string> find_command_name(const std::string& input);
 
-	std::vector<std::string> tokenize_string(const std::string& str);
+	std::vector<std::string> tokenize_string(const std::string& str, const std::size_t begin = 0ull, const std::size_t end = std::string::npos);
 
 	std::unordered_map<std::string, callback>& get_commands();
 	std::unordered_map<std::string, std::string>& get_aliases();
