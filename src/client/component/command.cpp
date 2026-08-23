@@ -413,7 +413,7 @@ namespace command
 
 	void add(const std::string& name, const callback& cb)
 	{
-		console::info("Registering console command \"%s\"\n", name.data());
+		console::debug("Registering console command \"%s\"\n", name.data());
 		commands.insert(std::make_pair(name, cb));
 	}
 

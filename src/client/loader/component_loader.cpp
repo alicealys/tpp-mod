@@ -18,6 +18,7 @@ void component_loader::__name__() \
 		return; \
 	} \
 	handled = true; \
+	console::info("[component_loader] running " #__name__ "\n"); \
 	for (const auto& component : get_components()) \
 	{ \
 		if (!component->is_supported()) \
@@ -45,6 +46,7 @@ void component_loader::__name__() \
 		return; \
 	} \
 	handled = true; \
+	console::info("[component loader] running " #__name__ "\n"); \
 	for (const auto& component : get_components()) \
 	{ \
 		if (!component->is_supported()) \
