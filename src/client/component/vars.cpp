@@ -29,7 +29,6 @@ namespace vars
 	namespace
 	{
 		var_ptr var_cheat_enabled;
-		std::vector<std::function<void(std::string&)>> write_callbacks;
 
 		void reset_cheats()
 		{
@@ -391,7 +390,7 @@ namespace vars
 			}
 		}
 
-		if ((var->flags & var_flag_saved) != 0 && set_source != var_source_internal)
+		if ((var->flags & var_flag_saved) != 0 && set_source != var_source_internal && post_initialization)
 		{
 			write_config();
 		}
@@ -729,8 +728,10 @@ namespace vars
 		std::string buffer;
 
 		const auto path = get_config_file_path();
+		const auto& var_list = get_var_list();
+		const auto& aliases = command::get_aliases();
 
-		for (const auto& var : get_var_list())
+		for (const auto& var : var_list)
 		{
 			if ((var->flags & var_flag_saved) == 0)
 			{
@@ -741,22 +742,12 @@ namespace vars
 			buffer.append(utils::string::va("set %s \"%s\"\r\n", var->name.data(), value.data()));
 		}
 
-		for (const auto& alias : command::get_aliases())
+		for (const auto& alias : aliases)
 		{
 			buffer.append(utils::string::va("alias \"%s\" \"%s\"\r\n", alias.first.data(), alias.second.data()));
 		}
 
-		for (auto& cb : write_callbacks)
-		{
-			cb(buffer);
-		}
-
 		utils::io::write_file(path, buffer, false);
-	}
-
-	void add_config_write_callback(const std::function<void(std::string&)>& cb)
-	{
-		write_callbacks.emplace_back(cb);
 	}
 
 	bool is_post_initialization()

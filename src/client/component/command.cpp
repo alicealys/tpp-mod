@@ -173,12 +173,37 @@ namespace command
 			return cmds;
 		}
 
+		bool get_next_command(const std::string& cmd, const std::size_t begin, std::size_t& end)
+		{
+			auto is_in_quotes = false;
+
+			end = begin;
+			for (end = begin; end < cmd.size(); end++)
+			{
+				if (cmd[end] == '"')
+				{
+					is_in_quotes = !is_in_quotes;
+				}
+
+				if (!is_in_quotes && cmd[end] == ';')
+				{
+					return true;
+				}
+			}
+
+			return end != begin;
+		}
+
 		void execute_commands(const std::string& line)
 		{
-			const auto cmds = split_commands(line);
-			for (auto i = 0; i < cmds.size(); i++)
+			std::size_t begin{};
+			std::size_t end{};
+			auto start1 = std::chrono::high_resolution_clock::now();
+			while (get_next_command(line, begin, end))
 			{
-				const auto args = tokenize_string(cmds[i]);
+				const auto args = tokenize_string(line, begin, end);
+				begin = end + 1;
+
 				if (args.empty())
 				{
 					continue;
@@ -192,17 +217,7 @@ namespace command
 						wait_time = std::atoi(args[1].data());
 					}
 
-					std::string next_commands;
-					for (auto o = i + 1; o < cmds.size(); o++)
-					{
-						next_commands.append(cmds[o]);
-
-						if (o < cmds.size() - 1)
-						{
-							next_commands.append(";");
-						}
-					}
-
+					auto next_commands = line.substr(begin);
 					queue_command(next_commands, wait_time);
 					return;
 				}
@@ -215,50 +230,58 @@ namespace command
 
 		void exec_file(const std::string& data)
 		{
+			std::string cmd_buffer;
+
 			auto is_in_comment = false;
-			const auto lines = utils::string::split_lines(data);
+			auto is_in_quotes = false;
 
-			for (const auto& line : lines)
+			auto start = std::chrono::high_resolution_clock::now();
+			for (auto i = 0ull; i < data.size(); i++)
 			{
-				std::string cmd_buffer;
-
-				auto is_in_quotes = false;
-
-				for (auto i = 0ull; i < line.size(); i++)
+				if (data[i] == '\n' || data[i] == '\r')
 				{
-					const auto cur = line[i];
-					const auto prev = i > 0 ? line[i - 1] : 0;
-					const auto next = i < line.size() - 1 ? line[i + 1] : 0;
+					if (!cmd_buffer.empty())
+					{
+						execute(cmd_buffer, true);
+					}
 
-					if (!is_in_quotes && !is_in_comment && cur == '/' && next == '*')
-					{
-						is_in_comment = true;
-						i++;
-					}
-					else if (is_in_comment && cur == '*' && next == '/')
-					{
-						is_in_comment = false;
-						i++;
-					}
-					else if (!is_in_quotes && !is_in_comment && cur == '/' && next == '/')
-					{
-						break;
-					}
-					else if (!is_in_comment && cur == '"' && prev != '\\')
-					{
-						is_in_quotes = !is_in_quotes;
-						cmd_buffer += cur;
-					}
-					else if (!is_in_comment)
-					{
-						cmd_buffer += cur;
-					}
+					is_in_quotes = false;
+					cmd_buffer.clear();
+					continue;
 				}
 
-				if (!cmd_buffer.empty())
+				const auto cur = data[i];
+				const auto prev = i > 0 ? data[i - 1] : 0;
+				const auto next = i < data.size() - 1 ? data[i + 1] : 0;
+
+				if (!is_in_quotes && !is_in_comment && cur == '/' && next == '*')
 				{
-					execute(cmd_buffer, true);
+					is_in_comment = true;
+					i++;
 				}
+				else if (is_in_comment && cur == '*' && next == '/')
+				{
+					is_in_comment = false;
+					i++;
+				}
+				else if (!is_in_quotes && !is_in_comment && cur == '/' && next == '/')
+				{
+					break;
+				}
+				else if (!is_in_comment && cur == '"' && prev != '\\')
+				{
+					is_in_quotes = !is_in_quotes;
+					cmd_buffer += cur;
+				}
+				else if (!is_in_comment)
+				{
+					cmd_buffer += cur;
+				}
+			}
+
+			if (!cmd_buffer.empty())
+			{
+				execute(cmd_buffer, true);
 			}
 		}
 
@@ -427,11 +450,11 @@ namespace command
 		return {};
 	}
 
-	std::vector<std::string> tokenize_string(const std::string& str)
+	std::vector<std::string> tokenize_string(const std::string& str, const std::size_t begin, const std::size_t end)
 	{
 		std::vector<std::string> res;
-
 		std::string current_token;
+
 		auto is_in_quotes = false;
 		auto is_in_word = false;
 
@@ -453,8 +476,10 @@ namespace command
 			}
 		};
 
+		const auto end_cap = std::min(str.size(), end);
+
 		auto was_space = false;
-		for (auto i = 0; i < str.size(); i++)
+		for (auto i = begin; i < end_cap; i++)
 		{
 			const auto c = str[i];
 			const auto prev = i > 0 ? str[i - 1] : 0;

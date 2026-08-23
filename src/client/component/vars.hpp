@@ -190,6 +190,5 @@ namespace vars
 	std::vector<var_ptr>& get_var_list();
 
 	void write_config();
-	void add_config_write_callback(const std::function<void(std::string&)>& cb);
 	bool is_post_initialization();
 }
