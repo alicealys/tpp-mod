@@ -164,6 +164,8 @@ namespace game
 
 			WEAK symbol<unsigned char> g_packetSize{0x1429E5130, 0x141E96100, 0x0, 0x0};
 
+			WEAK symbol<RenderWork*> g_renderWork{0x142B73580, 0x14206C330, 0x0, 0x0};
+
 			namespace Draw2D_
 			{
 				WEAK symbol<void(Draw2D*)> Draw2D_{0x1401BFCA0, 0x140AAFC80, 0x0, 0x0};
@@ -196,6 +198,8 @@ namespace game
 
 			namespace dg
 			{
+				WEAK symbol<DgDx11*()> GetDgInstance{0x140204E80, 0x140B145C0, 0x0, 0x0};
+
 				namespace CommandBuffer_
 				{
 					WEAK symbol<void(CommandBuffer*, int, unsigned int)> SetTexture{0x1402D8AA0, 0x140BC9F70, 0x0, 0x0};
