@@ -55,6 +55,16 @@ namespace scripting
 		return this->instance_.lua->state;
 	}
 
+	lua_scoped_global_policy::lua_scoped_global_policy(game::lua::lua_State* state, int a2)
+	{
+		game::fox::LuaScopedGlobalPolicy_::LuaScopedGlobalPolicy_(&this->instance_, state, a2);
+	}
+
+	lua_scoped_global_policy::~lua_scoped_global_policy()
+	{
+		game::fox::LuaScopedGlobalPolicy_::LuaScopedGlobalPolicy__destructor(&this->instance_);
+	}
+
 	lua_value::lua_value(game::lua::lua_State* state, int index)
 	{
 		this->type_ = game::lua::lua_type(state, -1);
@@ -172,6 +182,9 @@ namespace scripting
 			print_loading_script(path);
 
 			const auto lock = acquire_lock();
+
+			lua_scoped_global_policy policy{lock->get_lua_state(), 0};
+
 			if (game::lua::luaL_loadbuffer(lock->get_lua_state(), data.data(), data.size(), path.data()) != 0 ||
 				game::lua::lua_pcall(lock->get_lua_state(), 0, 0, 0) != 0)
 			{
@@ -719,6 +732,8 @@ namespace scripting
 		{
 			return {};
 		}
+
+		lua_scoped_global_policy policy{lock->get_lua_state(), 0};
 
 		loading_custom_script = true;
 		const auto _0 = gsl::finally([&]

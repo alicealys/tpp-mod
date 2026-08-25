@@ -42,7 +42,7 @@ namespace scheduler
 			{
 				callbacks_.access([&](task_list& tasks)
 				{
-					this->merge_callbacks();
+					this->merge_callbacks(tasks);
 
 					for (auto i = tasks.begin(); i != tasks.end();)
 					{
@@ -74,15 +74,12 @@ namespace scheduler
 			utils::concurrency::container<task_list> new_callbacks_;
 			utils::concurrency::container<task_list, std::recursive_mutex> callbacks_;
 
-			void merge_callbacks()
+			void merge_callbacks(task_list& tasks)
 			{
-				callbacks_.access([&](task_list& tasks)
+				new_callbacks_.access([&](task_list& new_tasks)
 				{
-					new_callbacks_.access([&](task_list& new_tasks)
-					{
-						tasks.insert(tasks.end(), std::move_iterator<task_list::iterator>(new_tasks.begin()), std::move_iterator<task_list::iterator>(new_tasks.end()));
-						new_tasks = {};
-					});
+					tasks.insert(tasks.end(), std::move_iterator<task_list::iterator>(new_tasks.begin()), std::move_iterator<task_list::iterator>(new_tasks.end()));
+					new_tasks = {};
 				});
 			}
 		};
