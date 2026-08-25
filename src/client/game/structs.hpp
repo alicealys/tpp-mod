@@ -8568,8 +8568,8 @@ namespace game
 			{
 				struct ButtonMask
 				{
-					int id;
-					int mask;
+					unsigned int id;
+					unsigned int mask;
 				};
 
 				struct vtable
@@ -8579,7 +8579,7 @@ namespace game
 
 				vtable* __vftable;
 				char __pad0[32];
-				int mask;
+				unsigned int mask;
 				char __pad1[660];
 				ButtonMask buttonMasks[8];
 				char __pad2[432];
