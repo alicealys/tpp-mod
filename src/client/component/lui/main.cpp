@@ -148,13 +148,13 @@ namespace lui
 	class component final : public component_interface
 	{
 	public:
+		bool is_supported()
+		{
+			return !game::environment::is_dedi();
+		}
+
 		void post_load() override
 		{
-			if (game::environment::is_dedi())
-			{
-				return;
-			}
-
 			command::add("lui_restart", []()
 			{
 				restart_requested = true;
@@ -162,11 +162,12 @@ namespace lui
 
 			scheduler::loop(update_ui, scheduler::main);
 			flow_manager::load();
+			renderer::init();
 		}
 
-		void on_game_initialized()
+		void game_initialized()
 		{
-			renderer::load();
+			renderer::init_draw();
 		}
 
 		void end() override
