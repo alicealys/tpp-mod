@@ -23,6 +23,23 @@ namespace scripting
 
 	};
 
+	class lua_scoped_global_policy
+	{
+	public:
+		lua_scoped_global_policy(game::lua::lua_State* state, int a2);
+		~lua_scoped_global_policy();
+
+		lua_scoped_global_policy(const lua_lock&) = delete;
+		lua_scoped_global_policy(lua_lock&&) = delete;
+
+		lua_scoped_global_policy& operator=(const lua_lock&) = delete;
+		lua_scoped_global_policy& operator=(lua_lock&&) = delete;
+
+	private:
+		game::fox::LuaScopedGlobalPolicy instance_{};
+
+	};
+
 	class lua_value
 	{
 	public:

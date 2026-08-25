@@ -70,8 +70,8 @@ namespace game
 
 		namespace LuaScopedGlobalPolicy_
 		{
-			WEAK symbol<void(LuaScopedGlobalPolicy*, lua::lua_State*, int)> LuaScopedGlobalPolicy_{0x14006A850, 0x0, 0x0, 0x0};
-			WEAK symbol<void(LuaScopedGlobalPolicy*)> LuaScopedGlobalPolicy__destructor{0x14006AA40, 0x0, 0x0, 0x0};
+			WEAK symbol<void(LuaScopedGlobalPolicy*, lua::lua_State*, int)> LuaScopedGlobalPolicy_{0x14006A850, 0x14006B100, 0x0, 0x0};
+			WEAK symbol<void(LuaScopedGlobalPolicy*)> LuaScopedGlobalPolicy__destructor{0x14006AA40, 0x14006B2F0, 0x0, 0x0};
 		}
 
 		namespace Script_
