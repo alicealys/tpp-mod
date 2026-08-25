@@ -117,6 +117,11 @@ namespace lui::renderer
 		std::lock_guard _0(draw_list.mutex);
 
 		auto cmd = allocate_draw_command<draw_box_command>();
+		if (cmd == nullptr)
+		{
+			return;
+		}
+
 		cmd->type = CMD_DRAW_BOX;
 		cmd->x = x;
 		cmd->y = y;
@@ -133,6 +138,11 @@ namespace lui::renderer
 		std::lock_guard _0(draw_list.mutex);
 
 		auto cmd = allocate_draw_command<draw_text_command>();
+		if (cmd == nullptr)
+		{
+			return;
+		}
+
 		cmd->type = CMD_DRAW_TEXT;
 		strncpy_s(cmd->text, sizeof(cmd->text), text, _TRUNCATE);
 		cmd->height = height;
@@ -162,6 +172,11 @@ namespace lui::renderer
 		std::lock_guard _0(draw_list.mutex);
 
 		auto cmd = allocate_draw_command<draw_text_cursor_command>();
+		if (cmd == nullptr)
+		{
+			return;
+		}
+
 		cmd->type = CMD_DRAW_TEXT_CURSOR;
 		strncpy_s(cmd->text, sizeof(cmd->text), text, _TRUNCATE);
 		cmd->height = height;
@@ -183,13 +198,13 @@ namespace lui::renderer
 		}
 	}
 
-	void load()
+	void init()
 	{
-		if (!allocate_command_buffer())
-		{
-			return;
-		}
+		allocate_command_buffer();
+	}
 
+	void init_draw()
+	{
 		draw_instance = ::renderer::register_draw(render_ui, ::renderer::priority_topmost);
 	}
 	

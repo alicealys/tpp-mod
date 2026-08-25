@@ -60,6 +60,7 @@ namespace lui::renderer
 	void add_draw_text_with_cursor(const char* text, float height, float x, float y, float* color, float* outline_color,
 		bool formatted, float display_width, int cursor, ::renderer::params_t* params);
 
-	void load();
+	void init();
+	void init_draw();
 	void end();
 }
