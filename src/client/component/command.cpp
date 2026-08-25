@@ -234,8 +234,8 @@ namespace command
 
 			auto is_in_comment = false;
 			auto is_in_quotes = false;
+			auto skip_line = false;
 
-			auto start = std::chrono::high_resolution_clock::now();
 			for (auto i = 0ull; i < data.size(); i++)
 			{
 				if (data[i] == '\n' || data[i] == '\r')
@@ -245,8 +245,15 @@ namespace command
 						execute(cmd_buffer, true);
 					}
 
-					is_in_quotes = false;
 					cmd_buffer.clear();
+					is_in_quotes = false;
+					is_in_comment = false;
+					skip_line = false;
+					continue;
+				}
+
+				if (skip_line)
+				{
 					continue;
 				}
 
@@ -266,7 +273,8 @@ namespace command
 				}
 				else if (!is_in_quotes && !is_in_comment && cur == '/' && next == '/')
 				{
-					break;
+					skip_line = true;
+					continue;
 				}
 				else if (!is_in_comment && cur == '"' && prev != '\\')
 				{
@@ -282,6 +290,7 @@ namespace command
 			if (!cmd_buffer.empty())
 			{
 				execute(cmd_buffer, true);
+				cmd_buffer.clear();
 			}
 		}
 
