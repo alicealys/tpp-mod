@@ -2149,6 +2149,8 @@ namespace game
 			};
 		}
 
+		struct MessageBox2;
+
 		namespace impl
 		{
 			struct TimeSystemImpl;
@@ -2179,6 +2181,100 @@ namespace game
 			static_assert(offsetof(TimeSystemImpl, frameTime) == 40);
 			static_assert(offsetof(TimeSystemImpl, elapsedTimeSinceStartup) == 48);
 			static_assert(offsetof(TimeSystemImpl, frameIndex) == 56);
+
+			namespace message2
+			{
+				struct MessageBox2Impl;
+				struct MessageBox2Impl
+				{
+					struct vtable
+					{
+						void(__fastcall* SendMessageToSubscribers)(fox::impl::message2::MessageBox2Impl*);
+						void(__fastcall* SendMessageTo)(fox::impl::message2::MessageBox2Impl*);
+						void(__fastcall* ResendMessage)(fox::impl::message2::MessageBox2Impl*);
+						void(__fastcall* meth_004)(fox::impl::message2::MessageBox2Impl*);
+						void(__fastcall* __destructor)(fox::impl::message2::MessageBox2Impl*);
+					};
+
+					vtable* __vftable;
+					__int64 unk1;
+					__int64 unk2;
+					unsigned int a1;
+					char a2;
+					char __pad1[3];
+					unsigned int flags;
+					char __pad0[4];
+				};
+
+				struct MessageSystem2Impl;
+				struct MessageSystem2Impl
+				{
+					struct vtable
+					{
+						fox::MessageBox2* (__fastcall* CreateMessageBox)(fox::impl::message2::MessageSystem2Impl*);
+						void(__fastcall* DeleteMessageBox)(fox::impl::message2::MessageSystem2Impl*);
+						void(__fastcall* Subscribe)(fox::impl::message2::MessageSystem2Impl*);
+						void(__fastcall* SendMessage1)(fox::impl::message2::MessageSystem2Impl*);
+						void(__fastcall* SendMessageToSubscribers)(fox::impl::message2::MessageSystem2Impl*);
+						void(__fastcall* DeliverMessages)(fox::impl::message2::MessageSystem2Impl*);
+						void(__fastcall* __destructor)(fox::impl::message2::MessageSystem2Impl*);
+					};
+
+					vtable* __vftable;
+					char __pad0[9064];
+				};
+			}
+		}
+
+		struct MessageBox2 : fox::impl::message2::MessageBox2Impl
+		{
+
+		};
+
+		struct MessageSystem2 : fox::impl::message2::MessageSystem2Impl
+		{
+
+		};
+
+		struct MessageBox2DelegateInterface;
+		struct MessageBox2DelegateInterface
+		{
+			struct vtable
+			{
+				void(__fastcall* ReceiveMessage)(fox::MessageBox2DelegateInterface*);
+				void(__fastcall* __destructor)(fox::MessageBox2DelegateInterface*);
+			};
+
+			vtable* __vftable;
+		};
+
+		struct QuarkRecreationCallbackInterface;
+		struct QuarkRecreationCallbackInterface
+		{
+			struct vtable
+			{
+				void(__fastcall* meth_001)(fox::QuarkRecreationCallbackInterface*);
+				void(__fastcall* __destructor)(fox::QuarkRecreationCallbackInterface*);
+			};
+
+			vtable* __vftable;
+		};
+
+		namespace concurrent
+		{
+			namespace impl
+			{
+				struct QueueBase
+				{
+					struct vtable
+					{
+
+					};
+
+					vtable* __vftable;
+					char __pad0[64];
+				};
+			}
 		}
 
 		namespace uix
@@ -2891,6 +2987,9 @@ namespace game
 
 			};
 
+			struct GameObjectInterface;
+			struct GameObjectFactoryInterface;
+
 			struct GameObjectMessageSystem
 			{
 				struct vtable
@@ -2921,7 +3020,165 @@ namespace game
 					Mutex mutex;
 					char __pad2[184];
 				};
+
+				struct GameObjectExecutionImpl;
+				struct GameObjectExecutionImpl
+				{
+					struct vtable
+					{
+						void(__fastcall* SetExecutionPriority)(fox::gm::impl::GameObjectExecutionImpl*);
+						void(__fastcall* GetExecutionPriority)(fox::gm::impl::GameObjectExecutionImpl*);
+						void(__fastcall* ProcessSignal)(fox::gm::impl::GameObjectExecutionImpl*);
+						void(__fastcall* IsParallel)(fox::gm::impl::GameObjectExecutionImpl*);
+						void(__fastcall* __destructor)(fox::gm::impl::GameObjectExecutionImpl*);
+					};
+
+					vtable* __vftable;
+					unsigned int a1;
+					unsigned int a2;
+					unsigned int a3;
+					unsigned int a4;
+					unsigned short a5_1;
+					unsigned short a5_2;
+					unsigned int a6;
+					fox::gm::GameObjectInterface* gameObjectInterface;
+					void* unk1;
+					unsigned a7;
+					char __pad1[4];
+				};
+
+
+				struct GameObjectFactoryControllerImpl;
+				struct GameObjectFactoryControllerImpl
+				{
+					struct vtable
+					{
+						void(__fastcall* GetFactoryForTypeId)(fox::gm::impl::GameObjectFactoryControllerImpl*);
+						void(__fastcall* GetFactoryWithTypeIndex)(fox::gm::impl::GameObjectFactoryControllerImpl*);
+						void(__fastcall* __destructor)(fox::gm::impl::GameObjectFactoryControllerImpl*);
+					};
+
+					vtable* __vftable;
+					fox::gm::GameObjectFactoryInterface* factories[128];
+				};
+
+
+				struct GameObjectImpl
+				{
+					struct vtable
+					{
+
+					};
+
+					vtable* __vftable;
+					char __pad0[24];
+					fox::gm::GameObjectInterface* gameObjectInterface;
+					char __pad1[24];
+				};
+
+				struct GameObjectTypeCollector
+				{
+					struct vtable
+					{
+
+					};
+
+					vtable* __vftable;
+					fox::gm::impl::GameObjectImpl* gameObject;
+					char __pad0[56];
+				};
+
+				struct GameObjectControllerImpl;
+				struct GameObjectControllerImpl
+				{
+					struct vtable
+					{
+						void(__fastcall* GameObjectTypeWasRegistered)(fox::gm::impl::GameObjectControllerImpl*, unsigned int, fox::StringId);
+						void(__fastcall* AddGameObjectImpl)(fox::gm::impl::GameObjectControllerImpl*);
+						void(__fastcall* AddGameObjectLocator)(fox::gm::impl::GameObjectControllerImpl*);
+						void(__fastcall* DeleteGameObject)(fox::gm::impl::GameObjectControllerImpl*);
+						fox::gm::GameObjectInterface* (__fastcall* GetGameObjectWithId)(fox::gm::impl::GameObjectControllerImpl*);
+						void(__fastcall* GetGameObjectIdWithInstanceName)(fox::gm::impl::GameObjectControllerImpl*);
+						void(__fastcall* Update)(fox::gm::impl::GameObjectControllerImpl*);
+						void(__fastcall* GetGameObjectLocatorCountToBeAdded)(fox::gm::impl::GameObjectControllerImpl*);
+						void(__fastcall* __destructor)(fox::gm::impl::GameObjectControllerImpl*);
+					};
+
+					vtable* __vftable;
+					fox::MessageBox2* messageBox;
+					fox::MessageBox2DelegateInterface* messageBox2DelegateInterface;
+					fox::QuarkRecreationCallbackInterface* quarkRecreationCallbackInterface;
+					__int64 unk1;
+					__int64 unk2;
+					fox::gm::impl::GameObjectTypeCollector* gameObjectTypeCollectors[128];
+					fox::concurrent::impl::QueueBase gameObjectLocatorQueue;
+				};
+
 			}
+
+			struct GameObjectFactoryInterface
+			{
+				struct vtable
+				{
+					void(__fastcall* __destructor)(fox::gm::GameObjectFactoryInterface*);
+					void(__fastcall* GetGameObjectTypeId)(fox::gm::GameObjectFactoryInterface*);
+					void(__fastcall* GetGameObjectTypeIndex)(fox::gm::GameObjectFactoryInterface*);
+					fox::gm::GameObjectInterface* (__fastcall* CreateGameObject)(fox::gm::GameObjectFactoryInterface*);
+					void(__fastcall* DeleteGameObject)(fox::gm::GameObjectFactoryInterface*);
+				};
+
+				vtable* __vftable;
+			};
+
+			struct GameObjectInterface
+			{
+				struct ExecutionDesc
+				{
+					unsigned short a1;
+					unsigned int a2;
+					unsigned int a3;
+					unsigned int a4;
+					char __pad0[8];
+				};
+
+				struct unk1
+				{
+					char __pad0[40];
+					fox::gm::impl::GameObjectExecutionImpl* execution;
+				};
+
+				struct vtable
+				{
+					void(__fastcall* AllocResources)(fox::gm::GameObjectInterface*);
+					void(__fastcall* FreeResources)(fox::gm::GameObjectInterface*);
+					void(__fastcall* meth_003)(fox::gm::GameObjectInterface*);
+					void(__fastcall* TerminateGameObject)(fox::gm::GameObjectInterface*);
+					void(__fastcall* Activate)(fox::gm::GameObjectInterface*);
+					void(__fastcall* Deactivate)(fox::gm::GameObjectInterface*);
+					void(__fastcall* AddLocators)(fox::gm::GameObjectInterface*);
+					void(__fastcall* RemoveLocators)(fox::gm::GameObjectInterface*);
+					void(__fastcall* GetExecutionDesc)(fox::gm::GameObjectInterface*);
+					void(__fastcall* ExecuteSerially)(fox::gm::GameObjectInterface*);
+					void(__fastcall* ExecuteInParallel)(fox::gm::GameObjectInterface*);
+					void(__fastcall* ExecuteLast)(fox::gm::GameObjectInterface*);
+					void(__fastcall* ExecuteAtInactive)(fox::gm::GameObjectInterface*);
+					void(__fastcall* meth_014)(fox::gm::GameObjectInterface*);
+					void(__fastcall* ProcessSignal)(fox::gm::GameObjectInterface*);
+					void(__fastcall* meth_0016)(fox::gm::GameObjectInterface*);
+					void(__fastcall* ProcessLuaCommand)(fox::gm::GameObjectInterface*);
+					void(__fastcall* GetGameObjectIdWithName)(fox::gm::GameObjectInterface*);
+					void(__fastcall* GetNameIdWithGameObjectId)(fox::gm::GameObjectInterface*);
+					void(__fastcall* GetNameStringIdWithGameObjectId)(fox::gm::GameObjectInterface*);
+					void(__fastcall* meth_021)(fox::gm::GameObjectInterface*);
+					void(__fastcall* meth_022)(fox::gm::GameObjectInterface*);
+					void(__fastcall* meth_023)(fox::gm::GameObjectInterface*);
+					void(__fastcall* __destructor)(fox::gm::GameObjectInterface*);
+				};
+
+				vtable* __vftable;
+				unk1* unk1;
+				char __pad0[184];
+			};
 		}
 
 		namespace ncl
@@ -9192,7 +9449,7 @@ namespace game
 			void* __system_21;
 			void* __system_22;
 			void* __system_23;
-			void* __system_24;
+			fox::impl::message2::MessageSystem2Impl* messageSystem2;
 			void* __system_25;
 			void* uixSystem;
 			void* eventTimerSystem;
