@@ -571,6 +571,18 @@ namespace binds
 		utils::io::write_file(path, buffer);
 	}
 
+	unsigned int get_button_mask()
+	{
+		if (game::tpp::gm::player::player2System->player2System == nullptr ||
+			game::tpp::gm::player::player2System->player2System->tpp.pad == nullptr)
+		{
+			return 0xFFFFFFFF;
+		}
+
+		const auto mask = game::tpp::gm::player::player2System->player2System->tpp.pad->mask;
+		return mask & ~0x100;
+	}
+
 	bool is_player_action_blocked()
 	{
 		const auto inst = game::tpp::ui::hud::CommonDataManager_::GetInstance();
@@ -588,13 +600,7 @@ namespace binds
 			return true;
 		}
 
-		if (game::tpp::gm::player::player2System->player2System == nullptr ||
-			game::tpp::gm::player::player2System->player2System->tpp.pad == nullptr)
-		{
-			return true;
-		}
-
-		if (game::tpp::gm::player::player2System->player2System->tpp.pad->mask != 0)
+		if ((get_button_mask() & ~0x100) != 0)
 		{
 			return true;
 		}
