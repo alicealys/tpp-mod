@@ -8427,7 +8427,7 @@ namespace game
 					void* (__fastcall* SetOriginalOwner)(tpp::gm::player::impl::EquipControllerImpl_tpp*, unsigned int, int, int);
 					void* (__fastcall* GetOriginalOwner)(tpp::gm::player::impl::EquipControllerImpl_tpp*, unsigned int, int);
 					void* (__fastcall* GetCurrentEquipId)(tpp::gm::player::impl::EquipControllerImpl_tpp*, unsigned int);
-					void* (__fastcall* GetEquipIdSlot)(tpp::gm::player::impl::EquipControllerImpl_tpp*, unsigned int, int, unsigned int);
+					unsigned int (__fastcall* GetEquipIdSlot)(tpp::gm::player::impl::EquipControllerImpl_tpp*, unsigned int, int, unsigned int);
 					void* (__fastcall* SetEquipState)(tpp::gm::player::impl::EquipControllerImpl_tpp*, unsigned int, int, unsigned int, int, unsigned __int8, bool, unsigned __int8);
 					void* (__fastcall* SetSlot)(tpp::gm::player::impl::EquipControllerImpl_tpp*, unsigned int, int, int, int, bool, bool);
 					void* (__fastcall* SetAmmoCount)(tpp::gm::player::impl::EquipControllerImpl_tpp*, unsigned int, int, unsigned int, bool);
@@ -8505,7 +8505,8 @@ namespace game
 					void* (__fastcall* SetOriginalOwner)(tpp::gm::player::impl::EquipControllerImpl_mgo*, unsigned int, int, int);
 					void* (__fastcall* GetOriginalOwner)(tpp::gm::player::impl::EquipControllerImpl_mgo*, unsigned int, int);
 					void* (__fastcall* GetCurrentEquipId)(tpp::gm::player::impl::EquipControllerImpl_mgo*, unsigned int);
-					void* (__fastcall* GetEquipIdSlot)(tpp::gm::player::impl::EquipControllerImpl_mgo*, unsigned int, int, unsigned int);
+					void* pad2[5];
+					unsigned int (__fastcall* GetEquipIdSlot)(tpp::gm::player::impl::EquipControllerImpl_mgo*, unsigned int, int, unsigned int);
 					void* (__fastcall* SetEquipState)(tpp::gm::player::impl::EquipControllerImpl_mgo*, unsigned int, int, unsigned int, int, unsigned __int8, bool, unsigned __int8);
 					void* (__fastcall* SetSlot)(tpp::gm::player::impl::EquipControllerImpl_mgo*, unsigned int, int, int, int, bool, bool);
 					void* (__fastcall* SetAmmoCount)(tpp::gm::player::impl::EquipControllerImpl_mgo*, unsigned int, int, unsigned int, bool);
