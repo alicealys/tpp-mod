@@ -14,6 +14,36 @@ namespace gameplay
 {
 	namespace
 	{
+		std::uint32_t get_equip_id_slot(const game::tpp::gm::player::PlayerSlotType slot_type)
+		{
+			const auto player = game::tpp::gm::player::player2System->player2System;
+			if (game::environment::is_tpp())
+			{
+				return player->tpp.controller->__vftable->GetEquipIdSlot(player->tpp.controller, player->tpp.localPlayerIndex, slot_type, 0);
+			}
+			else
+			{
+				return player->mgo.controller->__vftable->GetEquipIdSlot(player->mgo.controller, player->mgo.localPlayerIndex, slot_type, 0);
+			}
+		}
+
+		game::tpp::gm::player::PlayerSlotType auto_select_primary()
+		{
+			const auto primary1 = get_equip_id_slot(game::tpp::gm::player::PlayerSlotType::PRIMARY_1);
+			if (primary1 != 0)
+			{
+				return game::tpp::gm::player::PlayerSlotType::PRIMARY_1;
+			}
+
+			const auto primary2 = get_equip_id_slot(game::tpp::gm::player::PlayerSlotType::PRIMARY_2);
+			if (primary2 != 0)
+			{
+				return game::tpp::gm::player::PlayerSlotType::PRIMARY_2;
+			}
+
+			return game::tpp::gm::player::PlayerSlotType::PRIMARY_1;
+		}
+
 		game::tpp::gm::player::PlayerSlotType get_slot_type(const std::string& name)
 		{
 			static std::unordered_map<std::string, game::tpp::gm::player::PlayerSlotType> slot_types =
@@ -28,6 +58,11 @@ namespace gameplay
 			};
 
 			const auto lower = utils::string::to_lower(name);
+			if (lower == "primary")
+			{
+				return auto_select_primary();
+			}
+
 			const auto iter = slot_types.find(lower);
 			if (iter != slot_types.end())
 			{
@@ -214,11 +249,6 @@ namespace gameplay
 
 				set_current_slot(slot_type, sub_index);
 			});
-		}
-
-		void start() override
-		{
-
 		}
 	};
 }
