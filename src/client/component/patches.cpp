@@ -373,6 +373,11 @@ namespace patches
 			utils::hook::jump(SELECT_VALUE(0x1412BD4D0, 0x141222B70, 0x0, 0x0), utils::hook::assemble(tps_camera_update_parameter_stub), true);
 			utils::hook::jump(SELECT_VALUE(0x1412A06C4, 0x141214854, 0x0, 0x0), utils::hook::assemble(subjective_camera_update_parameter_stub), true);
 		}
+
+		char steam_user_logged_on_stub()
+		{
+			return 1;
+		}
 	}
 
 	class component final : public component_interface
@@ -471,6 +476,14 @@ namespace patches
 
 			patch_sensitivity();
 			patch_fov();
+		}
+
+		void game_initialized()
+		{
+			const auto steam_user = (*game::SteamUser)();
+
+			// this shouldnt be checked according to steam docs
+			utils::hook::set(&steam_user->__vftable->LoggedOn, steam_user_logged_on_stub);
 		}
 	};
 }
