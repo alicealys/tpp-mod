@@ -5155,8 +5155,8 @@ namespace game
 			fox::ncl::NclHttpCodec* httpCodec;
 			int state;
 			int mode;
-			fox::StringId unkString;
-			int a5;
+			fox::StringId error;
+			int errorCount;
 			char a6;
 		};
 
@@ -5170,6 +5170,11 @@ namespace game
 			char __pad4[4];
 			DisplayName* displayName1;
 			DisplayName* displayName2;
+		};
+
+		struct SessionControl : tpp::net::ServerRequestBase
+		{
+		
 		};
 
 		struct PlayerPlatformInfo

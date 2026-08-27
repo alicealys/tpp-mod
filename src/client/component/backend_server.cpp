@@ -551,6 +551,25 @@ namespace backend_server
 			console::info("[net] set heartbeat: %i\n", value);
 			utils::hook::invoke<void>(SELECT_VALUE(0x1407DE720, 0x14057BEA0, 0x0, 0x0), this_, value);
 		}
+
+		game::tpp::net::SessionControl* net_update_session_failure_stub(void* a1, game::fox::StringId error)
+		{
+			const auto session_control = game::tpp::net::ServerManager_::GetSessionControl(*game::tpp::net::ServerManager_::s_instance);
+			if (++session_control->errorCount < 3)
+			{
+				session_control->state = 3;
+				session_control->error.id = 0xB8A0BF169F98;
+			}
+			else
+			{
+				session_control->state = 4;
+				session_control->error = error;
+			}
+
+			console::error("[net] session update failure 0x%llX (count: %i)\n", error.id, session_control->errorCount);
+
+			return session_control;
+		}
 	}
 
 	bool is_using_custom_server()
@@ -625,6 +644,8 @@ namespace backend_server
 
 			utils::hook::far_jump<BASE_ADDRESS>(SELECT_VALUE(0x1407DFC08, 0x14057D3C8, 0x0, 0x0), utils::hook::assemble(session_daemon_update_stub));
 			utils::hook::call(SELECT_VALUE(0x1407D2736, 0x140572156, 0x0, 0x0), net_daemon_set_heartbeat);
+
+			utils::hook::jump(SELECT_VALUE(0x140806B60, 0x14059A9A0, 0x0, 0x0), net_update_session_failure_stub);
 		}
 	};
 }
