@@ -423,7 +423,8 @@ namespace game
 			namespace ServerManager_
 			{
 				WEAK symbol<FobTarget*(ServerManager*)> GetFobTarget{0x1407D6470, 0x0, 0x0, 0x0};
-				WEAK symbol<ServerManager*> s_instance{0x142BEFC00, 0x0, 0x0, 0x0};
+				WEAK symbol<SessionControl*(ServerManager*)> GetSessionControl{0x1407D6810, 0x1405760C0, 0x0, 0x0};
+				WEAK symbol<ServerManager*> s_instance{0x142BEFC00, 0x141F89DB0, 0x0, 0x0};
 			}
 
 			namespace FobTarget_
