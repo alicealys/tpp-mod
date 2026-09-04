@@ -100,11 +100,6 @@
 #include <asmjit/x86/x86assembler.h>
 
 #include <d3d11.h>
-#include <imgui.h>
-#include <imgui_internal.h>
-#include <backends/imgui_impl_dx11.h>
-#include <backends/imgui_impl_win32.h>
-#include <misc/cpp/imgui_stdlib.h>
 
 #pragma warning(pop)
 #pragma warning(disable: 4100)
