@@ -28,7 +28,7 @@ namespace exception
 			char pathname[MAX_PATH] = {0};
 
 			GetTempPathA(sizeof(pathname), pathname);
-			GetTempFileNameA(pathname, "H2-Mod-", 0, filename);
+			GetTempFileNameA(pathname, "TPP-Mod-", 0, filename);
 			return filename;
 		}
 
