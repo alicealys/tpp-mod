@@ -23,25 +23,72 @@ namespace exception
 		{
 			DWORD code = 0;
 			PVOID address = nullptr;
+			ULONG_PTR information[15]{};
+			char crash_name[MAX_PATH]{};
 		} exception_data;
+
+		std::atomic_bool handler_disabled;
 
 		void show_mouse_cursor()
 		{
 			while (ShowCursor(TRUE) < 0);
 		}
 
+		bool get_module(const std::size_t address, HMODULE* module, char* buffer, std::size_t size)
+		{
+			const auto has_module = GetModuleHandleEx(
+				GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS |
+				GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT,
+				reinterpret_cast<LPCSTR>(address),
+				module);
+
+			if (has_module)
+			{
+				GetModuleFileNameA(*module, buffer, static_cast<DWORD>(size));
+			}
+
+			return has_module;
+		}
+
 		void display_error_dialog()
 		{
-			std::string error_str = utils::string::va("Fatal error (0x%08X) at 0x%p.\n"
-			                                          "A minidump has been written.\n\n",
-			                                          exception_data.code, exception_data.address);
+			HMODULE module{};
+			char module_name[MAX_PATH]{};
+			const auto has_module = get_module(reinterpret_cast<std::size_t>(exception_data.address),
+				&module, module_name, sizeof(module_name));
 
-			error_str += "Make sure to update your graphics card drivers and install operating system updates!";
+			std::string error_str = utils::string::va("Exception (0x%08X) at 0x%p in module\n", exception_data.code, exception_data.address);
 
-			utils::thread::suspend_other_threads();
+			if (has_module)
+			{
+				error_str += utils::string::va("\n%s\n", module_name);
+			}
+			else
+			{
+				error_str += "\nunknown module\n";
+			}
+
+			if (exception_data.code == EXCEPTION_ACCESS_VIOLATION)
+			{
+				switch (exception_data.information[0])
+				{
+				case 0:
+					error_str += utils::string::va("\nTried to read from invalid address 0x%p\n", exception_data.information[1]);
+					break;
+				case 1:
+					error_str += utils::string::va("\nTried to write at invalid address 0x%p\n", exception_data.information[1]);
+					break;
+				default:
+					error_str += utils::string::va("\nInvalid address 0x%p\n", exception_data.information[1]);
+				}
+			}
+
+			error_str += utils::string::va("\nA crash dump has been written at %s\n", exception_data.crash_name),
+
+				utils::thread::suspend_other_threads();
 			show_mouse_cursor();
 
-			MessageBoxA(nullptr, error_str.data(), "TPP-Mod ERROR", MB_ICONERROR);
+			MessageBoxA(nullptr, error_str.data(), "MGV-Mod ERROR", MB_ICONERROR);
 			TerminateProcess(GetCurrentProcess(), exception_data.code);
 		}
 
@@ -74,7 +121,7 @@ namespace exception
 			return timestamp;
 		}
 
-		std::string generate_crash_info(const LPEXCEPTION_POINTERS exceptioninfo)
+		std::string generate_crash_info(const LPEXCEPTION_POINTERS exception_info)
 		{
 			std::string info{};
 			const auto line = [&info](const std::string& text)
@@ -83,22 +130,18 @@ namespace exception
 				info.append("\r\n");
 			};
 
-			line("TPP-MOD Crash Dump");
+			HMODULE module{};
+			char module_name[MAX_PATH]{};
+			get_module(reinterpret_cast<std::size_t>(exception_info->ExceptionRecord->ExceptionAddress),
+				&module, module_name, sizeof(module_name));
+
+			line("MGV-MOD Crash Dump");
 			line("");
 			line("Version: "s + VERSION);
 			line("Timestamp: "s + get_timestamp());
-			line(utils::string::va("Exception: 0x%08X", exceptioninfo->ExceptionRecord->ExceptionCode));
-			line(utils::string::va("Address: 0x%llX", exceptioninfo->ExceptionRecord->ExceptionAddress));
-
-#pragma warning(push)
-#pragma warning(disable: 4996)
-			OSVERSIONINFOEXA version_info;
-			ZeroMemory(&version_info, sizeof(version_info));
-			version_info.dwOSVersionInfoSize = sizeof(version_info);
-			GetVersionExA(reinterpret_cast<LPOSVERSIONINFOA>(&version_info));
-#pragma warning(pop)
-
-			line(utils::string::va("OS Version: %u.%u", version_info.dwMajorVersion, version_info.dwMinorVersion));
+			line(utils::string::va("Exception: 0x%08X", exception_info->ExceptionRecord->ExceptionCode));
+			line(utils::string::va("Address: 0x%llX", exception_info->ExceptionRecord->ExceptionAddress));
+			line(utils::string::va("Module path: %s", module_name));
 
 			return info;
 		}
@@ -109,36 +152,45 @@ namespace exception
 			SecureZeroMemory(process_params->CommandLine.Buffer, process_params->CommandLine.Length);
 			process_params->CommandLine.Length = 0;
 
-			const std::string crash_name = utils::string::va("minidumps/tpp-mod-crash-%d-%s.zip",
-			                                                 game::environment::get_mode(),
-			                                                 get_timestamp().data());
+			const auto timestamp = get_timestamp();
+			const auto crash_name = std::format("minidumps/mgv-mod-crash-{}.zip", timestamp);
+			strncpy_s(exception_data.crash_name, sizeof(exception_data.crash_name), crash_name.data(), _TRUNCATE);
 
 			utils::compression::zip::archive zip_file{};
 			zip_file.add("crash.dmp", create_minidump(exceptioninfo));
 			zip_file.add("info.txt", generate_crash_info(exceptioninfo));
-			zip_file.write(crash_name, "TPP-Mod Crash Dump");
+			zip_file.write(crash_name, "MGV-Mod Crash Dump");
 		}
 
-		bool is_harmless_error(const LPEXCEPTION_POINTERS exceptioninfo)
+		bool is_harmless_error(const LPEXCEPTION_POINTERS exception_info)
 		{
-			const auto code = exceptioninfo->ExceptionRecord->ExceptionCode;
+			const auto code = exception_info->ExceptionRecord->ExceptionCode;
 			return code == STATUS_INTEGER_OVERFLOW || code == STATUS_FLOAT_OVERFLOW || code == STATUS_SINGLE_STEP;
 		}
 
-		LONG WINAPI exception_filter(const LPEXCEPTION_POINTERS exceptioninfo)
+		LONG WINAPI exception_filter(const LPEXCEPTION_POINTERS exception_info)
 		{
-			if (is_harmless_error(exceptioninfo))
+			if (is_harmless_error(exception_info))
 			{
 				return EXCEPTION_CONTINUE_EXECUTION;
 			}
 
-			write_minidump(exceptioninfo);
+			if (!handler_disabled)
+			{
+				write_minidump(exception_info);
 
-			exception_data.code = exceptioninfo->ExceptionRecord->ExceptionCode;
-			exception_data.address = exceptioninfo->ExceptionRecord->ExceptionAddress;
-			exceptioninfo->ContextRecord->Rip = get_reset_state_stub();
+				exception_data.code = exception_info->ExceptionRecord->ExceptionCode;
+				exception_data.address = exception_info->ExceptionRecord->ExceptionAddress;
+				std::memcpy(&exception_data.information, exception_info->ExceptionRecord->ExceptionInformation,
+					sizeof(exception_info->ExceptionRecord->ExceptionInformation));
+				exception_info->ContextRecord->Rip = get_reset_state_stub();
 
-			return EXCEPTION_CONTINUE_EXECUTION;
+				return EXCEPTION_CONTINUE_EXECUTION;
+			}
+			else
+			{
+				return EXCEPTION_CONTINUE_SEARCH;
+			}
 		}
 
 		LPTOP_LEVEL_EXCEPTION_FILTER WINAPI set_unhandled_exception_filter_stub(LPTOP_LEVEL_EXCEPTION_FILTER)
@@ -147,15 +199,15 @@ namespace exception
 		}
 	}
 
+	void disable_handler()
+	{
+		handler_disabled = true;
+	}
+
 	class component final : public component_interface
 	{
 	public:
-		component()
-		{
-			SetUnhandledExceptionFilter(exception_filter);
-		}
-
-		void post_load() override
+		void pre_load() override
 		{
 			SetUnhandledExceptionFilter(exception_filter);
 			utils::hook::jump(SetUnhandledExceptionFilter, set_unhandled_exception_filter_stub, true);
@@ -166,6 +218,11 @@ namespace exception
 				*reinterpret_cast<int*>(0) = 1;
 			});
 #endif
+		}
+
+		void game_initialized() override
+		{
+			SetUnhandledExceptionFilter(exception_filter);
 		}
 	};
 }
