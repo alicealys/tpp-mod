@@ -9,6 +9,7 @@
 #include "binds.hpp"
 #include "game_console.hpp"
 #include "lui/input.hpp"
+#include "exception.hpp"
 
 #include "text_chat/input.hpp"
 
@@ -474,6 +475,10 @@ namespace binds
 			{
 				SetCursor(LoadCursorA(NULL, IDC_ARROW));
 				return DefWindowProc(hwnd, msg, w_param, l_param);
+			}
+			else if (msg == WM_DESTROY)
+			{
+				exception::disable_handler();
 			}
 
 			return wnd_proc_hook.invoke<LRESULT>(hwnd, msg, w_param, l_param);

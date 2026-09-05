@@ -6,6 +6,7 @@
 #include "command.hpp"
 #include "vars.hpp"
 #include "game_console.hpp"
+#include "exception.hpp"
 
 #include <utils/thread.hpp>
 #include <utils/string.hpp>
@@ -346,6 +347,12 @@ namespace console
 			FILE* handle{};
 			freopen_s(&handle, "CONOUT$", "w", stdout);
 		}
+
+		BOOL WINAPI ctrl_handler(DWORD dwCtrlType)
+		{
+			exception::disable_handler();
+			return TRUE;
+		}
 	}
 
 	void print(const int type, const char* fmt, ...)
@@ -378,6 +385,7 @@ namespace console
 		create_console();
 		ShowWindow(GetConsoleWindow(), SW_SHOW);
 		SetConsoleTitle("TPP-Mod");
+		SetConsoleCtrlHandler(ctrl_handler, TRUE);
 
 		con.kill_event = CreateEvent(NULL, TRUE, FALSE, NULL);
 
