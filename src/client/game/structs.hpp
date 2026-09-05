@@ -118,6 +118,66 @@ namespace game
 		steam_id remote;
 	};
 
+	struct ISteamClient;
+	struct ISteamUser;
+	struct ISteamGameServer;
+	struct ISteamFriends;
+	struct ISteamUtils;
+	struct ISteamMatchmaking;
+	struct ISteamMatchmakingServers;
+	struct ISteamUserStats;
+	struct ISteamGameServerStats;
+	struct ISteamApps;
+	struct ISteamNetworking;
+	struct ISteamRemoteStorage;
+	struct ISteamScreenshots;
+	struct ISteamHTTP;
+	struct ISteamUnifiedMessages;
+	struct ISteamController;
+	struct ISteamUGC;
+	struct ISteamAppList;
+	struct ISteamMusic;
+	struct ISteamMusicRemote;
+
+	struct ISteamClient_vtbl
+	{
+		int(__fastcall* CreateSteamPipe)(ISteamClient*);
+		bool(__fastcall* BReleaseSteamPipe)(ISteamClient*, int hSteamPipe);
+		int(__fastcall* ConnectToGlobalUser)(ISteamClient*, int hSteamPipe);
+		int(__fastcall* CreateLocalUser)(ISteamClient*, int* phSteamPipe, int eAccountType);
+		void(__fastcall* ReleaseUser)(ISteamClient*, int hSteamPipe, int hUser);
+		ISteamUser* (__fastcall* GetISteamUser)(ISteamClient*, int hSteamUser, int hSteamPipe, const char* pchVersion);
+		ISteamGameServer* (__fastcall* GetISteamGameServer)(ISteamClient*, int hSteamUser, int hSteamPipe, const char* pchVersion);
+		void(__fastcall* SetLocalIPBinding)(ISteamClient*, unsigned int unIP, unsigned short usPort);
+		ISteamFriends* (__fastcall* GetISteamFriends)(ISteamClient*, int hSteamUser, int hSteamPipe, const char* pchVersion);
+		ISteamUtils* (__fastcall* GetISteamUtils)(ISteamClient*, int hSteamPipe, const char* pchVersion);
+		ISteamMatchmaking* (__fastcall* GetISteamMatchmaking)(ISteamClient*, int hSteamUser, int hSteamPipe, const char* pchVersion);
+		ISteamMatchmakingServers* (__fastcall* GetISteamMatchmakingServers)(ISteamClient*, int hSteamUser, int hSteamPipe, const char* pchVersion);
+		void* (__fastcall* GetISteamGenericInterface)(ISteamClient*, int hSteamUser, int hSteamPipe, const char* pchVersion);
+		ISteamUserStats* (__fastcall* GetISteamUserStats)(ISteamClient*, int hSteamUser, int hSteamPipe, const char* pchVersion);
+		ISteamGameServerStats* (__fastcall* GetISteamGameServerStats)(ISteamClient*, int hSteamuser, int hSteamPipe, const char* pchVersion);
+		ISteamApps* (__fastcall* GetISteamApps)(ISteamClient*, int hSteamUser, int hSteamPipe, const char* pchVersion);
+		ISteamNetworking* (__fastcall* GetISteamNetworking)(ISteamClient*, int hSteamUser, int hSteamPipe, const char* pchVersion);
+		ISteamRemoteStorage* (__fastcall* GetISteamRemoteStorage)(ISteamClient*, int hSteamuser, int hSteamPipe, const char* pchVersion);
+		ISteamScreenshots* (__fastcall* GetISteamScreenshots)(ISteamClient*, int hSteamuser, int hSteamPipe, const char* pchVersion);
+		void(__fastcall* RunFrame)(ISteamClient*);
+		unsigned int(__fastcall* GetIPCCallCount)(ISteamClient*);
+		void(__fastcall* SetWarningMessageHook)(ISteamClient*, void* pFunction);
+		bool(__fastcall* BShutdownIfAllPipesClosed)(ISteamClient*);
+		ISteamHTTP* (__fastcall* GetISteamHTTP)(ISteamClient*, int hSteamuser, int hSteamPipe, const char* pchVersion);
+		ISteamUnifiedMessages* (__fastcall* GetISteamUnifiedMessages)(ISteamClient*, int hSteamuser, int hSteamPipe, const char* pchVersion);
+		ISteamController* (__fastcall* GetISteamController)(ISteamClient*, int hSteamUser, int hSteamPipe, const char* pchVersion);
+		ISteamUGC* (__fastcall* GetISteamUGC)(ISteamClient*, int hSteamUser, int hSteamPipe, const char* pchVersion);
+		ISteamAppList* (__fastcall* GetISteamAppList)(ISteamClient*, int hSteamUser, int hSteamPipe, const char* pchVersion);
+		ISteamMusic* (__fastcall* GetISteamMusic)(ISteamClient*, int hSteamuser, int hSteamPipe, const char* pchVersion);
+		ISteamMusicRemote* (__fastcall* GetISteamMusicRemote)(ISteamClient*, int hSteamuser, int hSteamPipe, const char* pchVersion);
+	};
+
+	struct ISteamClient
+	{
+		ISteamClient_vtbl* __vftable;
+	};
+
 	struct /*VFT*/ ISteamUser_vtbl
 	{
 		int(__fastcall* GetHSteamUser)(ISteamUser* this_);
@@ -263,6 +323,39 @@ namespace game
 	struct ISteamFriends
 	{
 		ISteamFriends_vtbl* __vftable /*VFT*/;
+	};
+
+	struct ISteamApps;
+
+	struct ISteamApps_vtbl
+	{
+		bool(__fastcall* BIsSubscribed)(ISteamApps*);
+		bool(__fastcall* BIsLowViolence)(ISteamApps*);
+		bool(__fastcall* BIsCybercafe)(ISteamApps*);
+		bool(__fastcall* BIsVACBanned)(ISteamApps*);
+		const char* (__fastcall* GetCurrentGameLanguage)(ISteamApps*);
+		const char* (__fastcall* GetAvailableGameLanguages)(ISteamApps*);
+		bool(__fastcall* BIsSubscribedApp)(ISteamApps*, unsigned int appID);
+		bool(__fastcall* BIsDlcInstalled)(ISteamApps*, unsigned int appID);
+		unsigned int(__fastcall* GetEarliestPurchaseUnixTime)(ISteamApps*, unsigned int nAppID);
+		bool(__fastcall* BIsSubscribedFromFreeWeekend)(ISteamApps*);
+		int(__fastcall* GetDLCCount)(ISteamApps*);
+		bool(__fastcall* BGetDLCDataByIndex)(ISteamApps*, int iDLC, unsigned int* pAppID, bool* pbAvailable, char* pchName, int cchNameBufferSize);
+		void(__fastcall* InstallDLC)(ISteamApps*, unsigned int nAppID);
+		void(__fastcall* UninstallDLC)(ISteamApps*, unsigned int nAppID);
+		void(__fastcall* RequestAppProofOfPurchaseKey)(ISteamApps*, unsigned int nAppID);
+		bool(__fastcall* GetCurrentBetaName)(ISteamApps*, char* pchName, int cchNameBufferSize);
+		bool(__fastcall* MarkContentCorrupt)(ISteamApps*, bool bMissingFilesOnly);
+		unsigned int(__fastcall* GetInstalledDepots)(ISteamApps*, unsigned int appID, unsigned int* pvecDepots, unsigned int cMaxDepots);
+		unsigned int(__fastcall* GetAppInstallDir)(ISteamApps*, unsigned int appID, char* pchFolder, unsigned int cchFolderBufferSize);
+		bool(__fastcall* BIsAppInstalled)(ISteamApps*, unsigned int appID);
+		steam_id(__fastcall* GetAppOwner)(ISteamApps*);
+		const char* (__fastcall* GetLaunchQueryParam)(ISteamApps*, const char* pchKey);
+	};
+
+	struct ISteamApps
+	{
+		ISteamApps_vtbl* __vftable;
 	};
 
 	struct LobbyCreated_t
@@ -648,6 +741,7 @@ namespace game
 
 			void* a2;
 			void* queue;
+			char __pad0[56];
 		};
 
 		struct LuaAutoPtr
@@ -8513,7 +8607,7 @@ namespace game
 					void* pad2[5];
 					unsigned int (__fastcall* GetEquipIdSlot)(tpp::gm::player::impl::EquipControllerImpl_mgo*, unsigned int, int, unsigned int);
 					void* (__fastcall* SetEquipState)(tpp::gm::player::impl::EquipControllerImpl_mgo*, unsigned int, int, unsigned int, int, unsigned __int8, bool, unsigned __int8);
-					void* (__fastcall* SetSlot)(tpp::gm::player::impl::EquipControllerImpl_mgo*, unsigned int, int, int, int, bool, bool);
+					void* (__fastcall* SetSlot)(tpp::gm::player::impl::EquipControllerImpl_mgo*, unsigned int*, int, int, int, bool, bool);
 					void* (__fastcall* SetAmmoCount)(tpp::gm::player::impl::EquipControllerImpl_mgo*, unsigned int, int, unsigned int, bool);
 					void* (__fastcall* GetAmmoStockIndexBySlot)(tpp::gm::player::impl::EquipControllerImpl_mgo*, int, unsigned int);
 					void* (__fastcall* SetAmmoStockCountWithMax)(tpp::gm::player::impl::EquipControllerImpl_mgo*, int, int, unsigned int, unsigned int);

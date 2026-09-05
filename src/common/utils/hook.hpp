@@ -65,6 +65,9 @@ namespace utils::hook
 		using Assembler::call;
 		using Assembler::jmp;
 
+		void push_all_registers();
+		void pop_all_registers();
+
 		void pushad64();
 		void popad64();
 
