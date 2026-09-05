@@ -57,6 +57,48 @@ namespace utils::hook
 		this->pop(rax);
 	}
 
+	void assembler::push_all_registers()
+	{
+		this->push(rax);
+		this->push(rcx);
+		this->push(rdx);
+		this->push(rbx);
+		this->push(rsp);
+		this->push(rbp);
+		this->push(rsi);
+		this->push(rdi);
+
+		this->push(r8);
+		this->push(r9);
+		this->push(r10);
+		this->push(r11);
+		this->push(r12);
+		this->push(r13);
+		this->push(r14);
+		this->push(r15);
+	}
+
+	void assembler::pop_all_registers()
+	{
+		this->pop(r15);
+		this->pop(r14);
+		this->pop(r13);
+		this->pop(r12);
+		this->pop(r11);
+		this->pop(r10);
+		this->pop(r9);
+		this->pop(r8);
+
+		this->pop(rdi);
+		this->pop(rsi);
+		this->pop(rbp);
+		this->pop(rsp);
+		this->pop(rbx);
+		this->pop(rdx);
+		this->pop(rcx);
+		this->pop(rax);
+	}
+
 	void assembler::prepare_stack_for_call()
 	{
 		const auto reserve_callee_space = this->new_label();
