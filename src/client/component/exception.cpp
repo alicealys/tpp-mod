@@ -88,7 +88,7 @@ namespace exception
 				utils::thread::suspend_other_threads();
 			show_mouse_cursor();
 
-			MessageBoxA(nullptr, error_str.data(), "MGV-Mod ERROR", MB_ICONERROR);
+			MessageBoxA(nullptr, error_str.data(), "TPP-Mod ERROR", MB_ICONERROR);
 			TerminateProcess(GetCurrentProcess(), exception_data.code);
 		}
 
@@ -135,7 +135,7 @@ namespace exception
 			get_module(reinterpret_cast<std::size_t>(exception_info->ExceptionRecord->ExceptionAddress),
 				&module, module_name, sizeof(module_name));
 
-			line("MGV-MOD Crash Dump");
+			line("TPP-MOD Crash Dump");
 			line("");
 			line("Version: "s + VERSION);
 			line("Timestamp: "s + get_timestamp());
@@ -153,13 +153,13 @@ namespace exception
 			process_params->CommandLine.Length = 0;
 
 			const auto timestamp = get_timestamp();
-			const auto crash_name = std::format("minidumps/mgv-mod-crash-{}.zip", timestamp);
+			const auto crash_name = std::format("minidumps/tpp-mod-crash-{}.zip", timestamp);
 			strncpy_s(exception_data.crash_name, sizeof(exception_data.crash_name), crash_name.data(), _TRUNCATE);
 
 			utils::compression::zip::archive zip_file{};
 			zip_file.add("crash.dmp", create_minidump(exceptioninfo));
 			zip_file.add("info.txt", generate_crash_info(exceptioninfo));
-			zip_file.write(crash_name, "MGV-Mod Crash Dump");
+			zip_file.write(crash_name, "TPP-Mod Crash Dump");
 		}
 
 		bool is_harmless_error(const LPEXCEPTION_POINTERS exception_info)

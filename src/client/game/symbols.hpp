@@ -327,13 +327,6 @@ namespace game
 		}
 	}
 
-	namespace luaext
-	{
-		WEAK symbol<void*(lua::lua_State*, const char*, __int64, __int64, __int64)> lua_bind_start{0x141A158E0, 0x141472990, 0x0, 0x0};
-		WEAK symbol<void*(void*, const char*, void*, __int64, __int64, __int64)> lua_bind_closure{0x141A15690, 0x141472740, 0x0, 0x0};
-		WEAK symbol<void* (void*, __int64, __int64, __int64)> lua_bind_end{0x141A15760, 0x141472810, 0x0, 0x0};
-	}
-
 	namespace tpp
 	{
 		namespace sys
@@ -461,6 +454,13 @@ namespace game
 		}
 	}
 
+	namespace luaext
+	{
+		WEAK symbol<void* (lua::lua_State*, const char*, __int64, __int64, __int64)> lua_bind_start{0x141A158E0, 0x141472990, 0x0, 0x0};
+		WEAK symbol<void* (void*, const char*, void*, __int64, __int64, __int64)> lua_bind_closure{0x141A15690, 0x141472740, 0x0, 0x0};
+		WEAK symbol<void* (void*, __int64, __int64, __int64)> lua_bind_end{0x141A15760, 0x141472810, 0x0, 0x0};
+	}
+
 	namespace lua
 	{
 		WEAK symbol<int(lua_State* s, const char* buffer, 
@@ -489,7 +489,7 @@ namespace game
 		WEAK symbol<void(lua_State* L, const char*)> lua_pushstring{0x141A11970, 0x14146D760, 0x0, 0x0};
 		WEAK symbol<void(lua_State* L, double)> lua_pushnumber{0x141A11950, 0x14146D740, 0x0, 0x0};
 		WEAK symbol<void(lua_State* L, int)> lua_pushinteger{0x141A11880, 0x14146D670, 0x0, 0x0};
-		WEAK symbol<void(lua_State* L, int)> lua_pushboolean{0x141C9A140, 0x14146D540, 0x0, 0x0};
+		WEAK symbol<void(lua_State* L, int)> lua_pushboolean{0x141A11750, 0x14146D540, 0x0, 0x0};
 
 #define game_lua_pop(L,n) game::lua::lua_settop(L, -(n)-1)
 	}
