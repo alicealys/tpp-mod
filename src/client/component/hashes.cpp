@@ -106,7 +106,7 @@ namespace hashes
 			{
 				const auto str = params.get(1);
 				const auto hash = game::fox::FoxStrHash32(str.data(), str.size());
-				console::info("hash: 0x%llX, low: 0x%X", hash.id, hash.f.l);
+				console::info("hash: 0x%llX (%llu), low: 0x%X (%u)", hash.id, hash.f.l, hash.id, hash.f.l);
 			});
 
 			command::add("hash_path", [](const command::params& params)

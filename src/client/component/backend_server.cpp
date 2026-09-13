@@ -35,7 +35,6 @@ namespace backend_server
 
 		vars::var_ptr var_custom_server;
 		vars::var_ptr var_net_proxy_url;
-		vars::var_ptr var_net_server_url_ovveride;
 
 		struct steam_storage;
 
