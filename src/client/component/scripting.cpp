@@ -271,15 +271,20 @@ namespace scripting
 		}
 
 		template <console::console_type Type>
-		void lua_print(game::lua::lua_State* s)
+		int lua_print(game::lua::lua_State* s)
 		{
 			if (var_lua_logging->current.get_int() < 2)
 			{
-				return;
+				return 0;
 			}
 
 			size_t len{};
-			const char* cstr = game::lua::lua_tolstring(s, -1, &len);
+			const auto cstr = game::lua::lua_tolstring(s, -1, &len);
+			if (cstr == nullptr)
+			{
+				return 0;
+			}
+
 			std::string str(cstr, len);
 
 			const char* type_name = "Log";
@@ -294,6 +299,7 @@ namespace scripting
 			}
 
 			console::print(Type, "[Fox.%s] %s\n", type_name, str.data());
+			return 0;
 		}
 
 		std::string get_table_value(game::lua::lua_State* state)
