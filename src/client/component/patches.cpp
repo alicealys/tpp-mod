@@ -378,6 +378,12 @@ namespace patches
 		{
 			return 1;
 		}
+
+		int get_friend_count_stub()
+		{
+			const auto steam_friends = (*game::SteamFriends)();
+			return std::min(90, steam_friends->__vftable->GetFriendCount(steam_friends, 4));
+		}
 	}
 
 	class component final : public component_interface
@@ -461,6 +467,12 @@ namespace patches
 				}
 
 				get_ramble_speed_hook.create(SELECT_VALUE_LANG(0x140AFD550, 0x0), get_ramble_speed_stub);
+
+				utils::hook::nop(SELECT_VALUE_LANG(0x1407D60FA, 0x0), 7);
+				utils::hook::call(SELECT_VALUE_LANG(0x1407D60FA, 0x0), get_friend_count_stub);
+				
+				utils::hook::nop(SELECT_VALUE_LANG(0x1407D5EE9, 0x0), 7);
+				utils::hook::call(SELECT_VALUE_LANG(0x1407D5EE9, 0x0), get_friend_count_stub);
 			}
 
 			utils::hook::nop(SELECT_VALUE(0x1400013F9, 0x1400014E9, 0x0, 0x0), 6);
