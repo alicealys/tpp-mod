@@ -10,6 +10,7 @@
 #include "filesystem.hpp"
 #include "binds.hpp"
 #include "scripting.hpp"
+#include "backend_server.hpp"
 
 #include <utils/io.hpp>
 #include <utils/string.hpp>
@@ -687,6 +688,36 @@ namespace command
 					utils::nt::start_process("mgsvmgo.exe");
 					utils::nt::terminate();
 				});
+
+				command::add("addfollow", [](const params& parms)
+				{
+					if (parms.size() < 2)
+					{
+						return;
+					}
+
+					const auto steam_id = parms.get_uint64(1);
+					scheduler::once([steam_id]
+					{
+						nlohmann::json request;
+						request["rqid"] = 0;
+						request["msgid"] = "CMD_ADD_FOLLOW";
+						request["steam_id"] = steam_id;
+						request["player_id"] = 0;
+						request["xu_id"] = 0;
+						request["np_id"]["handler"]["data"] = "";
+						request["np_id"]["handler"]["term"] = 0;
+						auto result = backend_server::send_command("WEB", request, true);
+						if (result.has_value() && result->operator[]("result") == "NOERR")
+						{
+							console::info("[add follow] success\n");
+						}
+						else
+						{
+							console::error("[add follow] fail\n");
+						}
+					}, scheduler::async);
+				});
 			}
 			else
 			{
@@ -695,10 +726,7 @@ namespace command
 					utils::nt::start_process("mgsvtpp.exe");
 					utils::nt::terminate();
 				});
-			}
 
-			if (game::environment::is_mgo())
-			{
 				command::add("editavatar", []()
 				{
 					const auto script_vars = game::fox::GetQuarkSystemTable()->applicationSystem->mgo.scriptVars;
