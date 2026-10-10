@@ -128,6 +128,14 @@ namespace game
 			}
 		}
 
+		namespace nio
+		{
+			namespace Buffer_
+			{
+				WEAK symbol<unsigned __int64(Buffer*, void*, unsigned int)> IoBinary{0x141A52D20, 0x1414AF370, 0x0, 0x0};
+			}
+		}
+
 		namespace uix
 		{
 			namespace impl
