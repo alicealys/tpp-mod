@@ -293,6 +293,16 @@ namespace security
 			const auto num = steam_matchmaking->__vftable->GetNumLobbyMembers(steam_matchmaking, lobby_id);
 			return std::clamp(num, 0, 16);
 		}
+
+		unsigned __int64 nio_buffer_read_stub(game::fox::nio::Buffer* buffer, unsigned char* dest, unsigned int size)
+		{
+			const auto result = game::fox::nio::Buffer_::IoBinary(buffer, dest, size);
+			if (*dest != 0 && *dest != 3)
+			{
+				*dest = 0;
+			}
+			return result;
+		}
 	}
 
 	class component final : public component_interface
@@ -338,6 +348,8 @@ namespace security
 			utils::hook::jump(SELECT_VALUE(0x141A35A10, 0x141490DA0, 0x0, 0x0), lua_nullsub_module); // disable lua debug module
 
 			utils::hook::set(SELECT_VALUE(0x14208DC60, 0x1416F0AA0, 0x0, 0x0), system_stub); // remove 'system' import
+
+			utils::hook::call(SELECT_VALUE(0x14031BA37, 0x140C51CA7, 0x0, 0x0), nio_buffer_read_stub); // unchecked session user id type
 		}
 	};
 }
