@@ -321,7 +321,7 @@ namespace text_chat::lobby
 			game_socket::on("chat_message", [](game::fox::nt::impl::SessionImpl2* session,
 				const game_socket::message_info_t& info, const std::string_view& buffer)
 			{
-				if (info.game_object_id >= 16)
+				if (info.game_object_id >= session->allMembers.size)
 				{
 					return;
 				}
