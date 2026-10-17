@@ -166,6 +166,8 @@ namespace match_list
 
 			a.bind(unknown_map);
 			a.mov(byte_ptr(rax, -0x1E), cl);
+
+			a.cmp(byte_ptr(r8, 5), 0);
 			a.setnz(cl);
 
 			a.jmp(SELECT_VALUE_LANG(0x1413AAED7, 0x0));
@@ -321,7 +323,7 @@ namespace match_list
 			utils::hook::jump(SELECT_VALUE_LANG(0x1413BC199, 0x0), utils::hook::assemble(match_list_map_name_stub2), true);
 			utils::hook::jump(SELECT_VALUE_LANG(0x1413BA28B, 0x0), utils::hook::assemble(match_list_map_name_stub3), true);
 			utils::hook::jump(SELECT_VALUE_LANG(0x1413BB230, 0x0), utils::hook::assemble(match_list_map_name_stub4), true);
-			utils::hook::jump(SELECT_VALUE_LANG(0x1413AAEC9, 0x0), utils::hook::assemble(match_list_map_name_stub5), true, true);
+			utils::hook::jump(SELECT_VALUE_LANG(0x1413AAEC4, 0x0), utils::hook::assemble(match_list_map_name_stub5), true, true);
 			utils::hook::jump(SELECT_VALUE_LANG(0x1413A669C, 0x0), utils::hook::assemble(match_list_map_name_stub6), true);
 			// todo: 01413A676E, rush mode
 
