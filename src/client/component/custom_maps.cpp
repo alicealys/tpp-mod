@@ -8,8 +8,10 @@
 #include "scripting.hpp"
 #include "custom_maps.hpp"
 #include "scheduler.hpp"
+#include "vars.hpp"
 
 #include "utils/steam.hpp"
+#include "utils/fox.hpp"
 
 #include <utils/hook.hpp>
 #include <utils/concurrency.hpp>
@@ -24,6 +26,8 @@ namespace custom_maps
         constexpr const auto map_cmd_id = 0xFF;
         constexpr const auto map_cmd_location_code = 0xFF;
         constexpr const auto usermap_location_code_begin = 150;
+
+        vars::var_ptr ui_map_location_param_debug;
 
         union usermap_id_t
         {
@@ -285,6 +289,211 @@ namespace custom_maps
             {
                 command::execute("disconnect");
             }
+        }
+
+        bool parse_location_parameter(game::tpp::ui::menu::impl::MbDvcMapLocationParameterImpl_mgo* param, const std::string& data)
+        {
+            auto param_j = nlohmann::json::parse(data, nullptr, false);
+            if (param_j.is_discarded() || !param_j.is_object())
+            {
+                return false;
+            }
+
+            const auto parse_vec3 = [&](const std::string_view& key, float(&dest)[4])
+            {
+                std::memset(dest, 0, sizeof(dest));
+
+                auto& value_j = param_j[key];
+                if (!value_j.is_array())
+                {
+                    return;
+                }
+
+                for (auto i = 0ull; i < value_j.size(); i++)
+                {
+                    if (i >= 3)
+                    {
+                        break;
+                    }
+
+                    auto& entry_j = value_j[i];
+                    if (entry_j.is_number())
+                    {
+                        dest[i] = entry_j.get<float>();
+                    }
+                }
+            };
+
+            const auto parse_path_hash = [&](const std::string_view& key, std::uint64_t& dest)
+            {
+                auto& value_j = param_j[key];
+                if (value_j.is_string())
+                {
+                    const auto str = value_j.get<std::string>();
+                    dest = game::fox::fs::PathCodeImpl_::FromString(str.data());
+                }
+                else if (value_j.is_number_unsigned())
+                {
+                    dest = value_j.get<std::uint64_t>();
+                }
+                else
+                {
+                    dest = 0ull;
+                }
+            };
+
+            const auto parse_hash = [&](const std::string_view & key, std::uint64_t & dest)
+            {
+                auto& value_j = param_j[key];
+                if (value_j.is_string())
+                {
+                    const auto str = value_j.get<std::string>();
+                    dest = game::fox::FoxStrHash32(str.data(), str.size()).id;
+                }
+                else if (value_j.is_number_unsigned())
+                {
+                    dest = value_j.get<std::uint64_t>();
+                }
+                else
+                {
+                    dest = 0ull;
+                }
+            };
+
+            const auto parse_float = [&](const std::string_view& key, float& dest)
+            {
+                auto& value_j = param_j[key];
+                if (value_j.is_number())
+                {
+                    dest = value_j.get<float>();
+                    return false;
+                }
+                else
+                {
+                    dest = 0.f;
+                    return false;
+                }
+            };
+
+            auto has_tex = false;
+
+            const auto parse_texture = [&](const std::string_view& key, char(&dest)[128], const std::uint8_t flag)
+            {
+                std::memset(dest, 0, sizeof(dest));
+
+                auto& value_j = param_j[key];
+                if (!value_j.is_string())
+                {
+                    return false;
+                }
+
+                param->flags |= flag;
+                const auto data = value_j.get<std::string>();
+                strncpy_s(dest, data.data(), _TRUNCATE);
+
+                if (!game::_anonymous_namespace_::IsTexturePathNullOrDummy(dest))
+                {
+                    has_tex = true;
+                }
+
+                return true;
+            };
+
+            param->flags = 0;
+
+            parse_vec3("scrollMaxLeftUpPosition", param->scrollMaxLeftUpPosition);
+            parse_vec3("scrollMaxRightDownPosition", param->scrollMaxRightDownPosition);
+
+            parse_hash("locationNameLangId", param->locationNameLangId);
+            parse_path_hash("uniqueTownTexturePath", param->uniqueTownTexturePath);
+            parse_path_hash("commonTownTexturePath", param->commonTownTexturePath);
+
+            parse_float("stageSize", param->stageSize);
+            parse_float("stageRotate", param->stageRotate);
+            parse_float("highZoomScale", param->highZoomScale);
+            parse_float("middleZoomScale", param->middleZoomScale);
+            parse_float("lowZoomScale", param->lowZoomScale);
+            if (!parse_float("naviHighZoomScale", param->naviHighZoomScale))
+            {
+                param->naviHighZoomScale = param->highZoomScale;
+            }
+
+            if (!parse_float("naviMiddleZoomScale", param->naviMiddleZoomScale))
+            {
+                param->naviMiddleZoomScale = param->middleZoomScale;
+            }
+
+            if (!parse_texture("heightMapTexturePath", param->heightMapTexturePath1, 1))
+            {
+                parse_texture("heightMapTexturePath1", param->heightMapTexturePath1, 1);
+            }
+
+            parse_texture("heightMapTexturePath2", param->heightMapTexturePath2, 2);
+            parse_texture("heightMapTexturePath3", param->heightMapTexturePath3, 4);
+
+            parse_texture("photoRealMapTexturePath", param->photoRealMapTexturePath, 8);
+
+            if (!parse_texture("divideHeightMapTexturePath", param->divideHeightMapTexturePath1, 16))
+            {
+                parse_texture("divideHeightMapTexturePath1", param->divideHeightMapTexturePath1, 16);
+            }
+
+            parse_texture("divideHeightMapTexturePath2", param->divideHeightMapTexturePath2, 32);
+            parse_texture("divideHeightMapTexturePath3", param->divideHeightMapTexturePath3, 64);
+            parse_texture("dividePhotoRealMapTexturePath", param->dividePhotoRealMapTexturePath, 128);
+
+            param->stageRotateCos = std::cosf(param->stageRotate);
+            param->stageRotateSin = std::sinf(param->stageRotate);
+
+            if (!has_tex)
+            {
+                param->flags |= 0x100;
+            }
+
+            return true;
+        }
+
+        utils::hook::detour load_global_location_parameter_hook;
+        int* load_global_location_parameter_stub(game::tpp::ui::menu::impl::MbDvcMapLocationParameterImpl_mgo* param, 
+            int* result, unsigned short location_code)
+        {
+            if (param->locationCode == location_code)
+            {
+                *result = 0;
+                return result;
+            }
+
+            const auto map_info = get_map_by_location(static_cast<std::uint8_t>(location_code));
+            if (map_info == nullptr)
+            {
+                return load_global_location_parameter_hook.invoke<int*>(param, result, location_code);
+            }
+
+            const auto param_path = std::format("/Assets/mgo/ui/{}_location_parameter.json", map_info->name);
+
+            const auto try_load_from_disk = [&](std::string& data)
+            {
+                if (!ui_map_location_param_debug->current.enabled())
+                {
+                    return false;
+                }
+
+                const auto path = std::format("tpp-mod/ui/{}_location_parameter.json", map_info->name);
+                return utils::io::read_file(path, &data);
+            };
+
+            std::string data;
+            if ((!try_load_from_disk(data) && !utils::fox::fs::read_file(param_path, data)) || !parse_location_parameter(param, data))
+            {
+                return load_global_location_parameter_hook.invoke<int*>(param, result, location_code);
+            }
+
+            console::info("[custom maps] using map location parameter %s\n", param_path.data());
+
+            param->locationCode = location_code;
+
+            *result = 0;
+            return result;
         }
     }
 
@@ -548,12 +757,15 @@ namespace custom_maps
             }
 
             var_mapname = vars::register_string("mapname", "", vars::var_flag_readonly, "current mapname");
+            ui_map_location_param_debug = vars::register_bool("ui_map_location_param_debug", false, 0, "map location parameter debug (loads it from disk first)");
 
             utils::hook::call(SELECT_VALUE_LANG(0x140743197, 0x0), get_location_package_path_stub);
             get_package_paths_hook.create(SELECT_VALUE_LANG(0x140743050, 0x0), get_package_paths_stub);
 
             utils::hook::jump(SELECT_VALUE_LANG(0x14089A780, 0x0), location_code_to_map_id_stub);
             utils::hook::jump(SELECT_VALUE_LANG(0x1408A2149, 0x0), utils::hook::assemble(map_id_to_location_code_stub), true);
+
+            load_global_location_parameter_hook.create(SELECT_VALUE_LANG(0x1406D4B60, 0x0), load_global_location_parameter_stub);
 
             command::add("map", [](const command::params& params)
             {

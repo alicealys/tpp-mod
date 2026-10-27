@@ -794,6 +794,22 @@ namespace game
 			{
 
 			};
+
+			struct Path
+			{
+				char __pad0[24];
+			};
+
+			struct Stream
+			{
+				struct vtable
+				{
+
+				};
+
+				vtable* __vftable;
+				char __pad0[56];
+			};
 		}
 
 		namespace gk
@@ -3441,6 +3457,101 @@ namespace game
 					};
 
 					vtable* __vftable;
+				};
+
+				struct MbDvcMapLocationParameterImpl_mgo;
+
+				struct MbDvcMapLocationParameterImpl_mgo
+				{
+					struct vtable
+					{
+						void(__fastcall* meth_01)(MbDvcMapLocationParameterImpl_mgo*);
+						void(__fastcall* meth_02)(MbDvcMapLocationParameterImpl_mgo*);
+						void(__fastcall* meth_03)(MbDvcMapLocationParameterImpl_mgo*);
+						void(__fastcall* meth_04)(MbDvcMapLocationParameterImpl_mgo*);
+						void(__fastcall* meth_05)(MbDvcMapLocationParameterImpl_mgo*);
+						void(__fastcall* meth_06)(MbDvcMapLocationParameterImpl_mgo*);
+						void(__fastcall* meth_07)(MbDvcMapLocationParameterImpl_mgo*);
+						void(__fastcall* meth_08)(MbDvcMapLocationParameterImpl_mgo*);
+						void(__fastcall* meth_09)(MbDvcMapLocationParameterImpl_mgo*);
+						void(__fastcall* meth_10)(MbDvcMapLocationParameterImpl_mgo*);
+						void(__fastcall* meth_11)(MbDvcMapLocationParameterImpl_mgo*);
+						void(__fastcall* meth_12)(MbDvcMapLocationParameterImpl_mgo*);
+						void(__fastcall* meth_13)(MbDvcMapLocationParameterImpl_mgo*);
+						void(__fastcall* meth_14)(MbDvcMapLocationParameterImpl_mgo*);
+						void(__fastcall* meth_15)(MbDvcMapLocationParameterImpl_mgo*);
+						void(__fastcall* meth_16)(MbDvcMapLocationParameterImpl_mgo*);
+						void(__fastcall* meth_17)(MbDvcMapLocationParameterImpl_mgo*);
+						void(__fastcall* meth_18)(MbDvcMapLocationParameterImpl_mgo*);
+						void(__fastcall* meth_19)(MbDvcMapLocationParameterImpl_mgo*);
+						void(__fastcall* meth_20)(MbDvcMapLocationParameterImpl_mgo*);
+						void(__fastcall* meth_21)(MbDvcMapLocationParameterImpl_mgo*);
+						void(__fastcall* meth_22)(MbDvcMapLocationParameterImpl_mgo*);
+						void(__fastcall* meth_23)(MbDvcMapLocationParameterImpl_mgo*);
+						void(__fastcall* meth_24)(MbDvcMapLocationParameterImpl_mgo*);
+						void(__fastcall* meth_25)(MbDvcMapLocationParameterImpl_mgo*);
+						void(__fastcall* meth_26)(MbDvcMapLocationParameterImpl_mgo*);
+						void(__fastcall* meth_27)(MbDvcMapLocationParameterImpl_mgo*);
+						void(__fastcall* meth_28)(MbDvcMapLocationParameterImpl_mgo*);
+						void(__fastcall* meth_29)(MbDvcMapLocationParameterImpl_mgo*);
+						const char* (__fastcall* GetHeightMapTexturePath1)(MbDvcMapLocationParameterImpl_mgo*);
+						const char* (__fastcall* GetHeightMapTexturePath2)(MbDvcMapLocationParameterImpl_mgo*);
+						const char* (__fastcall* GetHeightMapTexturePath3)(MbDvcMapLocationParameterImpl_mgo*);
+						const char* (__fastcall* GetPhotoRealMapTexturePath)(MbDvcMapLocationParameterImpl_mgo*);
+						const char* (__fastcall* GetDivideHeightMapTexturePath1)(MbDvcMapLocationParameterImpl_mgo*);
+						const char* (__fastcall* GetDivideHeightMapTexturePath2)(MbDvcMapLocationParameterImpl_mgo*);
+						const char* (__fastcall* GetDivideHeightMapTexturePath3)(MbDvcMapLocationParameterImpl_mgo*);
+						const char* (__fastcall* GetDividePhotoRealMapTexturePath)(MbDvcMapLocationParameterImpl_mgo*);
+						void(__fastcall* meth_38)(MbDvcMapLocationParameterImpl_mgo*);
+						void(__fastcall* meth_39)(MbDvcMapLocationParameterImpl_mgo*);
+						void(__fastcall* meth_40)(MbDvcMapLocationParameterImpl_mgo*);
+					};
+
+					struct unk_t
+					{
+						unsigned int a1;
+						unsigned __int64 str1;
+						unsigned __int64 str2;
+						unsigned __int64 a2;
+						unsigned __int64 a3;
+						unsigned int a4;
+						unsigned short a5;
+					};
+
+					vtable* __vftable;
+					fox::Script** script;
+					char __pad0[24];
+					unsigned short locationCode;
+					char __pad1[6];
+					float scrollMaxLeftUpPosition[4];
+					float scrollMaxRightDownPosition[4];
+					unsigned __int64 locationNameLangId;
+					float stageSize;
+					float stageRotate;
+					float stageRotateSin;
+					float stageRotateCos;
+					float highZoomScale;
+					float middleZoomScale;
+					float lowZoomScale;
+					float naviHighZoomScale;
+					float naviMiddleZoomScale;
+					char heightMapTexturePath1[128]; // flags = 1
+					char heightMapTexturePath2[128]; // flags = 2
+					char heightMapTexturePath3[128]; // flags = 4
+					char photoRealMapTexturePath[128]; // flags = 8
+					char divideHeightMapTexturePath1[128]; // flags = 0x10
+					char divideHeightMapTexturePath2[128]; // flags = 0x20
+					char divideHeightMapTexturePath3[128]; // flags = 0x40
+					char dividePhotoRealMapTexturePath[128]; // flags = 0x80
+					char __pad2[4];
+					unk_t unk_array[41];
+					unsigned __int64 uniqueTownTexturePath;
+					unsigned __int64 commonTownTexturePath;
+					char unk1;
+					char sectionFuncRankForHeightMap1;
+					char sectionFuncRankForHeightMap2;
+					char unk2;
+					unsigned int flags;
 				};
 
 				struct MenuSystemImpl
