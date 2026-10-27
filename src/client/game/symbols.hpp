@@ -6,6 +6,11 @@ namespace game
 {
 	// Functions
 
+	namespace _anonymous_namespace_
+	{
+		WEAK symbol<bool(const char*)> IsTexturePathNullOrDummy{0x0, 0x1406D49B0, 0x0, 0x0};
+	}
+
 	namespace fox
 	{
 		WEAK symbol<fox::impl::TimeSystemImpl()> GetTimeSystem{0x1400F21F0, 0x1400F3B50 , 0x0, 0x0};
@@ -95,6 +100,21 @@ namespace game
 			namespace PathCodeImpl_
 			{
 				WEAK symbol<__int64(const char*)> FromString{0x14003DB30, 0x14003D560, 0x0, 0x0};
+			}
+
+			namespace Path_
+			{
+				WEAK symbol<void(fs::Path*, const char*)> Path_{0x14003E690, 0x14003E3B0, 0x0, 0x0};
+				WEAK symbol<void(fs::Path*)> Path__destructor{0x14003EA10, 0x14003E720, 0x0, 0x0};
+			}
+
+			namespace Stream_
+			{
+				WEAK symbol<int*(Stream*)> Stream_{0x14005E7F0, 0x14005E270, 0x0, 0x0};
+				WEAK symbol<int*(Stream*, int*, fs::Path*, int)> Open{0x14005FD60, 0x14005F7C0, 0x0, 0x0};
+				WEAK symbol<unsigned __int64(Stream*, int)> GetSize{0x14005FB30, 0x14005F590, 0x0, 0x0};
+				WEAK symbol<void(Stream*, int*, void*, unsigned __int64, __int64)> Read{0x14005FE60, 0x14005F8C0, 0x0, 0x0};
+				WEAK symbol<void(Stream*, int*)> Close{0x14005F360, 0x14005EDE0, 0x0, 0x0};
 			}
 		}
 
