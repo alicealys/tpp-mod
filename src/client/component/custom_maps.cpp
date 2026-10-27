@@ -94,6 +94,7 @@ namespace custom_maps
         {
             current_pack = name;
 
+            mods::reload_language_block();
             vars::set_var(var_mapname, "", vars::var_source_internal);
 
             const auto map_name = get_pack_base_name(name);

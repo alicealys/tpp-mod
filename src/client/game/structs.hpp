@@ -821,6 +821,24 @@ namespace game
 				char name[129];
 			};
 #pragma pack(pop)
+
+			namespace impl
+			{
+				namespace language_block
+				{
+					struct LanguageBlockController
+					{
+						struct vtable
+						{
+
+						};
+
+						vtable* __vftable;
+						char __pad0[148];
+						char flags;
+					};
+				}
+			}
 		}
 
 		namespace gr
@@ -3643,10 +3661,10 @@ namespace game
 						void(__fastcall* meth_082)(MenuSystemImpl*);
 						void(__fastcall* meth_083)(MenuSystemImpl*);
 						void(__fastcall* SetLangChange)(MenuSystemImpl*, char);
-						void(__fastcall* meth_085)(MenuSystemImpl*);
-						void(__fastcall* meth_086)(MenuSystemImpl*);
-						void(__fastcall* meth_087)(MenuSystemImpl*);
-						void(__fastcall* meth_088)(MenuSystemImpl*);
+						char(__fastcall* IsLangChange)(MenuSystemImpl*);
+						void(__fastcall* SetLangChangeId)(MenuSystemImpl*, unsigned int);
+						unsigned int(__fastcall* GetLangChangeId)(MenuSystemImpl*);
+						unsigned int(__fastcall* GetLangChangePreId)(MenuSystemImpl*);
 						void(__fastcall* meth_089)(MenuSystemImpl*);
 						void(__fastcall* meth_090)(MenuSystemImpl*);
 						void(__fastcall* meth_091)(MenuSystemImpl*);
