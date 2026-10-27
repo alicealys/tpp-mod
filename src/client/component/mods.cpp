@@ -320,6 +320,7 @@ namespace mods
             //menu_system->__vftable->SetLangChange(menu_system, 1);
             
             scripting::script_exec("Mission.LoadLocation({force=true});Mission.LoadMission({force=true})");
+            reload_language_block();
 
 #ifdef DEBUG
             command::execute("lui_restart");
@@ -943,6 +944,18 @@ namespace mods
         });
     }
 
+    void reload_language_block()
+    {
+        for (auto i = 0; i < 2; i++)
+        {
+            const auto controller = game::fox::gk::impl::language_block::LanguageBlockController_::s_controllers[i];
+            if (controller != nullptr)
+            {
+                controller->flags = controller->flags & 0xF6 | 1;
+            }
+        }
+    }
+
     class component final : public component_interface
     {
     public:
@@ -1009,6 +1022,8 @@ namespace mods
 
                 load(path);
             });
+
+            command::add("reloadlang", reload_language_block);
 
             if (!game::environment::is_mgo())
             {

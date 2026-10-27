@@ -118,6 +118,20 @@ namespace game
 			}
 		}
 
+		namespace gk
+		{
+			namespace impl
+			{
+				namespace language_block
+				{
+					namespace LanguageBlockController_
+					{
+						WEAK symbol<LanguageBlockController*> s_controllers{0x142BAB608, 0x141F42278, 0x0, 0x0};
+					}
+				}
+			}
+		}
+
 		namespace gm
 		{
 			namespace impl

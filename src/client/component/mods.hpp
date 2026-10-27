@@ -25,4 +25,6 @@ namespace mods
     bool validate_file_name(const std::string& name);
 
     void add_hash_job(const std::string& path, const std::function<void(const std::uint32_t)>& callback);
+
+    void reload_language_block();
 }
