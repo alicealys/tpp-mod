@@ -551,6 +551,8 @@ namespace game
 
 	WEAK symbol<ID3D11Device*> s_deviceD3D{0x142C6B870, 0x1420E4200, 0x0, 0x0};
 	WEAK symbol<ID3D11DeviceContext*> s_immediateContextD3D{0x142C6B878, 0x1420E4208, 0x0, 0x0};
+	WEAK symbol<IDXGIAdapter1*> s_adapterDXGI{0x142C6B888, 0x1420E4218, 0x0, 0x0};
+	WEAK symbol<DXGI_ADAPTER_DESC> s_adapterDXGIDesc{0x142C6B8A0, 0x1420E4230, 0x0, 0x0};
 
 	WEAK symbol<fox::Lua*> s_instances{0x142B641F0, 0x141F28240, 0x0, 0x0};
 
