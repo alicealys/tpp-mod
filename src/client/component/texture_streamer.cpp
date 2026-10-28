@@ -34,6 +34,18 @@ namespace texture_streamer
 			*reinterpret_cast<unsigned int*>(a2) = static_cast<unsigned int>(get_available_storage_memory());
 			return request_texture_storage_configuration_hook.invoke<char>(a1, a2);
 		}
+
+		utils::hook::detour texture_storage_manager_alloc_hook;
+		unsigned int texture_storage_manager_alloc_stub(void* manager, unsigned int size, int type)
+		{
+			const auto result = texture_storage_manager_alloc_hook.invoke<unsigned int>(manager, size, type);
+			if (result != 0xFFFFFFFF || type != 0)
+			{
+				return result;
+			}
+
+			return texture_storage_manager_alloc_hook.invoke<unsigned int>(manager, size, 2);
+		}
 		
 		void assembler_get_memory(utils::hook::assembler& a)
 		{
@@ -79,6 +91,9 @@ namespace texture_streamer
 
 			request_texture_storage_configuration_hook.create(SELECT_VALUE(0x1402A91D0, 0x140B9F920, 0x0, 0x0),
 				request_texture_storage_configuration_stub);
+
+			texture_storage_manager_alloc_hook.create(SELECT_VALUE(0x1402A6D40, 0x140B9D580, 0x0, 0x0),
+				texture_storage_manager_alloc_stub);
 
 			if (game::environment::is_tpp())
 			{
