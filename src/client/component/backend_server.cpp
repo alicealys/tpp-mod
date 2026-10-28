@@ -501,8 +501,16 @@ namespace backend_server
 				const auto data = get_fox_buffer(buffer);
 				const auto json = nlohmann::json::parse(data);
 				const auto cmd = json["msgid"].get<std::string>();
+				auto result = json["result"].get<std::string>();
 
-				console::info("[net] received response for command \"%s\"", cmd.data());
+				if (result == "NOERR")
+				{
+					console::info("[net] received response for command \"%s\": %s", cmd.data(), result.data());
+				}
+				else
+				{
+					console::error("[net] received response for command \"%s\": %s", cmd.data(), result.data());
+				}
 
 				const auto path = get_dump_path(cmd, false);
 				utils::io::write_file(path, json.dump(4));
