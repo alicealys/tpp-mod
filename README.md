@@ -10,10 +10,6 @@ https://discord.gg/hYfW9MEEGF
 tpp-mod only supports original steam releases (latest).  
 Any kind of modified or pirated version is **NOT** supported.   
 
-For older builds go here:
-- [23 March 2021](https://github.com/alicealys/tpp-mod/tree/day1820)
-- [6 June 2026](https://github.com/alicealys/tpp-mod/tree/day3800)
-
 | version | sha1 | support |
 | --- | --- | --- |
 | mgsvtpp.exe (eng, 1.0.15.4) | 4F643576C6F6ECF6C67A9AEF4D4F02285ADA43E3 | ✔️ |
