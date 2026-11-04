@@ -14,11 +14,16 @@ namespace texture_streamer
 	{
 		vars::var_ptr r_increase_texture_memory;
 
+		unsigned __int64 get_vram()
+		{
+			return game::s_adapterDXGIDesc->DedicatedVideoMemory +
+				game::s_adapterDXGIDesc->DedicatedSystemMemory;
+		}
+
 		unsigned __int64 get_available_storage_memory()
 		{
 			constexpr const auto cap = 0xFFFFFFFFull;
-			const auto size = game::s_adapterDXGIDesc->DedicatedVideoMemory + 
-				game::s_adapterDXGIDesc->DedicatedSystemMemory;
+			const auto size = get_vram();
 
 			if (size > cap)
 			{

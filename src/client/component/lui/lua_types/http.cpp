@@ -24,8 +24,15 @@ namespace lui::scripting::http
 			std::future<std::optional<nlohmann::json>> result;
 		};
 
-		std::deque<http_request_t> requests;
-		std::deque<server_http_request_t> server_requests;
+		template <typename T>
+		struct handler_t
+		{
+			std::deque<T> requests;
+			std::deque<T> new_requests;
+		};
+
+		handler_t<http_request_t> http_handler;
+		handler_t<server_http_request_t> server_handler;
 	}
 
 	void setup(sol::state& state)
@@ -37,7 +44,7 @@ namespace lui::scripting::http
 			http_request_t request{};
 			request.callback = callback;
 			request.result = utils::http::get_data_async(url);
-			requests.emplace_back(std::move(request));
+			http_handler.new_requests.emplace_back(std::move(request));
 		};
 
 		state["http"]["sendcommand"] = sol::overload(
@@ -52,7 +59,7 @@ namespace lui::scripting::http
 					return backend_server::send_command(endpoint, data_j, use_session);
 				});
 
-				server_requests.emplace_back(std::move(request));
+				server_handler.new_requests.emplace_back(std::move(request));
 			},
 			[](const std::string& endpoint, const sol::table& data, const sol::unsafe_function& callback)
 			{
@@ -66,15 +73,19 @@ namespace lui::scripting::http
 					return backend_server::send_command(endpoint, data_j, use_session);
 				});
 
-				server_requests.emplace_back(std::move(request));
+				server_handler.new_requests.emplace_back(std::move(request));
 			}
 		);
 	}
 
 	template <typename T>
-	void run_callbacks(std::deque<T>& callbacks)
+	void run_callbacks(handler_t<T>& handler)
 	{
-		for (auto i = callbacks.begin(); i != callbacks.end(); )
+		handler.requests.insert(handler.requests.end(),
+			std::move_iterator(handler.new_requests.begin()), std::move_iterator(handler.new_requests.end()));
+		handler.new_requests.clear();
+
+		for (auto i = handler.requests.begin(); i != handler.requests.end(); )
 		{
 			if (i->result.valid() && i->result.wait_for(0s) == std::future_status::ready)
 			{
@@ -87,7 +98,7 @@ namespace lui::scripting::http
 					console::error("LUI: error executing http request callback: %s\n", e.what());
 				}
 
-				i = callbacks.erase(i);
+				i = handler.requests.erase(i);
 			}
 			else
 			{
@@ -98,13 +109,13 @@ namespace lui::scripting::http
 
 	void run_frame(sol::state& state)
 	{
-		run_callbacks(requests);
-		run_callbacks(server_requests);
+		run_callbacks(http_handler);
+		run_callbacks(server_handler);
 	}
 
 	void clear()
 	{
-		requests.clear();
-		server_requests.clear();
+		http_handler = {};
+		server_handler = {};
 	}
 }

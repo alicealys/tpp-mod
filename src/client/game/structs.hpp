@@ -1349,6 +1349,72 @@ namespace game
 					float f9;
 				};
 
+				struct BlockAllocator
+				{
+					struct unk1_t
+					{
+						unsigned int bits;
+						unsigned short blockCount;
+						unsigned short a3;
+					};
+
+					struct unk2_t
+					{
+						unsigned short a1;
+					};
+
+					struct unk3_t
+					{
+						unsigned short a1;
+					};
+
+					struct unk4_t
+					{
+						unsigned short a1;
+					};
+
+					struct unk5_t
+					{
+						unsigned int a1;
+					};
+
+
+					void* unk_ptr1;
+					unsigned int size;
+					unsigned int blockSize;
+					unsigned int a1;
+					unsigned int unk1_array_size;
+					unsigned int a2;
+					char __pad3[4];
+					unk1_t* unk1_array;
+					unk2_t* unk2_array;
+					unsigned int a3;
+					unsigned int a4;
+					unsigned int a5;
+					unsigned int a6;
+					unk3_t* unk3_array;
+					unsigned __int64 a7;
+					unk4_t* unk4_array;
+					unsigned __int64 a8;
+					unk5_t* unk5_array;
+				};
+
+				struct TextureStorageManagerBase
+				{
+					char __pad0[16];
+					void* buffer;
+					char __pad1[8];
+					unsigned int size;
+					unsigned int blockSize;
+					unsigned int unkSize;
+					char __pad2[28];
+					fox::gr::dg::BlockAllocator* blockAllocator;
+					char __pad3[16];
+					void* unk1;
+					void* unk2;
+					char __pad4[400];
+				};
+
 				struct DgTextureStreamer
 				{
 
