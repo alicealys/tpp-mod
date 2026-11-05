@@ -260,6 +260,7 @@ workspace "tpp-mod"
 
 		filter "configurations:Release"
 			optimize "Full"
+			buildoptions {"/bigobj"}
 			defines {"NDEBUG"}
 			fatalwarnings {"All"}
 		filter {}
