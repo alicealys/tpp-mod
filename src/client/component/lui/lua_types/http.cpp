@@ -82,7 +82,8 @@ namespace lui::scripting::http
 	void run_callbacks(handler_t<T>& handler)
 	{
 		handler.requests.insert(handler.requests.end(),
-			std::move_iterator(handler.new_requests.begin()), std::move_iterator(handler.new_requests.end()));
+			std::move_iterator(handler.new_requests.begin()), 
+			std::move_iterator(handler.new_requests.end()));
 		handler.new_requests.clear();
 
 		for (auto i = handler.requests.begin(); i != handler.requests.end(); )
