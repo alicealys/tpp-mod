@@ -182,3 +182,9 @@ similar to cod dvars, can be set through the console or through the config files
 - `-var-cheat`: allow to modify cheat only vars
 - `-dump-hashes`: stores computed hashes, can be dumped with `dumpstrings` command
 - `-noconsole`: disable external console
+
+## Compile from source
+
+- Clone the Git repo. Do NOT download it as ZIP, that won't work.
+- Install [premake5](https://premake.github.io/download) on your PATH
+- Run `generate.bat` and build via solution file in `build\tpp-mod.sln` (Visual Studio 2022).

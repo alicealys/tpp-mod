@@ -223,102 +223,102 @@ dependencies.load()
 
 workspace "tpp-mod"
 	startproject "client"
-	location "./build"
-	objdir "%{wks.location}/obj"
-	targetdir "%{wks.location}/bin/%{cfg.platform}/%{cfg.buildcfg}"
+		location "./build"
+		objdir "%{wks.location}/obj"
+		targetdir "%{wks.location}/bin/%{cfg.platform}/%{cfg.buildcfg}"
 
-	configurations {"Debug", "Release"}
+		configurations {"Debug", "Release"}
 
-	language "C++"
-	cppdialect "C++latest"
+		language "C++"
+		cppdialect "C++latest"
 
-	architecture "x86_64"
-	platforms "x64"
+		architecture "x86_64"
+		platforms "x64"
 
-	systemversion "latest"
-	symbols "On"
-	staticruntime "On"
-	editandcontinue "Off"
-	warnings "Extra"
-	characterset "ASCII"
+		systemversion "latest"
+		symbols "On"
+		staticruntime "On"
+		editandcontinue "Off"
+		warnings "Extra"
+		characterset "ASCII"
 
-	if _OPTIONS["dev-build"] then
-		defines {"DEV_BUILD"}
-	end
+		if _OPTIONS["dev-build"] then
+			defines {"DEV_BUILD"}
+		end
 
-	if os.getenv("CI") then
-		defines {"CI"}
-	end
+		if os.getenv("CI") then
+			defines {"CI"}
+		end
 
-	flags {"NoIncrementalLink", "NoMinimalRebuild", "MultiProcessorCompile", "No64BitChecks"}
+		incrementallink "Off"
+		minimalrebuild "Off"
+		multiprocessorcompile "On"
 
-	filter "platforms:x64"
-		defines {"_WINDOWS", "WIN32"}
-	filter {}
+		filter "platforms:x64"
+			defines {"_WINDOWS", "WIN32"}
+		filter {}
 
-	filter "configurations:Release"
-		optimize "Size"
-		buildoptions {"/GL"}
-		linkoptions { "/IGNORE:4702", "/LTCG" }
-		defines {"NDEBUG"}
-		flags {"FatalCompileWarnings"}
-	filter {}
+		filter "configurations:Release"
+			optimize "Full"
+			defines {"NDEBUG"}
+			fatalwarnings {"All"}
+		filter {}
 
-	filter "configurations:Debug"
-		optimize "Debug"
-		buildoptions {"/bigobj"}
-		defines {"DEBUG", "_DEBUG"}
-	filter {}
+		filter "configurations:Debug"
+			optimize "Debug"
+			buildoptions {"/bigobj"}
+			defines {"DEBUG", "_DEBUG"}
+		filter {}
 
-	local elementslink = premake.vstudio.vc2010.elements.link
-	premake.vstudio.vc2010.elements.link = function(cfg, ...)
-		local elements = elementslink(cfg, ...)
-		if (cfg.project.name ~= "client") then
+		local elementslink = premake.vstudio.vc2010.elements.link
+		premake.vstudio.vc2010.elements.link = function(cfg, ...)
+			local elements = elementslink(cfg, ...)
+			if (cfg.project.name ~= "client") then
+				return elements
+			end
+
+			table.insert(elements, function()
+				premake.w('<RandomizedBaseAddress>false</RandomizedBaseAddress>')
+			end)
+
 			return elements
 		end
 
-		table.insert(elements, function()
-			premake.w('<RandomizedBaseAddress>false</RandomizedBaseAddress>')
-		end)
+		project "common"
+			kind "StaticLib"
+			language "C++"
 
-		return elements
-	end
+			files {"./src/common/**.hpp", "./src/common/**.cpp"}
 
-project "common"
-	kind "StaticLib"
-	language "C++"
+			includedirs {"./src/common", "%{prj.location}/src"}
 
-	files {"./src/common/**.hpp", "./src/common/**.cpp"}
+			resincludedirs {"$(ProjectDir)src"}
 
-	includedirs {"./src/common", "%{prj.location}/src"}
+			dependencies.imports()
 
-	resincludedirs {"$(ProjectDir)src"}
+		project "client"
+			kind "SharedLib"
+			language "C++"
 
-	dependencies.imports()
+			targetname "dinput8"
 
-project "client"
-	kind "SharedLib"
-	language "C++"
+			pchheader "std_include.hpp"
+			pchsource "src/client/std_include.cpp"
 
-	targetname "dinput8"
+			files {"./src/client/**.rc", "./src/client/**.hpp", "./src/client/**.cpp", "./src/client/resources/**.*"}
 
-	pchheader "std_include.hpp"
-	pchsource "src/client/std_include.cpp"
+			includedirs {"./src/client", "./src/common", "%{prj.location}/src"}
 
-	files {"./src/client/**.rc", "./src/client/**.hpp", "./src/client/**.cpp", "./src/client/resources/**.*"}
+			resincludedirs {"$(ProjectDir)src"}
 
-	includedirs {"./src/client", "./src/common", "%{prj.location}/src"}
+			links {"common"}
+			prebuildcommands {"pushd %{_MAIN_SCRIPT_DIR}", "premake5 generate-buildinfo", "popd"}
 
-	resincludedirs {"$(ProjectDir)src"}
+			if _OPTIONS["copy-to"] then
+				postbuildcommands {"copy /y \"$(TargetPath)\" \"" .. _OPTIONS["copy-to"] .. "\""}
+			end
 
-	links {"common"}
-	prebuildcommands {"pushd %{_MAIN_SCRIPT_DIR}", "tools\\premake5 generate-buildinfo", "popd"}
+			dependencies.imports()
 
-	if _OPTIONS["copy-to"] then
-		postbuildcommands {"copy /y \"$(TargetPath)\" \"" .. _OPTIONS["copy-to"] .. "\""}
-	end
-
-	dependencies.imports()
-
-group "Dependencies"
-	dependencies.projects()
+		group "Dependencies"
+			dependencies.projects()
