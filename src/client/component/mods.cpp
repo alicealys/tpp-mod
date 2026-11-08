@@ -102,27 +102,15 @@ namespace mods
 
             info.has_info = true;
 
-            const auto try_string = [&](const std::string& key)
-                -> std::string
-            {
-                auto& value = mod_info_j[key];
-                if (value.is_string())
-                {
-                    return value.get<std::string>();
-                }
-
-                return {};
-            };
-
             auto& flags_j = mod_info_j["flags"];
             if (flags_j.is_number_unsigned())
             {
                 info.flags = flags_j.get<std::uint32_t>();
             }
 
-            info.name = try_string("name");
-            info.author = try_string("author");
-            info.version = try_string("version");
+            mod_info_j["name"].get_to(info.name);
+            mod_info_j["author"].get_to(info.author);
+            mod_info_j["version"].get_to(info.version);
 
             auto& files = mod_info_j["pack_files"];
 
@@ -156,10 +144,18 @@ namespace mods
                 {
                     file.type = type_j.get<std::uint64_t>();
                 }
+                else
+                {
+                    file.type = mount_point_type_mod;
+                }
 
                 if (file_flags_j.is_number_unsigned())
                 {
                     file.flags = file_flags_j.get<std::uint32_t>();
+                }
+                else
+                {
+                    file.flags = mount_point_flags;
                 }
 
                 info.pack_files.emplace_back(file);
@@ -198,6 +194,33 @@ namespace mods
             }
 
             current_mod = {};
+        }
+
+
+        void autoload_mods(const std::string& path, bool pre_load)
+        {
+            if (!utils::io::directory_exists(path))
+            {
+                return;
+            }
+
+            if (pre_load)
+            {
+                filesystem::register_path(path);
+            }
+            else
+            {
+                const auto files = utils::io::list_files(path);
+                for (const auto& file : files)
+                {
+                    if (!file.ends_with(".dat"))
+                    {
+                        continue;
+                    }
+
+                    add_packfile(file, mount_point_type_mod, mount_point_flags);
+                }
+            }
         }
 
         bool set_mod(const std::string& path, bool& needs_restart)
@@ -253,7 +276,7 @@ namespace mods
         {
             console::info("[FS module] Init\n");
 
-            fs_module_init_hook.invoke<void>();
+            autoload_mods("mods/autoload", false);
 
             const auto& mod_path = var_fs_mod_path->current.get_string();
             if (!mod_path.empty())
@@ -261,6 +284,8 @@ namespace mods
                 auto needs_restart = false;
                 set_mod(mod_path, needs_restart);
             }
+
+            fs_module_init_hook.invoke<void>();
         }
 
         bool can_load_mod()
@@ -325,6 +350,159 @@ namespace mods
 #ifdef DEBUG
             command::execute("lui_restart");
 #endif
+        }
+
+        void search_mount_point_stub_tpp(utils::hook::assembler& a)
+        {
+            const auto match = a.new_label();
+
+            a.test(rsi, rsi);
+            a.jz(match);
+
+            a.mov(rax, qword_ptr(rbx));
+            a.mov(rax, qword_ptr(rax, 0x28));
+            a.mov(rdi, mount_point_type_mod);
+
+            a.cmp(rax, rdi);
+            a.jz(match);
+
+            a.cmp(rax, rsi);
+            a.jz(match);
+
+            a.jmp(SELECT_VALUE_LANG(0x14004A00F, 0x0));
+
+            a.bind(match);
+            a.jmp(SELECT_VALUE_LANG(0x140049F9E, 0x0));
+        }
+
+        void search_mount_point_stub_mgo(utils::hook::assembler& a)
+        {
+            const auto match = a.new_label();
+
+            a.test(rsi, rsi);
+            a.jz(match);
+
+            a.mov(rax, qword_ptr(rbx, 0x40));
+            a.mov(rax, qword_ptr(rax, 0x18));
+            a.mov(rdi, mount_point_type_mod);
+
+            a.cmp(rax, rdi);
+            a.jz(match);
+
+            a.cmp(rax, rsi);
+            a.jz(match);
+
+            a.jmp(SELECT_VALUE_LANG(0x14004A09D, 0x0));
+
+            a.bind(match);
+            a.jmp(SELECT_VALUE_LANG(0x14004A02B, 0x0));
+        }
+
+
+        utils::hook::detour compare_mount_points_hook;
+        bool compare_mount_points_stub(game::fox::fs::MountPoint* a, game::fox::fs::MountPoint* b)
+        {
+            if (a->tpp.type == mount_point_type_mod && b->tpp.type != mount_point_type_mod)
+            {
+                return true;
+            }
+
+            if (a->tpp.type != mount_point_type_mod && b->tpp.type == mount_point_type_mod)
+            {
+                return false;
+            }
+
+            return compare_mount_points_hook.invoke<bool>(a, b);
+        }
+
+        const char* kernel_string_str(game::fox::KernelString* string)
+        {
+            if (string->unk3 >= 0x10)
+            {
+                return string->buffer;
+            }
+
+            return reinterpret_cast<const char*>(string);
+        }
+
+        template <typename T>
+        struct mount_points_map_t
+        {
+            struct pair_t
+            {
+                game::fox::StringId key;
+                T* value;
+            };
+
+            struct node_t;
+
+            struct node_t
+            {
+                node_t* left;
+                node_t* parent;
+                node_t* right;
+                unsigned char color;
+                bool is_nil;
+                char __pad0[30];
+                pair_t pair;
+            };
+
+            node_t* head;
+            unsigned __int64 size;
+        };
+
+        template <typename T>
+        void print_mount_points_vector(T** iter, T** end, std::size_t& priority)
+        {
+            while (iter != end)
+            {
+                const auto mount_point = (*iter);
+                const auto name = kernel_string_str(&mount_point->fioMountPoint->name);
+                console::info("%i: %s\n", priority++, name);
+                iter++;
+            }
+        }
+
+        template <typename T>
+        void print_mount_points_map(mount_points_map_t<T>* map, std::size_t& priority)
+        {
+            auto iter = map->head->left;
+            while (iter != map->head)
+            {
+                const auto mount_point = iter->pair.value;
+                if (mount_point != nullptr)
+                {
+                    const auto name = kernel_string_str(&mount_point->fioMountPoint->name);
+                    console::info("%i: %s\n", priority++, name);
+                }
+
+                if (!iter->is_nil)
+                {
+                    auto right = iter->right;
+                    if (right->is_nil)
+                    {
+                        auto i = iter->parent;
+                        for (; !i->is_nil; i = i->parent)
+                        {
+                            if (iter != i->right)
+                            {
+                                break;
+                            }
+
+                            iter = i;
+                        }
+                        iter = i;
+                    }
+                    else
+                    {
+                        iter = iter->right;
+                        for (auto j = right->left; !j->is_nil; j = j->left)
+                        {
+                            iter = j;
+                        }
+                    }
+                }
+            }
         }
 
         void mod_download_ask_popup_update()
@@ -956,6 +1134,52 @@ namespace mods
         }
     }
 
+    void print_mount_points()
+    {
+        std::size_t priority{};
+
+        console::info("[FS] Current mount points:\n");
+
+        if (game::environment::is_tpp())
+        {
+            const auto pre_patch_mount_points_beg = *reinterpret_cast<game::fox::fs::MountPoint_tpp***>(
+                SELECT_VALUE_LANG(0x142B63C40, 0x0));
+            const auto pre_patch_mount_points_end = *reinterpret_cast<game::fox::fs::MountPoint_tpp***>(
+                SELECT_VALUE_LANG(0x142B63C48, 0x0));
+
+            print_mount_points_vector(
+                pre_patch_mount_points_beg,
+                pre_patch_mount_points_end,
+                priority);
+
+            const auto patch_mount_points = reinterpret_cast<mount_points_map_t<game::fox::fs::MountPoint_tpp>*>(
+                SELECT_VALUE_LANG(0x142B63C30, 0x0));
+
+            const auto mount_points = reinterpret_cast<mount_points_map_t<game::fox::fs::MountPoint_tpp>*>(
+                SELECT_VALUE_LANG(0x142B63C20, 0x0));
+
+            print_mount_points_map(patch_mount_points, priority);
+            print_mount_points_map(mount_points, priority);
+        }
+        else
+        {
+            const auto pre_patch_mount_points = reinterpret_cast<mount_points_map_t<game::fox::fs::MountPoint_mgo>*>(
+                SELECT_VALUE_LANG(0x141F27CF0, 0x0));
+
+            const auto patch_mount_points = reinterpret_cast<mount_points_map_t<game::fox::fs::MountPoint_mgo>*>(
+                SELECT_VALUE_LANG(0x141F27CD0, 0x0));
+
+            const auto mount_points = reinterpret_cast<mount_points_map_t<game::fox::fs::MountPoint_mgo>*>(
+                SELECT_VALUE_LANG(0x141F27CE0, 0x0));
+
+            print_mount_points_map(pre_patch_mount_points, priority);
+            print_mount_points_map(patch_mount_points, priority);
+            print_mount_points_map(mount_points, priority);
+        }
+
+        console::info("--------------------------\n");
+    }
+
     class component final : public component_interface
     {
     public:
@@ -971,10 +1195,22 @@ namespace mods
 
             fs_module_init_hook.create(SELECT_VALUE(0x14003A960, 0x14003A830, 0x0, 0x0), fs_module_init_stub);
             create_pack_mountpoint_hook.create(game::fox::fs::MountPoint_::CreateWithPackFile, create_pack_mountpoint_stub);
+
+            if (game::environment::is_tpp())
+            {
+                utils::hook::jump(SELECT_VALUE(0x140049F90, 0x0), utils::hook::assemble(search_mount_point_stub_tpp), true);
+                compare_mount_points_hook.create(SELECT_VALUE(0x140049C60, 0x0, 0x0, 0x0), compare_mount_points_stub);
+            }
+            else
+            {
+                utils::hook::jump(SELECT_VALUE_LANG(0x14004A01C, 0x0), utils::hook::assemble(search_mount_point_stub_mgo), true);
+            }
         }
 
         void post_load() override
         {
+            autoload_mods("mods/autoload", true);
+
             const auto& fs_mod = var_fs_mod_path->current.get_string();
             if (!fs_mod.empty())
             {
@@ -984,6 +1220,8 @@ namespace mods
 
         void start() override
         {
+            scheduler::once(print_mount_points, scheduler::main);
+
             command::add("unloadmod", []()
             {
                 if (var_fs_mod_path->current.get_string().empty())
@@ -1024,6 +1262,7 @@ namespace mods
             });
 
             command::add("reloadlang", reload_language_block);
+            command::add("fs_list", print_mount_points);
 
             if (!game::environment::is_mgo())
             {

@@ -122,9 +122,14 @@ namespace lui::scripting::json
 				auto& v = value[key];
 				return index_value(v, s);
 			},
-			[&](nlohmann::json& value, const sol::this_state s, const std::int32_t index)
+			[&](nlohmann::json& value, const sol::this_state s, const std::int64_t index)
 				-> sol::lua_value
 			{
+				if (index <= 0)
+				{
+					return {s, sol::nil};
+				}
+
 				auto& v = value[index - 1];
 				return index_value(v, s);
 			}

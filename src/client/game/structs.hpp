@@ -788,16 +788,107 @@ namespace game
 			void* unk6;
 		};
 
+		namespace fio
+		{
+			namespace impl
+			{
+				struct MountPoint
+				{
+					KernelString name;
+					KernelString str2;
+					KernelString str3;
+					char __pad1[24];
+				};
+			}
+		}
+
 		namespace fs
 		{
-			struct MountPoint
+			struct Path
+			{
+				void* a1;
+				unsigned __int64 string;
+			};
+
+			struct MountPointIoHandle
 			{
 
 			};
 
-			struct Path
+			struct ArchiveIoHandleInterface;
+
+			struct ArchiveIoHandleInterface
 			{
-				char __pad0[24];
+				struct FileInfo
+				{
+					char __pad0[64];
+				};
+
+				struct vtable
+				{
+					bool(__fastcall* Search)(fox::fs::ArchiveIoHandleInterface*, unsigned __int64, FileInfo*);
+					void(__fastcall* meth_01)(fox::fs::ArchiveIoHandleInterface*);
+					int* (__fastcall* ValidateContents)(fox::fs::ArchiveIoHandleInterface*, int*);
+					void(__fastcall* __destructor)(fox::fs::ArchiveIoHandleInterface*);
+					__int64(__fastcall* OpenMainStream)(fox::fs::ArchiveIoHandleInterface*, __int64 a2, unsigned int a3);
+					fox::fs::MountPointIoHandle* (__fastcall* CreateHandle)(fox::fs::ArchiveIoHandleInterface*, fox::fs::ArchiveIoHandleInterface*);
+				};
+
+				vtable* __vftable;
+				char __pad0[40];
+				fox::fs::Path path;
+				char __pad1[4];
+			};
+
+			struct SecureQarFile;
+			struct SecureQarFile
+			{
+				struct vtable
+				{
+					bool(__fastcall* Search)(fox::fs::SecureQarFile*, unsigned __int64, fox::fs::ArchiveIoHandleInterface::FileInfo*);
+					void(__fastcall* meth_01)(fox::fs::SecureQarFile*);
+					int* (__fastcall* ValidateContents)(fox::fs::SecureQarFile*, int*);
+					void(__fastcall* __destructor)(fox::fs::SecureQarFile*);
+					__int64(__fastcall* OpenMainStream)(fox::fs::SecureQarFile*, __int64 a2, unsigned int a3);
+					fox::fs::MountPointIoHandle* (__fastcall* CreateHandle)(fox::fs::SecureQarFile*, fox::fs::ArchiveIoHandleInterface*);
+				};
+
+				vtable* __vftable;
+				char __pad0[40];
+				fox::fs::Path path;
+				char __pad1[4];
+			};
+
+			struct MountPoint_mgo
+			{
+				fox::fio::impl::MountPoint* fioMountPoint;
+				int hasIo;
+				int flags;
+				fox::fs::SecureQarFile* qarFile;
+				unsigned __int64 type;
+			};
+
+			struct MountPoint_tpp;
+			struct MountPoint_tpp
+			{
+				struct vtable
+				{
+					void(__fastcall* __destructor)(MountPoint_tpp*);
+				};
+
+				vtable* __vftable;
+				fox::fio::impl::MountPoint* fioMountPoint;
+				int hasIo;
+				char __pad0[4];
+				fox::fs::SecureQarFile* qarFile;
+				int flags;
+				unsigned __int64 type;
+			};
+
+			union MountPoint
+			{
+				MountPoint_tpp tpp;
+				MountPoint_mgo mgo;
 			};
 
 			struct Stream

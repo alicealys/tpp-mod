@@ -5,6 +5,9 @@
 
 namespace mods
 {
+    constexpr const auto mount_point_type_mod = 0x535ED39C638Dull; // "mod"
+    constexpr const auto mount_point_flags = 0x20 | 0x1;
+
     struct mod_download_file_t
     {
         bool done;
@@ -27,4 +30,6 @@ namespace mods
     void add_hash_job(const std::string& path, const std::function<void(const std::uint32_t)>& callback);
 
     void reload_language_block();
+
+    void print_mount_points();
 }

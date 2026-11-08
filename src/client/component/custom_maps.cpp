@@ -112,7 +112,9 @@ namespace custom_maps
             }
 
             console::debug("adding usermap packfile %s\n", usermap_path.data());
-            usermap_handle = mods::add_packfile(usermap_path, "texture", 255);
+            usermap_handle = mods::add_packfile(usermap_path, mods::mount_point_type_mod, mods::mount_point_flags);
+
+            mods::print_mount_points();
         }
 
         game::fox::KernelString* get_location_package_path_stub(game::fox::KernelString* string, char* path)
