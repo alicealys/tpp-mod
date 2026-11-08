@@ -6,6 +6,7 @@
 namespace custom_maps
 {
 	std::string get_current_map_name();
+	game::fox::StringId get_current_location_name_lang_id();
 
 	void on_lobby_create(game::mgo_match_t* match, game::steam_id lobby_id);
 	void sync_registered_maps(const game::steam_id lobby_id);

@@ -57,6 +57,8 @@ namespace custom_maps
 
         vars::var_ptr var_mapname;
 
+        game::fox::StringId current_location_lang_id{};
+
         std::optional<std::string> get_pack_base_name(const std::string& pack)
         {
             const auto start = pack.find_last_of('/');
@@ -460,6 +462,11 @@ namespace custom_maps
         int* load_global_location_parameter_stub(game::tpp::ui::menu::impl::MbDvcMapLocationParameterImpl_mgo* param, 
             int* result, unsigned short location_code)
         {
+            const auto _0 = gsl::finally([&]
+            {
+                current_location_lang_id.id = param->locationNameLangId;
+            });
+
             if (param->locationCode == location_code)
             {
                 *result = 0;
@@ -747,6 +754,11 @@ namespace custom_maps
         }
 
         return static_cast<std::uint8_t>(count);
+    }
+
+    game::fox::StringId get_current_location_name_lang_id()
+    {
+        return current_location_lang_id;
     }
 
     class component final : public component_interface

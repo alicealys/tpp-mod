@@ -85,29 +85,6 @@ namespace discord
 			return game::tpp::ui::utility::GetLangText(string_id);
 		}
 
-		std::string get_map_name(const std::string& name)
-		{
-			static std::unordered_map<std::string, std::uint32_t> maps =
-			{
-				{"afc0", jade_forest},
-				{"afda", gray_rampart},
-				{"afn0", red_fortress},
-				{"cuba", black_site},
-				{"afc1", amber_station},
-				{"mba0", coral_complex},
-				{"sva0", azure_mountain},
-				{"rma0", rust_palace},
-			};
-
-			const auto iter = maps.find(name);
-			if (iter == maps.end())
-			{
-				return name;
-			}
-
-			return get_localized_string(iter->second);
-		}
-
 		std::string get_gamemode_name(const int match_rule)
 		{
 			static std::unordered_map<int, std::uint32_t> gamemodes =
@@ -164,7 +141,8 @@ namespace discord
 
 				const auto gamemode = get_gamemode_name(ruleset_id);
 				const auto mapname = custom_maps::get_current_map_name();
-				const auto localized_mapname = get_map_name(mapname);
+				const auto location_name = custom_maps::get_current_location_name_lang_id();
+				const auto localized_mapname = game::tpp::ui::utility::GetLangText(location_name);
 				const auto steam_matchmaking = (*game::SteamMatchmaking)();
 
 				if (script_vars->rulesetId != 4)
