@@ -196,7 +196,6 @@ namespace mods
             current_mod = {};
         }
 
-
         void autoload_mods(const std::string& path, bool pre_load)
         {
             if (!utils::io::directory_exists(path))
