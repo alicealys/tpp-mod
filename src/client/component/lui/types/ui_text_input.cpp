@@ -3,6 +3,7 @@
 #include "ui_text_input.hpp"
 
 #include "../renderer.hpp"
+#include "component/renderer/fonts.hpp"
 
 #include <utils/string.hpp>
 
@@ -133,8 +134,7 @@ namespace lui
 
 	bool ui_text_input::add_char(char c)
 	{
-		const auto u_c = static_cast<unsigned char>(c);
-		if (u_c >= 32 && u_c < 255)
+		if (!::renderer::is_char_printable(c))
 		{
 			return false;
 		}
@@ -169,8 +169,7 @@ namespace lui
 				return result;
 			}
 
-			const auto u_c = static_cast<unsigned char>(c);
-			if (u_c >= 32 && u_c < 255)
+			if (::renderer::is_char_printable(c))
 			{
 				result |= this->add_char(c);
 			}
