@@ -84,9 +84,6 @@
 #include <MinHook.h>
 #include <tomcrypt.h>
 
-#define RAPIDJSON_NOEXCEPT
-#define RAPIDJSON_ASSERT(cond) if(cond); else throw std::runtime_error("rapidjson assert fail");
-
 #include <rapidjson/document.h>
 #include <rapidjson/prettywriter.h>
 #include <rapidjson/stringbuffer.h>
@@ -99,8 +96,6 @@
 #include <asmjit/core/jitruntime.h>
 #include <asmjit/x86/x86assembler.h>
 
-#include <d3d11.h>
-
 #pragma warning(pop)
 #pragma warning(disable: 4100)
 
@@ -109,7 +104,6 @@
 #pragma comment(lib, "urlmon.lib" )
 #pragma comment(lib, "iphlpapi.lib")
 #pragma comment(lib, "Crypt32.lib")
-#pragma comment(lib, "d3d11.lib")
 #pragma comment(lib, "winhttp.lib")
 
 #include "resource.hpp"

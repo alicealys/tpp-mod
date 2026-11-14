@@ -117,4 +117,6 @@ namespace utils::nt
 	std::string write_exitisting_temp_file(const std::string& file, const std::string& data,
 		const bool fatal_if_overwrite_fails);
 	void relaunch_self(const std::string& extra_command_line = "", bool override_command_line = false);
+
+	utils::nt::library load_system_library(const std::string& name);
 }

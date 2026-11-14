@@ -12,19 +12,6 @@
 
 namespace
 {
-	utils::nt::library load_dinput_library()
-	{
-		char dir[MAX_PATH]{};
-		GetSystemDirectoryA(dir, sizeof(dir));
-		return utils::nt::library::load(dir + "/dinput8.dll"s);
-	}
-
-	utils::nt::library& get_dinput_library()
-	{
-		static auto lib = load_dinput_library();
-		return lib;
-	}
-
 	void enable_dpi_awareness()
 	{
 		const utils::nt::library user32{"user32.dll"};
@@ -91,9 +78,4 @@ BOOL WINAPI DllMain(HINSTANCE handle, const DWORD reason, LPVOID)
 	}
 
 	return TRUE;
-}
-
-extern "C" __declspec(dllexport) HRESULT DirectInput8Create(HINSTANCE inst, DWORD version, REFIID id, LPVOID* out, void* outer)
-{
-	return get_dinput_library().invoke<HRESULT>("DirectInput8Create", inst, version, id, out, outer);
 }

@@ -346,4 +346,11 @@ namespace utils::nt
 		if (process_info.hProcess && process_info.hProcess != INVALID_HANDLE_VALUE) CloseHandle(process_info.hProcess);
 	}
 
+	utils::nt::library load_system_library(const std::string& name)
+	{
+		char dir[MAX_PATH]{};
+		GetSystemDirectoryA(dir, sizeof(dir));
+		const auto path = std::format("{}/{}", dir, name);
+		return utils::nt::library::load(path);
+	}
 }
