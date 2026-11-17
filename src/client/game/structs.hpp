@@ -3607,6 +3607,18 @@ namespace game
 		fox::nt::impl::SessionIdle* sessionIdle;
 	};
 
+	namespace tpp::net
+	{
+		struct InformationData
+		{
+			unsigned int date;
+			unsigned int id;
+			fox::String subject;
+			fox::String body;
+			fox::String important;
+		};
+	}
+
 	namespace tpp::ui
 	{
 		namespace menu
@@ -3837,6 +3849,23 @@ namespace game
 					};
 
 					vtable* __vftable;
+				};
+
+				struct UiOnlineNewsControllerImpl
+				{
+					struct vtable
+					{
+
+					};
+
+					vtable* __vftable;
+					char __pad0[16];
+					tpp::net::InformationData infos[30];
+					char __pad1[3];
+					unsigned char count;
+					char __pad2[1];
+					char indices[30];
+					char __pad3[5];
 				};
 			}
 
@@ -6018,7 +6047,7 @@ namespace game
 			int eulaVersion3; // 56
 			int countryIndex; // 60
 			int countryStateIndex; // 64
-			int infoId; // 68
+			unsigned int infoId; // 68
 			int infoIdForMGO; // 72
 			int inquiryId; // 76
 			int fobPickup; // 80
@@ -7317,7 +7346,7 @@ namespace game
 			int eulaVersion3; // 60
 			int countryIndex; // 64
 			int countryStateIndex; // 68
-			int infoId; // 72
+			unsigned int infoId; // 72
 			int infoIdForMGO; // 76
 			int inquiryId; // 80
 			int fobPickup; // 84

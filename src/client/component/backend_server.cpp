@@ -77,12 +77,6 @@ namespace backend_server
 			return std::format("{}\\userdata\\{}", appdata.generic_string(), steam_id);
 		}
 
-		std::string get_data_folder()
-		{
-			const auto url_hash = get_url_hash();
-			return std::format("{}\\steam_storage\\server-{}", get_base_path(), url_hash);
-		}
-
 		std::string get_auth_token_save_path()
 		{
 			const auto url_hash = get_url_hash();
@@ -627,6 +621,12 @@ namespace backend_server
 		}
 
 		return {};
+	}
+
+	std::string get_data_folder()
+	{
+		const auto url_hash = get_url_hash();
+		return std::format("{}\\steam_storage\\server-{}", get_base_path(), url_hash);
 	}
 
 	class component final : public component_interface
