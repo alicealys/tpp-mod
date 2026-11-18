@@ -390,7 +390,7 @@ namespace vars
 			}
 		}
 
-		if ((var->flags & var_flag_saved) != 0 && set_source != var_source_internal && post_initialization)
+		if ((var->flags & var_flag_saved) != 0 && post_initialization)
 		{
 			write_config();
 		}

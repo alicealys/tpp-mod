@@ -169,7 +169,8 @@ namespace text_chat::mutes
 				return;
 			}
 
-			cl_muted_players = vars::register_string("chat_muted_players", "", vars::var_flag_saved, "Muted player list");
+			cl_muted_players = vars::register_string("chat_muted_players", "", 
+				vars::var_flag_saved | vars::var_flag_readonly, "Muted player list");
 		}
 
 		void start() override

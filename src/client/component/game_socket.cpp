@@ -3,9 +3,9 @@
 
 #include "game_socket.hpp"
 #include "command.hpp"
-#include "vars.hpp"
 
 #include <utils/hook.hpp>
+#include <utils/string.hpp>
 
 namespace game_socket
 {
@@ -22,39 +22,32 @@ namespace game_socket
 		};
 #pragma pack(pop)
 
-		vars::var_ptr radio_ignore;
-
 		std::unordered_map<std::uint64_t, message_callback_t> handlers;
 		std::vector<session_observer_t> session_observers;
 
-		void handle_message(game::fox::nt::impl::SessionImpl2* session, const message_info_t& info, const std::string_view& buffer)
+		bool handle_message(game::fox::nt::impl::SessionImpl2* session, const message_info_t& info, const std::string_view& buffer)
 		{
 			const auto handler = handlers.find(info.type);
 			if (handler == handlers.end())
 			{
-				return;
+				return false;
 			}
 
-			handler->second(session, info, buffer);
+			return handler->second(session, info, buffer);
 		}
 
-		bool is_radio_message(const std::uint64_t type)
-		{
-			return type == 0xDE553F42B9FE || type == 0x49E7EA6B20E0 || type == 0x8A2E0942078A;
-		}
-
-		std::uint64_t handle_message(unsigned short object_id, int peer_type, unsigned char sender, unsigned char target, const char* buffer, unsigned short buffer_size)
+		bool handle_message(unsigned short object_id, int peer_type, unsigned char sender, unsigned char target, const char* buffer, unsigned short buffer_size)
 		{
 			const auto session = *game::s_pSession;
 			if (session == nullptr || buffer == nullptr || buffer_size < 8)
 			{
-				return 0;
+				return false;
 			}
 
 			const auto self = session->sessionInterface.__vftable->GetLocalMemberInterface(&session->sessionInterface);
 			if (self->__vftable->GetIndex(self) != target && target != 0xFF)
 			{
-				return 0;
+				return false;
 			}
 
 			message_info_t info{};
@@ -65,18 +58,15 @@ namespace game_socket
 			info.game_object_id = object_id;
 
 			const auto buffer_view = std::string_view{buffer + 8, buffer + buffer_size};
-			handle_message(session, info, buffer_view);
 
-			return info.type;
+			return handle_message(session, info, buffer_view);
 		}
 
 		utils::hook::detour game_message_system_forward_signal_hook;
 		int* game_message_system_forward_signal_stub(game::fox::gm::impl::GameObjectMessageSystemImpl* inst, int* result, unsigned short object_id,
 			int peer_type, const char* buffer, unsigned short buffer_size, int a7, unsigned char sender, unsigned char target)
 		{
-			const auto type = handle_message(object_id, peer_type, sender, target, buffer, buffer_size);
-
-			if (game::environment::is_mgo() && is_radio_message(type) && radio_ignore->current.enabled())
+			if (handle_message(object_id, peer_type, sender, target, buffer, buffer_size))
 			{
 				*result = 0;
 				return result;
@@ -247,6 +237,11 @@ namespace game_socket
 		handlers.insert(std::make_pair(hash.id, handler));
 	}
 
+	void on(const std::uint64_t message_type, const message_callback_t& handler)
+	{
+		handlers.insert(std::make_pair(message_type, handler));
+	}
+
 	void on_session_notify(const std::int32_t event, const session_callback_t callback)
 	{
 		auto& observer = session_observers.emplace_back();
@@ -259,11 +254,6 @@ namespace game_socket
 	public:
 		void pre_load() override
 		{
-			if (game::environment::is_mgo())
-			{
-				radio_ignore = vars::register_bool("radio_ignore", false, vars::var_flag_saved, "ignore radio messages");
-			}
-
 			game_message_system_forward_signal_hook.create(SELECT_VALUE(0x140BFCAE0, 0x1408E9F20, 0x0, 0x0), game_message_system_forward_signal_stub);
 		}
 

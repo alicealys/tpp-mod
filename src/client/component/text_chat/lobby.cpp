@@ -323,16 +323,17 @@ namespace text_chat::lobby
 			{
 				if (info.game_object_id >= session->allMembers.size)
 				{
-					return;
+					return true;
 				}
 
 				const auto sender = session->allMembers.members[info.game_object_id];
 				if (sender == nullptr)
 				{
-					return;
+					return true;
 				}
 
 				process_chat_msg_fn(sender, buffer.data(), buffer.size());
+				return true;
 			});
 
 			command::add("say", [](const command::params& params)
@@ -353,7 +354,7 @@ namespace text_chat::lobby
 				{
 					if (game::environment::is_dedi() || info.peer_type != 5 || info.sender != 0)
 					{
-						return;
+						return true;
 					}
 
 					const auto len = std::min(chat_message_max_len, buffer.size() / sizeof(wchar_t));
@@ -362,6 +363,7 @@ namespace text_chat::lobby
 
 					ui::print(text, false);
 					console::info("%s\n", ascii.data());
+					return true;
 				});
 
 				command::add("tell", [](const command::params& params)
