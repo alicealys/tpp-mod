@@ -135,7 +135,6 @@ namespace mutes
 				const auto session = *game::s_pSession;
 				if (session != nullptr)
 				{
-
 					for (auto i = 0u; i < session->allMembers.size; i++)
 					{
 						const auto client = session->allMembers.members[i];
@@ -143,18 +142,8 @@ namespace mutes
 						{
 							continue;
 						}
-				
-						const auto is_muted = list.contains(client->sessionUserId->userId);
-						//if (is_muted)
-						//{
-						//	voice_chat_manager->players[i].flags &= ~1;
-						//}
-						//else
-						//{
-						//	voice_chat_manager->players[i].flags |= 1;
-						//}
-				
-						if (is_muted)
+
+						if (list.contains(client->sessionUserId->userId))
 						{
 							voice_chat_manager->mutedPlayers |= (1 << i);
 						}
