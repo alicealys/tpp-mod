@@ -1,6 +1,6 @@
 #pragma once
 
-namespace text_chat::mutes
+namespace mutes
 {
 	using mute_list_t = std::unordered_set<std::uint64_t>;
 

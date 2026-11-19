@@ -5,7 +5,7 @@
 #include "command.hpp"
 #include "vars.hpp"
 #include "session.hpp"
-#include "text_chat/mutes.hpp"
+#include "mutes.hpp"
 
 #include <utils/hook.hpp>
 #include <utils/string.hpp>
@@ -43,7 +43,7 @@ namespace radio_messages
 			}
 
 			const auto client = session::get_client_by_index(client_num, nullptr);
-			return client != nullptr && text_chat::mutes::is_muted(client->sessionUserId->userId);
+			return client != nullptr && mutes::is_muted(client->sessionUserId->userId);
 		}
 	}
 

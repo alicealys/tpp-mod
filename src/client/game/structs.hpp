@@ -10273,4 +10273,19 @@ namespace game
 
 	static_assert(offsetof(match_settings_t, member_max) == 32);
 	static_assert(offsetof(mgo_matchmaking_manager, state) == 5500);
+
+	struct mgo_voice_chat_manager_t
+	{
+		struct player_t
+		{
+			char __pad0[8];
+			int flags;
+			char __pad1[20];
+		};
+
+		char __pad0[168];
+		player_t* players;
+		char __pad1[44];
+		int mutedPlayers;
+	};
 }

@@ -295,7 +295,10 @@ namespace session
 			const auto member_name_lower = utils::string::to_lower(member_name);
 			if (member_name_lower.starts_with(lower))
 			{
-				*is_self = local_member->sessionUserId->userId == member->sessionUserId->userId;
+				if (is_self != nullptr)
+				{
+					*is_self = local_member->sessionUserId->userId == member->sessionUserId->userId;
+				}
 
 				if (out_name != nullptr)
 				{

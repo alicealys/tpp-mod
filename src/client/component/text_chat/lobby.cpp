@@ -4,7 +4,7 @@
 #include "game/game.hpp"
 
 #include "lobby.hpp"
-#include "mutes.hpp"
+#include "../mutes.hpp"
 #include "ui.hpp"
 #include "defs.hpp"
 #include "../session.hpp"
