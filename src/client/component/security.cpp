@@ -130,9 +130,9 @@ namespace security
 			param.fields.pad = 0;
 
 #define SNAP_VALUE(value, min, max, ceil) \
-			if (value >= min && param.fields.layout <= ceil) \
+			if (value >= min && value <= ceil) \
 			{ \
-				value = std::clamp(param.fields.layout, min, max); \
+				value = std::clamp(value, min, max); \
 			} \
 
 			if (param.fields.layout >= 10 && param.fields.layout <= 110)
