@@ -6,7 +6,7 @@
 
 #include "draw.hpp"
 #include "fonts.hpp"
-#include "../scheduler.hpp"
+#include "emoticons.hpp"
 #include "../console.hpp"
 
 #include <utils/hook.hpp>
@@ -292,7 +292,7 @@ namespace renderer
 		}
 
 		float add_wstring_custom(game::fox::gr::dg::plugins::Draw2DRenderer* instance, const wchar_t* text, int length, float base_height, float* color,
-			float& offset_x, float& offset_y, float start_x, float start_y, bool word_wrapping = false, float line_width = 0.f, int caret_index = -1)
+			float& offset_x, float& offset_y, float start_x, float start_y, bool word_wrapping = false, float line_width = 0.f, int caret_index = -1, float draw_emoticons = true)
 		{
 			if (length < 0)
 			{
@@ -324,10 +324,6 @@ namespace renderer
 					break;
 				}
 
-				auto vertices = reinterpret_cast<vertex_buffer*>(game::fox::gr::dg::DynamicVertexBuffer_::GetBuffer(
-					instance->parameters->vertexBuffer, &instance->buffer, &instance->size, 144));
-				std::memset(vertices, 0, sizeof(vertex_buffer));
-
 				const auto idx = static_cast<std::uint16_t>(text[i]);
 				const auto glyph_info = &font_data.wide_char_glyphs[idx];
 
@@ -347,10 +343,38 @@ namespace renderer
 					continue;
 				}
 
+				auto emoticon_length = 0u;
+				emoticon_t* emoticon = nullptr;
+				if (text[i] == ':' && get_emoticon(&text[i + 1], emoticon_length, &emoticon))
+				{
+					auto alpha = color != nullptr
+						? color[3]
+						: 1.f;
+					i += emoticon_length;
+
+					if (draw_emoticons)
+					{
+						float emoticon_color[4]{};
+						emoticon_color[0] = color_vec.values[0];
+						emoticon_color[1] = color_vec.values[1];
+						emoticon_color[2] = color_vec.values[2];
+						emoticon_color[3] = alpha;
+						const auto force_color = (emoticon->flags & emoticon_flag_force_color) != 0;
+						draw_emoticon(instance, emoticon, start_x + offset_x, start_y + offset_y, height, alpha, force_color, emoticon_color);
+					}
+
+					offset_x += emoticon->ratio * height;
+					continue;
+				}
+
 				const auto x1 = glyph_info->metrics.f7 * width + offset_x + start_x;
 				const auto x2 = glyph_info->metrics.f5 * width + x1;
 				const auto y1 = -1.f * (glyph_info->metrics.f8 * height) + offset_y + start_y;
 				const auto y2 = glyph_info->metrics.f6 * height + y1;
+
+				auto vertices = reinterpret_cast<vertex_buffer*>(game::fox::gr::dg::DynamicVertexBuffer_::GetBuffer(
+					instance->parameters->vertexBuffer, &instance->buffer, &instance->size, 144));
+				std::memset(vertices, 0, sizeof(vertex_buffer));
 
 				vertices->v[0][0] = x1;
 				vertices->v[0][1] = y1;
@@ -560,7 +584,7 @@ namespace renderer
 		}
 
 		float draw_wtext_internal(game::fox::gr::dg::plugins::Draw2DRenderer* instance, const wchar_t* text, float height, float x, float y, float* color,
-			float display_width, float display_height, float scroll_x, float scroll_y, bool word_wrapping, int caret_index, params_t* params)
+			float display_width, float display_height, float scroll_x, float scroll_y, bool word_wrapping, int caret_index, params_t* params, bool draw_emoticons)
 		{
 			set_position(instance, 0.f, 0.f);
 			set_other_params(instance, params);
@@ -587,18 +611,16 @@ namespace renderer
 
 			if (color == nullptr)
 			{
-				set_color(instance, color_default);
+				color = color_default;
 			}
-			else
-			{
-				set_color(instance, color);
-			}
+
+			set_color(instance, color);
 
 			auto offset_x = 0.f;
 			auto offset_y = 0.f;
 
-			const auto width = add_wstring_custom(instance, text, -1, height, nullptr, offset_x, offset_y,
-				start_x, start_y, word_wrapping, display_width, caret_index);
+			const auto width = add_wstring_custom(instance, text, -1, height, color, offset_x, offset_y,
+				start_x, start_y, word_wrapping, display_width, caret_index, draw_emoticons);
 			if (has_stencil)
 			{
 				remove_stencil(instance);
@@ -725,12 +747,12 @@ namespace renderer
 				const auto c_next = custom_metrics->string[i + 1];
 				const auto glyph_info = &font_data.wide_char_glyphs[c];
 
+				const auto current_color = instance->commandBuffer->shadowConstantRegister->buffers[3].vectors[1].vec;
+				const auto product = current_color[0] * current_color[1] * current_color[2];
+
 				float new_color[4]{};
 				if (c == '^' && get_color_code(static_cast<wchar_t>(c_next), new_color))
 				{
-					const auto current_color = instance->commandBuffer->shadowConstantRegister->buffers[3].vectors[1].vec;
-					const auto product = current_color[0] * current_color[1] * current_color[2];
-
 					if (product > 0.f)
 					{
 						current_color[0] = new_color[0];
@@ -739,6 +761,17 @@ namespace renderer
 					}
 
 					++i;
+					continue;
+				}
+
+				auto emoticon_length = 0u;
+				emoticon_t* emoticon = nullptr;
+				if (c == ':' && get_emoticon(&custom_metrics->string[i + 1], emoticon_length, &emoticon))
+				{
+					i += emoticon_length;
+					const auto force_color = (emoticon->flags & emoticon_flag_force_color) != 0;
+					draw_emoticon(instance, emoticon, offset_x, offset_y, height, current_color[3], force_color);
+					offset_x += emoticon->ratio * height;
 					continue;
 				}
 
@@ -973,6 +1006,15 @@ namespace renderer
 				continue;
 			}
 
+			auto emoticon_length = 0u;
+			emoticon_t* emoticon = nullptr;
+			if (formatted && text[i] == ':' && get_emoticon(&text[i + 1], emoticon_length, &emoticon))
+			{
+				i += emoticon_length;
+				offset_x += height * emoticon->ratio;
+				continue;
+			}
+
 			if (i == caret_index)
 			{
 				continue;
@@ -1074,10 +1116,10 @@ namespace renderer
 	{
 		if (outline_color != nullptr)
 		{
-			draw_wtext_internal(instance, text, height, x + 0.5f, y + 0.5f, outline_color, display_width, display_height, scroll_x, scroll_y, word_wrapping, caret_index, params);
+			draw_wtext_internal(instance, text, height, x + 0.5f, y + 0.5f, outline_color, display_width, display_height, scroll_x, scroll_y, word_wrapping, caret_index, params, false);
 		}
 
-		return draw_wtext_internal(instance, text, height, x, y, color, display_width, display_height, scroll_x, scroll_y, word_wrapping, caret_index, params);
+		return draw_wtext_internal(instance, text, height, x, y, color, display_width, display_height, scroll_x, scroll_y, word_wrapping, caret_index, params, true);
 	}
 
 	float draw_text_with_cursor(game::fox::gr::dg::plugins::Draw2DRenderer* instance, const char* text, int cursor,
@@ -1169,7 +1211,8 @@ namespace renderer
 			}
 		}
 
-		return draw_text(instance, buffer, height, x, y, color, outline_color, formatted, display_width, display_width, scroll_x, 0.f, false, caret_index, params);
+		draw_text(instance, buffer, height, x, y, color, outline_color, formatted, display_width, display_width, scroll_x, 0.f, false, caret_index, params);
+		return text_width_to_cursor;
 	}
 
 	void draw_box(game::fox::gr::dg::plugins::Draw2DRenderer* instance, float x, float y, float width,

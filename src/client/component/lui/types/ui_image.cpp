@@ -10,47 +10,6 @@ namespace lui
 {
 	namespace
 	{
-		enum : std::uint32_t
-		{
-			Base_Texture = 0x3BBF9889,
-			Screen_Texture = 0xC97E5580,
-			Mask_Texture = 0xBCAE534B,
-			Layer_Texture = 0x8D982B8E,
-
-			UCenter_BaseTex = 0xF38B8E7A,
-			VCenter_BaseTex = 0x7377E3CF,
-			UShift_BaseTex = 0x3E2EF6C2,
-			VShift_BaseTex = 0xA1B43647,
-			URepeat_BaseTex = 0x96B29F61,
-			VRepeat_BaseTex = 0x540F4165,
-			Blend_BaseTex = 0xECE504CB,
-
-			UCenter_ScreenTex = 0x882D69FD,
-			VCenter_ScreenTex = 0x51FB4EEF,
-			UShift_ScreenTex = 0x2FC9FA66,
-			VShift_ScreenTex = 0x1B6BF7D5,
-			URepeat_ScreenTex = 0xC5A5EE70,
-			VRepeat_ScreenTex = 0xA8903ABD,
-			Blend_ScreenTex = 0x4E41757F,
-
-			UCenter_MaskTex = 0x8E422B3F,
-			VCenter_MaskTex = 0x54C9DCEA,
-			UShift_MaskTex = 0xA707068B,
-			VShift_MaskTex = 0x987BF357,
-			URepeat_MaskTex = 0x8D3C1EBC,
-			VRepeat_MaskTex = 0x4CCC0901,
-			Blend_MaskTex = 0x2D45F6E6,
-
-			UCenter_LayerTex = 0x5ECDD3BC,
-			VCenter_LayerTex = 0x44D0D944,
-			UShift_LayerTex = 0xB2BA8021,
-			VShift_LayerTex = 0x12168AEE,
-			URepeat_LayerTex = 0x934392F8,
-			VRepeat_LayerTex = 0x75DC38D5,
-			Blend_LayerTex = 0x2F965F29,
-		};
-
-
 		struct material_param_names_t
 		{
 			std::uint32_t ucenter;
@@ -67,42 +26,42 @@ namespace lui
 
 		void initialize_names()
 		{
-			texture_type_names[TEXTURE_BASE] = Base_Texture;
-			texture_type_names[TEXTURE_SCREEN] = Screen_Texture;
-			texture_type_names[TEXTURE_MASK] = Mask_Texture;
-			texture_type_names[TEXTURE_LAYER] = Layer_Texture;
+			texture_type_names[TEXTURE_BASE] = game::Base_Texture;
+			texture_type_names[TEXTURE_SCREEN] = game::Screen_Texture;
+			texture_type_names[TEXTURE_MASK] = game::Mask_Texture;
+			texture_type_names[TEXTURE_LAYER] = game::Layer_Texture;
 
-			material_param_names[TEXTURE_BASE].ucenter = UCenter_BaseTex;
-			material_param_names[TEXTURE_BASE].vcenter = VCenter_BaseTex;
-			material_param_names[TEXTURE_BASE].ushift = UShift_BaseTex;
-			material_param_names[TEXTURE_BASE].vshift = VShift_BaseTex;
-			material_param_names[TEXTURE_BASE].urepeat = URepeat_BaseTex;
-			material_param_names[TEXTURE_BASE].vrepeat = VRepeat_BaseTex;
-			material_param_names[TEXTURE_BASE].blend = Blend_BaseTex;
+			material_param_names[TEXTURE_BASE].ucenter = game::UCenter_BaseTex;
+			material_param_names[TEXTURE_BASE].vcenter = game::VCenter_BaseTex;
+			material_param_names[TEXTURE_BASE].ushift = game::UShift_BaseTex;
+			material_param_names[TEXTURE_BASE].vshift = game::VShift_BaseTex;
+			material_param_names[TEXTURE_BASE].urepeat = game::URepeat_BaseTex;
+			material_param_names[TEXTURE_BASE].vrepeat = game::VRepeat_BaseTex;
+			material_param_names[TEXTURE_BASE].blend = game::Blend_BaseTex;
 
-			material_param_names[TEXTURE_SCREEN].ucenter = UCenter_ScreenTex;
-			material_param_names[TEXTURE_SCREEN].vcenter = VCenter_ScreenTex;
-			material_param_names[TEXTURE_SCREEN].ushift = UShift_ScreenTex;
-			material_param_names[TEXTURE_SCREEN].vshift = VShift_ScreenTex;
-			material_param_names[TEXTURE_SCREEN].urepeat = URepeat_ScreenTex;
-			material_param_names[TEXTURE_SCREEN].vrepeat = VRepeat_ScreenTex;
-			material_param_names[TEXTURE_SCREEN].blend = Blend_ScreenTex;
+			material_param_names[TEXTURE_SCREEN].ucenter = game::UCenter_ScreenTex;
+			material_param_names[TEXTURE_SCREEN].vcenter = game::VCenter_ScreenTex;
+			material_param_names[TEXTURE_SCREEN].ushift = game::UShift_ScreenTex;
+			material_param_names[TEXTURE_SCREEN].vshift = game::VShift_ScreenTex;
+			material_param_names[TEXTURE_SCREEN].urepeat = game::URepeat_ScreenTex;
+			material_param_names[TEXTURE_SCREEN].vrepeat = game::VRepeat_ScreenTex;
+			material_param_names[TEXTURE_SCREEN].blend = game::Blend_ScreenTex;
 
-			material_param_names[TEXTURE_MASK].ucenter = UCenter_MaskTex;
-			material_param_names[TEXTURE_MASK].vcenter = VCenter_MaskTex;
-			material_param_names[TEXTURE_MASK].ushift = UShift_MaskTex;
-			material_param_names[TEXTURE_MASK].vshift = VShift_MaskTex;
-			material_param_names[TEXTURE_MASK].urepeat = URepeat_MaskTex;
-			material_param_names[TEXTURE_MASK].vrepeat = VRepeat_MaskTex;
-			material_param_names[TEXTURE_MASK].blend = Blend_MaskTex;
+			material_param_names[TEXTURE_MASK].ucenter = game::UCenter_MaskTex;
+			material_param_names[TEXTURE_MASK].vcenter = game::VCenter_MaskTex;
+			material_param_names[TEXTURE_MASK].ushift = game::UShift_MaskTex;
+			material_param_names[TEXTURE_MASK].vshift = game::VShift_MaskTex;
+			material_param_names[TEXTURE_MASK].urepeat = game::URepeat_MaskTex;
+			material_param_names[TEXTURE_MASK].vrepeat = game::VRepeat_MaskTex;
+			material_param_names[TEXTURE_MASK].blend = game::Blend_MaskTex;
 
-			material_param_names[TEXTURE_LAYER].ucenter = UCenter_LayerTex;
-			material_param_names[TEXTURE_LAYER].vcenter = VCenter_LayerTex;
-			material_param_names[TEXTURE_LAYER].ushift = UShift_LayerTex;
-			material_param_names[TEXTURE_LAYER].vshift = VShift_LayerTex;
-			material_param_names[TEXTURE_LAYER].urepeat = URepeat_LayerTex;
-			material_param_names[TEXTURE_LAYER].vrepeat = VRepeat_LayerTex;
-			material_param_names[TEXTURE_LAYER].blend = Blend_LayerTex;
+			material_param_names[TEXTURE_LAYER].ucenter = game::UCenter_LayerTex;
+			material_param_names[TEXTURE_LAYER].vcenter = game::VCenter_LayerTex;
+			material_param_names[TEXTURE_LAYER].ushift = game::UShift_LayerTex;
+			material_param_names[TEXTURE_LAYER].vshift = game::VShift_LayerTex;
+			material_param_names[TEXTURE_LAYER].urepeat = game::URepeat_LayerTex;
+			material_param_names[TEXTURE_LAYER].vrepeat = game::VRepeat_LayerTex;
+			material_param_names[TEXTURE_LAYER].blend = game::Blend_LayerTex;
 		}
 
 		class initializer
@@ -293,8 +252,8 @@ namespace lui
 			const auto x = static_cast<float>(rand() % 100) / 100.f;
 			const auto y = static_cast<float>(rand() % 100) / 100.f;
 			this->set_uv_shift(x, y, TEXTURE_BASE);
-			this->bind_param(UShift_BaseTex, x, 0.f, 0.f, 0.f);
-			this->bind_param(VShift_BaseTex, y, 0.f, 0.f, 0.f);
+			this->bind_param(game::UShift_BaseTex, x, 0.f, 0.f, 0.f);
+			this->bind_param(game::VShift_BaseTex, y, 0.f, 0.f, 0.f);
 			this->last_update_ = now;
 		}
 	}

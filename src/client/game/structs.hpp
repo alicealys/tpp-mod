@@ -424,6 +424,51 @@ namespace game
 		ISteamMatchmaking_vtbl* __vftable /*VFT*/;
 	};
 
+	enum : std::uint32_t
+	{
+		Base_Texture = 0x3BBF9889,
+		Screen_Texture = 0xC97E5580,
+		Mask_Texture = 0xBCAE534B,
+		Layer_Texture = 0x8D982B8E,
+
+		UCenter_BaseTex = 0xF38B8E7A,
+		VCenter_BaseTex = 0x7377E3CF,
+		UShift_BaseTex = 0x3E2EF6C2,
+		VShift_BaseTex = 0xA1B43647,
+		URepeat_BaseTex = 0x96B29F61,
+		VRepeat_BaseTex = 0x540F4165,
+		Blend_BaseTex = 0xECE504CB,
+
+		UCenter_ScreenTex = 0x882D69FD,
+		VCenter_ScreenTex = 0x51FB4EEF,
+		UShift_ScreenTex = 0x2FC9FA66,
+		VShift_ScreenTex = 0x1B6BF7D5,
+		URepeat_ScreenTex = 0xC5A5EE70,
+		VRepeat_ScreenTex = 0xA8903ABD,
+		Blend_ScreenTex = 0x4E41757F,
+
+		UCenter_MaskTex = 0x8E422B3F,
+		VCenter_MaskTex = 0x54C9DCEA,
+		UShift_MaskTex = 0xA707068B,
+		VShift_MaskTex = 0x987BF357,
+		URepeat_MaskTex = 0x8D3C1EBC,
+		VRepeat_MaskTex = 0x4CCC0901,
+		Blend_MaskTex = 0x2D45F6E6,
+
+		UCenter_LayerTex = 0x5ECDD3BC,
+		VCenter_LayerTex = 0x44D0D944,
+		UShift_LayerTex = 0xB2BA8021,
+		VShift_LayerTex = 0x12168AEE,
+		URepeat_LayerTex = 0x934392F8,
+		VRepeat_LayerTex = 0x75DC38D5,
+		Blend_LayerTex = 0x2F965F29,
+	};
+
+	enum : std::uint64_t
+	{
+		fox_2d_Basic_LyMUL = 0x458B7104866A,
+	};
+
 	namespace Json
 	{
 		struct Value

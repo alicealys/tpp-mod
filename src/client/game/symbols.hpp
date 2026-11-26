@@ -231,6 +231,8 @@ namespace game
 			namespace Texture_
 			{
 				WEAK symbol<Texture**(Texture**, StringId*)> Create{0x1401B6F50, 0x140AA7600, 0x0, 0x0};
+				WEAK symbol<float(Texture*)> GetWidth{0x1401B7580, 0x140AA7B20, 0x0, 0x0};
+				WEAK symbol<float(Texture*)> GetHeight{0x1401B7540, 0x140AA7AE0, 0x0, 0x0};
 			}
 
 			namespace Font_

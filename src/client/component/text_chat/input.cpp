@@ -24,7 +24,7 @@ namespace text_chat::input
 				return;
 			}
 
-			std::memmove(state.input + state.cursor + 1, state.input + state.cursor, chat_message_max_len - state.cursor);
+			std::memmove(state.input + state.cursor + 1, state.input + state.cursor, (chat_message_max_len - state.cursor) * sizeof(wchar_t));
 			state.input[state.cursor] = c;
 			state.cursor++;
 
@@ -42,12 +42,54 @@ namespace text_chat::input
 			}
 
 			std::memmove(state.input + state.cursor - 1, state.input + state.cursor,
-				std::wcslen(state.input) + 1 - state.cursor);
+				(std::wcslen(state.input) + 1 - state.cursor) * sizeof(wchar_t));
 			state.cursor--;
+		}
+
+		bool handle_tab_emoticon(chat_state_t& state)
+		{
+			if (state.emoticon_matches.empty())
+			{
+				return false;
+			}
+
+			if (state.emoticon_scroll_index >= static_cast<std::int32_t>(state.emoticon_matches.size()))
+			{
+				return true;
+			}
+
+			const auto index = state.emoticon_scroll_index == -1
+				? 0
+				: state.emoticon_scroll_index;
+
+			state.cursor = state.emoticon_char_index + 1;
+			const auto& match = state.emoticon_matches[index];
+
+			for (const auto c : match->name)
+			{
+				if (state.cursor >= chat_message_max_len)
+				{
+					return true;
+				}
+
+				if (renderer::is_char_printable(c))
+				{
+					state.input[state.cursor++] = static_cast<wchar_t>(c);
+				}
+			}
+
+			handle_char(state, ':');
+
+			return true;
 		}
 
 		void handle_tab(chat_state_t& state)
 		{
+			if (handle_tab_emoticon(state))
+			{
+				return;
+			}
+
 			std::string input = utils::string::convert(state.input);
 			const auto space_index = input.find_last_of(' ');
 			if (space_index != std::string::npos)
@@ -155,6 +197,17 @@ namespace text_chat::input
 
 		void handle_up(chat_state_t& state)
 		{
+			if (!state.emoticon_matches.empty())
+			{
+				if (state.emoticon_scroll_index > 0)
+				{
+					--state.emoticon_scroll_index;
+					state.emoticon_scroll_max = std::min(state.emoticon_scroll_max, state.emoticon_scroll_index + (chat_emoticon_window_size - 1));
+				}
+
+				return;
+			}
+
 			if (++state.history_index >= state.history.size())
 			{
 				state.history_index = static_cast<int>(state.history.size()) - 1;
@@ -172,6 +225,19 @@ namespace text_chat::input
 
 		void handle_down(chat_state_t& state)
 		{
+			if (!state.emoticon_matches.empty())
+			{
+				const auto max_idx = static_cast<std::int32_t>(state.emoticon_matches.size()) - 1;
+				if (state.emoticon_scroll_index < max_idx)
+				{
+					++state.emoticon_scroll_index;
+					state.emoticon_scroll_max = std::max(state.emoticon_scroll_max, state.emoticon_scroll_index);
+					state.emoticon_scroll_max = std::min(state.emoticon_scroll_max, state.emoticon_scroll_index + (chat_emoticon_window_size - 1));
+				}
+
+				return;
+			}
+
 			if (--state.history_index < -1)
 			{
 				state.history_index = -1;
@@ -214,6 +280,10 @@ namespace text_chat::input
 
 		void clear_input(chat_state_t& state)
 		{
+			state.emoticon_matches.clear();
+			state.emoticon_char_index = -1;
+			state.emoticon_scroll_index = -1;
+			state.emoticon_scroll_max = -1;
 			state.cursor = 0;
 			std::memset(state.input, 0, sizeof(state.input));
 		}
@@ -225,6 +295,43 @@ namespace text_chat::input
 				const auto hud_system = game::fox::GetQuarkSystemTable()->applicationSystem->mgo.uiSystem->hudSystem;
 				hud_system->mgo.unk1.showScores &= ~1;
 			}
+		}
+
+		void update_emoticon_matches(chat_state_t& state)
+		{
+			state.emoticon_matches.clear();
+			state.emoticon_char_index = -1;
+
+			std::string input = utils::string::convert(state.input);
+			char name[renderer::max_emoticon_length]{};
+			auto len = 0u;
+			auto in_emoticon = false;
+
+			for (auto i = 0; i < state.cursor; i++)
+			{
+				const auto c = std::wctob(state.input[i]);
+
+				if (in_emoticon && len < sizeof(name))
+				{
+					name[len++] = static_cast<char>(c);
+				}
+
+				if (c == ':' && (i == 0 || state.input[i - 1] != '^'))
+				{
+					len = 0;
+					std::memset(name, 0, sizeof(name));
+					state.emoticon_char_index = i;
+					in_emoticon = !in_emoticon;
+				}
+			}
+
+			if (in_emoticon)
+			{
+				renderer::find_emoticons(name, state.emoticon_matches);
+			}
+
+			state.emoticon_scroll_index = std::min(state.emoticon_scroll_index, static_cast<std::int32_t>(state.emoticon_matches.size()) - 1);
+			state.emoticon_scroll_max = std::min(state.emoticon_scroll_max, static_cast<std::int32_t>(state.emoticon_matches.size()) - 1);
 		}
 	}
 
@@ -276,6 +383,8 @@ namespace text_chat::input
 				break;
 			}
 
+			update_emoticon_matches(state);
+
 			return true;
 		});
 	}
@@ -316,6 +425,8 @@ namespace text_chat::input
 			}
 			}
 
+			update_emoticon_matches(state);
+
 			return true;
 		});
 	}
@@ -327,6 +438,12 @@ namespace text_chat::input
 			if (!state.is_typing)
 			{
 				return false;
+			}
+
+			if (!state.emoticon_matches.empty())
+			{
+				down ? handle_down(state) : handle_up(state);
+				return true;
 			}
 
 			const auto scroll_amount = state.ctrl_down ? 50.f : 10.f;
@@ -343,6 +460,7 @@ namespace text_chat::input
 		state.cursor = 0;
 		state.view_text_offset_y = 0.f;
 		state.history_index = -1;
+		clear_input(state);
 	}
 
 	bool is_input_blocked()

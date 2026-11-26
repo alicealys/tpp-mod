@@ -1,6 +1,7 @@
 #pragma once
 
 #include "game/game.hpp"
+#include "utils.hpp"
 
 namespace renderer
 {

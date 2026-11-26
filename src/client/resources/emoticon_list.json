@@ -1,0 +1,7988 @@
+[
+    {
+        "name": "heart",
+        "texture": "0x1E66D2C8A7717",
+        "game": 2,
+        "flags": 1,
+        "color": [
+            1.0,
+            0.3,
+            0.2
+        ],
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "name": "heart_white",
+        "texture": "0x1E66D2C8A7717",
+        "game": 2,
+        "flags": 0,
+        "color": [
+            1.0,
+            1.0,
+            1.0
+        ],
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "name": "heart_gold",
+        "texture": "0x3BC7BBAD652A0",
+        "game": 2,
+        "flags": 1,
+        "color": [
+            1.0,
+            1.0,
+            1.0
+        ],
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "name": "heart_green",
+        "texture": "0x1EF243728D1F4",
+        "game": 2,
+        "flags": 1,
+        "color": [
+            1.0,
+            1.0,
+            1.0
+        ],
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "name": "skull",
+        "texture": "0x3A9A6FCB4A238",
+        "game": 2,
+        "flags": 0,
+        "color": [
+            1.0,
+            1.0,
+            1.0
+        ],
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "name": "skull_gold",
+        "texture": "0x1BDA76B93D230",
+        "game": 2,
+        "flags": 1,
+        "color": [
+            1.0,
+            1.0,
+            1.0
+        ],
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "name": "eye",
+        "texture": "0x3AEB82CF1CDB5",
+        "game": 2,
+        "flags": 1,
+        "color": [
+            1.0,
+            1.0,
+            1.0
+        ],
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "name": "solid",
+        "texture": "0x20CC05865C603",
+        "game": 2,
+        "flags": 1,
+        "color": [
+            1.0,
+            1.0,
+            1.0
+        ],
+        "uv_repeat": [
+            0.5,
+            0.5
+        ],
+        "uv_shift": [
+            0.5,
+            0.0
+        ]
+    },
+    {
+        "name": "liquid",
+        "texture": "0x20CC05865C603",
+        "game": 2,
+        "flags": 1,
+        "color": [
+            1.0,
+            1.0,
+            1.0
+        ],
+        "uv_repeat": [
+            0.5,
+            0.5
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "name": "fulton",
+        "texture": "0x3DDB2AAFC8308",
+        "game": 2,
+        "flags": 0,
+        "color": [
+            1.0,
+            1.0,
+            1.0
+        ],
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "name": "stun",
+        "texture": "0x6D126E435E57",
+        "game": 2,
+        "flags": 0,
+        "color": [
+            1.0,
+            1.0,
+            1.0
+        ],
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "name": "interrogate",
+        "texture": "0x26A9A71760E92",
+        "game": 2,
+        "flags": 0,
+        "color": [
+            1.0,
+            1.0,
+            1.0
+        ],
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "name": "mark",
+        "texture": "0x1EBA9B2033919",
+        "game": 2,
+        "flags": 0,
+        "color": [
+            1.0,
+            1.0,
+            1.0
+        ],
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "name": "trophy",
+        "texture": "0x138FFCA5D3021",
+        "game": 2,
+        "flags": 0,
+        "color": [
+            1.0,
+            1.0,
+            1.0
+        ],
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "name": "missile",
+        "texture": "0x102A70FE5F2AA",
+        "game": 2,
+        "flags": 0,
+        "color": [
+            1.0,
+            1.0,
+            1.0
+        ],
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+        {
+        "name": "question",
+        "texture": "0x140A1859F03BD",
+        "game": 2,
+        "flags": 0,
+        "color": [
+            1.0,
+            1.0,
+            1.0
+        ],
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "name": "crosshair",
+        "texture": "0x170DD2DD0258A",
+        "game": 2,
+        "flags": 0,
+        "color": [
+            1.0,
+            1.0,
+            1.0
+        ],
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "name": "piranha",
+        "texture": "0x138F865D7FF7E",
+        "game": 2,
+        "flags": 0,
+        "color": [
+            1.0,
+            1.0,
+            1.0
+        ],
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "name": "little_grey",
+        "texture": "0x13ACB8A4D93D1",
+        "game": 2,
+        "flags": 0,
+        "color": [
+            1.0,
+            1.0,
+            1.0
+        ],
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "name": "chamaleon",
+        "texture": "0x193A1CB08BE67",
+        "game": 2,
+        "flags": 0,
+        "color": [
+            1.0,
+            1.0,
+            1.0
+        ],
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "name": "snake",
+        "texture": "0x1F013C0B693A9",
+        "game": 2,
+        "flags": 0,
+        "color": [
+            1.0,
+            1.0,
+            1.0
+        ],
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "name": "fox",
+        "texture": "0xBE6866BEC78B",
+        "game": 2,
+        "flags": 0,
+        "color": [
+            1.0,
+            1.0,
+            1.0
+        ],
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "name": "foxhound",
+        "texture": "0x1F3160430F758",
+        "game": 2,
+        "flags": 0,
+        "color": [
+            1.0,
+            1.0,
+            1.0
+        ],
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "name": "panda",
+        "texture": "0x34FED69848A89",
+        "game": 2,
+        "flags": 0,
+        "color": [
+            1.0,
+            1.0,
+            1.0
+        ],
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "name": "crocodile",
+        "texture": "0x3553923A5754C",
+        "game": 2,
+        "flags": 0,
+        "color": [
+            1.0,
+            1.0,
+            1.0
+        ],
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "name": "sloth",
+        "texture": "0x36A7E4A0223BC",
+        "game": 2,
+        "flags": 0,
+        "color": [
+            1.0,
+            1.0,
+            1.0
+        ],
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "name": "gecko",
+        "texture": "0x37174023D12E7",
+        "game": 2,
+        "flags": 0,
+        "color": [
+            1.0,
+            1.0,
+            1.0
+        ],
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "name": "bat",
+        "texture": "0x380EED2154C9D",
+        "game": 2,
+        "flags": 0,
+        "color": [
+            1.0,
+            1.0,
+            1.0
+        ],
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "name": "orca",
+        "texture": "0x39F7D45019A4F",
+        "game": 2,
+        "flags": 0,
+        "color": [
+            1.0,
+            1.0,
+            1.0
+        ],
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "name": "horse",
+        "texture": "0x3E67D3C3E8551",
+        "game": 2,
+        "flags": 0,
+        "color": [
+            1.0,
+            1.0,
+            1.0
+        ],
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "name": "scarab",
+        "texture": "0x3EA43152752E1",
+        "game": 2,
+        "flags": 0,
+        "color": [
+            1.0,
+            1.0,
+            1.0
+        ],
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "name": "cat",
+        "texture": "0x3ECEF6737B2CE",
+        "game": 2,
+        "flags": 0,
+        "color": [
+            1.0,
+            1.0,
+            1.0
+        ],
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "name": "eagle",
+        "texture": "0x3ED25821B0639",
+        "game": 2,
+        "flags": 0,
+        "color": [
+            1.0,
+            1.0,
+            1.0
+        ],
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "name": "sheep",
+        "texture": "0x3F4B035091C6",
+        "game": 2,
+        "flags": 0,
+        "color": [
+            1.0,
+            1.0,
+            1.0
+        ],
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "name": "shark",
+        "texture": "0x4A50C2181F92",
+        "game": 2,
+        "flags": 0,
+        "color": [
+            1.0,
+            1.0,
+            1.0
+        ],
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "name": "doberman",
+        "texture": "0x7E491DE8DE12",
+        "game": 2,
+        "flags": 0,
+        "color": [
+            1.0,
+            1.0,
+            1.0
+        ],
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "name": "chicken",
+        "texture": "0x9AD7E06E8132",
+        "game": 2,
+        "flags": 0,
+        "color": [
+            1.0,
+            1.0,
+            1.0
+        ],
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "name": "bee",
+        "texture": "0xAB670AFE7909",
+        "game": 2,
+        "flags": 0,
+        "color": [
+            1.0,
+            1.0,
+            1.0
+        ],
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "name": "leopard",
+        "texture": "0xB18B1533F150",
+        "game": 2,
+        "flags": 0,
+        "color": [
+            1.0,
+            1.0,
+            1.0
+        ],
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "name": "scorpion",
+        "texture": "0xBAE0A5E46897",
+        "game": 2,
+        "flags": 0,
+        "color": [
+            1.0,
+            1.0,
+            1.0
+        ],
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "name": "hawk",
+        "texture": "0xE7E4C1DC1282",
+        "game": 2,
+        "flags": 0,
+        "color": [
+            1.0,
+            1.0,
+            1.0
+        ],
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "name": "pigeon",
+        "texture": "0xEC19F1BDC36A",
+        "game": 2,
+        "flags": 0,
+        "color": [
+            1.0,
+            1.0,
+            1.0
+        ],
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "name": "hyena",
+        "texture": "0x30CEF3EE1E59",
+        "game": 2,
+        "flags": 0,
+        "color": [
+            1.0,
+            1.0,
+            1.0
+        ],
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "name": "water_bear",
+        "texture": "0x241A7AF10AF9B",
+        "game": 2,
+        "flags": 0,
+        "color": [
+            1.0,
+            1.0,
+            1.0
+        ],
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "name": "bigboss",
+        "texture": "0x2f5d88233b4d9",
+        "game": 2,
+        "flags": 0,
+        "color": [
+            1.0,
+            1.0,
+            1.0
+        ],
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "name": "bigboss_salute",
+        "texture": "0x18a4c81aaf004",
+        "game": 2,
+        "flags": 0,
+        "color": [
+            1.0,
+            1.0,
+            1.0
+        ],
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "name": "tv",
+        "texture": "0x3ee076a3338ec",
+        "game": 2,
+        "flags": 0,
+        "color": [
+            1.0,
+            1.0,
+            1.0
+        ],
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "name": "stogie",
+        "texture": "0x3DD1EB22BDF6D",
+        "game": 2,
+        "flags": 1,
+        "color": [
+            1.0,
+            1.0,
+            1.0
+        ],
+        "uv_repeat": [
+            0.5,
+            1
+        ],
+        "uv_shift": [
+            0.25,
+            0
+        ]
+    },
+    {
+        "name": "poacher",
+        "texture": "0x2ABEC514EBDA9",
+        "game": 2,
+        "flags": 1,
+        "color": [
+            1.0,
+            1.0,
+            1.0
+        ],
+        "uv_repeat": [
+            0.5,
+            1
+        ],
+        "uv_shift": [
+            0.25,
+            0
+        ]
+    },
+    {
+        "name": "busker",
+        "texture": "0x1569B01D80A27F42",
+        "game": 2,
+        "flags": 1,
+        "color": [
+            1.0,
+            1.0,
+            1.0
+        ],
+        "uv_repeat": [
+            0.5,
+            1
+        ],
+        "uv_shift": [
+            0.25,
+            0
+        ]
+    },
+    {
+        "name": "bandana",
+        "texture": "0xad45065fd626",
+        "game": 2,
+        "flags": 1,
+        "color": [
+            1.0,
+            1.0,
+            1.0
+        ],
+        "uv_repeat": [
+            0.5,
+            1
+        ],
+        "uv_shift": [
+            0.25,
+            0
+        ]
+    },
+    {
+        "name": "maverick",
+        "texture": "0x34c788e28fa61",
+        "game": 2,
+        "flags": 1,
+        "color": [
+            1.0,
+            1.0,
+            1.0
+        ],
+        "uv_repeat": [
+            0.5,
+            1
+        ],
+        "uv_shift": [
+            0.25,
+            0
+        ]
+    },
+    {
+        "name": "clown",
+        "texture": "0x3120A9F71E053",
+        "game": 2,
+        "flags": 1,
+        "color": [
+            1.0,
+            1.0,
+            1.0
+        ],
+        "uv_repeat": [
+            0.5,
+            1
+        ],
+        "uv_shift": [
+            0.25,
+            0
+        ]
+    },
+    {
+        "name": "ricky",
+        "texture": "0x1569DC5EE1C22683",
+        "game": 2,
+        "flags": 1,
+        "color": [
+            1.0,
+            1.0,
+            1.0
+        ],
+        "uv_repeat": [
+            0.5,
+            1
+        ],
+        "uv_shift": [
+            0.25,
+            0
+        ]
+    },
+    {
+        "name": "visitor",
+        "texture": "0x1568672700C9B219",
+        "game": 2,
+        "flags": 1,
+        "color": [
+            1.0,
+            1.0,
+            1.0
+        ],
+        "uv_repeat": [
+            0.5,
+            1
+        ],
+        "uv_shift": [
+            0.25,
+            0
+        ]
+    },
+    {
+        "name": "equine",
+        "texture": "0x156A3452F98A8BDC",
+        "game": 2,
+        "flags": 1,
+        "color": [
+            1.0,
+            1.0,
+            1.0
+        ],
+        "uv_repeat": [
+            0.5,
+            1
+        ],
+        "uv_shift": [
+            0.25,
+            0
+        ]
+    },
+    {
+        "name": "rex",
+        "texture": "0x1569A389CECE6FED",
+        "game": 2,
+        "flags": 1,
+        "color": [
+            1.0,
+            1.0,
+            1.0
+        ],
+        "uv_repeat": [
+            0.5,
+            1
+        ],
+        "uv_shift": [
+            0.25,
+            0
+        ]
+    },
+    {
+        "name": "ray",
+        "texture": "0x3f6aed7326569",
+        "game": 2,
+        "flags": 1,
+        "color": [
+            1.0,
+            1.0,
+            1.0
+        ],
+        "uv_repeat": [
+            0.5,
+            1
+        ],
+        "uv_shift": [
+            0.25,
+            0
+        ]
+    },
+    {
+        "name": "afro",
+        "texture": "0x10de52fd79113",
+        "game": 2,
+        "flags": 1,
+        "color": [
+            1.0,
+            1.0,
+            1.0
+        ],
+        "uv_repeat": [
+            0.5,
+            1
+        ],
+        "uv_shift": [
+            0.25,
+            0
+        ]
+    },
+    {
+        "name": "ishmael",
+        "texture": "0x3a15ef752df2d",
+        "game": 2,
+        "flags": 1,
+        "color": [
+            1.0,
+            1.0,
+            1.0
+        ],
+        "uv_repeat": [
+            0.5,
+            1
+        ],
+        "uv_shift": [
+            0.25,
+            0
+        ]
+    },
+    {
+        "name": "croc",
+        "texture": "0x1569A029E0186023",
+        "game": 2,
+        "flags": 1,
+        "color": [
+            1.0,
+            1.0,
+            1.0
+        ],
+        "uv_repeat": [
+            0.5,
+            1
+        ],
+        "uv_shift": [
+            0.25,
+            0
+        ]
+    },
+    {
+        "name": "cephalopod",
+        "texture": "0x15696C07A63DFDA4",
+        "game": 2,
+        "flags": 1,
+        "color": [
+            1.0,
+            1.0,
+            1.0
+        ],
+        "uv_repeat": [
+            0.5,
+            1
+        ],
+        "uv_shift": [
+            0.25,
+            0
+        ]
+    },
+    {
+        "name": "snorkel",
+        "texture": "0x156BD57552E8CACB",
+        "game": 2,
+        "flags": 1,
+        "color": [
+            1.0,
+            1.0,
+            1.0
+        ],
+        "uv_repeat": [
+            0.5,
+            1
+        ],
+        "uv_shift": [
+            0.25,
+            0
+        ]
+    },
+    {
+        "name": "headset",
+        "texture": "0x1568019FD816758D",
+        "game": 2,
+        "flags": 1,
+        "color": [
+            1.0,
+            1.0,
+            1.0
+        ],
+        "uv_repeat": [
+            0.5,
+            1
+        ],
+        "uv_shift": [
+            0.25,
+            0
+        ]
+    },
+    {
+        "name": "beret",
+        "texture": "0x1568EBEE2AE00448",
+        "game": 2,
+        "flags": 1,
+        "color": [
+            1.0,
+            1.0,
+            1.0
+        ],
+        "uv_repeat": [
+            0.5,
+            1
+        ],
+        "uv_shift": [
+            0.25,
+            0
+        ]
+    },
+    {
+        "name": "beanie",
+        "texture": "0x1569C90D9D98314A",
+        "game": 2,
+        "flags": 1,
+        "color": [
+            1.0,
+            1.0,
+            1.0
+        ],
+        "uv_repeat": [
+            0.5,
+            1
+        ],
+        "uv_shift": [
+            0.25,
+            0
+        ]
+    },
+    {
+        "name": "cap",
+        "texture": "0x1569C90D9D98314A",
+        "game": 2,
+        "flags": 1,
+        "color": [
+            1.0,
+            1.0,
+            1.0
+        ],
+        "uv_repeat": [
+            0.5,
+            1
+        ],
+        "uv_shift": [
+            0.25,
+            0
+        ]
+    },
+    {
+        "name": "sunglasses",
+        "texture": "0x156A87F3A47820A7",
+        "game": 2,
+        "flags": 1,
+        "color": [
+            1.0,
+            1.0,
+            1.0
+        ],
+        "uv_repeat": [
+            0.5,
+            1
+        ],
+        "uv_shift": [
+            0.25,
+            0
+        ]
+    },
+    {
+        "name": "hideo",
+        "texture": "0x3d4f683398770",
+        "game": 2,
+        "flags": 1,
+        "color": [
+            1.0,
+            1.0,
+            1.0
+        ],
+        "uv_repeat": [
+            0.5,
+            1
+        ],
+        "uv_shift": [
+            0.25,
+            0
+        ]
+    },
+    {
+        "name": "hat_alert",
+        "texture": "0x27cba7eebdfd6",
+        "game": 2,
+        "flags": 1,
+        "color": [
+            1.0,
+            1.0,
+            1.0
+        ],
+        "uv_repeat": [
+            0.5,
+            1
+        ],
+        "uv_shift": [
+            0.25,
+            0
+        ]
+    },
+    {
+        "name": "hat_question",
+        "texture": "0x16a2f39f2c7d3",
+        "game": 2,
+        "flags": 1,
+        "color": [
+            1.0,
+            1.0,
+            1.0
+        ],
+        "uv_repeat": [
+            0.5,
+            1
+        ],
+        "uv_shift": [
+            0.25,
+            0
+        ]
+    },
+    {
+        "name": "skill_antimarking_1",
+        "texture": "0x156BCD14E99E957D",
+        "game": 2,
+        "flags": 1,
+        "color": [
+            1,
+            1,
+            1
+        ],
+        "uv_repeat": [
+            0.5,
+            1
+        ],
+        "uv_shift": [
+            0.25,
+            0
+        ]
+    },
+    {
+        "name": "skill_antimarking_2",
+        "texture": "0x15691C9D9D19D7CD",
+        "game": 2,
+        "flags": 1,
+        "color": [
+            1,
+            1,
+            1
+        ],
+        "uv_repeat": [
+            0.5,
+            1
+        ],
+        "uv_shift": [
+            0.25,
+            0
+        ]
+    },
+    {
+        "name": "skill_antimarking_3",
+        "texture": "0x1568A384B0DDDE1F",
+        "game": 2,
+        "flags": 1,
+        "color": [
+            1,
+            1,
+            1
+        ],
+        "uv_repeat": [
+            0.5,
+            1
+        ],
+        "uv_shift": [
+            0.25,
+            0
+        ]
+    },
+    {
+        "name": "skill_cqc_stealthplus_1",
+        "texture": "0x1569DE7DC7D820CD",
+        "game": 2,
+        "flags": 1,
+        "color": [
+            1,
+            1,
+            1
+        ],
+        "uv_repeat": [
+            0.5,
+            1
+        ],
+        "uv_shift": [
+            0.25,
+            0
+        ]
+    },
+    {
+        "name": "skill_cqc_stealthplus_2",
+        "texture": "0x1569776E4862E35F",
+        "game": 2,
+        "flags": 1,
+        "color": [
+            1,
+            1,
+            1
+        ],
+        "uv_repeat": [
+            0.5,
+            1
+        ],
+        "uv_shift": [
+            0.25,
+            0
+        ]
+    },
+    {
+        "name": "skill_cqc_stealthplus_3",
+        "texture": "0x156B5B57A20E7977",
+        "game": 2,
+        "flags": 1,
+        "color": [
+            1,
+            1,
+            1
+        ],
+        "uv_repeat": [
+            0.5,
+            1
+        ],
+        "uv_shift": [
+            0.25,
+            0
+        ]
+    },
+    {
+        "name": "skill_camo_1",
+        "texture": "0x156A2D21AAB05C28",
+        "game": 2,
+        "flags": 1,
+        "color": [
+            1,
+            1,
+            1
+        ],
+        "uv_repeat": [
+            0.5,
+            1
+        ],
+        "uv_shift": [
+            0.25,
+            0
+        ]
+    },
+    {
+        "name": "skill_camo_2",
+        "texture": "0x156AC4D098CA2AF2",
+        "game": 2,
+        "flags": 1,
+        "color": [
+            1,
+            1,
+            1
+        ],
+        "uv_repeat": [
+            0.5,
+            1
+        ],
+        "uv_shift": [
+            0.25,
+            0
+        ]
+    },
+    {
+        "name": "skill_camo_3",
+        "texture": "0x156B45EAC1CA06A9",
+        "game": 2,
+        "flags": 1,
+        "color": [
+            1,
+            1,
+            1
+        ],
+        "uv_repeat": [
+            0.5,
+            1
+        ],
+        "uv_shift": [
+            0.25,
+            0
+        ]
+    },
+    {
+        "name": "skill_demolition_1",
+        "texture": "0x1569D06ED8A80B8E",
+        "game": 2,
+        "flags": 1,
+        "color": [
+            1,
+            1,
+            1
+        ],
+        "uv_repeat": [
+            0.5,
+            1
+        ],
+        "uv_shift": [
+            0.25,
+            0
+        ]
+    },
+    {
+        "name": "skill_demolition_2",
+        "texture": "0x1568552FCE1B28BE",
+        "game": 2,
+        "flags": 1,
+        "color": [
+            1,
+            1,
+            1
+        ],
+        "uv_repeat": [
+            0.5,
+            1
+        ],
+        "uv_shift": [
+            0.25,
+            0
+        ]
+    },
+    {
+        "name": "skill_demolition_3",
+        "texture": "0x156B7875C190445C",
+        "game": 2,
+        "flags": 1,
+        "color": [
+            1,
+            1,
+            1
+        ],
+        "uv_repeat": [
+            0.5,
+            1
+        ],
+        "uv_shift": [
+            0.25,
+            0
+        ]
+    },
+    {
+        "name": "skill_fieldreport_1",
+        "texture": "0x156AD5C26E9B8CB2",
+        "game": 2,
+        "flags": 1,
+        "color": [
+            1,
+            1,
+            1
+        ],
+        "uv_repeat": [
+            0.5,
+            1
+        ],
+        "uv_shift": [
+            0.25,
+            0
+        ]
+    },
+    {
+        "name": "skill_fieldreport_2",
+        "texture": "0x156993F429643D35",
+        "game": 2,
+        "flags": 1,
+        "color": [
+            1,
+            1,
+            1
+        ],
+        "uv_repeat": [
+            0.5,
+            1
+        ],
+        "uv_shift": [
+            0.25,
+            0
+        ]
+    },
+    {
+        "name": "skill_fieldreport_3",
+        "texture": "0x156B440AE898EA9A",
+        "game": 2,
+        "flags": 1,
+        "color": [
+            1,
+            1,
+            1
+        ],
+        "uv_repeat": [
+            0.5,
+            1
+        ],
+        "uv_shift": [
+            0.25,
+            0
+        ]
+    },
+    {
+        "name": "skill_fultonplus_1",
+        "texture": "0x156AF03328F718F3",
+        "game": 2,
+        "flags": 1,
+        "color": [
+            1,
+            1,
+            1
+        ],
+        "uv_repeat": [
+            0.5,
+            1
+        ],
+        "uv_shift": [
+            0.25,
+            0
+        ]
+    },
+    {
+        "name": "skill_fultonplus_2",
+        "texture": "0x156871AEB261335D",
+        "game": 2,
+        "flags": 1,
+        "color": [
+            1,
+            1,
+            1
+        ],
+        "uv_repeat": [
+            0.5,
+            1
+        ],
+        "uv_shift": [
+            0.25,
+            0
+        ]
+    },
+    {
+        "name": "skill_fultonplus_3",
+        "texture": "0x1569294FD849763F",
+        "game": 2,
+        "flags": 1,
+        "color": [
+            1,
+            1,
+            1
+        ],
+        "uv_repeat": [
+            0.5,
+            1
+        ],
+        "uv_shift": [
+            0.25,
+            0
+        ]
+    },
+    {
+        "name": "skill_intel_1",
+        "texture": "0x15699A292385960D",
+        "game": 2,
+        "flags": 1,
+        "color": [
+            1,
+            1,
+            1
+        ],
+        "uv_repeat": [
+            0.5,
+            1
+        ],
+        "uv_shift": [
+            0.25,
+            0
+        ]
+    },
+    {
+        "name": "skill_intel_2",
+        "texture": "0x156BF1DB55C01A70",
+        "game": 2,
+        "flags": 1,
+        "color": [
+            1,
+            1,
+            1
+        ],
+        "uv_repeat": [
+            0.5,
+            1
+        ],
+        "uv_shift": [
+            0.25,
+            0
+        ]
+    },
+    {
+        "name": "skill_intel_3",
+        "texture": "0x15690862FF19CF63",
+        "game": 2,
+        "flags": 1,
+        "color": [
+            1,
+            1,
+            1
+        ],
+        "uv_repeat": [
+            0.5,
+            1
+        ],
+        "uv_shift": [
+            0.25,
+            0
+        ]
+    },
+    {
+        "name": "skill_interrogationplus_1",
+        "texture": "0x156BA6B589965DE4",
+        "game": 2,
+        "flags": 1,
+        "color": [
+            1,
+            1,
+            1
+        ],
+        "uv_repeat": [
+            0.5,
+            1
+        ],
+        "uv_shift": [
+            0.25,
+            0
+        ]
+    },
+    {
+        "name": "skill_interrogationplus_2",
+        "texture": "0x156BA3BDBB5E318F",
+        "game": 2,
+        "flags": 1,
+        "color": [
+            1,
+            1,
+            1
+        ],
+        "uv_repeat": [
+            0.5,
+            1
+        ],
+        "uv_shift": [
+            0.25,
+            0
+        ]
+    },
+    {
+        "name": "skill_interrogationplus_3",
+        "texture": "0x15696587648B2612",
+        "game": 2,
+        "flags": 1,
+        "color": [
+            1,
+            1,
+            1
+        ],
+        "uv_repeat": [
+            0.5,
+            1
+        ],
+        "uv_shift": [
+            0.25,
+            0
+        ]
+    },
+    {
+        "name": "skill_lethalmarksmanplus_1",
+        "texture": "0x156882D5DBFC3A6B",
+        "game": 2,
+        "flags": 1,
+        "color": [
+            1,
+            1,
+            1
+        ],
+        "uv_repeat": [
+            0.5,
+            1
+        ],
+        "uv_shift": [
+            0.25,
+            0
+        ]
+    },
+    {
+        "name": "skill_lethalmarksmanplus_2",
+        "texture": "0x156B2C1188C5B253",
+        "game": 2,
+        "flags": 1,
+        "color": [
+            1,
+            1,
+            1
+        ],
+        "uv_repeat": [
+            0.5,
+            1
+        ],
+        "uv_shift": [
+            0.25,
+            0
+        ]
+    },
+    {
+        "name": "skill_lethalmarksmanplus_3",
+        "texture": "0x15685489ADE099F5",
+        "game": 2,
+        "flags": 1,
+        "color": [
+            1,
+            1,
+            1
+        ],
+        "uv_repeat": [
+            0.5,
+            1
+        ],
+        "uv_shift": [
+            0.25,
+            0
+        ]
+    },
+    {
+        "name": "skill_nonlethalmarksman_1",
+        "texture": "0x156ACBD2D6DB663A",
+        "game": 2,
+        "flags": 1,
+        "color": [
+            1,
+            1,
+            1
+        ],
+        "uv_repeat": [
+            0.5,
+            1
+        ],
+        "uv_shift": [
+            0.25,
+            0
+        ]
+    },
+    {
+        "name": "skill_nonlethalmarksman_2",
+        "texture": "0x156A158BD10D8059",
+        "game": 2,
+        "flags": 1,
+        "color": [
+            1,
+            1,
+            1
+        ],
+        "uv_repeat": [
+            0.5,
+            1
+        ],
+        "uv_shift": [
+            0.25,
+            0
+        ]
+    },
+    {
+        "name": "skill_nonlethalmarksman_3",
+        "texture": "0x156BF91A6A4D5AAC",
+        "game": 2,
+        "flags": 1,
+        "color": [
+            1,
+            1,
+            1
+        ],
+        "uv_repeat": [
+            0.5,
+            1
+        ],
+        "uv_shift": [
+            0.25,
+            0
+        ]
+    },
+    {
+        "name": "appeal_1",
+        "texture": "0x1125a8dbfd80c",
+        "game": 2,
+        "flags": 0,
+        "color": [
+            1,
+            1,
+            1
+        ],
+        "uv_repeat": [
+            0.5,
+            1
+        ],
+        "uv_shift": [
+            0.25,
+            0
+        ]
+    },
+    {
+        "name": "appeal_2",
+        "texture": "0x125487106efc7",
+        "game": 2,
+        "flags": 0,
+        "color": [
+            1,
+            1,
+            1
+        ],
+        "uv_repeat": [
+            0.5,
+            1
+        ],
+        "uv_shift": [
+            0.25,
+            0
+        ]
+    },
+    {
+        "name": "appeal_3",
+        "texture": "0x16245e1dffe5",
+        "game": 2,
+        "flags": 0,
+        "color": [
+            1,
+            1,
+            1
+        ],
+        "uv_repeat": [
+            0.5,
+            1
+        ],
+        "uv_shift": [
+            0.25,
+            0
+        ]
+    },
+    {
+        "name": "appeal_4",
+        "texture": "0x17e8f6bb99d6c",
+        "game": 2,
+        "flags": 0,
+        "color": [
+            1,
+            1,
+            1
+        ],
+        "uv_repeat": [
+            0.5,
+            1
+        ],
+        "uv_shift": [
+            0.25,
+            0
+        ]
+    },
+    {
+        "name": "appeal_5",
+        "texture": "0x188ca94fb9f87",
+        "game": 2,
+        "flags": 0,
+        "color": [
+            1,
+            1,
+            1
+        ],
+        "uv_repeat": [
+            0.5,
+            1
+        ],
+        "uv_shift": [
+            0.25,
+            0
+        ]
+    },
+    {
+        "name": "appeal_6",
+        "texture": "0x19ab509894e64",
+        "game": 2,
+        "flags": 0,
+        "color": [
+            1,
+            1,
+            1
+        ],
+        "uv_repeat": [
+            0.5,
+            1
+        ],
+        "uv_shift": [
+            0.25,
+            0
+        ]
+    },
+    {
+        "name": "appeal_7",
+        "texture": "0x19c75f46dc8f4",
+        "game": 2,
+        "flags": 0,
+        "color": [
+            1,
+            1,
+            1
+        ],
+        "uv_repeat": [
+            0.5,
+            1
+        ],
+        "uv_shift": [
+            0.25,
+            0
+        ]
+    },
+    {
+        "name": "appeal_8",
+        "texture": "0x1b51559ff6e75",
+        "game": 2,
+        "flags": 0,
+        "color": [
+            1,
+            1,
+            1
+        ],
+        "uv_repeat": [
+            0.5,
+            1
+        ],
+        "uv_shift": [
+            0.25,
+            0
+        ]
+    },
+    {
+        "name": "appeal_9",
+        "texture": "0x1c754cfac3eb5",
+        "game": 2,
+        "flags": 0,
+        "color": [
+            1,
+            1,
+            1
+        ],
+        "uv_repeat": [
+            0.5,
+            1
+        ],
+        "uv_shift": [
+            0.25,
+            0
+        ]
+    },
+    {
+        "name": "appeal_10",
+        "texture": "0x1e53bed5b1d1d",
+        "game": 2,
+        "flags": 0,
+        "color": [
+            1,
+            1,
+            1
+        ],
+        "uv_repeat": [
+            0.5,
+            1
+        ],
+        "uv_shift": [
+            0.25,
+            0
+        ]
+    },
+    {
+        "name": "appeal_11",
+        "texture": "0x200b6933c7414",
+        "game": 2,
+        "flags": 0,
+        "color": [
+            1,
+            1,
+            1
+        ],
+        "uv_repeat": [
+            0.5,
+            1
+        ],
+        "uv_shift": [
+            0.25,
+            0
+        ]
+    },
+    {
+        "name": "appeal_12",
+        "texture": "0x201101797b29f",
+        "game": 2,
+        "flags": 0,
+        "color": [
+            1,
+            1,
+            1
+        ],
+        "uv_repeat": [
+            0.5,
+            1
+        ],
+        "uv_shift": [
+            0.25,
+            0
+        ]
+    },
+    {
+        "name": "appeal_13",
+        "texture": "0x20bfd05f48e66",
+        "game": 2,
+        "flags": 0,
+        "color": [
+            1,
+            1,
+            1
+        ],
+        "uv_repeat": [
+            0.5,
+            1
+        ],
+        "uv_shift": [
+            0.25,
+            0
+        ]
+    },
+    {
+        "name": "appeal_14",
+        "texture": "0x216d145ecf6b8",
+        "game": 2,
+        "flags": 0,
+        "color": [
+            1,
+            1,
+            1
+        ],
+        "uv_repeat": [
+            0.5,
+            1
+        ],
+        "uv_shift": [
+            0.25,
+            0
+        ]
+    },
+    {
+        "name": "appeal_15",
+        "texture": "0x22a0e73efbaf",
+        "game": 2,
+        "flags": 0,
+        "color": [
+            1,
+            1,
+            1
+        ],
+        "uv_repeat": [
+            0.5,
+            1
+        ],
+        "uv_shift": [
+            0.25,
+            0
+        ]
+    },
+    {
+        "name": "appeal_16",
+        "texture": "0x2464b86a39a71",
+        "game": 2,
+        "flags": 0,
+        "color": [
+            1,
+            1,
+            1
+        ],
+        "uv_repeat": [
+            0.5,
+            1
+        ],
+        "uv_shift": [
+            0.25,
+            0
+        ]
+    },
+    {
+        "name": "appeal_17",
+        "texture": "0x2553fb44c145a",
+        "game": 2,
+        "flags": 0,
+        "color": [
+            1,
+            1,
+            1
+        ],
+        "uv_repeat": [
+            0.5,
+            1
+        ],
+        "uv_shift": [
+            0.25,
+            0
+        ]
+    },
+    {
+        "name": "appeal_18",
+        "texture": "0x28ac99c9d514c",
+        "game": 2,
+        "flags": 0,
+        "color": [
+            1,
+            1,
+            1
+        ],
+        "uv_repeat": [
+            0.5,
+            1
+        ],
+        "uv_shift": [
+            0.25,
+            0
+        ]
+    },
+    {
+        "name": "appeal_19",
+        "texture": "0x2a08bbd5392a9",
+        "game": 2,
+        "flags": 0,
+        "color": [
+            1,
+            1,
+            1
+        ],
+        "uv_repeat": [
+            0.5,
+            1
+        ],
+        "uv_shift": [
+            0.25,
+            0
+        ]
+    },
+    {
+        "name": "appeal_20",
+        "texture": "0x2b1a565f26cf9",
+        "game": 2,
+        "flags": 0,
+        "color": [
+            1,
+            1,
+            1
+        ],
+        "uv_repeat": [
+            0.5,
+            1
+        ],
+        "uv_shift": [
+            0.25,
+            0
+        ]
+    },
+    {
+        "name": "appeal_21",
+        "texture": "0x321071c2ec3c9",
+        "game": 2,
+        "flags": 0,
+        "color": [
+            1,
+            1,
+            1
+        ],
+        "uv_repeat": [
+            0.5,
+            1
+        ],
+        "uv_shift": [
+            0.25,
+            0
+        ]
+    },
+    {
+        "name": "appeal_22",
+        "texture": "0x34cc4673ca408",
+        "game": 2,
+        "flags": 0,
+        "color": [
+            1,
+            1,
+            1
+        ],
+        "uv_repeat": [
+            0.5,
+            1
+        ],
+        "uv_shift": [
+            0.25,
+            0
+        ]
+    },
+    {
+        "name": "appeal_23",
+        "texture": "0x36b605ba5a04e",
+        "game": 2,
+        "flags": 0,
+        "color": [
+            1,
+            1,
+            1
+        ],
+        "uv_repeat": [
+            0.5,
+            1
+        ],
+        "uv_shift": [
+            0.25,
+            0
+        ]
+    },
+    {
+        "name": "appeal_24",
+        "texture": "0x3886aee859761",
+        "game": 2,
+        "flags": 0,
+        "color": [
+            1,
+            1,
+            1
+        ],
+        "uv_repeat": [
+            0.5,
+            1
+        ],
+        "uv_shift": [
+            0.25,
+            0
+        ]
+    },
+    {
+        "name": "appeal_25",
+        "texture": "0x3a79e49bd173f",
+        "game": 2,
+        "flags": 0,
+        "color": [
+            1,
+            1,
+            1
+        ],
+        "uv_repeat": [
+            0.5,
+            1
+        ],
+        "uv_shift": [
+            0.25,
+            0
+        ]
+    },
+    {
+        "name": "appeal_26",
+        "texture": "0x3aa5920b123f6",
+        "game": 2,
+        "flags": 0,
+        "color": [
+            1,
+            1,
+            1
+        ],
+        "uv_repeat": [
+            0.5,
+            1
+        ],
+        "uv_shift": [
+            0.25,
+            0
+        ]
+    },
+    {
+        "name": "appeal_27",
+        "texture": "0x3ba0a8ac07ba2",
+        "game": 2,
+        "flags": 0,
+        "color": [
+            1,
+            1,
+            1
+        ],
+        "uv_repeat": [
+            0.5,
+            1
+        ],
+        "uv_shift": [
+            0.25,
+            0
+        ]
+    },
+    {
+        "name": "appeal_28",
+        "texture": "0x3d3f80a4431b5",
+        "game": 2,
+        "flags": 0,
+        "color": [
+            1,
+            1,
+            1
+        ],
+        "uv_repeat": [
+            0.5,
+            1
+        ],
+        "uv_shift": [
+            0.25,
+            0
+        ]
+    },
+    {
+        "name": "appeal_29",
+        "texture": "0x3d7570d62afd5",
+        "game": 2,
+        "flags": 0,
+        "color": [
+            1,
+            1,
+            1
+        ],
+        "uv_repeat": [
+            0.5,
+            1
+        ],
+        "uv_shift": [
+            0.25,
+            0
+        ]
+    },
+    {
+        "name": "appeal_30",
+        "texture": "0x4be03bf8481d",
+        "game": 2,
+        "flags": 0,
+        "color": [
+            1,
+            1,
+            1
+        ],
+        "uv_repeat": [
+            0.5,
+            1
+        ],
+        "uv_shift": [
+            0.25,
+            0
+        ]
+    },
+    {
+        "name": "appeal_31",
+        "texture": "0x5631ce1a0447",
+        "game": 2,
+        "flags": 0,
+        "color": [
+            1,
+            1,
+            1
+        ],
+        "uv_repeat": [
+            0.5,
+            1
+        ],
+        "uv_shift": [
+            0.25,
+            0
+        ]
+    },
+    {
+        "name": "appeal_32",
+        "texture": "0x657356ec264c",
+        "game": 2,
+        "flags": 0,
+        "color": [
+            1,
+            1,
+            1
+        ],
+        "uv_repeat": [
+            0.5,
+            1
+        ],
+        "uv_shift": [
+            0.25,
+            0
+        ]
+    },
+    {
+        "name": "appeal_33",
+        "texture": "0x8997f6c428a9",
+        "game": 2,
+        "flags": 0,
+        "color": [
+            1,
+            1,
+            1
+        ],
+        "uv_repeat": [
+            0.5,
+            1
+        ],
+        "uv_shift": [
+            0.25,
+            0
+        ]
+    },
+    {
+        "name": "appeal_34",
+        "texture": "0x98132dea41b6",
+        "game": 2,
+        "flags": 0,
+        "color": [
+            1,
+            1,
+            1
+        ],
+        "uv_repeat": [
+            0.5,
+            1
+        ],
+        "uv_shift": [
+            0.25,
+            0
+        ]
+    },
+    {
+        "name": "appeal_35",
+        "texture": "0xb1249dec237c",
+        "game": 2,
+        "flags": 0,
+        "color": [
+            1,
+            1,
+            1
+        ],
+        "uv_repeat": [
+            0.5,
+            1
+        ],
+        "uv_shift": [
+            0.25,
+            0
+        ]
+    },
+    {
+        "name": "appeal_36",
+        "texture": "0xbd8974adbfef",
+        "game": 2,
+        "flags": 0,
+        "color": [
+            1,
+            1,
+            1
+        ],
+        "uv_repeat": [
+            0.5,
+            1
+        ],
+        "uv_shift": [
+            0.25,
+            0
+        ]
+    },
+    {
+        "name": "appeal_37",
+        "texture": "0xcb06f635866",
+        "game": 2,
+        "flags": 0,
+        "color": [
+            1,
+            1,
+            1
+        ],
+        "uv_repeat": [
+            0.5,
+            1
+        ],
+        "uv_shift": [
+            0.25,
+            0
+        ]
+    },
+    {
+        "name": "appeal_38",
+        "texture": "0xdb61962675c",
+        "game": 2,
+        "flags": 0,
+        "color": [
+            1,
+            1,
+            1
+        ],
+        "uv_repeat": [
+            0.5,
+            1
+        ],
+        "uv_shift": [
+            0.25,
+            0
+        ]
+    },
+    {
+        "name": "appeal_39",
+        "texture": "0xf7d7ff8dd200",
+        "game": 2,
+        "flags": 0,
+        "color": [
+            1,
+            1,
+            1
+        ],
+        "uv_repeat": [
+            0.5,
+            1
+        ],
+        "uv_shift": [
+            0.25,
+            0
+        ]
+    },
+    {
+        "name": "appeal_40",
+        "texture": "0xf80342f517a6",
+        "game": 2,
+        "flags": 0,
+        "color": [
+            1,
+            1,
+            1
+        ],
+        "uv_repeat": [
+            0.5,
+            1
+        ],
+        "uv_shift": [
+            0.25,
+            0
+        ]
+    },
+{
+        "name": "heart",
+        "texture": "0x1568536BA987038A",
+        "game": 1,
+        "flags": 1,
+        "color": [
+            0.867,
+            0.18,
+            0.267
+        ],
+        "uv_repeat": [
+            0.5,
+            0.5
+        ],
+        "uv_shift": [
+            0.25,
+            0.25
+        ]
+    },
+    {
+        "name": "pink_heart",
+        "texture": "0x1568536BA987038A",
+        "game": 1,
+        "flags": 1,
+        "color": [
+            0.957,
+            0.671,
+            0.729
+        ],
+        "uv_repeat": [
+            0.5,
+            0.5
+        ],
+        "uv_shift": [
+            0.25,
+            0.25
+        ]
+    },
+    {
+        "name": "orange_heart",
+        "texture": "0x1568536BA987038A",
+        "game": 1,
+        "flags": 1,
+        "color": [
+            0.957,
+            0.565,
+            0.047
+        ],
+        "uv_repeat": [
+            0.5,
+            0.5
+        ],
+        "uv_shift": [
+            0.25,
+            0.25
+        ]
+    },
+    {
+        "name": "yellow_heart",
+        "texture": "0x1568536BA987038A",
+        "game": 1,
+        "flags": 1,
+        "color": [
+            0.992,
+            0.796,
+            0.345
+        ],
+        "uv_repeat": [
+            0.5,
+            0.5
+        ],
+        "uv_shift": [
+            0.25,
+            0.25
+        ]
+    },
+    {
+        "name": "green_heart",
+        "texture": "0x1568536BA987038A",
+        "game": 1,
+        "flags": 1,
+        "color": [
+            0.471,
+            0.694,
+            0.349
+        ],
+        "uv_repeat": [
+            0.5,
+            0.5
+        ],
+        "uv_shift": [
+            0.25,
+            0.25
+        ]
+    },
+    {
+        "name": "blue_heart",
+        "texture": "0x1568536BA987038A",
+        "game": 1,
+        "flags": 1,
+        "color": [
+            0.365,
+            0.678,
+            0.925
+        ],
+        "uv_repeat": [
+            0.5,
+            0.5
+        ],
+        "uv_shift": [
+            0.25,
+            0.25
+        ]
+    },
+    {
+        "name": "light_blue_heart",
+        "texture": "0x1568536BA987038A",
+        "game": 1,
+        "flags": 1,
+        "color": [
+            0.533,
+            0.788,
+            0.976
+        ],
+        "uv_repeat": [
+            0.5,
+            0.5
+        ],
+        "uv_shift": [
+            0.25,
+            0.25
+        ]
+    },
+    {
+        "name": "purple_heart",
+        "texture": "0x1568536BA987038A",
+        "game": 1,
+        "flags": 1,
+        "color": [
+            0.667,
+            0.557,
+            0.839
+        ],
+        "uv_repeat": [
+            0.5,
+            0.5
+        ],
+        "uv_shift": [
+            0.25,
+            0.25
+        ]
+    },
+    {
+        "name": "brown_heart",
+        "texture": "0x1568536BA987038A",
+        "game": 1,
+        "flags": 1,
+        "color": [
+            0.757,
+            0.412,
+            0.31
+        ],
+        "uv_repeat": [
+            0.5,
+            0.5
+        ],
+        "uv_shift": [
+            0.25,
+            0.25
+        ]
+    },
+    {
+        "name": "black_heart",
+        "texture": "0x1568536BA987038A",
+        "game": 1,
+        "flags": 1,
+        "color": [
+            0.192,
+            0.216,
+            0.239
+        ],
+        "uv_repeat": [
+            0.5,
+            0.5
+        ],
+        "uv_shift": [
+            0.25,
+            0.25
+        ]
+    },
+    {
+        "name": "grey_heart",
+        "texture": "0x1568536BA987038A",
+        "game": 1,
+        "flags": 1,
+        "color": [
+            0.6,
+            0.667,
+            0.71
+        ],
+        "uv_repeat": [
+            0.5,
+            0.5
+        ],
+        "uv_shift": [
+            0.25,
+            0.25
+        ]
+    },
+    {
+        "name": "white_heart",
+        "texture": "0x1568536BA987038A",
+        "game": 1,
+        "flags": 1,
+        "color": [
+            0.902,
+            0.906,
+            0.91
+        ],
+        "uv_repeat": [
+            0.5,
+            0.5
+        ],
+        "uv_shift": [
+            0.25,
+            0.25
+        ]
+    },
+    {
+        "name": "fulton",
+        "texture": "0x156952DEFE0D7D5D",
+        "game": 1,
+        "flags": 0,
+        "color": [
+            0.8,
+            0.8,
+            0.8
+        ],
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "name": "nuke",
+        "texture": "0x2adb231468de5",
+        "game": 1,
+        "flags": 1,
+        "color": [
+            1.0,
+            1.0,
+            1.0
+        ],
+        "uv_repeat": [
+            0.5,
+            1
+        ],
+        "uv_shift": [
+            0.25,
+            0
+        ]
+    },
+    {
+        "name": "huey",
+        "texture": "0x1568C2C5C0FCE202",
+        "game": 1,
+        "flags": 1,
+        "color": [
+            1.0,
+            1.0,
+            1.0
+        ],
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "name": "kaz",
+        "texture": "0x156A7259C26CE1FB",
+        "game": 1,
+        "flags": 1,
+        "color": [
+            1.0,
+            1.0,
+            1.0
+        ],
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "name": "quiet",
+        "texture": "0x1568442179242C97",
+        "game": 1,
+        "flags": 1,
+        "color": [
+            1.0,
+            1.0,
+            1.0
+        ],
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "name": "skullface",
+        "texture": "0x156B925A411D4277",
+        "game": 1,
+        "flags": 1,
+        "color": [
+            1.0,
+            1.0,
+            1.0
+        ],
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "name": "miller",
+        "texture": "0x156B283AC3C6366B",
+        "game": 1,
+        "flags": 3,
+        "color": [
+            1.0,
+            1.0,
+            1.0,
+            15.0
+        ],
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "name": "staff",
+        "texture": "0x13eb86e247b1c",
+        "game": 1,
+        "flags": 1,
+        "color": [
+            1.0,
+            1.0,
+            1.0
+        ],
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "name": "dd",
+        "texture": "0x15697D0AF966445A",
+        "game": 1,
+        "flags": 1,
+        "color": [
+            1.0,
+            1.0,
+            1.0
+        ],
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "name": "wolf",
+        "texture": "0x32b645f9821d8",
+        "game": 1,
+        "flags": 3,
+        "color": [
+            1.0,
+            1.0,
+            1.0,
+            10.0
+        ],
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "name": "manonfire",
+        "texture": "0x3673610299757",
+        "game": 1,
+        "flags": 3,
+        "color": [
+            1.0,
+            1.0,
+            1.0,
+            10.0
+        ],
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "name": "aipod",
+        "texture": "0x22bcabf15844a",
+        "game": 1,
+        "flags": 3,
+        "color": [
+            1.0,
+            1.0,
+            1.0,
+            10.0
+        ],
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "name": "flag_england",
+        "texture": "0x15699AC93FDFFCB2",
+        "game": 1,
+        "flags": 1,
+        "ratio": 2.0,
+        "color": [
+            1.0,
+            1.0,
+            1.0
+        ],
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "name": "swimsuit",
+        "texture": "0x156B11D2DD4FA404",
+        "game": 1,
+        "flags": 1,
+        "ratio": 1.25,
+        "color": [
+            1.0,
+            1.0,
+            1.0
+        ],
+        "uv_repeat": [
+            0.6,
+            0.8
+        ],
+        "uv_shift": [
+            0.2,
+            0.1
+        ]
+    },
+    {
+        "name": "tamika",
+        "texture": "0x14EDF90EBC90",
+        "game": 0,
+        "flags": 1,
+        "color": [
+            1.0,
+            1.0,
+            1.0
+        ],
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "name": "tamika2",
+        "texture": "0x2D41EFD0A1828",
+        "game": 0,
+        "flags": 1,
+        "color": [
+            1.0,
+            1.0,
+            1.0
+        ],
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "name": "paz",
+        "texture": "0xCEFEBB11E12C",
+        "game": 0,
+        "flags": 1,
+        "color": [
+            1.0,
+            1.0,
+            1.0
+        ],
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "name": "paz2",
+        "texture": "0x3BC2DE5E87C09",
+        "game": 0,
+        "flags": 1,
+        "color": [
+            1.0,
+            1.0,
+            1.0
+        ],
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "name": "salute",
+        "texture": "0x23D8D0F52317D",
+        "game": 0,
+        "flags": 1,
+        "color": [
+            1.0,
+            1.0,
+            1.0
+        ],
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "name": "salute2",
+        "texture": "0x242628D3164D3",
+        "game": 0,
+        "flags": 1,
+        "color": [
+            1.0,
+            1.0,
+            1.0
+        ],
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "name": "copyright",
+        "texture": "0x3C9F5320DA5A6",
+        "game": 0,
+        "flags": 0,
+        "color": [
+            1.0,
+            1.0,
+            1.0
+        ],
+        "uv_repeat": [
+            0.5,
+            0.5
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "name": "register",
+        "texture": "0x3C9F5320DA5A6",
+        "game": 0,
+        "flags": 0,
+        "color": [
+            1.0,
+            1.0,
+            1.0
+        ],
+        "uv_repeat": [
+            0.5,
+            0.5
+        ],
+        "uv_shift": [
+            0.5,
+            0.0
+        ]
+    },
+    {
+        "name": "kjp",
+        "texture": "0x3C0B764A33B4B",
+        "game": 2,
+        "flags": 0,
+        "color": [
+            1.0,
+            1.0,
+            1.0
+        ],
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "name": "dd",
+        "texture": "0x3C5B3F3CC5C24",
+        "game": 2,
+        "flags": 0,
+        "color": [
+            1.0,
+            1.0,
+            1.0
+        ],
+        "uv_repeat": [
+            0.5,
+            1
+        ],
+        "uv_shift": [
+            0.25,
+            0
+        ]
+    },
+    {
+        "name": "common_metal",
+        "texture": "0x3A67DB5354570",
+        "game": 0,
+        "flags": 1,
+        "color": [
+            1.0,
+            1.0,
+            1.0
+        ],
+        "uv_repeat": [
+            0.25,
+            0.25
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "name": "minor_metal",
+        "texture": "0x3A67DB5354570",
+        "game": 0,
+        "flags": 1,
+        "color": [
+            1.0,
+            1.0,
+            1.0
+        ],
+        "uv_repeat": [
+            0.25,
+            0.25
+        ],
+        "uv_shift": [
+            0.25,
+            0.0
+        ]
+    },
+    {
+        "name": "precious_metal",
+        "texture": "0x3A67DB5354570",
+        "game": 0,
+        "flags": 1,
+        "color": [
+            1.0,
+            1.0,
+            1.0
+        ],
+        "uv_repeat": [
+            0.25,
+            0.25
+        ],
+        "uv_shift": [
+            0.5,
+            0.0
+        ]
+    },
+    {
+        "name": "fuel_resource",
+        "texture": "0x3A67DB5354570",
+        "game": 0,
+        "flags": 1,
+        "color": [
+            1.0,
+            1.0,
+            1.0
+        ],
+        "uv_repeat": [
+            0.25,
+            0.25
+        ],
+        "uv_shift": [
+            0.75,
+            0.0
+        ]
+    },
+    {
+        "name": "biotic_resource",
+        "texture": "0x3A67DB5354570",
+        "game": 0,
+        "flags": 1,
+        "color": [
+            1.0,
+            1.0,
+            1.0
+        ],
+        "uv_repeat": [
+            0.25,
+            0.25
+        ],
+        "uv_shift": [
+            0.0,
+            0.25
+        ]
+    },
+    {
+        "name": "golden_crescent",
+        "texture": "0x3A67DB5354570",
+        "game": 0,
+        "flags": 1,
+        "color": [
+            1.0,
+            1.0,
+            1.0
+        ],
+        "uv_repeat": [
+            0.25,
+            0.25
+        ],
+        "uv_shift": [
+            0.5,
+            0.25
+        ]
+    },
+    {
+        "name": "african_peach",
+        "texture": "0x3A67DB5354570",
+        "game": 0,
+        "flags": 1,
+        "color": [
+            1.0,
+            1.0,
+            1.0
+        ],
+        "uv_repeat": [
+            0.25,
+            0.25
+        ],
+        "uv_shift": [
+            0.75,
+            0.25
+        ]
+    },
+    {
+        "name": "digitalis_p",
+        "texture": "0x3A67DB5354570",
+        "game": 0,
+        "flags": 1,
+        "color": [
+            1.0,
+            1.0,
+            1.0
+        ],
+        "uv_repeat": [
+            0.25,
+            0.25
+        ],
+        "uv_shift": [
+            1.0,
+            0.25
+        ]
+    },
+    {
+        "name": "digitalis_l",
+        "texture": "0x3A67DB5354570",
+        "game": 0,
+        "flags": 1,
+        "color": [
+            1.0,
+            1.0,
+            1.0
+        ],
+        "uv_repeat": [
+            0.25,
+            0.25
+        ],
+        "uv_shift": [
+            0.0,
+            0.5
+        ]
+    },
+    {
+        "name": "black_carrot",
+        "texture": "0x3A67DB5354570",
+        "game": 0,
+        "flags": 1,
+        "color": [
+            1.0,
+            1.0,
+            1.0
+        ],
+        "uv_repeat": [
+            0.25,
+            0.25
+        ],
+        "uv_shift": [
+            0.25,
+            0.5
+        ]
+    },
+    {
+        "name": "wormwood",
+        "texture": "0x3A67DB5354570",
+        "game": 0,
+        "flags": 1,
+        "color": [
+            1.0,
+            1.0,
+            1.0
+        ],
+        "uv_repeat": [
+            0.25,
+            0.25
+        ],
+        "uv_shift": [
+            0.5,
+            0.5
+        ]
+    },
+    {
+        "name": "tarragon",
+        "texture": "0x3A67DB5354570",
+        "game": 0,
+        "flags": 1,
+        "color": [
+            1.0,
+            1.0,
+            1.0
+        ],
+        "uv_repeat": [
+            0.25,
+            0.25
+        ],
+        "uv_shift": [
+            0.75,
+            0.5
+        ]
+    },
+    {
+        "name": "haoma",
+        "texture": "0x3A67DB5354570",
+        "game": 0,
+        "flags": 1,
+        "color": [
+            1.0,
+            1.0,
+            1.0
+        ],
+        "uv_repeat": [
+            0.25,
+            0.25
+        ],
+        "uv_shift": [
+            0.0,
+            0.75
+        ]
+    },
+    {
+        "color": [
+            0.8,
+            0.8,
+            0.8
+        ],
+        "flags": 0,
+        "game": 1,
+        "name": "emblem_diamond",
+        "texture": "0x1569AB46219C912F",
+        "uv_repeat": [
+            0.8,
+            0.8
+        ],
+        "uv_shift": [
+            0.1,
+            0.1
+        ]
+    },
+    {
+        "color": [
+            0.8,
+            0.8,
+            0.8
+        ],
+        "flags": 0,
+        "game": 1,
+        "name": "emblem_moon",
+        "texture": "0x156B6E26C2735E46",
+        "uv_repeat": [
+            0.8,
+            0.8
+        ],
+        "uv_shift": [
+            0.1,
+            0.1
+        ]
+    },
+    {
+        "color": [
+            0.8,
+            0.8,
+            0.8
+        ],
+        "flags": 0,
+        "game": 1,
+        "name": "emblem_lightning_01",
+        "texture": "0x1569707364A4C364",
+        "uv_repeat": [
+            0.8,
+            0.8
+        ],
+        "uv_shift": [
+            0.1,
+            0.1
+        ]
+    },
+    {
+        "color": [
+            0.8,
+            0.8,
+            0.8
+        ],
+        "flags": 0,
+        "game": 1,
+        "name": "emblem_lightning_02",
+        "texture": "0x1568E6338054AA27",
+        "uv_repeat": [
+            0.8,
+            0.8
+        ],
+        "uv_shift": [
+            0.1,
+            0.1
+        ]
+    },
+    {
+        "color": [
+            0.8,
+            0.8,
+            0.8
+        ],
+        "flags": 0,
+        "game": 1,
+        "name": "emblem_flames_01",
+        "texture": "0x15693B1A745CEECE",
+        "uv_repeat": [
+            0.8,
+            0.8
+        ],
+        "uv_shift": [
+            0.1,
+            0.1
+        ]
+    },
+    {
+        "color": [
+            0.8,
+            0.8,
+            0.8
+        ],
+        "flags": 0,
+        "game": 1,
+        "name": "emblem_flames_02",
+        "texture": "0x156A45104064EA63",
+        "uv_repeat": [
+            0.8,
+            0.8
+        ],
+        "uv_shift": [
+            0.1,
+            0.1
+        ]
+    },
+    {
+        "color": [
+            0.8,
+            0.8,
+            0.8
+        ],
+        "flags": 0,
+        "game": 1,
+        "name": "emblem_anchor",
+        "texture": "0x156AE584E6B423E0",
+        "uv_repeat": [
+            0.8,
+            0.8
+        ],
+        "uv_shift": [
+            0.1,
+            0.1
+        ]
+    },
+    {
+        "color": [
+            0.8,
+            0.8,
+            0.8
+        ],
+        "flags": 0,
+        "game": 1,
+        "name": "emblem_musical_note",
+        "texture": "0x156BE386B91D788C",
+        "uv_repeat": [
+            0.8,
+            0.8
+        ],
+        "uv_shift": [
+            0.1,
+            0.1
+        ]
+    },
+    {
+        "color": [
+            0.8,
+            0.8,
+            0.8
+        ],
+        "flags": 0,
+        "game": 1,
+        "name": "emblem_gear",
+        "texture": "0x1569B673B8964CCF",
+        "uv_repeat": [
+            0.8,
+            0.8
+        ],
+        "uv_shift": [
+            0.1,
+            0.1
+        ]
+    },
+    {
+        "color": [
+            0.8,
+            0.8,
+            0.8
+        ],
+        "flags": 0,
+        "game": 1,
+        "name": "emblem_biohazard",
+        "texture": "0x156ABB848DAE8210",
+        "uv_repeat": [
+            0.8,
+            0.8
+        ],
+        "uv_shift": [
+            0.1,
+            0.1
+        ]
+    },
+    {
+        "color": [
+            0.8,
+            0.8,
+            0.8
+        ],
+        "flags": 0,
+        "game": 1,
+        "name": "emblem_radiological_hazard",
+        "texture": "0x1569CA94C02CBD01",
+        "uv_repeat": [
+            0.8,
+            0.8
+        ],
+        "uv_shift": [
+            0.1,
+            0.1
+        ]
+    },
+    {
+        "color": [
+            0.8,
+            0.8,
+            0.8
+        ],
+        "flags": 0,
+        "game": 1,
+        "name": "emblem_earth",
+        "texture": "0x1568D81E0B9CCF04",
+        "uv_repeat": [
+            0.8,
+            0.8
+        ],
+        "uv_shift": [
+            0.1,
+            0.1
+        ]
+    },
+    {
+        "color": [
+            0.8,
+            0.8,
+            0.8
+        ],
+        "flags": 0,
+        "game": 1,
+        "name": "emblem_flower",
+        "texture": "0x1569DF306904021A",
+        "uv_repeat": [
+            0.8,
+            0.8
+        ],
+        "uv_shift": [
+            0.1,
+            0.1
+        ]
+    },
+    {
+        "color": [
+            0.8,
+            0.8,
+            0.8
+        ],
+        "flags": 0,
+        "game": 1,
+        "name": "emblem_garland",
+        "texture": "0x156AEF97DA89FAF8",
+        "uv_repeat": [
+            0.8,
+            0.8
+        ],
+        "uv_shift": [
+            0.1,
+            0.1
+        ]
+    },
+    {
+        "color": [
+            0.8,
+            0.8,
+            0.8
+        ],
+        "flags": 0,
+        "game": 1,
+        "name": "emblem_chick",
+        "texture": "0x15698C87E7FA19DD",
+        "uv_repeat": [
+            0.8,
+            0.8
+        ],
+        "uv_shift": [
+            0.1,
+            0.1
+        ]
+    },
+    {
+        "color": [
+            0.8,
+            0.8,
+            0.8
+        ],
+        "flags": 0,
+        "game": 1,
+        "name": "emblem_waterfowl",
+        "texture": "0x156BF51F4B3DA90D",
+        "uv_repeat": [
+            0.8,
+            0.8
+        ],
+        "uv_shift": [
+            0.1,
+            0.1
+        ]
+    },
+    {
+        "color": [
+            0.8,
+            0.8,
+            0.8
+        ],
+        "flags": 0,
+        "game": 1,
+        "name": "emblem_crown",
+        "texture": "0x156B1B914B7BE469",
+        "uv_repeat": [
+            0.8,
+            0.8
+        ],
+        "uv_shift": [
+            0.1,
+            0.1
+        ]
+    },
+    {
+        "color": [
+            0.8,
+            0.8,
+            0.8
+        ],
+        "flags": 0,
+        "game": 1,
+        "name": "emblem_jeweled_crown",
+        "texture": "0x15690F312876F00F",
+        "uv_repeat": [
+            0.8,
+            0.8
+        ],
+        "uv_shift": [
+            0.1,
+            0.1
+        ]
+    },
+    {
+        "color": [
+            0.8,
+            0.8,
+            0.8
+        ],
+        "flags": 0,
+        "game": 1,
+        "name": "emblem_skull_front",
+        "texture": "0x1569C0D14EB29FFF",
+        "uv_repeat": [
+            0.8,
+            0.8
+        ],
+        "uv_shift": [
+            0.1,
+            0.1
+        ]
+    },
+    {
+        "color": [
+            0.8,
+            0.8,
+            0.8
+        ],
+        "flags": 0,
+        "game": 1,
+        "name": "emblem_skull_profile",
+        "texture": "0x156B539E6722C1DC",
+        "uv_repeat": [
+            0.8,
+            0.8
+        ],
+        "uv_shift": [
+            0.1,
+            0.1
+        ]
+    },
+    {
+        "color": [
+            0.8,
+            0.8,
+            0.8
+        ],
+        "flags": 0,
+        "game": 1,
+        "name": "emblem_skull_ring",
+        "texture": "0x156A577353DBDE57",
+        "uv_repeat": [
+            0.8,
+            0.8
+        ],
+        "uv_shift": [
+            0.1,
+            0.1
+        ]
+    },
+    {
+        "color": [
+            0.8,
+            0.8,
+            0.8
+        ],
+        "flags": 0,
+        "game": 1,
+        "name": "emblem_skull_horn",
+        "texture": "0x156A68D487BF8337",
+        "uv_repeat": [
+            0.8,
+            0.8
+        ],
+        "uv_shift": [
+            0.1,
+            0.1
+        ]
+    },
+    {
+        "color": [
+            0.8,
+            0.8,
+            0.8
+        ],
+        "flags": 0,
+        "game": 1,
+        "name": "emblem_heart_ring",
+        "texture": "0x15684C0603AC7C60",
+        "uv_repeat": [
+            0.8,
+            0.8
+        ],
+        "uv_shift": [
+            0.1,
+            0.1
+        ]
+    },
+    {
+        "color": [
+            0.8,
+            0.8,
+            0.8
+        ],
+        "flags": 0,
+        "game": 1,
+        "name": "emblem_wings",
+        "texture": "0x1569FFF2294F2926",
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "color": [
+            0.8,
+            0.8,
+            0.8
+        ],
+        "flags": 0,
+        "game": 1,
+        "name": "emblem_falcon",
+        "texture": "0x1568FD4C8B6A0713",
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "color": [
+            0.8,
+            0.8,
+            0.8
+        ],
+        "flags": 0,
+        "game": 1,
+        "name": "emblem_lion",
+        "texture": "0x156A56980C46CF60",
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "color": [
+            0.8,
+            0.8,
+            0.8
+        ],
+        "flags": 0,
+        "game": 1,
+        "name": "emblem_pegasus",
+        "texture": "0x15697A5285FB2EBD",
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "color": [
+            0.8,
+            0.8,
+            0.8
+        ],
+        "flags": 0,
+        "game": 1,
+        "name": "emblem_unicorn",
+        "texture": "0x156A94BCC819E2B2",
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "color": [
+            0.8,
+            0.8,
+            0.8
+        ],
+        "flags": 0,
+        "game": 1,
+        "name": "emblem_griffon",
+        "texture": "0x156B5E6F3BBDC524",
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "color": [
+            0.8,
+            0.8,
+            0.8
+        ],
+        "flags": 0,
+        "game": 1,
+        "name": "emblem_dragon",
+        "texture": "0x15683F7D464AC49E",
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "color": [
+            0.8,
+            0.8,
+            0.8
+        ],
+        "flags": 0,
+        "game": 1,
+        "name": "emblem_archangel",
+        "texture": "0x156969D0DC301628",
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "color": [
+            0.8,
+            0.8,
+            0.8
+        ],
+        "flags": 0,
+        "game": 1,
+        "name": "emblem_arm",
+        "texture": "0x156AF19EE20AB1CA",
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "color": [
+            0.8,
+            0.8,
+            0.8
+        ],
+        "flags": 0,
+        "game": 1,
+        "name": "emblem_sword",
+        "texture": "0x156A62B1B8B46629",
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "color": [
+            0.8,
+            0.8,
+            0.8
+        ],
+        "flags": 0,
+        "game": 1,
+        "name": "emblem_axe",
+        "texture": "0x156813C3FF3B0D23",
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "color": [
+            0.8,
+            0.8,
+            0.8
+        ],
+        "flags": 0,
+        "game": 1,
+        "name": "emblem_spear",
+        "texture": "0x15682B04A72DAED8",
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "color": [
+            0.8,
+            0.8,
+            0.8
+        ],
+        "flags": 0,
+        "game": 1,
+        "name": "emblem_handgun",
+        "texture": "0x15693994DA748867",
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "color": [
+            0.8,
+            0.8,
+            0.8
+        ],
+        "flags": 0,
+        "game": 1,
+        "name": "emblem_assault_rifle",
+        "texture": "0x156B1BDBB4DE7A34",
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "color": [
+            0.8,
+            0.8,
+            0.8
+        ],
+        "flags": 0,
+        "game": 1,
+        "name": "emblem_gas_mask",
+        "texture": "0x156AAEF62BEF8D4B",
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "color": [
+            0.8,
+            0.8,
+            0.8
+        ],
+        "flags": 0,
+        "game": 1,
+        "name": "emblem_cardboard_box",
+        "texture": "0x15682AA5E9C5E2BC",
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "color": [
+            0.8,
+            0.8,
+            0.8
+        ],
+        "flags": 0,
+        "game": 1,
+        "name": "emblem_parachute",
+        "texture": "0x156A4E6B39D523B9",
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "color": [
+            0.8,
+            0.8,
+            0.8
+        ],
+        "flags": 0,
+        "game": 1,
+        "name": "emblem_fulton_recovery_device_soldier",
+        "texture": "0x156952DEFE0D7D5D",
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "color": [
+            0.8,
+            0.8,
+            0.8
+        ],
+        "flags": 0,
+        "game": 1,
+        "name": "emblem_fulton_recovery_device_sheep",
+        "texture": "0x1569E6E2C54C570F",
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "color": [
+            0.8,
+            0.8,
+            0.8
+        ],
+        "flags": 0,
+        "game": 1,
+        "name": "emblem_walker_gear",
+        "texture": "0x156B50F900D5FD5C",
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "color": [
+            0.8,
+            0.8,
+            0.8
+        ],
+        "flags": 0,
+        "game": 1,
+        "name": "emblem_tank",
+        "texture": "0x156A20ECD0BD43BF",
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "color": [
+            0.8,
+            0.8,
+            0.8
+        ],
+        "flags": 0,
+        "game": 1,
+        "name": "emblem_gunship",
+        "texture": "0x15697738DBF7EA5F",
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "color": [
+            0.8,
+            0.8,
+            0.8
+        ],
+        "flags": 0,
+        "game": 1,
+        "name": "emblem_fighter_jet",
+        "texture": "0x156A15FE3071FFD2",
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "color": [
+            0.8,
+            0.8,
+            0.8
+        ],
+        "flags": 0,
+        "game": 1,
+        "name": "emblem_battleship",
+        "texture": "0x156AB08B5711E354",
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "color": [
+            0.8,
+            0.8,
+            0.8
+        ],
+        "flags": 0,
+        "game": 1,
+        "name": "emblem_nuke",
+        "texture": "0x156B083C3D957ADA",
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "color": [
+            0.8,
+            0.8,
+            0.8
+        ],
+        "flags": 0,
+        "game": 1,
+        "name": "emblem_gerbil",
+        "texture": "0x156BB20EBB0913CC",
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "color": [
+            0.8,
+            0.8,
+            0.8
+        ],
+        "flags": 0,
+        "game": 1,
+        "name": "emblem_hedgehog",
+        "texture": "0x156972F754F030BF",
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "color": [
+            0.8,
+            0.8,
+            0.8
+        ],
+        "flags": 0,
+        "game": 1,
+        "name": "emblem_afghan_pika",
+        "texture": "0x156B03A95F82C679",
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "color": [
+            0.8,
+            0.8,
+            0.8
+        ],
+        "flags": 0,
+        "game": 1,
+        "name": "emblem_common_raven",
+        "texture": "0x156999CBDC97475A",
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "color": [
+            0.8,
+            0.8,
+            0.8
+        ],
+        "flags": 0,
+        "game": 1,
+        "name": "emblem_trumpeter_hornbill",
+        "texture": "0x156B6500F0748A66",
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "color": [
+            0.8,
+            0.8,
+            0.8
+        ],
+        "flags": 0,
+        "game": 1,
+        "name": "emblem_black_stork",
+        "texture": "0x156AF996862A235D",
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "color": [
+            0.8,
+            0.8,
+            0.8
+        ],
+        "flags": 0,
+        "game": 1,
+        "name": "emblem_oriental_stork",
+        "texture": "0x156B1F9AA276500C",
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "color": [
+            0.8,
+            0.8,
+            0.8
+        ],
+        "flags": 0,
+        "game": 1,
+        "name": "emblem_griffon_vulture",
+        "texture": "0x156B32D48ACC3529",
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "color": [
+            0.8,
+            0.8,
+            0.8
+        ],
+        "flags": 0,
+        "game": 1,
+        "name": "emblem_lappet-faced_vulture",
+        "texture": "0x156A2FF8620F073D",
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "color": [
+            0.8,
+            0.8,
+            0.8
+        ],
+        "flags": 0,
+        "game": 1,
+        "name": "emblem_martial_eagle",
+        "texture": "0x1568E9BBC741E90A",
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "color": [
+            0.8,
+            0.8,
+            0.8
+        ],
+        "flags": 0,
+        "game": 1,
+        "name": "emblem_karakul_sheep",
+        "texture": "0x15694EBC94843C7D",
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "color": [
+            0.8,
+            0.8,
+            0.8
+        ],
+        "flags": 0,
+        "game": 1,
+        "name": "emblem_cashmere_goat",
+        "texture": "0x156ABABF8650E407",
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "color": [
+            0.8,
+            0.8,
+            0.8
+        ],
+        "flags": 0,
+        "game": 1,
+        "name": "emblem_nubian",
+        "texture": "0x156BFABFD5A0BEA2",
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "color": [
+            0.8,
+            0.8,
+            0.8
+        ],
+        "flags": 0,
+        "game": 1,
+        "name": "emblem_boer_goat",
+        "texture": "0x15696B5E8B9ACFD7",
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "color": [
+            0.8,
+            0.8,
+            0.8
+        ],
+        "flags": 0,
+        "game": 1,
+        "name": "emblem_wild_ass",
+        "texture": "0x156BC85497BD6FC7",
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "color": [
+            0.8,
+            0.8,
+            0.8
+        ],
+        "flags": 0,
+        "game": 1,
+        "name": "emblem_grants_zebra",
+        "texture": "0x1569A4AA44B530BD",
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "color": [
+            0.8,
+            0.8,
+            0.8
+        ],
+        "flags": 0,
+        "game": 1,
+        "name": "emblem_okapi",
+        "texture": "0x1569EA777F4182B1",
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "color": [
+            0.8,
+            0.8,
+            0.8
+        ],
+        "flags": 0,
+        "game": 1,
+        "name": "emblem_gray_wolf",
+        "texture": "0x156A894AD6455A72",
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "color": [
+            0.8,
+            0.8,
+            0.8
+        ],
+        "flags": 0,
+        "game": 1,
+        "name": "emblem_african_wild_dog",
+        "texture": "0x156A1200087FE5FA",
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "color": [
+            0.8,
+            0.8,
+            0.8
+        ],
+        "flags": 0,
+        "game": 1,
+        "name": "emblem_side-striped_jackal",
+        "texture": "0x156A9A010AB2F341",
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "color": [
+            0.8,
+            0.8,
+            0.8
+        ],
+        "flags": 0,
+        "game": 1,
+        "name": "emblem_brown_bear",
+        "texture": "0x156B7E0FE9D3B85C",
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "color": [
+            0.8,
+            0.8,
+            0.8
+        ],
+        "flags": 0,
+        "game": 1,
+        "name": "emblem_himalayan_brown_bear",
+        "texture": "0x15691B76EA2D7649",
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "color": [
+            0.8,
+            0.8,
+            0.8
+        ],
+        "flags": 0,
+        "game": 1,
+        "name": "emblem_deathstalker",
+        "texture": "0x15682ED07BA6292F",
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "color": [
+            0.8,
+            0.8,
+            0.8
+        ],
+        "flags": 0,
+        "game": 1,
+        "name": "emblem_emperor_scorpion",
+        "texture": "0x156832D16EB159A2",
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "color": [
+            0.8,
+            0.8,
+            0.8
+        ],
+        "flags": 0,
+        "game": 1,
+        "name": "emblem_oriental_ratsnake",
+        "texture": "0x156B60007427E29C",
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "color": [
+            0.8,
+            0.8,
+            0.8
+        ],
+        "flags": 0,
+        "game": 1,
+        "name": "emblem_black_mamba",
+        "texture": "0x1568D67FD679F6E6",
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "color": [
+            0.8,
+            0.8,
+            0.8
+        ],
+        "flags": 0,
+        "game": 1,
+        "name": "emblem_tsuchinoko",
+        "texture": "0x156902B399E9B6C2",
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "color": [
+            0.8,
+            0.8,
+            0.8
+        ],
+        "flags": 0,
+        "game": 1,
+        "name": "emblem_rainbow_agama",
+        "texture": "0x15697C4423A0EBE5",
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "color": [
+            0.8,
+            0.8,
+            0.8
+        ],
+        "flags": 0,
+        "game": 1,
+        "name": "emblem_namaqua_chameleon",
+        "texture": "0x156BEBA6C6B4EE8A",
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "color": [
+            0.8,
+            0.8,
+            0.8
+        ],
+        "flags": 0,
+        "game": 1,
+        "name": "emblem_leopard_gecko",
+        "texture": "0x15697BEC3B04479B",
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "color": [
+            0.8,
+            0.8,
+            0.8
+        ],
+        "flags": 0,
+        "game": 1,
+        "name": "emblem_african_fat-tailed_gecko",
+        "texture": "0x156BE6FA68E38D99",
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "color": [
+            0.8,
+            0.8,
+            0.8
+        ],
+        "flags": 0,
+        "game": 1,
+        "name": "emblem_african_bullfrog",
+        "texture": "0x156B0F5C97D6EE36",
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "color": [
+            0.8,
+            0.8,
+            0.8
+        ],
+        "flags": 0,
+        "game": 1,
+        "name": "emblem_russian_tortoise",
+        "texture": "0x156A7ACFF25443B3",
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "color": [
+            0.8,
+            0.8,
+            0.8
+        ],
+        "flags": 0,
+        "game": 1,
+        "name": "emblem_leopard_tortoise",
+        "texture": "0x156ABA68BD77B863",
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "color": [
+            0.8,
+            0.8,
+            0.8
+        ],
+        "flags": 0,
+        "game": 1,
+        "name": "emblem_bechsteins_bat",
+        "texture": "0x156986D76E1E4C59",
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "color": [
+            0.8,
+            0.8,
+            0.8
+        ],
+        "flags": 0,
+        "game": 1,
+        "name": "emblem_rock_hyrax",
+        "texture": "0x156ABCAC8B7EBA99",
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "color": [
+            0.8,
+            0.8,
+            0.8
+        ],
+        "flags": 0,
+        "game": 1,
+        "name": "emblem_tree_pangolin",
+        "texture": "0x156B2B2E54185A92",
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "color": [
+            0.8,
+            0.8,
+            0.8
+        ],
+        "flags": 0,
+        "game": 1,
+        "name": "emblem_sand_cat",
+        "texture": "0x15688A5D96005615",
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "color": [
+            0.8,
+            0.8,
+            0.8
+        ],
+        "flags": 0,
+        "game": 1,
+        "name": "emblem_caracal",
+        "texture": "0x1568A0E4C18EACBF",
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "color": [
+            0.8,
+            0.8,
+            0.8
+        ],
+        "flags": 0,
+        "game": 1,
+        "name": "emblem_african_civet",
+        "texture": "0x1568FBDB10E000A0",
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "color": [
+            0.8,
+            0.8,
+            0.8
+        ],
+        "flags": 0,
+        "game": 1,
+        "name": "emblem_marsh_mongoose",
+        "texture": "0x156B7832FC0F2490",
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "color": [
+            0.8,
+            0.8,
+            0.8
+        ],
+        "flags": 0,
+        "game": 1,
+        "name": "emblem_red_fox",
+        "texture": "0x1569832B5EE8679A",
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "color": [
+            0.8,
+            0.8,
+            0.8
+        ],
+        "flags": 0,
+        "game": 1,
+        "name": "emblem_blanfords_fox",
+        "texture": "0x156A0664151EEBB3",
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "color": [
+            0.8,
+            0.8,
+            0.8
+        ],
+        "flags": 0,
+        "game": 1,
+        "name": "emblem_honey_badger",
+        "texture": "0x1569EE38B85726E2",
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "color": [
+            0.8,
+            0.8,
+            0.8
+        ],
+        "flags": 0,
+        "game": 1,
+        "name": "emblem_chicken",
+        "texture": "0x1569B0B6A3B39975",
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "color": [
+            0.8,
+            0.8,
+            0.8
+        ],
+        "flags": 0,
+        "game": 1,
+        "name": "emblem_foxhound",
+        "texture": "0x156BF05C5C85DD8B",
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "color": [
+            0.8,
+            0.8,
+            0.8
+        ],
+        "flags": 0,
+        "game": 1,
+        "name": "emblem_fox",
+        "texture": "0x1569632A487F4832",
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "color": [
+            0.8,
+            0.8,
+            0.8
+        ],
+        "flags": 0,
+        "game": 1,
+        "name": "emblem_eagle",
+        "texture": "0x156979F5A4DB58A9",
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "color": [
+            0.8,
+            0.8,
+            0.8
+        ],
+        "flags": 0,
+        "game": 1,
+        "name": "emblem_puma",
+        "texture": "0x156BBEEB15320C53",
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "color": [
+            0.8,
+            0.8,
+            0.8
+        ],
+        "flags": 0,
+        "game": 1,
+        "name": "emblem_bear",
+        "texture": "0x156B78B45E1AA608",
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "color": [
+            0.8,
+            0.8,
+            0.8
+        ],
+        "flags": 0,
+        "game": 1,
+        "name": "emblem_octopus",
+        "texture": "0x1569E8A7A71EFBAE",
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "color": [
+            0.8,
+            0.8,
+            0.8
+        ],
+        "flags": 0,
+        "game": 1,
+        "name": "emblem_mantis",
+        "texture": "0x1568CD00FDF0F442",
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "color": [
+            0.8,
+            0.8,
+            0.8
+        ],
+        "flags": 0,
+        "game": 1,
+        "name": "emblem_bee",
+        "texture": "0x15693A1BFA78611C",
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "color": [
+            0.8,
+            0.8,
+            0.8
+        ],
+        "flags": 0,
+        "game": 1,
+        "name": "emblem_scorpion",
+        "texture": "0x156B9623F485D252",
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "color": [
+            0.8,
+            0.8,
+            0.8
+        ],
+        "flags": 0,
+        "game": 1,
+        "name": "emblem_piranha",
+        "texture": "0x15693F56F82E997B",
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "color": [
+            0.8,
+            0.8,
+            0.8
+        ],
+        "flags": 0,
+        "game": 1,
+        "name": "emblem_doberman",
+        "texture": "0x1569DDD438DFE709",
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "color": [
+            0.8,
+            0.8,
+            0.8
+        ],
+        "flags": 0,
+        "game": 1,
+        "name": "emblem_raven",
+        "texture": "0x1569D5894B0B4885",
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "color": [
+            0.8,
+            0.8,
+            0.8
+        ],
+        "flags": 0,
+        "game": 1,
+        "name": "emblem_wolf",
+        "texture": "0x1569CBE357011262",
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "color": [
+            0.8,
+            0.8,
+            0.8
+        ],
+        "flags": 0,
+        "game": 1,
+        "name": "emblem_shark",
+        "texture": "0x156AF55E5292AA9C",
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "color": [
+            0.8,
+            0.8,
+            0.8
+        ],
+        "flags": 0,
+        "game": 1,
+        "name": "emblem_orca",
+        "texture": "0x156A3FFABE024C06",
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "color": [
+            0.8,
+            0.8,
+            0.8
+        ],
+        "flags": 0,
+        "game": 1,
+        "name": "emblem_spider",
+        "texture": "0x156B5A4FF8ADDA13",
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "color": [
+            0.8,
+            0.8,
+            0.8
+        ],
+        "flags": 0,
+        "game": 1,
+        "name": "emblem_butterfly",
+        "texture": "0x156A7E5A715724E1",
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "color": [
+            0.8,
+            0.8,
+            0.8
+        ],
+        "flags": 0,
+        "game": 1,
+        "name": "emblem_hound",
+        "texture": "0x1569CFE15BEEBC4A",
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "color": [
+            0.8,
+            0.8,
+            0.8
+        ],
+        "flags": 0,
+        "game": 1,
+        "name": "emblem_hog",
+        "texture": "0x156A903854C3FB9E",
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "color": [
+            0.8,
+            0.8,
+            0.8
+        ],
+        "flags": 0,
+        "game": 1,
+        "name": "emblem_ostrich",
+        "texture": "0x156A19200E01D9BE",
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "color": [
+            0.8,
+            0.8,
+            0.8
+        ],
+        "flags": 0,
+        "game": 1,
+        "name": "emblem_tortoise",
+        "texture": "0x156B806D75E02C7E",
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "color": [
+            0.8,
+            0.8,
+            0.8
+        ],
+        "flags": 0,
+        "game": 1,
+        "name": "emblem_hawk",
+        "texture": "0x156BCAB1C0FB9420",
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "color": [
+            0.8,
+            0.8,
+            0.8
+        ],
+        "flags": 0,
+        "game": 1,
+        "name": "emblem_whale",
+        "texture": "0x156A42E36A4340D0",
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "color": [
+            0.8,
+            0.8,
+            0.8
+        ],
+        "flags": 0,
+        "game": 1,
+        "name": "emblem_bat",
+        "texture": "0x156895D2E848111A",
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "color": [
+            0.8,
+            0.8,
+            0.8
+        ],
+        "flags": 0,
+        "game": 1,
+        "name": "emblem_old_mother_base",
+        "texture": "0x15683DB54C0C15C1",
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "color": [
+            0.8,
+            0.8,
+            0.8
+        ],
+        "flags": 0,
+        "game": 1,
+        "name": "emblem_peace_walker",
+        "texture": "0x1568FDDD79029DE4",
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "color": [
+            0.8,
+            0.8,
+            0.8
+        ],
+        "flags": 0,
+        "game": 1,
+        "name": "emblem_diamond_dogs",
+        "texture": "0x15695592DDA085D2",
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "color": [
+            0.8,
+            0.8,
+            0.8
+        ],
+        "flags": 0,
+        "game": 1,
+        "name": "emblem_cfa",
+        "texture": "0x156AEF77E700F9BA",
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "color": [
+            0.8,
+            0.8,
+            0.8
+        ],
+        "flags": 0,
+        "game": 1,
+        "name": "emblem_rogue_coyote",
+        "texture": "0x1568D2AA6D3713EF",
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "color": [
+            0.8,
+            0.8,
+            0.8
+        ],
+        "flags": 0,
+        "game": 1,
+        "name": "emblem_zero_risk_security",
+        "texture": "0x156B2A6BE45945CD",
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "color": [
+            0.8,
+            0.8,
+            0.8
+        ],
+        "flags": 0,
+        "game": 1,
+        "name": "emblem_outer_heaven",
+        "texture": "0x156942331B165976",
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "color": [
+            0.8,
+            0.8,
+            0.8
+        ],
+        "flags": 0,
+        "game": 1,
+        "name": "emblem_pieuvre_armement",
+        "texture": "0x156984B7BA3744B8",
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "color": [
+            0.8,
+            0.8,
+            0.8
+        ],
+        "flags": 0,
+        "game": 1,
+        "name": "emblem_raven_sword",
+        "texture": "0x156B9DFF132858F3",
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "color": [
+            0.8,
+            0.8,
+            0.8
+        ],
+        "flags": 0,
+        "game": 1,
+        "name": "emblem_werewolf",
+        "texture": "0x156B389E16D6D43B",
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "color": [
+            0.8,
+            0.8,
+            0.8
+        ],
+        "flags": 0,
+        "game": 1,
+        "name": "emblem_praying_mantis",
+        "texture": "0x1568E8046C3893F2",
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "color": [
+            0.8,
+            0.8,
+            0.8
+        ],
+        "flags": 0,
+        "game": 1,
+        "name": "emblem_otselotovaya_khvatka",
+        "texture": "0x1569FB16485657C2",
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "color": [
+            0.8,
+            0.8,
+            0.8
+        ],
+        "flags": 0,
+        "game": 1,
+        "name": "emblem_outer_haven",
+        "texture": "0x15686A342ED9470B",
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "color": [
+            0.8,
+            0.8,
+            0.8
+        ],
+        "flags": 0,
+        "game": 1,
+        "name": "emblem_!",
+        "texture": "0x156BE491F7A4E48A",
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "color": [
+            0.8,
+            0.8,
+            0.8
+        ],
+        "flags": 0,
+        "game": 1,
+        "name": "emblem_?",
+        "texture": "0x156B89A17AEB6C40",
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "color": [
+            0.8,
+            0.8,
+            0.8
+        ],
+        "flags": 0,
+        "game": 1,
+        "name": "emblem_otaku_spirit",
+        "texture": "0x15683E6EE6F84AFA",
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "color": [
+            0.8,
+            0.8,
+            0.8
+        ],
+        "flags": 0,
+        "game": 1,
+        "name": "emblem_zan",
+        "texture": "0x156A46D7ABA02161",
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "color": [
+            0.8,
+            0.8,
+            0.8
+        ],
+        "flags": 0,
+        "game": 1,
+        "name": "emblem_datsu",
+        "texture": "0x156A032DC47888F8",
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "color": [
+            0.8,
+            0.8,
+            0.8
+        ],
+        "flags": 0,
+        "game": 1,
+        "name": "emblem_moai",
+        "texture": "0x156912D8135C963C",
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "color": [
+            0.8,
+            0.8,
+            0.8
+        ],
+        "flags": 0,
+        "game": 1,
+        "name": "emblem_otenko",
+        "texture": "0x15680F33D7669CFA",
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "color": [
+            0.8,
+            0.8,
+            0.8
+        ],
+        "flags": 0,
+        "game": 1,
+        "name": "emblem_nero",
+        "texture": "0x156BBF4B10354C35",
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "color": [
+            0.8,
+            0.8,
+            0.8
+        ],
+        "flags": 0,
+        "game": 1,
+        "name": "emblem_martian",
+        "texture": "0x156BA6B915731EFB",
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "color": [
+            0.8,
+            0.8,
+            0.8
+        ],
+        "flags": 0,
+        "game": 1,
+        "name": "emblem_jehuty",
+        "texture": "0x1568C48D87E9ED42",
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "color": [
+            0.8,
+            0.8,
+            0.8
+        ],
+        "flags": 0,
+        "game": 1,
+        "name": "emblem_anubis",
+        "texture": "0x156AF0FE17A9E30C",
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "color": [
+            0.8,
+            0.8,
+            0.8
+        ],
+        "flags": 0,
+        "game": 1,
+        "name": "emblem_venom_snake",
+        "texture": "0x1568E619ACD20BE9",
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "color": [
+            0.8,
+            0.8,
+            0.8
+        ],
+        "flags": 0,
+        "game": 1,
+        "name": "emblem_pigeon",
+        "texture": "0x1569A165D0EA9255",
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "color": [
+            0.8,
+            0.8,
+            0.8
+        ],
+        "flags": 0,
+        "game": 1,
+        "name": "emblem_blue_bird",
+        "texture": "0x156B6830206FD129",
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "color": [
+            0.8,
+            0.8,
+            0.8
+        ],
+        "flags": 0,
+        "game": 1,
+        "name": "emblem_little_gray",
+        "texture": "0x1569F42958FE9448",
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "color": [
+            0.8,
+            0.8,
+            0.8
+        ],
+        "flags": 0,
+        "game": 1,
+        "name": "emblem_ant",
+        "texture": "0x156BB3A120A4DF3F",
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "color": [
+            0.8,
+            0.8,
+            0.8
+        ],
+        "flags": 0,
+        "game": 1,
+        "name": "emblem_gibbon",
+        "texture": "0x15695612FABD4790",
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "color": [
+            0.8,
+            0.8,
+            0.8
+        ],
+        "flags": 0,
+        "game": 1,
+        "name": "emblem_rabbit",
+        "texture": "0x156BA4651CD2F7B4",
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "color": [
+            0.8,
+            0.8,
+            0.8
+        ],
+        "flags": 0,
+        "game": 1,
+        "name": "emblem_gecko",
+        "texture": "0x156AC08245BD55FB",
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "color": [
+            0.8,
+            0.8,
+            0.8
+        ],
+        "flags": 0,
+        "game": 1,
+        "name": "emblem_scarab",
+        "texture": "0x156A149F55D918F8",
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "color": [
+            0.8,
+            0.8,
+            0.8
+        ],
+        "flags": 0,
+        "game": 1,
+        "name": "emblem_frog",
+        "texture": "0x1569803FE4E3C255",
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "color": [
+            0.8,
+            0.8,
+            0.8
+        ],
+        "flags": 0,
+        "game": 1,
+        "name": "emblem_inchworm",
+        "texture": "0x156A6AC867892C4E",
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "color": [
+            0.8,
+            0.8,
+            0.8
+        ],
+        "flags": 0,
+        "game": 1,
+        "name": "emblem_lobster",
+        "texture": "0x156A19EC796F8EDE",
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "color": [
+            0.8,
+            0.8,
+            0.8
+        ],
+        "flags": 0,
+        "game": 1,
+        "name": "emblem_hyena",
+        "texture": "0x15683D9A9F362A51",
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "color": [
+            0.8,
+            0.8,
+            0.8
+        ],
+        "flags": 0,
+        "game": 1,
+        "name": "emblem_pig",
+        "texture": "0x156BEE616657D5CA",
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "color": [
+            0.8,
+            0.8,
+            0.8
+        ],
+        "flags": 0,
+        "game": 1,
+        "name": "emblem_cow",
+        "texture": "0x1569EE2A74D4D428",
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "color": [
+            0.8,
+            0.8,
+            0.8
+        ],
+        "flags": 0,
+        "game": 1,
+        "name": "emblem_crocodile",
+        "texture": "0x15690B1CC70D0C19",
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "color": [
+            0.8,
+            0.8,
+            0.8
+        ],
+        "flags": 0,
+        "game": 1,
+        "name": "emblem_giant_panda",
+        "texture": "0x156A81582426D618",
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "color": [
+            0.8,
+            0.8,
+            0.8
+        ],
+        "flags": 0,
+        "game": 1,
+        "name": "emblem_tarantula",
+        "texture": "0x15696D1004C7F98A",
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "color": [
+            0.8,
+            0.8,
+            0.8
+        ],
+        "flags": 0,
+        "game": 1,
+        "name": "emblem_centipede",
+        "texture": "0x156A0108EC525E75",
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "color": [
+            0.8,
+            0.8,
+            0.8
+        ],
+        "flags": 0,
+        "game": 1,
+        "name": "emblem_jaguar",
+        "texture": "0x156A73D2955397BB",
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "color": [
+            0.8,
+            0.8,
+            0.8
+        ],
+        "flags": 0,
+        "game": 1,
+        "name": "emblem_panther",
+        "texture": "0x1568F5F6ED69D1C4",
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "color": [
+            0.8,
+            0.8,
+            0.8
+        ],
+        "flags": 0,
+        "game": 1,
+        "name": "emblem_leopard",
+        "texture": "0x15688FF87C3EE8DC",
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "color": [
+            0.8,
+            0.8,
+            0.8
+        ],
+        "flags": 0,
+        "game": 1,
+        "name": "emblem_star_of_bethlehem",
+        "texture": "0x156A2E3CB650809D",
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "color": [
+            0.8,
+            0.8,
+            0.8
+        ],
+        "flags": 0,
+        "game": 1,
+        "name": "emblem_water_bear",
+        "texture": "0x15698AC53343195C",
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "color": [
+            0.8,
+            0.8,
+            0.8
+        ],
+        "flags": 0,
+        "game": 1,
+        "name": "emblem_flying_squirrel",
+        "texture": "0x156A04388CF1D862",
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "color": [
+            0.8,
+            0.8,
+            0.8
+        ],
+        "flags": 0,
+        "game": 1,
+        "name": "emblem_night_owl",
+        "texture": "0x1568B2F82C3D724C",
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "color": [
+            0.8,
+            0.8,
+            0.8
+        ],
+        "flags": 0,
+        "game": 1,
+        "name": "emblem_fighting_fish",
+        "texture": "0x1569384A12078FE8",
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "color": [
+            0.8,
+            0.8,
+            0.8
+        ],
+        "flags": 0,
+        "game": 1,
+        "name": "emblem_komodo_dragon",
+        "texture": "0x156822E49B5D9697",
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "color": [
+            0.8,
+            0.8,
+            0.8
+        ],
+        "flags": 0,
+        "game": 1,
+        "name": "emblem_arctic_skua",
+        "texture": "0x156B410E3A48387D",
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "color": [
+            0.8,
+            0.8,
+            0.8
+        ],
+        "flags": 0,
+        "game": 1,
+        "name": "emblem_cuckoo",
+        "texture": "0x1569B68D147C2273",
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "color": [
+            0.8,
+            0.8,
+            0.8
+        ],
+        "flags": 0,
+        "game": 1,
+        "name": "emblem_snake",
+        "texture": "0x1569F3B9E1DED17A",
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "color": [
+            0.8,
+            0.8,
+            0.8
+        ],
+        "flags": 0,
+        "game": 1,
+        "name": "emblem_chameleon",
+        "texture": "0x156B9F8835968F7D",
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "color": [
+            0.8,
+            0.8,
+            0.8
+        ],
+        "flags": 0,
+        "game": 1,
+        "name": "emblem_rat",
+        "texture": "0x156B049AF64C3AA9",
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "color": [
+            0.8,
+            0.8,
+            0.8
+        ],
+        "flags": 0,
+        "game": 1,
+        "name": "emblem_sloth",
+        "texture": "0x156B5913084269D4",
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "color": [
+            0.8,
+            0.8,
+            0.8
+        ],
+        "flags": 0,
+        "game": 1,
+        "name": "emblem_deer",
+        "texture": "0x156B60E70DF2A6BB",
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "color": [
+            0.8,
+            0.8,
+            0.8
+        ],
+        "flags": 0,
+        "game": 1,
+        "name": "emblem_cat",
+        "texture": "0x156827FD6861E138",
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "color": [
+            0.8,
+            0.8,
+            0.8
+        ],
+        "flags": 0,
+        "game": 1,
+        "name": "emblem_gull",
+        "texture": "0x1569126DFAC9EE32",
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "color": [
+            0.8,
+            0.8,
+            0.8
+        ],
+        "flags": 0,
+        "game": 1,
+        "name": "emblem_swallow",
+        "texture": "0x1569668215E8C2E8",
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "color": [
+            0.8,
+            0.8,
+            0.8
+        ],
+        "flags": 0,
+        "game": 1,
+        "name": "emblem_kangaroo",
+        "texture": "0x156AEAE2B160259A",
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "color": [
+            0.8,
+            0.8,
+            0.8
+        ],
+        "flags": 0,
+        "game": 1,
+        "name": "emblem_firefly",
+        "texture": "0x156BF57A41E00A9E",
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "color": [
+            0.8,
+            0.8,
+            0.8
+        ],
+        "flags": 0,
+        "game": 1,
+        "name": "emblem_eel",
+        "texture": "0x156B9C8A1D791CD3",
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "color": [
+            0.8,
+            0.8,
+            0.8
+        ],
+        "flags": 0,
+        "game": 1,
+        "name": "emblem_triangle",
+        "texture": "0x1569D787299DD326",
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "color": [
+            0.8,
+            0.8,
+            0.8
+        ],
+        "flags": 0,
+        "game": 1,
+        "name": "emblem_isosceles_triangle",
+        "texture": "0x156B4551AFC21912",
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "color": [
+            0.8,
+            0.8,
+            0.8
+        ],
+        "flags": 0,
+        "game": 1,
+        "name": "emblem_inverted_triangle",
+        "texture": "0x156BD323D332A9B0",
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "color": [
+            0.8,
+            0.8,
+            0.8
+        ],
+        "flags": 0,
+        "game": 1,
+        "name": "emblem_fan",
+        "texture": "0x156B83106F929AD0",
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "color": [
+            0.8,
+            0.8,
+            0.8
+        ],
+        "flags": 0,
+        "game": 1,
+        "name": "emblem_double_inverted_triangles",
+        "texture": "0x156925ADBC30F626",
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "color": [
+            0.8,
+            0.8,
+            0.8
+        ],
+        "flags": 0,
+        "game": 1,
+        "name": "emblem_square",
+        "texture": "0x156A62B603D60CFF",
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "color": [
+            0.8,
+            0.8,
+            0.8
+        ],
+        "flags": 0,
+        "game": 1,
+        "name": "emblem_rectangle_vertical",
+        "texture": "0x156B422696343B72",
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "color": [
+            0.8,
+            0.8,
+            0.8
+        ],
+        "flags": 0,
+        "game": 1,
+        "name": "emblem_rectangle_horizontal",
+        "texture": "0x156A6DD8C3AB813C",
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "color": [
+            0.8,
+            0.8,
+            0.8
+        ],
+        "flags": 0,
+        "game": 1,
+        "name": "emblem_trapezoid",
+        "texture": "0x1569EF827A54955C",
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "color": [
+            0.8,
+            0.8,
+            0.8
+        ],
+        "flags": 0,
+        "game": 1,
+        "name": "emblem_parallelogram",
+        "texture": "0x1568BD84C572F816",
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "color": [
+            0.8,
+            0.8,
+            0.8
+        ],
+        "flags": 0,
+        "game": 1,
+        "name": "emblem_flag",
+        "texture": "0x156955BED9ADC285",
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "color": [
+            0.8,
+            0.8,
+            0.8
+        ],
+        "flags": 0,
+        "game": 1,
+        "name": "emblem_arch",
+        "texture": "0x1569C71015755564",
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "color": [
+            0.8,
+            0.8,
+            0.8
+        ],
+        "flags": 0,
+        "game": 1,
+        "name": "emblem_rhombus",
+        "texture": "0x156B837AA251A4F5",
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "color": [
+            0.8,
+            0.8,
+            0.8
+        ],
+        "flags": 0,
+        "game": 1,
+        "name": "emblem_cross",
+        "texture": "0x15684D9A2EC6A6A5",
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "color": [
+            0.8,
+            0.8,
+            0.8
+        ],
+        "flags": 0,
+        "game": 1,
+        "name": "emblem_x",
+        "texture": "0x1569EE1CDD6C3080",
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "color": [
+            0.8,
+            0.8,
+            0.8
+        ],
+        "flags": 0,
+        "game": 1,
+        "name": "emblem_pentagon",
+        "texture": "0x15691239D361178B",
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "color": [
+            0.8,
+            0.8,
+            0.8
+        ],
+        "flags": 0,
+        "game": 1,
+        "name": "emblem_hexagon",
+        "texture": "0x156BBCB427F62B67",
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "color": [
+            0.8,
+            0.8,
+            0.8
+        ],
+        "flags": 0,
+        "game": 1,
+        "name": "emblem_octagon",
+        "texture": "0x1568D124EFE33A66",
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "color": [
+            0.8,
+            0.8,
+            0.8
+        ],
+        "flags": 0,
+        "game": 1,
+        "name": "emblem_circle",
+        "texture": "0x15682960B3A0D208",
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "color": [
+            0.8,
+            0.8,
+            0.8
+        ],
+        "flags": 0,
+        "game": 1,
+        "name": "emblem_dog_tag",
+        "texture": "0x156B9293256D6193",
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "color": [
+            0.8,
+            0.8,
+            0.8
+        ],
+        "flags": 0,
+        "game": 1,
+        "name": "emblem_barrel_01",
+        "texture": "0x1568C35916F9860E",
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "color": [
+            0.8,
+            0.8,
+            0.8
+        ],
+        "flags": 0,
+        "game": 1,
+        "name": "emblem_barrel_02",
+        "texture": "0x156908DA99E63480",
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "color": [
+            0.8,
+            0.8,
+            0.8
+        ],
+        "flags": 0,
+        "game": 1,
+        "name": "emblem_shield_01",
+        "texture": "0x156B534ACA3248FE",
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "color": [
+            0.8,
+            0.8,
+            0.8
+        ],
+        "flags": 0,
+        "game": 1,
+        "name": "emblem_shield_02",
+        "texture": "0x15690F7D322903C0",
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "color": [
+            0.8,
+            0.8,
+            0.8
+        ],
+        "flags": 0,
+        "game": 1,
+        "name": "emblem_shield_03",
+        "texture": "0x15693026DFBCA087",
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "color": [
+            0.8,
+            0.8,
+            0.8
+        ],
+        "flags": 0,
+        "game": 1,
+        "name": "emblem_shield_04",
+        "texture": "0x156A522520158400",
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "color": [
+            0.8,
+            0.8,
+            0.8
+        ],
+        "flags": 0,
+        "game": 1,
+        "name": "emblem_shield_05",
+        "texture": "0x15698302C00257B4",
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "color": [
+            0.8,
+            0.8,
+            0.8
+        ],
+        "flags": 0,
+        "game": 1,
+        "name": "emblem_shield_06",
+        "texture": "0x15688BDF248C0314",
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "color": [
+            0.8,
+            0.8,
+            0.8
+        ],
+        "flags": 0,
+        "game": 1,
+        "name": "emblem_shield_07",
+        "texture": "0x156839AFD318DCAD",
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "color": [
+            0.8,
+            0.8,
+            0.8
+        ],
+        "flags": 0,
+        "game": 1,
+        "name": "emblem_shield_08",
+        "texture": "0x156872CCFBCB2EED",
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "color": [
+            0.8,
+            0.8,
+            0.8
+        ],
+        "flags": 0,
+        "game": 1,
+        "name": "emblem_shield_09",
+        "texture": "0x1568D29E61A7D52B",
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "color": [
+            0.8,
+            0.8,
+            0.8
+        ],
+        "flags": 0,
+        "game": 1,
+        "name": "emblem_leaf",
+        "texture": "0x15682B017D2A650A",
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "color": [
+            0.8,
+            0.8,
+            0.8
+        ],
+        "flags": 0,
+        "game": 1,
+        "name": "emblem_arrowhead_01",
+        "texture": "0x156807363C5E3B41",
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "color": [
+            0.8,
+            0.8,
+            0.8
+        ],
+        "flags": 0,
+        "game": 1,
+        "name": "emblem_arrowhead_02",
+        "texture": "0x1568723B3C3CB4C7",
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "color": [
+            0.8,
+            0.8,
+            0.8
+        ],
+        "flags": 0,
+        "game": 1,
+        "name": "emblem_spade",
+        "texture": "0x1568F4BFF1E91D55",
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "color": [
+            0.8,
+            0.8,
+            0.8
+        ],
+        "flags": 0,
+        "game": 1,
+        "name": "emblem_heart",
+        "texture": "0x156870AF3F3F6CD2",
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "color": [
+            0.8,
+            0.8,
+            0.8
+        ],
+        "flags": 0,
+        "game": 1,
+        "name": "emblem_club",
+        "texture": "0x1568B65476AD8721",
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "color": [
+            0.8,
+            0.8,
+            0.8
+        ],
+        "flags": 0,
+        "game": 1,
+        "name": "emblem_star",
+        "texture": "0x1569FE84777495AC",
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "color": [
+            0.8,
+            0.8,
+            0.8
+        ],
+        "flags": 0,
+        "game": 1,
+        "name": "emblem_lightning",
+        "texture": "0x156B3664D310BDC8",
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "color": [
+            0.8,
+            0.8,
+            0.8
+        ],
+        "flags": 0,
+        "game": 1,
+        "name": "emblem_horseshoe",
+        "texture": "0x156A805070F5881F",
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "color": [
+            0.8,
+            0.8,
+            0.8
+        ],
+        "flags": 0,
+        "game": 1,
+        "name": "emblem_ellipse",
+        "texture": "0x156A52775C4CC701",
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "color": [
+            0.8,
+            0.8,
+            0.8
+        ],
+        "flags": 0,
+        "game": 1,
+        "name": "emblem_circle_old_mother_base",
+        "texture": "0x1569CDE28FB5F70F",
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "color": [
+            0.8,
+            0.8,
+            0.8
+        ],
+        "flags": 0,
+        "game": 1,
+        "name": "emblem_circle_peace_walker",
+        "texture": "0x1569A482F85F8F57",
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "color": [
+            0.8,
+            0.8,
+            0.8
+        ],
+        "flags": 0,
+        "game": 1,
+        "name": "emblem_shield_cfa",
+        "texture": "0x15697883A5024176",
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "color": [
+            0.8,
+            0.8,
+            0.8
+        ],
+        "flags": 0,
+        "game": 1,
+        "name": "emblem_inverted_spade",
+        "texture": "0x156B3B74F9FA58E9",
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "color": [
+            0.8,
+            0.8,
+            0.8
+        ],
+        "flags": 0,
+        "game": 1,
+        "name": "emblem_inverted_triangle_zrs",
+        "texture": "0x156A27DF1B919511",
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "color": [
+            0.8,
+            0.8,
+            0.8
+        ],
+        "flags": 0,
+        "game": 1,
+        "name": "emblem_circle_outer_heaven",
+        "texture": "0x156AC8122C40A50F",
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "color": [
+            0.8,
+            0.8,
+            0.8
+        ],
+        "flags": 0,
+        "game": 1,
+        "name": "emblem_zoe",
+        "texture": "0x156BDCAB4039637C",
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    }
+]

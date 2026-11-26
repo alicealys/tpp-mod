@@ -7,8 +7,7 @@
 #include "utils.hpp"
 #include "fonts.hpp"
 #include "draw.hpp"
-#include "../scheduler.hpp"
-#include "../vars.hpp"
+#include "emoticons.hpp"
 
 #include <utils/hook.hpp>
 
@@ -384,6 +383,15 @@ namespace renderer
 					continue;
 				}
 
+				auto emoticon_length = 0u;
+				emoticon_t* emoticon = nullptr;
+				if (c[0] == ':' && get_emoticon(reinterpret_cast<const char*>(&c[1]), emoticon_length, &emoticon))
+				{
+					c += emoticon_length;
+					*length += font_data.wide_char_glyphs[' '].metrics.f9 * scaling * emoticon->ratio + spacing * (1.f / 60.f);
+					continue;
+				}
+
 				const auto char_idx = game::fox::Utf8ToUtf32(&c);
 				if (char_idx >= 0xFFFF || !is_char_printable(static_cast<wchar_t>(char_idx)))
 				{
@@ -412,6 +420,15 @@ namespace renderer
 				if (c[0] == '^' && get_color_code(static_cast<char>(c[1]), nullptr))
 				{
 					c += 2;
+					continue;
+				}
+
+				auto emoticon_length = 0u;
+				emoticon_t* emoticon = nullptr;
+				if (c[0] == ':' && get_emoticon(reinterpret_cast<const char*>(&c[1]), emoticon_length, &emoticon))
+				{
+					c += emoticon_length;
+					++idx;
 					continue;
 				}
 
@@ -461,14 +478,17 @@ namespace renderer
 					return;
 				}
 
-				scheduler::once(init_fonts, scheduler::main);
-
 				utils::hook::call(SELECT_VALUE(0x1402AF515, 0x140BA5CE5, 0x0, 0x0), alloc_font_metrics_stub);
 				utils::hook::call(SELECT_VALUE(0x1402AF3C8, 0x140BA5B98, 0x0, 0x0), free_font_metrics_stub);
 				utils::hook::call(SELECT_VALUE(0x1402AF52A, 0x140BA5CFA, 0x0, 0x0), init_metrics_stub);
 				get_utf8_count_hook.create(SELECT_VALUE(0x140914AA0, 0x140686B60, 0x0, 0x0), get_utf8_count_stub);
 				get_string_width_hook.create(SELECT_VALUE(0x140224650, 0x140B2A440, 0x0, 0x0), get_string_width_stub);
 				change_language_hook.create(SELECT_VALUE(0x14090FA70, 0x140681A80, 0x0, 0x0), change_language_stub);
+			}
+
+			void game_initialized() override
+			{
+				init_fonts();
 			}
 		};
 	}

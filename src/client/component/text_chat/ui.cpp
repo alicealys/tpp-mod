@@ -7,6 +7,7 @@
 #include "ui.hpp"
 #include "input.hpp"
 #include "../renderer/draw.hpp"
+#include "../renderer/emoticons.hpp"
 #include "../session.hpp"
 
 #include <utils/hook.hpp>
@@ -239,7 +240,7 @@ namespace text_chat::ui
 			renderer::remove_stencil(r);
 		}
 
-		void draw_input_text(game::fox::gr::dg::plugins::Draw2DRenderer* r, chat_state_t& state, float x, float y)
+		float draw_input_text(game::fox::gr::dg::plugins::Draw2DRenderer* r, chat_state_t& state, float x, float y)
 		{
 			float color[4]{};
 			color[0] = color_white[0];
@@ -309,8 +310,91 @@ namespace text_chat::ui
 				renderer::draw_text(r, prefix, chat_settings.font_height, x + chat_settings.margin, y, color_hint, outline_color);
 			}
 
+			const auto max_width = chat_settings.width - chat_settings.margin * 2.f;
 			renderer::draw_text_with_cursor(r, state.input, state.cursor, chat_settings.font_height,
-				x + chat_settings.margin, y, color, color_outline, true, chat_settings.width - chat_settings.margin * 2.f);
+				x + chat_settings.margin, y + 1.f, color, color_outline, true, max_width);
+
+			const auto emoticon_offset = renderer::calc_text_width(state.input, chat_settings.font_height,
+				true, false, 0.f, nullptr, -1, state.emoticon_char_index);
+
+			return std::min(max_width, emoticon_offset);
+		}
+
+		void draw_emoticon_matches(game::fox::gr::dg::plugins::Draw2DRenderer* r, chat_state_t& state, float x, float y)
+		{
+			if (state.emoticon_matches.empty())
+			{
+				return;
+			}
+
+			float color[4]{};
+			color[0] = color_white[0];
+			color[1] = color_white[1];
+			color[2] = color_white[2];
+			color[3] = color_white[3];
+
+			float color_highlight[4]{};
+			color_highlight[0] = 1.0f;
+			color_highlight[1] = 0.8f;
+			color_highlight[2] = 0.2f;
+			color_highlight[3] = color_white[3];
+
+			const auto bg_color_var = var_chat_input_bg->current.get_color();
+			float bg_color[4]{};
+			bg_color[0] = bg_color_var.r;
+			bg_color[1] = bg_color_var.g;
+			bg_color[2] = bg_color_var.b;
+			bg_color[3] = bg_color_var.a;
+
+			auto offset_x = x + chat_settings.margin;
+			auto offset_y = y + chat_settings.margin;
+			auto height = chat_settings.font_height;
+
+			const auto window_size = std::min(chat_emoticon_window_size, static_cast<std::int32_t>(state.emoticon_matches.size()));
+			const auto scroll_max = std::min(state.emoticon_scroll_max, static_cast<std::int32_t>(state.emoticon_matches.size()) - 1);
+
+			auto end = scroll_max >= (window_size - 1)
+				? scroll_max
+				: (window_size - 1);
+
+			auto max_width = 0.f;
+			for (auto i = end - (window_size - 1); i <= end; i++)
+			{
+				const auto& match = state.emoticon_matches[i];
+
+				auto width = height * match->ratio + chat_settings.line_height;
+				width += renderer::calc_text_width(match->name.data(), height);
+
+				max_width = std::max(max_width, width);
+			}
+
+			renderer::draw_box(r, x, y, max_width, (height + chat_settings.margin) * static_cast<float>(window_size) + chat_settings.margin, bg_color);
+
+			for (auto i = end - (window_size - 1); i <= end; i++)
+			{
+				const auto& match = state.emoticon_matches[i];
+
+				float emoticon_color[4]{};
+				emoticon_color[0] = match->color[0];
+				emoticon_color[1] = match->color[1];
+				emoticon_color[2] = match->color[2];
+				emoticon_color[3] = match->color[3];
+
+				const auto emoticon_width = height * match->ratio;
+				renderer::draw_material(r, match->material->resource.data, offset_x, offset_y, emoticon_width, height, emoticon_color);
+
+				auto text_color = color;
+				if (i == state.emoticon_scroll_index)
+				{
+					text_color = color_highlight;
+				}
+
+				char buffer[0x100]{};
+				_snprintf_s(buffer, sizeof(buffer), sizeof(buffer), ":%s:", match->name.data());
+
+				renderer::draw_text(r, buffer, height, offset_x + emoticon_width + chat_settings.margin, offset_y, text_color);
+				offset_y += height + chat_settings.margin;
+			}
 		}
 
 		void set_chat_settings()
@@ -344,7 +428,8 @@ namespace text_chat::ui
 
 				if (state.is_typing)
 				{
-					draw_input_text(r, state, pos.x, pos.y);
+					const auto offset = draw_input_text(r, state, pos.x, pos.y);
+					draw_emoticon_matches(r, state, pos.x + offset, pos.y + chat_settings.line_height + chat_settings.margin);
 				}
 			});
 		}

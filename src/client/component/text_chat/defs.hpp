@@ -4,6 +4,7 @@
 #include "../command.hpp"
 #include "../vars.hpp"
 #include "../scheduler.hpp"
+#include "../renderer/emoticons.hpp"
 
 #include <utils/concurrency.hpp>
 
@@ -30,6 +31,7 @@ namespace text_chat
 	constexpr auto chat_key_default = 'Y';
 	constexpr auto chat_message_max_len = 128ull;
 	constexpr auto chat_message_buffer_len = 255ull;
+	constexpr auto chat_emoticon_window_size = 4;
 
 	using message_buffer_t = wchar_t[chat_message_buffer_len + 1];
 
@@ -72,6 +74,10 @@ namespace text_chat
 		std::vector<sound_play_t> sounds;
 		std::deque<std::wstring> history;
 		std::int32_t history_index = -1;
+		std::int32_t emoticon_char_index = -1;
+		std::int32_t emoticon_scroll_index = -1;
+		std::int32_t emoticon_scroll_max = -1;
+		std::vector<std::shared_ptr<renderer::emoticon_t>> emoticon_matches;
 	};
 
 	extern utils::concurrency::container<chat_state_t, std::recursive_mutex> chat_state;
