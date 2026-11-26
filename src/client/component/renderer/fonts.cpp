@@ -484,6 +484,14 @@ namespace renderer
 				get_utf8_count_hook.create(SELECT_VALUE(0x140914AA0, 0x140686B60, 0x0, 0x0), get_utf8_count_stub);
 				get_string_width_hook.create(SELECT_VALUE(0x140224650, 0x140B2A440, 0x0, 0x0), get_string_width_stub);
 				change_language_hook.create(SELECT_VALUE(0x14090FA70, 0x140681A80, 0x0, 0x0), change_language_stub);
+
+				// disable keyboard typing char restrictions
+				utils::hook::set<std::uint8_t>(SELECT_VALUE(0x140937DE9, 0x1406A45C9, 0x0, 0x0), 0xEB);
+				utils::hook::set<std::uint16_t>(SELECT_VALUE(0x141652A3A, 0x1412D474A, 0x0, 0x0), 0x01B0);
+				if (game::environment::is_mgo())
+				{
+					utils::hook::nop(SELECT_VALUE_LANG(0x1406AD496, 0x0), 2);
+				}
 			}
 
 			void game_initialized() override

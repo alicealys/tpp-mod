@@ -55,21 +55,18 @@ namespace renderer
 			game::fox::gr::Texture texture{};
 			texture.id = game::fox::gr::dg::TextureManager_::CreateResourceFromFile(&path);
 
+			if (texture.id.data == 0)
+			{
+				return false;
+			}
+
 			const auto streamer = game::fox::gr::dg::DgTextureStreamer_::Instance();
 			if (game::fox::gr::dg::DgTextureStreamer_::IsEnable(streamer))
 			{
 				game::fox::gr::dg::DgTextureStreamer_::RequestTextureDetailByDgTexture(streamer, texture.id, 2);
 			}
 
-			const auto width = game::fox::gr::Texture_::GetWidth(&texture);
-			const auto height = game::fox::gr::Texture_::GetHeight(&texture);
-
-			if (width == 0.f)
-			{
-				return false;
-			}
-
-			emoticon->ratio = width / height;
+			emoticon->ratio = 1.f;
 
 			game::fox::StringId material_id{};
 			material_id.id = 0x189F16095D8A;
