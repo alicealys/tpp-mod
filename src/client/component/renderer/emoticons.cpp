@@ -311,6 +311,11 @@ namespace renderer
 
 			void game_initialized() override
 			{
+				if (game::environment::is_dedi())
+				{
+					return;
+				}
+
 				load_emoticons();
 			}
 

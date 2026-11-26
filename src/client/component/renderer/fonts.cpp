@@ -487,7 +487,7 @@ namespace renderer
 
 				// disable keyboard typing char restrictions
 				utils::hook::set<std::uint8_t>(SELECT_VALUE(0x140937DE9, 0x1406A45C9, 0x0, 0x0), 0xEB);
-				utils::hook::set<std::uint16_t>(SELECT_VALUE(0x141652A3A, 0x1412D474A, 0x0, 0x0), 0x01B0);
+				utils::hook::nop(SELECT_VALUE(0x141652A0D, 0x1412D471D, 0x0, 0x0), 2);
 				if (game::environment::is_mgo())
 				{
 					utils::hook::nop(SELECT_VALUE_LANG(0x1406AD496, 0x0), 2);

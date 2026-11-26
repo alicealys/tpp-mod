@@ -41,7 +41,7 @@ namespace binds
 		std::map<int, bind_t> binds;
 		std::unordered_set<std::string> action_commands;
 
-		std::atomic_bool block_input = false;
+		std::atomic_int last_keyboard_input_frame = 0;
 
 		enum custom_keys_t
 		{
@@ -285,6 +285,12 @@ namespace binds
 			return iter->second.mode == command && iter->second.command == "toggleconsole";
 		}
 
+		bool is_using_game_keyboard()
+		{
+			const auto now_frame = game::fox::GetTimeSystem().frameIndex;
+			return now_frame - last_keyboard_input_frame < 2;
+		}
+
 		bool handle_input_keyboard(RAWINPUT* raw_input)
 		{
 			BYTE key_state[256]{};
@@ -330,20 +336,26 @@ namespace binds
 			const auto was_down = !was_up;
 
 			keys[key] = raw_input->data.keyboard.Flags;
+			const auto is_console_bind = is_game_console_bind(key);
 
-			if (game_console::handle_key(key, is_down, is_game_console_bind(key)))
+			if (game_console::handle_key(key, is_down, is_console_bind))
 			{
 				game_console::handle_char(character_ascii, is_down);
 				return true;
 			}
 
-			if (text_chat::input::handle_key(key, is_down, is_game_console_bind(key)))
+			if (is_using_game_keyboard() && !is_console_bind)
+			{
+				return false;
+			}
+
+			if (text_chat::input::handle_key(key, is_down, is_console_bind))
 			{
 				text_chat::input::handle_char(character, is_down);
 				return true;
 			}
 
-			if (lui::input::handle_key(key, is_down, is_game_console_bind(key)))
+			if (lui::input::handle_key(key, is_down, is_console_bind))
 			{
 				lui::input::handle_char(character, is_down);
 				return true;
@@ -409,6 +421,11 @@ namespace binds
 			if (game_console::handle_key(-1, false, false))
 			{
 				return true;
+			}
+
+			if (is_using_game_keyboard())
+			{
+				return false;
 			}
 
 			if (text_chat::input::handle_key(-1, false))
@@ -482,6 +499,13 @@ namespace binds
 			}
 
 			return wnd_proc_hook.invoke<LRESULT>(hwnd, msg, w_param, l_param);
+		}
+
+		utils::hook::detour clear_keyboard_latest_input_unicode_hook;
+		void clear_keyboard_latest_input_unicode_stub(void* a1)
+		{
+			clear_keyboard_latest_input_unicode_hook.invoke<void>(a1);
+			last_keyboard_input_frame = game::fox::GetTimeSystem().frameIndex;
 		}
 
 		std::string get_config_file_path()
@@ -694,6 +718,8 @@ namespace binds
 			}
 
 			wnd_proc_hook.create(SELECT_VALUE(0x140070430, 0x140070C70, 0x0, 0x0), wnd_proc_stub);
+			clear_keyboard_latest_input_unicode_hook.create(SELECT_VALUE(0x14094E2E0, 0x1406B64B0, 0x0, 0x0), 
+				clear_keyboard_latest_input_unicode_stub);
 
 			write_binds();
 		}

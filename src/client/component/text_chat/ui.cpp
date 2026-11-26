@@ -307,7 +307,7 @@ namespace text_chat::ui
 
 			if (state.input[0] == 0)
 			{
-				renderer::draw_text(r, prefix, chat_settings.font_height, x + chat_settings.margin, y, color_hint, outline_color);
+				renderer::draw_text(r, prefix, chat_settings.font_height, x + chat_settings.margin, y + 1.f, color_hint, outline_color);
 			}
 
 			const auto max_width = chat_settings.width - chat_settings.margin * 2.f;
