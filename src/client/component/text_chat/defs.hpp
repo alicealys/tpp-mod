@@ -77,7 +77,7 @@ namespace text_chat
 		std::int32_t emoticon_char_index = -1;
 		std::int32_t emoticon_scroll_index = -1;
 		std::int32_t emoticon_scroll_max = -1;
-		std::vector<std::shared_ptr<renderer::emoticon_t>> emoticon_matches;
+		std::vector<renderer::emoticon_t*> emoticon_matches;
 	};
 
 	extern utils::concurrency::container<chat_state_t, std::recursive_mutex> chat_state;

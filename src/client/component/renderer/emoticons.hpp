@@ -33,5 +33,5 @@ namespace renderer
 
 	float draw_emoticon(game::fox::gr::dg::plugins::Draw2DRenderer* instance, emoticon_t* emoticon, float x, float y, float size, float alpha, bool add_color = true, float* color_override = nullptr);
 	
-	void find_emoticons(const std::string& input, std::vector<std::shared_ptr<emoticon_t>>& matches);
+	void find_emoticons(const std::string& input, std::vector<emoticon_t*>& matches);
 }

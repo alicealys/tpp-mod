@@ -18,8 +18,8 @@ namespace renderer
 	{
 		constexpr const auto hash_init = 0x319712C3u;
 
-		std::unordered_map<std::uint32_t, std::shared_ptr<emoticon_t>> emoticons_map;
-		std::vector<std::shared_ptr<emoticon_t>> emoticons_list;
+		std::array<emoticon_t*, 0xFFFF> emoticons_map;
+		std::vector<emoticon_t*> emoticons_list;
 
 		inline void hash_char(std::uint32_t& hash, char c)
 		{
@@ -113,14 +113,9 @@ namespace renderer
 		{
 			if (text[len] == ':')
 			{
-				const auto iter = emoticons_map.find(hash);
-				if (iter != emoticons_map.end())
-				{
-					*emoticon = iter->second.get();
-					return true;
-				}
-
-				return false;
+				++len;
+				*emoticon = emoticons_map[hash & 0xFFFF];
+				return *emoticon != nullptr;
 			}
 			else
 			{
@@ -142,14 +137,8 @@ namespace renderer
 			if (text[len] == ':')
 			{
 				++len;
-				const auto iter = emoticons_map.find(hash);
-				if (iter != emoticons_map.end())
-				{
-					*emoticon = iter->second.get();
-					return true;
-				}
-
-				return false;
+				*emoticon = emoticons_map[hash & 0xFFFF];
+				return *emoticon != nullptr;
 			}
 			else
 			{
@@ -193,7 +182,7 @@ namespace renderer
 		return width;
 	}
 
-	void find_emoticons(const std::string& input, std::vector<std::shared_ptr<emoticon_t>>& matches)
+	void find_emoticons(const std::string& input, std::vector<emoticon_t*>& matches)
 	{
 		for (const auto& emo : emoticons_list)
 		{
@@ -245,7 +234,7 @@ namespace renderer
 				continue;
 			}
 
-			auto emoticon = std::make_shared<emoticon_t>();
+			auto emoticon = utils::memory::allocate<emoticon_t>();
 			emoticon->name = name_j.get<std::string>();
 			emoticon->flags = flags_j.get<std::uint32_t>();
 			emoticon->color[0] = color_j[0].get<float>();
@@ -273,7 +262,7 @@ namespace renderer
 			const auto texture_name = texture_j.get<std::string>();
 			const auto texture_id = std::strtoull(texture_name.data(), nullptr, 16);
 
-			if (!initialize_emoticon(emoticon.get(), texture_id, uv_repeat, uv_shift))
+			if (!initialize_emoticon(emoticon, texture_id, uv_repeat, uv_shift))
 			{
 				console::error("[renderer::emoticons] emoticon %s has no texture\n", emoticon->name.data());
 				continue;
@@ -284,14 +273,14 @@ namespace renderer
 				emoticon->ratio = ratio_j.get<float>();
 			}
 
-			const auto hash = hash_string(emoticon->name.data());
-			if (emoticons_map.contains(hash))
+			const auto index = hash_string(emoticon->name.data()) & 0xFFFF;
+			if (emoticons_map[index] != nullptr)
 			{
-				console::error("[renderer::emoticons] hash collision on %s\n", emoticon->name.data());
+				console::error("[renderer::emoticons] hash collision on %s and %s\n", emoticon->name.data(), emoticons_map[index]->name.data());
 				continue;
 			}
 
-			emoticons_map.insert(std::make_pair(hash, emoticon));
+			emoticons_map[index] = emoticon;
 			emoticons_list.emplace_back(emoticon);
 		}
 	}
@@ -305,9 +294,11 @@ namespace renderer
 				emoticon->material->__vftable->__destructor(emoticon->material, 1);
 				emoticon->material = nullptr;
 			}
+
+			utils::memory::free(emoticon);
 		}
 
-		emoticons_map.clear();
+		std::memset(emoticons_map.data(), 0, emoticons_map.size() * sizeof(emoticon_t*));
 		emoticons_list.clear();
 	}
 

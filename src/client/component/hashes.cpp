@@ -116,6 +116,22 @@ namespace hashes
 				console::info("hash: 0x%llX", hash);
 			});
 
+			command::add("lang_str", [](const command::params& params)
+			{
+				const auto str = params.get(1);
+				const auto id = game::fox::FoxStrHash32(str.data(), str.size());
+				console::info("str: %s\n", game::tpp::ui::utility::GetLangText(id));
+			});
+
+			command::add("lang_str_hex", [](const command::params& params)
+			{
+				const auto str = params.get(1);
+				const auto value = std::strtoull(str.data(), nullptr, 16);
+				game::fox::StringId id{};
+				id.id = value;
+				console::info("str: %s\n", game::tpp::ui::utility::GetLangText(id));
+			});
+
 			if (!utils::flags::has_flag("dump-hashes"))
 			{
 				return;

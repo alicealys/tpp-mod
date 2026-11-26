@@ -4383,7 +4383,7 @@
         ],
         "flags": 0,
         "game": 1,
-        "name": "emblem_fulton_recovery_device_soldier",
+        "name": "emblem_fulton_soldier",
         "texture": "0x156952DEFE0D7D5D",
         "uv_repeat": [
             1.0,
@@ -4402,7 +4402,7 @@
         ],
         "flags": 0,
         "game": 1,
-        "name": "emblem_fulton_recovery_device_sheep",
+        "name": "emblem_fulton_sheep",
         "texture": "0x1569E6E2C54C570F",
         "uv_repeat": [
             1.0,
