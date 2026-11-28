@@ -1,9 +1,237 @@
 [
     {
         "name": "heart",
-        "texture": "0x1E66D2C8A7717",
+        "texture": "0x13ebde99f7fe4",
         "game": 2,
         "flags": 1,
+        "color": [
+            1.0,
+            0.3,
+            0.2
+        ],
+        "uv_repeat": [
+            0.125,
+            0.125
+        ],
+        "uv_shift": [
+            0.375,
+            0.375
+        ]
+    },
+    {
+        "name": "pink_heart",
+        "texture": "0x13ebde99f7fe4",
+        "game": 2,
+        "flags": 1,
+        "color": [
+            0.957,
+            0.671,
+            0.729
+        ],
+        "uv_repeat": [
+            0.125,
+            0.125
+        ],
+        "uv_shift": [
+            0.375,
+            0.375
+        ]
+    },
+    {
+        "name": "orange_heart",
+        "texture": "0x13ebde99f7fe4",
+        "game": 2,
+        "flags": 1,
+        "color": [
+            0.957,
+            0.565,
+            0.047
+        ],
+        "uv_repeat": [
+            0.125,
+            0.125
+        ],
+        "uv_shift": [
+            0.375,
+            0.375
+        ]
+    },
+    {
+        "name": "yellow_heart",
+        "texture": "0x13ebde99f7fe4",
+        "game": 2,
+        "flags": 1,
+        "color": [
+            0.992,
+            0.796,
+            0.345
+        ],
+        "uv_repeat": [
+            0.125,
+            0.125
+        ],
+        "uv_shift": [
+            0.375,
+            0.375
+        ]
+    },
+    {
+        "name": "green_heart",
+        "texture": "0x13ebde99f7fe4",
+        "game": 2,
+        "flags": 1,
+        "color": [
+            0.471,
+            0.694,
+            0.349
+        ],
+        "uv_repeat": [
+            0.125,
+            0.125
+        ],
+        "uv_shift": [
+            0.375,
+            0.375
+        ]
+    },
+    {
+        "name": "blue_heart",
+        "texture": "0x13ebde99f7fe4",
+        "game": 2,
+        "flags": 1,
+        "color": [
+            0.365,
+            0.678,
+            0.925
+        ],
+        "uv_repeat": [
+            0.125,
+            0.125
+        ],
+        "uv_shift": [
+            0.375,
+            0.375
+        ]
+    },
+    {
+        "name": "light_blue_heart",
+        "texture": "0x13ebde99f7fe4",
+        "game": 2,
+        "flags": 1,
+        "color": [
+            0.533,
+            0.788,
+            0.976
+        ],
+        "uv_repeat": [
+            0.125,
+            0.125
+        ],
+        "uv_shift": [
+            0.375,
+            0.375
+        ]
+    },
+    {
+        "name": "purple_heart",
+        "texture": "0x13ebde99f7fe4",
+        "game": 2,
+        "flags": 1,
+        "color": [
+            0.667,
+            0.557,
+            0.839
+        ],
+        "uv_repeat": [
+            0.125,
+            0.125
+        ],
+        "uv_shift": [
+            0.375,
+            0.375
+        ]
+    },
+    {
+        "name": "brown_heart",
+        "texture": "0x13ebde99f7fe4",
+        "game": 2,
+        "flags": 1,
+        "color": [
+            0.757,
+            0.412,
+            0.31
+        ],
+        "uv_repeat": [
+            0.125,
+            0.125
+        ],
+        "uv_shift": [
+            0.375,
+            0.375
+        ]
+    },
+    {
+        "name": "black_heart",
+        "texture": "0x13ebde99f7fe4",
+        "game": 2,
+        "flags": 1,
+        "color": [
+            0.192,
+            0.216,
+            0.239
+        ],
+        "uv_repeat": [
+            0.125,
+            0.125
+        ],
+        "uv_shift": [
+            0.375,
+            0.375
+        ]
+    },
+    {
+        "name": "grey_heart",
+        "texture": "0x13ebde99f7fe4",
+        "game": 2,
+        "flags": 1,
+        "color": [
+            0.6,
+            0.667,
+            0.71
+        ],
+        "uv_repeat": [
+            0.125,
+            0.125
+        ],
+        "uv_shift": [
+            0.375,
+            0.375
+        ]
+    },
+    {
+        "name": "white_heart",
+        "texture": "0x13ebde99f7fe4",
+        "game": 2,
+        "flags": 1,
+        "color": [
+            0.902,
+            0.906,
+            0.91
+        ],
+        "uv_repeat": [
+            0.125,
+            0.125
+        ],
+        "uv_shift": [
+            0.375,
+            0.375
+        ]
+    },
+    {
+        "name": "title_heart",
+        "texture": "0x1E66D2C8A7717",
+        "game": 2,
+        "flags": 0,
         "color": [
             1.0,
             0.3,
@@ -19,7 +247,7 @@
         ]
     },
     {
-        "name": "heart_white",
+        "name": "title_heart_white",
         "texture": "0x1E66D2C8A7717",
         "game": 2,
         "flags": 0,
@@ -38,7 +266,7 @@
         ]
     },
     {
-        "name": "heart_gold",
+        "name": "title_heart_gold",
         "texture": "0x3BC7BBAD652A0",
         "game": 2,
         "flags": 1,
@@ -57,29 +285,10 @@
         ]
     },
     {
-        "name": "heart_green",
+        "name": "title_heart_green",
         "texture": "0x1EF243728D1F4",
         "game": 2,
         "flags": 1,
-        "color": [
-            1.0,
-            1.0,
-            1.0
-        ],
-        "uv_repeat": [
-            1.0,
-            1.0
-        ],
-        "uv_shift": [
-            0.0,
-            0.0
-        ]
-    },
-    {
-        "name": "skull",
-        "texture": "0x3A9A6FCB4A238",
-        "game": 2,
-        "flags": 0,
         "color": [
             1.0,
             1.0,
@@ -171,8 +380,8 @@
         ]
     },
     {
-        "name": "fulton",
-        "texture": "0x3DDB2AAFC8308",
+        "name": "!",
+        "texture": "0x15686961E89F9F91",
         "game": 2,
         "flags": 0,
         "color": [
@@ -181,17 +390,606 @@
             1.0
         ],
         "uv_repeat": [
-            1.0,
-            1.0
+            0.5,
+            0.5
         ],
         "uv_shift": [
             0.0,
             0.0
+        ]
+    },
+    {
+        "name": "?",
+        "texture": "0x28b30fc2122af",
+        "game": 2,
+        "flags": 0,
+        "color": [
+            1.0,
+            1.0,
+            1.0
+        ],
+        "uv_repeat": [
+            0.25,
+            0.5
+        ],
+        "uv_shift": [
+            0.25,
+            0.5
+        ]
+    },
+    {
+        "name": "fulton",
+        "texture": "0x15686961E89F9F91",
+        "game": 2,
+        "flags": 0,
+        "color": [
+            1.0,
+            1.0,
+            1.0
+        ],
+        "uv_repeat": [
+            0.5,
+            0.5
+        ],
+        "uv_shift": [
+            0.5,
+            0.0
+        ]
+    },
+    {
+        "name": "carry",
+        "texture": "0x15686961E89F9F91",
+        "game": 2,
+        "flags": 0,
+        "color": [
+            1.0,
+            1.0,
+            1.0
+        ],
+        "uv_repeat": [
+            0.5,
+            0.5
+        ],
+        "uv_shift": [
+            0.0,
+            0.5
+        ]
+    },
+    {
+        "name": "lock",
+        "texture": "0xd36e7062793d",
+        "game": 2,
+        "flags": 0,
+        "color": [
+            1.0,
+            1.0,
+            1.0
+        ],
+        "uv_repeat": [
+            0.25,
+            0.25
+        ],
+        "uv_shift": [
+            0.25,
+            0.25
+        ]
+    },
+    {
+        "name": "unlock",
+        "texture": "0xd36e7062793d",
+        "game": 2,
+        "flags": 0,
+        "color": [
+            1.0,
+            1.0,
+            1.0
+        ],
+        "uv_repeat": [
+            0.25,
+            0.25
+        ],
+        "uv_shift": [
+            0.5,
+            0.25
+        ]
+    },
+    {
+        "name": "clock",
+        "texture": "0xd36e7062793d",
+        "game": 2,
+        "flags": 0,
+        "color": [
+            1.0,
+            1.0,
+            1.0
+        ],
+        "uv_repeat": [
+            0.25,
+            0.25
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "name": "helmet",
+        "texture": "0xd36e7062793d",
+        "game": 2,
+        "flags": 0,
+        "color": [
+            1.0,
+            1.0,
+            1.0
+        ],
+        "uv_repeat": [
+            0.25,
+            0.25
+        ],
+        "uv_shift": [
+            0.75,
+            0.25
+        ]
+    },
+    {
+        "name": "vest",
+        "texture": "0xd36e7062793d",
+        "game": 2,
+        "flags": 0,
+        "color": [
+            1.0,
+            1.0,
+            1.0
+        ],
+        "uv_repeat": [
+            0.25,
+            0.25
+        ],
+        "uv_shift": [
+            0,
+            0.5
+        ]
+    },
+    {
+        "name": "shirt",
+        "texture": "0xd36e7062793d",
+        "game": 2,
+        "flags": 0,
+        "color": [
+            1.0,
+            1.0,
+            1.0
+        ],
+        "uv_repeat": [
+            0.25,
+            0.25
+        ],
+        "uv_shift": [
+            0.25,
+            0.5
+        ]
+    },
+    {
+        "name": "dollar",
+        "texture": "0xd36e7062793d",
+        "game": 2,
+        "flags": 0,
+        "color": [
+            1.0,
+            1.0,
+            1.0
+        ],
+        "uv_repeat": [
+            0.25,
+            0.25
+        ],
+        "uv_shift": [
+            0.5,
+            0.5
+        ]
+    },
+    {
+        "name": "chains",
+        "texture": "0xd36e7062793d",
+        "game": 2,
+        "flags": 0,
+        "color": [
+            1.0,
+            1.0,
+            1.0
+        ],
+        "uv_repeat": [
+            0.25,
+            0.25
+        ],
+        "uv_shift": [
+            0.75,
+            0.5
+        ]
+    },
+    {
+        "name": "helicopter",
+        "texture": "0x1568E6C87DF1C0EE",
+        "game": 2,
+        "flags": 0,
+        "color": [
+            1.0,
+            1.0,
+            1.0
+        ],
+        "uv_repeat": [
+            0.5,
+            0.5
+        ],
+        "uv_shift": [
+            0.5,
+            0.0
+        ]
+    },
+    {
+        "name": "minigun",
+        "texture": "0x1568E6C87DF1C0EE",
+        "game": 2,
+        "flags": 0,
+        "color": [
+            1.0,
+            1.0,
+            1.0
+        ],
+        "uv_repeat": [
+            0.5,
+            0.5
+        ],
+        "uv_shift": [
+            0.0,
+            0.5
+        ]
+    },
+    {
+        "name": "up",
+        "texture": "0x1568E6C87DF1C0EE",
+        "game": 2,
+        "flags": 0,
+        "color": [
+            1.0,
+            1.0,
+            1.0
+        ],
+        "uv_repeat": [
+            0.5,
+            0.5
+        ],
+        "uv_shift": [
+            0.5,
+            0.5
+        ]
+    },
+    {
+        "name": "down",
+        "texture": "0x1568E6C87DF1C0EE",
+        "game": 2,
+        "flags": 0,
+        "color": [
+            1.0,
+            1.0,
+            1.0
+        ],
+        "uv_repeat": [
+            0.5,
+            -0.5
+        ],
+        "uv_shift": [
+            0.5,
+            1.0
+        ]
+    },
+    {
+        "name": "lightbulb",
+        "texture": "0x1568AD2833CB99E1",
+        "game": 2,
+        "flags": 0,
+        "color": [
+            1.0,
+            1.0,
+            1.0
+        ],
+        "uv_repeat": [
+            0.5,
+            0.5
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "name": "flashlight",
+        "texture": "0x1568AD2833CB99E1",
+        "game": 2,
+        "flags": 0,
+        "color": [
+            1.0,
+            1.0,
+            1.0
+        ],
+        "uv_repeat": [
+            0.5,
+            0.5
+        ],
+        "uv_shift": [
+            0.5,
+            0.0
+        ]
+    },
+    {
+        "name": "jumpover",
+        "texture": "0x1568AD2833CB99E1",
+        "game": 2,
+        "flags": 0,
+        "color": [
+            1.0,
+            1.0,
+            1.0
+        ],
+        "uv_repeat": [
+            0.5,
+            0.5
+        ],
+        "uv_shift": [
+            0.0,
+            0.5
+        ]
+    },
+    {
+        "name": "antiairgun",
+        "texture": "0x1568AD2833CB99E1",
+        "game": 2,
+        "flags": 0,
+        "color": [
+            1.0,
+            1.0,
+            1.0
+        ],
+        "uv_repeat": [
+            0.5,
+            0.5
+        ],
+        "uv_shift": [
+            0.5,
+            0.5
+        ]
+    },
+    {
+        "name": "dhorse",
+        "texture": "0x156837A531A49148",
+        "game": 2,
+        "flags": 0,
+        "color": [
+            1.0,
+            1.0,
+            1.0
+        ],
+        "uv_repeat": [
+            0.5,
+            0.5
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "name": "truck",
+        "texture": "0x156837A531A49148",
+        "game": 2,
+        "flags": 0,
+        "color": [
+            1.0,
+            1.0,
+            1.0
+        ],
+        "uv_repeat": [
+            0.5,
+            0.5
+        ],
+        "uv_shift": [
+            0.5,
+            0.0
+        ]
+    },
+    {
+        "name": "armored",
+        "texture": "0x156837A531A49148",
+        "game": 2,
+        "flags": 0,
+        "color": [
+            1.0,
+            1.0,
+            1.0
+        ],
+        "uv_repeat": [
+            0.5,
+            0.5
+        ],
+        "uv_shift": [
+            0.0,
+            0.5
+        ]
+    },
+    {
+        "name": "jeep",
+        "texture": "0x156837A531A49148",
+        "game": 2,
+        "flags": 0,
+        "color": [
+            1.0,
+            1.0,
+            1.0
+        ],
+        "uv_repeat": [
+            0.5,
+            0.5
+        ],
+        "uv_shift": [
+            0.5,
+            0.5
+        ]
+    },
+    {
+        "name": "ladder",
+        "texture": "0x156B53ED552A2B4C",
+        "game": 2,
+        "flags": 0,
+        "color": [
+            1.0,
+            1.0,
+            1.0
+        ],
+        "uv_repeat": [
+            0.5,
+            0.5
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "name": "read",
+        "texture": "0x156B53ED552A2B4C",
+        "game": 2,
+        "flags": 0,
+        "color": [
+            1.0,
+            1.0,
+            1.0
+        ],
+        "uv_repeat": [
+            0.5,
+            0.5
+        ],
+        "uv_shift": [
+            0.5,
+            0.0
+        ]
+    },
+    {
+        "name": "mantle",
+        "texture": "0x156B53ED552A2B4C",
+        "game": 2,
+        "flags": 0,
+        "color": [
+            1.0,
+            1.0,
+            1.0
+        ],
+        "uv_repeat": [
+            0.5,
+            0.5
+        ],
+        "uv_shift": [
+            0.0,
+            0.5
+        ]
+    },
+    {
+        "name": "hang",
+        "texture": "0x156B53ED552A2B4C",
+        "game": 2,
+        "flags": 0,
+        "color": [
+            1.0,
+            1.0,
+            1.0
+        ],
+        "uv_repeat": [
+            0.5,
+            0.5
+        ],
+        "uv_shift": [
+            0.5,
+            0.5
+        ]
+    },
+    {
+        "name": "press",
+        "texture": "0x156803BA406C6C2B",
+        "game": 2,
+        "flags": 0,
+        "color": [
+            1.0,
+            1.0,
+            1.0
+        ],
+        "uv_repeat": [
+            0.5,
+            0.5
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "name": "medkit",
+        "texture": "0x156803BA406C6C2B",
+        "game": 2,
+        "flags": 0,
+        "color": [
+            1.0,
+            1.0,
+            1.0
+        ],
+        "uv_repeat": [
+            0.5,
+            0.5
+        ],
+        "uv_shift": [
+            0.5,
+            0.0
+        ]
+    },
+    {
+        "name": "portapotty",
+        "texture": "0x156803BA406C6C2B",
+        "game": 2,
+        "flags": 0,
+        "color": [
+            1.0,
+            1.0,
+            1.0
+        ],
+        "uv_repeat": [
+            0.5,
+            0.5
+        ],
+        "uv_shift": [
+            0.0,
+            0.5
+        ]
+    },
+    {
+        "name": "walkergear",
+        "texture": "0x156803BA406C6C2B",
+        "game": 2,
+        "flags": 0,
+        "color": [
+            1.0,
+            1.0,
+            1.0
+        ],
+        "uv_repeat": [
+            0.5,
+            0.5
+        ],
+        "uv_shift": [
+            0.5,
+            0.5
         ]
     },
     {
         "name": "stun",
-        "texture": "0x6D126E435E57",
+        "texture": "0x156838154C148517",
         "game": 2,
         "flags": 0,
         "color": [
@@ -200,17 +998,226 @@
             1.0
         ],
         "uv_repeat": [
+            0.5,
+            0.5
+        ],
+        "uv_shift": [
+            0.5,
+            0.0
+        ]
+    },
+    {
+        "name": "cqc",
+        "texture": "0x156838154C148517",
+        "game": 2,
+        "flags": 0,
+        "color": [
+            1.0,
             1.0,
             1.0
+        ],
+        "uv_repeat": [
+            0.5,
+            0.5
         ],
         "uv_shift": [
             0.0,
             0.0
+        ]
+    },
+    {
+        "name": "headshot",
+        "texture": "0x316bf90512d96",
+        "game": 2,
+        "flags": 0,
+        "color": [
+            1.0,
+            1.0,
+            1.0
+        ],
+        "uv_repeat": [
+            0.5,
+            0.5
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "name": "dropdisc",
+        "texture": "0x316bf90512d96",
+        "game": 2,
+        "flags": 0,
+        "color": [
+            1.0,
+            1.0,
+            1.0
+        ],
+        "uv_repeat": [
+            0.5,
+            0.5
+        ],
+        "uv_shift": [
+            0.0,
+            0.5
+        ]
+    },
+    {
+        "name": "walkergear_exit",
+        "texture": "0x3b815fac7649b",
+        "game": 2,
+        "flags": 0,
+        "color": [
+            1.0,
+            1.0,
+            1.0
+        ],
+        "uv_repeat": [
+            0.5,
+            0.5
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "name": "tap",
+        "texture": "0x3b815fac7649b",
+        "game": 2,
+        "flags": 0,
+        "color": [
+            1.0,
+            1.0,
+            1.0
+        ],
+        "uv_repeat": [
+            0.5,
+            0.5
+        ],
+        "uv_shift": [
+            0.5,
+            0.0
+        ]
+    },
+    {
+        "name": "hearts",
+        "texture": "0x3b815fac7649b",
+        "game": 2,
+        "flags": 0,
+        "color": [
+            1.0,
+            1.0,
+            1.0
+        ],
+        "uv_repeat": [
+            0.5,
+            0.5
+        ],
+        "uv_shift": [
+            0.0,
+            0.5
+        ]
+    },
+    {
+        "name": "handshake",
+        "texture": "0x3b815fac7649b",
+        "game": 2,
+        "flags": 0,
+        "color": [
+            1.0,
+            1.0,
+            1.0
+        ],
+        "uv_repeat": [
+            0.5,
+            0.5
+        ],
+        "uv_shift": [
+            0.5,
+            0.5
+        ]
+    },
+    {
+        "name": "emplacement",
+        "texture": "0x15699D34FA19C61C",
+        "game": 2,
+        "flags": 0,
+        "color": [
+            1.0,
+            1.0,
+            1.0
+        ],
+        "uv_repeat": [
+            0.5,
+            0.5
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "name": "helipad",
+        "texture": "0x15699D34FA19C61C",
+        "game": 2,
+        "flags": 0,
+        "color": [
+            1.0,
+            1.0,
+            1.0
+        ],
+        "uv_repeat": [
+            0.5,
+            0.5
+        ],
+        "uv_shift": [
+            0.5,
+            0.0
+        ]
+    },
+    {
+        "name": "mortar",
+        "texture": "0x15699D34FA19C61C",
+        "game": 2,
+        "flags": 0,
+        "color": [
+            1.0,
+            1.0,
+            1.0
+        ],
+        "uv_repeat": [
+            0.5,
+            0.5
+        ],
+        "uv_shift": [
+            0.0,
+            0.5
+        ]
+    },
+    {
+        "name": "skull",
+        "texture": "0x156838154C148517",
+        "game": 2,
+        "flags": 0,
+        "color": [
+            1.0,
+            1.0,
+            1.0
+        ],
+        "uv_repeat": [
+            0.5,
+            0.5
+        ],
+        "uv_shift": [
+            0.5,
+            0.5
         ]
     },
     {
         "name": "interrogate",
-        "texture": "0x26A9A71760E92",
+        "texture": "0x156838154C148517",
         "game": 2,
         "flags": 0,
         "color": [
@@ -219,7 +1226,577 @@
             1.0
         ],
         "uv_repeat": [
+            0.5,
+            0.5
+        ],
+        "uv_shift": [
+            0.0,
+            0.5
+        ]
+    },
+    {
+        "name": "mark",
+        "texture": "0x105e45846b0ca",
+        "game": 2,
+        "flags": 0,
+        "color": [
             1.0,
+            1.0,
+            1.0
+        ],
+        "uv_repeat": [
+            0.25,
+            0.25
+        ],
+        "uv_shift": [
+            0.0,
+            0.75
+        ]
+    },
+    {
+        "name": "zzz",
+        "texture": "0x105e45846b0ca",
+        "game": 2,
+        "flags": 0,
+        "color": [
+            1.0,
+            1.0,
+            1.0
+        ],
+        "uv_repeat": [
+            0.25,
+            0.25
+        ],
+        "uv_shift": [
+            0.75,
+            0.25
+        ]
+    },
+    {
+        "name": "cqc_in",
+        "texture": "0x156A15AC4F8D98F1",
+        "game": 2,
+        "flags": 0,
+        "color": [
+            1.0,
+            1.0,
+            1.0
+        ],
+        "uv_repeat": [
+            0.5,
+            0.5
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "name": "tank",
+        "texture": "0x156A15AC4F8D98F1",
+        "game": 2,
+        "flags": 0,
+        "color": [
+            1.0,
+            1.0,
+            1.0
+        ],
+        "uv_repeat": [
+            0.5,
+            0.5
+        ],
+        "uv_shift": [
+            0.5,
+            0.0
+        ]
+    },
+    {
+        "name": "box_in",
+        "texture": "0x156A15AC4F8D98F1",
+        "game": 2,
+        "flags": 0,
+        "color": [
+            1.0,
+            1.0,
+            1.0
+        ],
+        "uv_repeat": [
+            0.5,
+            0.5
+        ],
+        "uv_shift": [
+            0.0,
+            0.5
+        ]
+    },
+    {
+        "name": "pullup",
+        "texture": "0x156A15AC4F8D98F1",
+        "game": 2,
+        "flags": 0,
+        "color": [
+            1.0,
+            1.0,
+            1.0
+        ],
+        "uv_repeat": [
+            0.5,
+            0.5
+        ],
+        "uv_shift": [
+            0.5,
+            0.5
+        ]
+    },
+    {
+        "name": "lightbulb_off",
+        "texture": "0x156B08B62BF5E9A4",
+        "game": 2,
+        "flags": 0,
+        "color": [
+            1.0,
+            1.0,
+            1.0
+        ],
+        "uv_repeat": [
+            0.5,
+            0.5
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "name": "shower",
+        "texture": "0x156B08B62BF5E9A4",
+        "game": 2,
+        "flags": 0,
+        "color": [
+            1.0,
+            1.0,
+            1.0
+        ],
+        "uv_repeat": [
+            0.5,
+            0.5
+        ],
+        "uv_shift": [
+            0.5,
+            0.0
+        ]
+    },
+    {
+        "name": "music_cassette",
+        "texture": "0x156B08B62BF5E9A4",
+        "game": 2,
+        "flags": 0,
+        "color": [
+            1.0,
+            1.0,
+            1.0
+        ],
+        "uv_repeat": [
+            0.5,
+            0.5
+        ],
+        "uv_shift": [
+            0.0,
+            0.5
+        ]
+    },
+    {
+        "name": "dropdown",
+        "texture": "0x156B08B62BF5E9A4",
+        "game": 2,
+        "flags": 0,
+        "color": [
+            1.0,
+            1.0,
+            1.0
+        ],
+        "uv_repeat": [
+            0.5,
+            0.5
+        ],
+        "uv_shift": [
+            0.5,
+            0.5
+        ]
+    },
+    {
+        "name": "wormhole",
+        "texture": "0x156A57B391C3FA6A",
+        "game": 2,
+        "flags": 0,
+        "color": [
+            1.0,
+            1.0,
+            1.0
+        ],
+        "uv_repeat": [
+            0.5,
+            0.5
+        ],
+        "uv_shift": [
+            0.5,
+            0.0
+        ]
+    },
+    {
+        "name": "alert",
+        "texture": "0x156A57B391C3FA6A",
+        "game": 2,
+        "flags": 0,
+        "color": [
+            1.0,
+            1.0,
+            1.0
+        ],
+        "uv_repeat": [
+            0.5,
+            0.5
+        ],
+        "uv_shift": [
+            0.0,
+            0.5
+        ]
+    },
+    {
+        "name": "target_gun",
+        "texture": "0x156A57B391C3FA6A",
+        "game": 2,
+        "flags": 0,
+        "color": [
+            1.0,
+            1.0,
+            1.0
+        ],
+        "uv_repeat": [
+            0.5,
+            0.5
+        ],
+        "uv_shift": [
+            0.5,
+            0.5
+        ]
+    },
+    {
+        "name": "pipe",
+        "texture": "0x156B53491C88DB66",
+        "game": 2,
+        "flags": 0,
+        "color": [
+            1.0,
+            1.0,
+            1.0
+        ],
+        "uv_repeat": [
+            0.5,
+            0.5
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "name": "target",
+        "texture": "0x156B53491C88DB66",
+        "game": 2,
+        "flags": 0,
+        "color": [
+            1.0,
+            1.0,
+            1.0
+        ],
+        "uv_repeat": [
+            0.5,
+            0.5
+        ],
+        "uv_shift": [
+            0.5,
+            0.0
+        ]
+    },
+    {
+        "name": "box",
+        "texture": "0x156B53491C88DB66",
+        "game": 2,
+        "flags": 0,
+        "color": [
+            1.0,
+            1.0,
+            1.0
+        ],
+        "uv_repeat": [
+            0.5,
+            0.5
+        ],
+        "uv_shift": [
+            0.0,
+            0.5
+        ]
+    },
+    {
+        "name": "document",
+        "texture": "0x156B53491C88DB66",
+        "game": 2,
+        "flags": 0,
+        "color": [
+            1.0,
+            1.0,
+            1.0
+        ],
+        "uv_repeat": [
+            0.5,
+            0.5
+        ],
+        "uv_shift": [
+            0.5,
+            0.5
+        ]
+    },
+    {
+        "name": "dumpster",
+        "texture": "0x15699B8F377DFB1F",
+        "game": 2,
+        "flags": 0,
+        "color": [
+            1.0,
+            1.0,
+            1.0
+        ],
+        "uv_repeat": [
+            0.5,
+            0.5
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "name": "dog_heart",
+        "texture": "0x15699B8F377DFB1F",
+        "game": 2,
+        "flags": 0,
+        "color": [
+            1.0,
+            1.0,
+            1.0
+        ],
+        "uv_repeat": [
+            0.5,
+            0.5
+        ],
+        "uv_shift": [
+            0.5,
+            0.0
+        ]
+    },
+    {
+        "name": "aipod",
+        "texture": "0x15699B8F377DFB1F",
+        "game": 2,
+        "flags": 0,
+        "color": [
+            1.0,
+            1.0,
+            1.0
+        ],
+        "uv_repeat": [
+            0.5,
+            0.5
+        ],
+        "uv_shift": [
+            0.0,
+            0.5
+        ]
+    },
+    {
+        "name": "cqc_fulton",
+        "texture": "0x15699B8F377DFB1F",
+        "game": 2,
+        "flags": 0,
+        "color": [
+            1.0,
+            1.0,
+            1.0
+        ],
+        "uv_repeat": [
+            0.5,
+            0.5
+        ],
+        "uv_shift": [
+            0.5,
+            0.5
+        ]
+    },
+    {
+        "name": "pill",
+        "texture": "0x15685B7331D964A3",
+        "game": 2,
+        "flags": 0,
+        "color": [
+            1.0,
+            1.0,
+            1.0
+        ],
+        "uv_repeat": [
+            0.5,
+            0.5
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "name": "ghost",
+        "texture": "0x15685B7331D964A3",
+        "game": 2,
+        "flags": 0,
+        "color": [
+            1.0,
+            1.0,
+            1.0
+        ],
+        "uv_repeat": [
+            0.5,
+            0.5
+        ],
+        "uv_shift": [
+            0.5,
+            0.0
+        ]
+    },
+    {
+        "name": "climb",
+        "texture": "0x15685B7331D964A3",
+        "game": 2,
+        "flags": 0,
+        "color": [
+            1.0,
+            1.0,
+            1.0
+        ],
+        "uv_repeat": [
+            0.5,
+            0.5
+        ],
+        "uv_shift": [
+            0.0,
+            0.5
+        ]
+    },
+    {
+        "name": "drop",
+        "texture": "0x15685B7331D964A3",
+        "game": 2,
+        "flags": 0,
+        "color": [
+            1.0,
+            1.0,
+            1.0
+        ],
+        "uv_repeat": [
+            0.5,
+            0.5
+        ],
+        "uv_shift": [
+            0.5,
+            0.5
+        ]
+    },
+    {
+        "name": "party",
+        "texture": "0x3bcecf8a8825a",
+        "game": 2,
+        "flags": 0,
+        "color": [
+            1.0,
+            1.0,
+            1.0
+        ],
+        "uv_repeat": [
+            0.25,
+            0.5
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "name": "database",
+        "texture": "0x3bcecf8a8825a",
+        "game": 2,
+        "flags": 0,
+        "color": [
+            1.0,
+            1.0,
+            1.0
+        ],
+        "uv_repeat": [
+            0.25,
+            0.5
+        ],
+        "uv_shift": [
+            0.25,
+            0.0
+        ]
+    },
+    {
+        "name": "stocks",
+        "texture": "0x3bcecf8a8825a",
+        "game": 2,
+        "flags": 0,
+        "color": [
+            1.0,
+            1.0,
+            1.0
+        ],
+        "uv_repeat": [
+            0.25,
+            0.5
+        ],
+        "uv_shift": [
+            0.5,
+            0.0
+        ]
+    },
+    {
+        "name": "automatch",
+        "texture": "0x3bcecf8a8825a",
+        "game": 2,
+        "flags": 0,
+        "color": [
+            1.0,
+            1.0,
+            1.0
+        ],
+        "uv_repeat": [
+            0.25,
+            0.5
+        ],
+        "uv_shift": [
+            0.75,
+            0.0
+        ]
+    },
+    {
+        "name": "day",
+        "texture": "0x2832b25337420",
+        "game": 2,
+        "flags": 0,
+        "color": [
+            1.0,
+            1.0,
+            1.0
+        ],
+        "uv_repeat": [
+            0.5,
             1.0
         ],
         "uv_shift": [
@@ -228,8 +1805,8 @@
         ]
     },
     {
-        "name": "mark",
-        "texture": "0x1EBA9B2033919",
+        "name": "night",
+        "texture": "0x2832b25337420",
         "game": 2,
         "flags": 0,
         "color": [
@@ -238,11 +1815,231 @@
             1.0
         ],
         "uv_repeat": [
-            1.0,
+            0.5,
             1.0
         ],
         "uv_shift": [
+            0.5,
+            0.0
+        ]
+    },
+    {
+        "name": "rifle",
+        "texture": "0x377e5ce962670",
+        "game": 2,
+        "flags": 0,
+        "ratio": 2,
+        "color": [
+            1.0,
+            1.0,
+            1.0
+        ],
+        "uv_repeat": [
+            1.0,
+            0.5
+        ],
+        "uv_shift": [
             0.0,
+            0.25
+        ]
+    },
+    {
+        "name": "pistol",
+        "texture": "0x15682D6C790A4DE6",
+        "game": 2,
+        "flags": 0,
+        "ratio": 1,
+        "color": [
+            1.0,
+            1.0,
+            1.0
+        ],
+        "uv_repeat": [
+            0.125,
+            0.25
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "name": "smg",
+        "texture": "0x15682D6C790A4DE6",
+        "game": 2,
+        "flags": 0,
+        "ratio": 1,
+        "color": [
+            1.0,
+            1.0,
+            1.0
+        ],
+        "uv_repeat": [
+            0.125,
+            0.25
+        ],
+        "uv_shift": [
+            0.125,
+            0.0
+        ]
+    },
+    {
+        "name": "shotgun",
+        "texture": "0x2d26b09cadd84",
+        "game": 2,
+        "flags": 0,
+        "ratio": 2,
+        "color": [
+            1.0,
+            1.0,
+            1.0
+        ],
+        "uv_repeat": [
+            0.18,
+            0.25
+        ],
+        "uv_shift": [
+            0.56,
+            0.0
+        ]
+    },
+    {
+        "name": "sniper",
+        "texture": "0x2d26b09cadd84",
+        "game": 2,
+        "flags": 0,
+        "ratio": 2,
+        "color": [
+            1.0,
+            1.0,
+            1.0
+        ],
+        "uv_repeat": [
+            0.25,
+            0.25
+        ],
+        "uv_shift": [
+            0.0,
+            0.25
+        ]
+    },
+    {
+        "name": "lmg",
+        "texture": "0x2d26b09cadd84",
+        "game": 2,
+        "flags": 0,
+        "ratio": 2,
+        "color": [
+            1.0,
+            1.0,
+            1.0
+        ],
+        "uv_repeat": [
+            0.25,
+            0.25
+        ],
+        "uv_shift": [
+            0.25,
+            0.25
+        ]
+    },
+    {
+        "name": "knife",
+        "texture": "0x156828D8F7048897",
+        "game": 2,
+        "flags": 0,
+        "ratio": 2,
+        "color": [
+            1.0,
+            1.0,
+            1.0
+        ],
+        "uv_repeat": [
+            0.25,
+            0.25
+        ],
+        "uv_shift": [
+            0.0,
+            0.5
+        ]
+    },
+    {
+        "name": "rocket_launcher",
+        "texture": "0x2d26b09cadd84",
+        "game": 2,
+        "flags": 0,
+        "ratio": 2,
+        "color": [
+            1.0,
+            1.0,
+            1.0
+        ],
+        "uv_repeat": [
+            0.25,
+            0.25
+        ],
+        "uv_shift": [
+            0.5,
+            0.25
+        ]
+    },
+    {
+        "name": "rocket_arm",
+        "texture": "0x2d26b09cadd84",
+        "game": 2,
+        "flags": 0,
+        "ratio": 2,
+        "color": [
+            1.0,
+            1.0,
+            1.0
+        ],
+        "uv_repeat": [
+            0.25,
+            0.25
+        ],
+        "uv_shift": [
+            0.5,
+            0.5
+        ]
+    },
+    {
+        "name": "grenade",
+        "texture": "0x15682D6C790A4DE6",
+        "game": 2,
+        "flags": 0,
+        "ratio": 1,
+        "color": [
+            1.0,
+            1.0,
+            1.0
+        ],
+        "uv_repeat": [
+            0.125,
+            0.25
+        ],
+        "uv_shift": [
+            0.25,
+            0.0
+        ]
+    },
+    {
+        "name": "c4",
+        "texture": "0x15682D6C790A4DE6",
+        "game": 2,
+        "flags": 0,
+        "ratio": 1,
+        "color": [
+            1.0,
+            1.0,
+            1.0
+        ],
+        "uv_repeat": [
+            0.125,
+            0.25
+        ],
+        "uv_shift": [
+            0.375,
             0.0
         ]
     },
@@ -267,7 +2064,7 @@
     },
     {
         "name": "missile",
-        "texture": "0x102A70FE5F2AA",
+        "texture": "0x28b30fc2122af",
         "game": 2,
         "flags": 0,
         "color": [
@@ -276,17 +2073,17 @@
             1.0
         ],
         "uv_repeat": [
-            1.0,
-            1.0
+            0.25,
+            0.5
         ],
         "uv_shift": [
-            0.0,
-            0.0
+            0.5,
+            0.5
         ]
     },
-        {
-        "name": "question",
-        "texture": "0x140A1859F03BD",
+    {
+        "name": "survival",
+        "texture": "0x28b30fc2122af",
         "game": 2,
         "flags": 0,
         "color": [
@@ -295,17 +2092,94 @@
             1.0
         ],
         "uv_repeat": [
+            0.25,
+            0.5
+        ],
+        "uv_shift": [
+            0.75,
+            0.5
+        ]
+    },
+    {
+        "name": "disc_a",
+        "texture": "0x95b34b522b8",
+        "game": 2,
+        "flags": 0,
+        "color": [
+            1.0,
             1.0,
             1.0
         ],
+        "uv_repeat": [
+            0.25,
+            0.25
+        ],
         "uv_shift": [
             0.0,
-            0.0
+            0.5
+        ]
+    },
+    {
+        "name": "disc_b",
+        "texture": "0x95b34b522b8",
+        "game": 2,
+        "flags": 0,
+        "color": [
+            1.0,
+            1.0,
+            1.0
+        ],
+        "uv_repeat": [
+            0.25,
+            0.25
+        ],
+        "uv_shift": [
+            0.25,
+            0.5
+        ]
+    },
+    {
+        "name": "disc_c",
+        "texture": "0x95b34b522b8",
+        "game": 2,
+        "flags": 0,
+        "color": [
+            1.0,
+            1.0,
+            1.0
+        ],
+        "uv_repeat": [
+            0.25,
+            0.25
+        ],
+        "uv_shift": [
+            0.5,
+            0.5
+        ]
+    },
+    {
+        "name": "ticket",
+        "texture": "0x95b34b522b8",
+        "game": 2,
+        "flags": 0,
+        "ratio": 2,
+        "color": [
+            1.0,
+            1.0,
+            1.0
+        ],
+        "uv_repeat": [
+            0.5,
+            0.25
+        ],
+        "uv_shift": [
+            0.5,
+            0.75
         ]
     },
     {
         "name": "crosshair",
-        "texture": "0x170DD2DD0258A",
+        "texture": "0x1887ed2cf35b6",
         "game": 2,
         "flags": 0,
         "color": [
@@ -314,17 +2188,55 @@
             1.0
         ],
         "uv_repeat": [
-            1.0,
-            1.0
+            0.25,
+            0.5
         ],
         "uv_shift": [
             0.0,
             0.0
+        ]
+    },
+    {
+        "name": "musical_note",
+        "texture": "0x15ef46f28ae25",
+        "game": 2,
+        "flags": 0,
+        "color": [
+            1.0,
+            1.0,
+            1.0
+        ],
+        "uv_repeat": [
+            0.5,
+            0.5
+        ],
+        "uv_shift": [
+            0.5,
+            0.0
+        ]
+    },
+    {
+        "name": "sprint",
+        "texture": "0x15ef46f28ae25",
+        "game": 2,
+        "flags": 0,
+        "color": [
+            1.0,
+            1.0,
+            1.0
+        ],
+        "uv_repeat": [
+            0.5,
+            0.5
+        ],
+        "uv_shift": [
+            0.0,
+            0.5
         ]
     },
     {
         "name": "piranha",
-        "texture": "0x138F865D7FF7E",
+        "texture": "0x30120f3e0c743",
         "game": 2,
         "flags": 0,
         "color": [
@@ -342,8 +2254,8 @@
         ]
     },
     {
-        "name": "little_grey",
-        "texture": "0x13ACB8A4D93D1",
+        "name": "little_gray",
+        "texture": "0x2f916af0d3fb3",
         "game": 2,
         "flags": 0,
         "color": [
@@ -362,7 +2274,7 @@
     },
     {
         "name": "chamaleon",
-        "texture": "0x193A1CB08BE67",
+        "texture": "0x400a87830780",
         "game": 2,
         "flags": 0,
         "color": [
@@ -381,7 +2293,7 @@
     },
     {
         "name": "snake",
-        "texture": "0x1F013C0B693A9",
+        "texture": "0x3c7e072f06b1b",
         "game": 2,
         "flags": 0,
         "color": [
@@ -400,7 +2312,7 @@
     },
     {
         "name": "fox",
-        "texture": "0xBE6866BEC78B",
+        "texture": "0x1acc9dd18d09b",
         "game": 2,
         "flags": 0,
         "color": [
@@ -419,7 +2331,7 @@
     },
     {
         "name": "foxhound",
-        "texture": "0x1F3160430F758",
+        "texture": "0x13eabe0580926",
         "game": 2,
         "flags": 0,
         "color": [
@@ -438,7 +2350,7 @@
     },
     {
         "name": "panda",
-        "texture": "0x34FED69848A89",
+        "texture": "0x4ab441892e09",
         "game": 2,
         "flags": 0,
         "color": [
@@ -457,7 +2369,7 @@
     },
     {
         "name": "crocodile",
-        "texture": "0x3553923A5754C",
+        "texture": "0x18afe63cd9c58",
         "game": 2,
         "flags": 0,
         "color": [
@@ -476,7 +2388,7 @@
     },
     {
         "name": "sloth",
-        "texture": "0x36A7E4A0223BC",
+        "texture": "0x40ce2531a2e3",
         "game": 2,
         "flags": 0,
         "color": [
@@ -495,7 +2407,7 @@
     },
     {
         "name": "gecko",
-        "texture": "0x37174023D12E7",
+        "texture": "0x18c0e0bb2e877",
         "game": 2,
         "flags": 0,
         "color": [
@@ -514,7 +2426,7 @@
     },
     {
         "name": "bat",
-        "texture": "0x380EED2154C9D",
+        "texture": "0x1416bd3a4eac5",
         "game": 2,
         "flags": 0,
         "color": [
@@ -533,7 +2445,7 @@
     },
     {
         "name": "orca",
-        "texture": "0x39F7D45019A4F",
+        "texture": "0x782abfa02f79",
         "game": 2,
         "flags": 0,
         "color": [
@@ -552,7 +2464,7 @@
     },
     {
         "name": "horse",
-        "texture": "0x3E67D3C3E8551",
+        "texture": "0x67458ab8121c",
         "game": 2,
         "flags": 0,
         "color": [
@@ -571,7 +2483,7 @@
     },
     {
         "name": "scarab",
-        "texture": "0x3EA43152752E1",
+        "texture": "0x5c4c7914032a",
         "game": 2,
         "flags": 0,
         "color": [
@@ -590,7 +2502,7 @@
     },
     {
         "name": "cat",
-        "texture": "0x3ECEF6737B2CE",
+        "texture": "0x333c8e8697c2e",
         "game": 2,
         "flags": 0,
         "color": [
@@ -609,7 +2521,7 @@
     },
     {
         "name": "eagle",
-        "texture": "0x3ED25821B0639",
+        "texture": "0x484330bf024",
         "game": 2,
         "flags": 0,
         "color": [
@@ -628,7 +2540,7 @@
     },
     {
         "name": "sheep",
-        "texture": "0x3F4B035091C6",
+        "texture": "0x31e82770fe5e8",
         "game": 2,
         "flags": 0,
         "color": [
@@ -647,7 +2559,7 @@
     },
     {
         "name": "shark",
-        "texture": "0x4A50C2181F92",
+        "texture": "0x2a747df391193",
         "game": 2,
         "flags": 0,
         "color": [
@@ -666,7 +2578,7 @@
     },
     {
         "name": "doberman",
-        "texture": "0x7E491DE8DE12",
+        "texture": "0x5899ece47c66",
         "game": 2,
         "flags": 0,
         "color": [
@@ -685,7 +2597,7 @@
     },
     {
         "name": "chicken",
-        "texture": "0x9AD7E06E8132",
+        "texture": "0x23895ca9d6e2",
         "game": 2,
         "flags": 0,
         "color": [
@@ -704,7 +2616,7 @@
     },
     {
         "name": "bee",
-        "texture": "0xAB670AFE7909",
+        "texture": "0x1a035a993277a",
         "game": 2,
         "flags": 0,
         "color": [
@@ -723,7 +2635,7 @@
     },
     {
         "name": "leopard",
-        "texture": "0xB18B1533F150",
+        "texture": "0x2b736474ea243",
         "game": 2,
         "flags": 0,
         "color": [
@@ -742,7 +2654,7 @@
     },
     {
         "name": "scorpion",
-        "texture": "0xBAE0A5E46897",
+        "texture": "0x1a486827cc5ba",
         "game": 2,
         "flags": 0,
         "color": [
@@ -761,7 +2673,7 @@
     },
     {
         "name": "hawk",
-        "texture": "0xE7E4C1DC1282",
+        "texture": "0x3647ae9656257",
         "game": 2,
         "flags": 0,
         "color": [
@@ -780,7 +2692,7 @@
     },
     {
         "name": "pigeon",
-        "texture": "0xEC19F1BDC36A",
+        "texture": "0x1e2ecbeb957b0",
         "game": 2,
         "flags": 0,
         "color": [
@@ -799,7 +2711,7 @@
     },
     {
         "name": "hyena",
-        "texture": "0x30CEF3EE1E59",
+        "texture": "0x27ef9164d1639",
         "game": 2,
         "flags": 0,
         "color": [
@@ -818,7 +2730,26 @@
     },
     {
         "name": "water_bear",
-        "texture": "0x241A7AF10AF9B",
+        "texture": "0x10aa731d13ad0",
+        "game": 2,
+        "flags": 0,
+        "color": [
+            1.0,
+            1.0,
+            1.0
+        ],
+        "uv_repeat": [
+            1.0,
+            1.0
+        ],
+        "uv_shift": [
+            0.0,
+            0.0
+        ]
+    },
+    {
+        "name": "turtle",
+        "texture": "0x29c188b9e4747",
         "game": 2,
         "flags": 0,
         "color": [
@@ -837,7 +2768,7 @@
     },
     {
         "name": "bigboss",
-        "texture": "0x2f5d88233b4d9",
+        "texture": "0x24bfbd3df4613",
         "game": 2,
         "flags": 0,
         "color": [
@@ -856,7 +2787,7 @@
     },
     {
         "name": "bigboss_salute",
-        "texture": "0x18a4c81aaf004",
+        "texture": "0x2f13c4e348439",
         "game": 2,
         "flags": 0,
         "color": [
@@ -875,7 +2806,7 @@
     },
     {
         "name": "tv",
-        "texture": "0x3ee076a3338ec",
+        "texture": "0x25840cd7915ef",
         "game": 2,
         "flags": 0,
         "color": [
@@ -1919,6 +3850,44 @@
         ]
     },
     {
+        "name": "explosion",
+        "texture": "0x27c3c929f1595",
+        "game": 2,
+        "flags": 0,
+        "color": [
+            1,
+            1,
+            1
+        ],
+        "uv_repeat": [
+            0.5,
+            1
+        ],
+        "uv_shift": [
+            0.25,
+            0
+        ]
+    },
+    {
+        "name": "crushed",
+        "texture": "0x18bf1012d0a79",
+        "game": 2,
+        "flags": 0,
+        "color": [
+            1,
+            1,
+            1
+        ],
+        "uv_repeat": [
+            0.5,
+            1
+        ],
+        "uv_shift": [
+            0.25,
+            0
+        ]
+    },
+    {
         "name": "appeal_1",
         "texture": "0x1125a8dbfd80c",
         "game": 2,
@@ -2678,7 +4647,7 @@
             0
         ]
     },
-{
+    {
         "name": "heart",
         "texture": "0x1568536BA987038A",
         "game": 1,
@@ -3332,7 +5301,7 @@
     },
     {
         "name": "kjp",
-        "texture": "0x3C0B764A33B4B",
+        "texture": "0x3c0b764a33b4b",
         "game": 2,
         "flags": 0,
         "color": [
